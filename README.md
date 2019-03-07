@@ -4,7 +4,8 @@ Open source software for image correlation, distance and analysis.
 
 ## Getting Started
 
-* [State Of The Art](./SOTA.md)
+* State Of The Art : [MarkDown](./SOTA/SOTA.md) | [PDF version](./SOTA/SOTA.pdf)
+
 
 ### Prerequisites
 
