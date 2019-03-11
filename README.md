@@ -27,9 +27,11 @@ Other picture sources :
 - Do we want to a YES/NO algorithms output, which may not deliver any results, or do we want a "top N" algorithm, who's trying to match the best pictures he has ? 
 First case require some kind of threeshold at some point. Second case is just a ranking algorithm.
 
-Depends on the usecase. 
+Depends on the usecase. MISP would need a certain clear correlation for automation, whereas other application may only be a "best match" output.
 
 - Is it a similarity search (global picture, then), an object search (1 object -> Where whitin a scene, OR one Scene -> Many objects -> Where each is within other Scene ?)
+
+For a first iteration, we are focusing on picture-to-picture matching. Given problems we will face and usecases we will add, the project may be extended to object to picture matching.
 
 ### Prerequisites
 
