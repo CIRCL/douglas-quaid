@@ -57,5 +57,6 @@ For a first iteration, we are focusing on picture-to-picture matching. Given pro
 
 * [Original project structure source](http://www.kennethreitz.org/essays/repository-structure-and-python)
 * [Built-for-the-occasion manual image classificator](https://github.com/Vincent-CIRCL/visjs_classificator)
+* [Bibliography](https://www.zotero.org/groups/2296751/carl-hauser/items)
 
 ## Contributing
