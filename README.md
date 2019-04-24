@@ -12,7 +12,8 @@ A lot of information collected or processed by CIRCL are related to images (at l
 
 Three main applications are envisioned : 
 - Match new screenshots to a known baseline. E.g. : Matching screenshots from phishing-like website to known legitimate wesite.
-- Match pictures or objects of pictures together. E.g : AIL; crawled websites (mainly Tor hidden services) from interpreted screenshot, crawled websites - image extraction from DOM (ex : picture matching and inference if there is no text related to the picture.)
+- Match pictures or objects of pictures together. E.g : AIL; crawled websites (mainly Tor hidden services) from interpreted screenshot, 
+- Match pictures or objects of pictures together. E.g : crawled websites or image extraction from DOM (ex : picture matching and inference if there is no text related to the picture.)
 
 
 Other picture sources : 
@@ -21,19 +22,28 @@ Other picture sources :
 
 ## Getting Started
 
-* Review existing algorithms, techniques and libraries for calculating distances between images, State Of The Art : [MarkDown](./SOTA/SOTA.md) | [PDF version](./SOTA/SOTA.pdf)
+* Review of existing algorithms, techniques and libraries for calculating distances between images, State Of The Art : [MarkDown](./SOTA/SOTA.md) | [PDF version](./SOTA/SOTA.pdf)
 
 ### Questions
-- Do we want to a YES/NO algorithms output, which may not deliver any results, or do we want a "top N" algorithm, who's trying to match the best pictures he has ? 
-First case require some kind of threeshold at some point. Second case is just a ranking algorithm.
+- **_Do we want to a "YES they are the same"/"NO they're not" algorithms output, which can deliver an empty set of results (threeshold at some point) OR  do we want a "top N" algorithm, who's trying to match the best pictures he has ? (ranking algorithm)_**
 
-Depends on the usecase. MISP would need a certain clear correlation for automation, whereas other application may only be a "best match" output.
+Depends on the usecase. MISP would need a certain clear correlation for automation. The "best match" output is mainly useful for quality evaluation of different algorithms. However some application could use it as a production output.
 
-- Is it a similarity search (global picture, then), an object search (1 object -> Where whitin a scene, OR one Scene -> Many objects -> Where each is within other Scene ?)
+The final goal of this library is to map all matches into one of the three categories : Accepted pictures, To-review pictures, and Rejected pictures.
+Therefore, the goal will be to reduce the "to review" category to diminish needed human labor to edgy cases only.
+
+- **_Is it about a similarity search (global picture matching) or an object search (1 object -> Where is it within a scene OR one Scene -> Many objects -> Where each object is within other Scene ?)_**
 
 For a first iteration, we are focusing on picture-to-picture matching. Given problems we will face and usecases we will add, the project may be extended to object to picture matching.
+However, matching principles are quite similar, and the extension may be trivial.
+
+- **_Can I use the library in the current state for production ?_**
+
+Not now. The library has for now no "core element" that you can atomically use in your own software. The library is for now mainly a testbench to evaluate algorithms on your own dataset.
 
 ### Prerequisites
+
+See requirements.txt
 
 (...)
 
@@ -44,6 +54,26 @@ For a first iteration, we are focusing on picture-to-picture matching. Given pro
 ## Running the tests
 
 (...)
+
+## Running the benchmark evaluation
+
+in /lib_testing you just have to launch "python3 ./launcher.py"
+Parameters are hardcoded in the launcher.py, as : 
+- Path to pictures folder
+- Output folder to store results
+- Requested outputs (result graphe, statistics, LaTeX export, threshold evaluation, similarity matrix ...)
+
+This is currently working on most configuration and will explore following algorithms for matching : 
+- ImageHash Algorithms (A-hash, P-hash, D-hash, W-hash ... )
+- TLSH (be sure to have BMP pictures or uncompressed format at least. A function is available to convert pictures in /utility/manual.py) 
+- ORB (and its parameters space)
+- ORB Bag-Of-Words / Bag-Of-Features (and its parameters space, including size of the "Bag"/Dictionnary)
+- ORB RANSAC (with/without homography matrix filtering)
+
+You can also manually generate modified datasets from your original dataset : 
+- Text detector and hider (DeepLearning, Tesseract, ...)
+- Edge detector (DeepLearning, Canny, ...)
+- PNG/BMP versions of pictures (compressed/uncompressed)
 
 ### For Developers
 
@@ -62,3 +92,4 @@ For a first iteration, we are focusing on picture-to-picture matching. Given pro
 * [Bibliography](https://www.zotero.org/groups/2296751/carl-hauser/items)
 
 ## Contributing
+PR are welcomed
