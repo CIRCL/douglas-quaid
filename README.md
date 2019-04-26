@@ -83,6 +83,9 @@ You can also manually generate modified datasets from your original dataset :
 
 (...)
 
+For the algorithms test library : See [installation instruction](./installation_info.md)
+
+
 ## Built With & Sources
 
 * [Original project structure source](http://www.kennethreitz.org/essays/repository-structure-and-python)
