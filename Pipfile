@@ -15,6 +15,7 @@ scipy = "*"
 pytesseract = "*"
 imutils = "*"
 imagehash = "*"
+flask = "*"
 
 [requires]
 python_version = "3.7"
