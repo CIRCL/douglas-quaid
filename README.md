@@ -20,6 +20,16 @@ Other picture sources :
 - lookyloo screenshots from phishing-like - mix and non validated dataset
 - screenshots from sandboxed malware analysis
 
+## API Target
+
+Now : 
+- Provide a simple API : add pictures to the database, perform a picture-request 
+- Provide an algorithm-blind API : user should have no choice except a threshold for his requests
+
+Later : 
+- Provide an extended API for post treatement : thresholding over the result / Storing request and asking results with many threshold
+- Handling tags with storing picture : retrieve tags . Question : Extend it to any data store along with pictures ? 
+
 ## Getting Started
 
 * Review of existing algorithms, techniques and libraries for calculating distances between images, State Of The Art : [MarkDown](./SOTA/SOTA.md) | [PDF version](./SOTA/SOTA.pdf)
