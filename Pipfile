@@ -16,6 +16,7 @@ pytesseract = "*"
 imutils = "*"
 imagehash = "*"
 flask = "*"
+pyopenssl = "*"
 
 [requires]
 python_version = "3.7"

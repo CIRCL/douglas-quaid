@@ -1,4 +1,9 @@
 ## Installation
+
+### Core product
+
+< To be detailed >
+
 ### Library testing framework
 
 #### Installation
