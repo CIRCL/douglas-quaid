@@ -10,7 +10,7 @@ import pathlib
 sys.path.append(os.path.abspath(os.path.pardir))
 
 
-def get_SHA1(file_value : io.BufferedReader):
+def get_SHA1(file_value : io.BufferedReader): # TODO : Fix the input type
     # Get SHA1 hash from the file, directly in memory
 
     h  = hashlib.sha1()
@@ -33,6 +33,7 @@ def convert_to_bmp(file_value : io.BufferedReader):
         return contents
 
 def write_to_file(file_value, file_path : pathlib.Path):
+    # Write a buffer to a file. Works with convert_to_bmp() output
     newfile = open(str(file_path), 'wb')
     newfile.write(file_value)
     newfile.close()

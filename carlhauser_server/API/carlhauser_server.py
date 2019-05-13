@@ -13,7 +13,7 @@ import logging
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
 sys.path.append(os.path.abspath(os.path.pardir))
 import carlhauser_server.Configuration.webservice_conf as webservice_conf
-
+import carlhauser_server.Helpers.id_generator as id_generator
 # ==================== ------ SERVER Flask API definition ------- ====================
 
 class EndpointAction(object):
@@ -82,8 +82,14 @@ class FlaskAppWrapper(object):
     def add_picture(self):
         if flask.request.method == 'POST':
             f = flask.request.files['image']
-            f.save('./uploaded_file.jpg')
+
+            # Compute input picture hash and convert to BMP
+            f_hash = id_generator.get_SHA1(f)
+            f_bmp = id_generator.convert_to_bmp(f)
+
             # If the filename need to be used : secure_filename(f.filename)
+            # DEBUG / f_bmp = id_generator.write_to_file(f_bmp, pathlib.Path('./' + str(f_hash) + ".bmp").resolve())
+
 
         # Dummy action
         return "add_picture"
