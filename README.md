@@ -33,6 +33,7 @@ Later :
 ## Getting Started
 
 * Review of existing algorithms, techniques and libraries for calculating distances between images, State Of The Art : [MarkDown](./SOTA/SOTA.md) | [PDF version](./SOTA/SOTA.pdf)
+* Documentation of core components : [MarkDown - NOT UPDATED](./SOTA/Core_doc.md) | [PDF version](./SOTA/Core_doc.pdf)
 
 ### Questions
 - **_Do we want to a "YES they are the same"/"NO they're not" algorithms output, which can deliver an empty set of results (threeshold at some point) OR  do we want a "top N" algorithm, who's trying to match the best pictures he has ? (ranking algorithm)_**
