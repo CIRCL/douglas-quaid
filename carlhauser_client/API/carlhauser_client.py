@@ -33,6 +33,7 @@ class API_caller():
         # Select the endpoint
         target_url = self.server_url + "add_picture"
 
+        # Send the picture
         with open(str(file_path), 'rb') as img:
             files = {'image': (file_path.name, img, 'multipart/form-data', {'Expires': '0'})}
             with requests.Session() as s:
