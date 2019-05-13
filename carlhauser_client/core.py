@@ -32,8 +32,10 @@ class launcher_handler():
     def get_api(self):
         # Generate the API access point link to the hardcoded server
         cert = pathlib.Path("./cert.pem").resolve()
+
         # See : https://stackoverflow.com/questions/10667960/python-requests-throwing-sslerror
-        api = API_caller(url='https://localhost:5000/', certificate_path=False)  # TODO : Should be =cert
+        # To create : openssl req -x509 -newkey rsa:4096 -nodes -out cert.pem -keyout key.pem -days 365
+        api = API_caller(url='https://localhost:5000/', certificate_path=cert)  # TODO : Should be =cert
         logging.captureWarnings(True)  # TODO : Remove
         return api
 

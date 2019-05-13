@@ -11,6 +11,7 @@ import json
 sys.path.append(os.path.abspath(os.path.pardir))
 import carlhauser_server.Configuration.template_conf as template_conf
 
+
 class Custom_JSON_Encoder(json.JSONEncoder):
     '''
     Custom JSON Encoder to store Enum and custom configuration objects (for example) of the framework
@@ -28,7 +29,6 @@ class Custom_JSON_Encoder(json.JSONEncoder):
         return json.JSONEncoder.default(self, o)
 
 
-@staticmethod
 def save_json(obj, file_path: pathlib.Path):
     # TODO : To fix json_data = ast.literal_eval(json_data) ?
     #  See : https://stackoverflow.com/questions/25707558/json-valueerror-expecting-property-name-line-1-column-2-char-1
@@ -43,7 +43,6 @@ def save_json(obj, file_path: pathlib.Path):
     logger.debug(f"File saved as {file_path}.")
 
 
-@staticmethod
 def load_json(file_path: pathlib.Path):
     logger = logging.getLogger()
     # !! : json.load() is for loading a file. json.loads() works with strings.

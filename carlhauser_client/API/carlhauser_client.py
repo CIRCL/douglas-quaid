@@ -11,6 +11,7 @@ import logging
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
 sys.path.append(os.path.abspath(os.path.pardir))
 
+
 # ==================== ------ SERVER Flask API CALLER ------- ====================
 class API_caller():
     def __init__(self, url, certificate_path):
@@ -27,7 +28,7 @@ class API_caller():
 
     def add_picture_server(self, file_path: pathlib.Path):
         # Solve the file path
-        if not file_path.is_absolute() :
+        if not file_path.is_absolute():
             file_path = file_path.resolve()
 
         # Select the endpoint
@@ -37,10 +38,8 @@ class API_caller():
         with open(str(file_path), 'rb') as img:
             files = {'image': (file_path.name, img, 'multipart/form-data', {'Expires': '0'})}
             with requests.Session() as s:
-                r = s.post(url=target_url, files=files, verify=self.cert)
+                r = s.put(url=target_url, files=files, verify=self.cert)
                 self.logger.info(f"POST picture => {r.status_code} {r.reason} {r.text}")
+                self.logger.info(r.content)
 
-
-        # create_row_data = {'id': '1235', 'name': 'Joel', 'created_on': '27/01/2018', 'modified_on': '27/01/2018', 'desc': 'This is Joel!!'}
-        # r = requests.post(url=self.server_url, json=create_row_data)
         # print(r.status_code, r.reason, r.text)
