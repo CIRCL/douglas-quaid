@@ -5,6 +5,7 @@
 import sys, os
 import logging.config
 import argparse
+import pathlib
 
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
 sys.path.append(os.path.abspath(os.path.pardir))
@@ -30,6 +31,8 @@ class launcher_handler():
     def start_webservice(self):
         # Creat configuration file
         ws_conf = webservice_conf.Default_webservice_conf()
+        ws_conf.CERT_FILE = pathlib.Path(ws_conf.CERT_FILE).resolve()
+        ws_conf.KEY_FILE = pathlib.Path(ws_conf.KEY_FILE).resolve()
 
         # Create Flask endpoint
         api = FlaskAppWrapper('api', conf=ws_conf)
@@ -37,7 +40,6 @@ class launcher_handler():
 
         # Run Flask API endpoint
         api.run() # debug=True
-
 
 if __name__ == '__main__':
     launcher = launcher_handler()

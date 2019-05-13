@@ -15,5 +15,5 @@ class X_MODES(Enum):
 
 class Default_webservice_conf():
     def __init__(self):
-        self.X = X_MODES.X
-        self.Z = None
+        self.CERT_FILE = './cert.pem'
+        self.KEY_FILE = './key.pem'
