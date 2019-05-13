@@ -15,5 +15,6 @@ class X_MODES(Enum):
 
 class Default_webservice_conf():
     def __init__(self):
+        # Please note that CERT and KEY files must be in carl-hauser/carlhauser_server (where the flask server is)
         self.CERT_FILE = './cert.pem'
         self.KEY_FILE = './key.pem'

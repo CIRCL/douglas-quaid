@@ -48,11 +48,12 @@ class FlaskAppWrapper(object):
         self.app = flask.Flask(name)
 
     def run(self):
+        # Handle SLL Certificate, if they are provided = use them, else = self sign a certificate on the fly
         if self.conf.CERT_FILE is None or self.conf.KEY_FILE is None :
-            self.logger.error(f"Provided CERT OR KEY file not found. {self.conf.CERT_FILE} {self.conf.KEY_FILE}")
+            self.logger.error(f"Provided CERT OR KEY file not found :  {self.conf.CERT_FILE} and {self.conf.KEY_FILE}")
             self.app.run(ssl_context='adhoc')
         else :
-            self.logger.info(f"Provided CERT OR KEY file used. {self.conf.CERT_FILE} {self.conf.KEY_FILE}")
+            self.logger.info(f"Provided CERT OR KEY file used : {self.conf.CERT_FILE} and {self.conf.KEY_FILE}")
             self.app.run(ssl_context=(str(self.conf.CERT_FILE), str(self.conf.KEY_FILE))) # ssl_context='adhoc')
 
     def add_all_endpoints(self):
@@ -80,8 +81,8 @@ class FlaskAppWrapper(object):
 
     def add_picture(self):
         if flask.request.method == 'POST':
-            f = flask.request.files['the_file']
-            f.save('/var/www/uploads/uploaded_file.txt')
+            f = flask.request.files['image']
+            f.save('./uploaded_file.jpg')
             # If the filename need to be used : secure_filename(f.filename)
 
         # Dummy action

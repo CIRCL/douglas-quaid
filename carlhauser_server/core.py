@@ -17,9 +17,7 @@ import carlhauser_server.Configuration.webservice_conf as webservice_conf
 # load the logging configuration
 logging.config.fileConfig('logging.ini')
 
-
 # ==================== ------ LAUNCHER ------- ====================
-
 class launcher_handler():
     def __init__(self):
         self.logger = logging.getLogger(__name__)
