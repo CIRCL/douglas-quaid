@@ -9,13 +9,14 @@ import pathlib
 
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
 sys.path.append(os.path.abspath(os.path.pardir))
+from carlhauser_server.Helpers.environment_variable import get_homedir
 from carlhauser_server.API.carlhauser_server import FlaskAppWrapper
 import carlhauser_server.Configuration.webservice_conf as webservice_conf
 # from . import helpers
-
 # ==================== ------ PREPARATION ------- ====================
 # load the logging configuration
-logging.config.fileConfig('logging.ini')
+logconfig_path = (get_homedir() / pathlib.Path("carlhauser_server", "logging.ini")).resolve()
+logging.config.fileConfig(str(logconfig_path))
 
 # ==================== ------ LAUNCHER ------- ====================
 class launcher_handler():
@@ -27,7 +28,7 @@ class launcher_handler():
         self.start_webservice()
 
     def start_webservice(self):
-        # Creat configuration file
+        # Create configuration file
         ws_conf = webservice_conf.Default_webservice_conf()
         ws_conf.CERT_FILE = pathlib.Path(ws_conf.CERT_FILE).resolve()
         ws_conf.KEY_FILE = pathlib.Path(ws_conf.KEY_FILE).resolve()

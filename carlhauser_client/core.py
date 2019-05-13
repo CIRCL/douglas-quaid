@@ -9,12 +9,14 @@ import pathlib
 
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
 sys.path.append(os.path.abspath(os.path.pardir))
+from carlhauser_client.Helpers.environment_variable import get_homedir
 from carlhauser_client.API.carlhauser_client import API_caller
 # from . import helpers
 
 # ==================== ------ PREPARATION ------- ====================
 # load the logging configuration
-logging.config.fileConfig('logging.ini')
+logconfig_path = (get_homedir() / pathlib.Path("carlhauser_client", "logging.ini")).resolve()
+logging.config.fileConfig(str(logconfig_path))
 
 # ==================== ------ LAUNCHER ------- ====================
 class launcher_handler():
@@ -28,7 +30,9 @@ class launcher_handler():
         self.perform_upload()
 
     def get_api(self):
+        # Generate the API access point link to the hardcoded server
         cert = pathlib.Path("./cert.pem").resolve()
+        # See : https://stackoverflow.com/questions/10667960/python-requests-throwing-sslerror
         api = API_caller(url='https://localhost:5000/', certificate_path=False)  # TODO : Should be =cert
         logging.captureWarnings(True)  # TODO : Remove
         return api
