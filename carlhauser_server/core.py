@@ -10,7 +10,10 @@ import pathlib
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
 sys.path.append(os.path.abspath(os.path.pardir))
 from carlhauser_server.Helpers.environment_variable import get_homedir
+
 import carlhauser_server.Helpers.database_start_stop as database_start_stop
+import carlhauser_server.Configuration.database_conf as database_conf
+
 from carlhauser_server.API.carlhauser_server import FlaskAppWrapper
 import carlhauser_server.Configuration.webservice_conf as webservice_conf
 # from . import helpers
@@ -31,8 +34,12 @@ class launcher_handler():
     def start_database(self):
         self.logger.info(f"Launching redis database (x2) ...")
 
+        # Create configuration file
+        db_conf = database_conf.Default_database_conf()
+        self.db_handler = database_start_stop.Database_StartStop(conf=db_conf)
+
         # Launch redis db (cache and storage)
-        database_start_stop.launch_all_redis()
+        self.db_handler.launch_all_redis()
 
     def start_webservice(self):
         self.logger.info(f"Launching webservice ...")
@@ -43,11 +50,11 @@ class launcher_handler():
         ws_conf.KEY_FILE = pathlib.Path(ws_conf.KEY_FILE).resolve()
 
         # Create Flask endpoint
-        api = FlaskAppWrapper('api', conf=ws_conf)
-        api.add_all_endpoints()
+        self.api = FlaskAppWrapper('api', conf=ws_conf)
+        self.api.add_all_endpoints()
 
         # Run Flask API endpoint
-        api.run() # debug=True
+        self.api.run() # debug=True
 
 if __name__ == '__main__':
     launcher = launcher_handler()
