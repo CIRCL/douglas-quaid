@@ -7,7 +7,7 @@ import subprocess
 import pathlib
 import time
 import redis
-
+import logging
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
 sys.path.append(os.path.abspath(os.path.pardir))
 
@@ -21,11 +21,17 @@ True
 
 '''
 
+database_scripts_path = pathlib.Path('carlhauser_server', 'Helpers', 'database_scripts')
+database_sockets_path = pathlib.Path('carlhauser_server', 'Helpers', 'database_sockets')
+database_data_path = pathlib.Path('carlhauser_server', 'Helpers', 'database_data')
+
 
 def get_socket_path(name: str) -> str:
+    # Redis is configured to allow connection from/to Unix socket
+    # Unix sockets paths for Redis are defined in cache.conf and storage.conf
     mapping = {
-        'cache': pathlib.Path('carlhauser_server', 'Helpers', 'database_sockets', 'cache.sock'),
-        'storage': pathlib.Path('carlhauser_server', 'Helpers', 'database_sockets', 'storage.sock'),
+        'cache': get_homedir() / database_sockets_path / pathlib.Path('cache.sock'),
+        'storage': get_homedir() / database_sockets_path / pathlib.Path('storage.sock'),
     }
     return str(get_homedir() / mapping[name])
 
@@ -33,39 +39,50 @@ def get_socket_path(name: str) -> str:
 def check_running(name: str) -> bool:
     socket_path = get_socket_path(name)
 
+    print(socket_path)
+    try:
+        r = redis.Redis(unix_socket_path=socket_path)
+        if r.ping():
+            return True
+    except Exception as e:
+        # logger = logging.getLogger(__name__)
+        # logger.error(f"PING got no answer. Invalid socket. {e}")
+        return False
+
 
 # ==================== ------ CACHE MNGT ------- ====================
 
-def launch_cache(storage_directory: pathlib.Path = None):
-    if not storage_directory:
-        storage_directory = get_homedir()
+
+def launch_cache():
+    # Launch cache instance of redis. Uses a launch script
     if not check_running('cache'):
-        subprocess.Popen(["./run_redis_cache.sh"], cwd=(storage_directory / 'cache'))
+        script_path = get_homedir() / database_scripts_path / pathlib.Path("run_redis_cache.sh")
+        subprocess.Popen([str(script_path)], cwd=(get_homedir() / database_scripts_path))
 
 
-def shutdown_cache(storage_directory: pathlib.Path = None):
-    if not storage_directory:
-        storage_directory = get_homedir()
-    subprocess.Popen(["./shutdown_redis_cache.sh"], cwd=(storage_directory / 'cache'))
+def shutdown_cache():
+    script_path = get_homedir() / database_scripts_path / pathlib.Path("shutdown_redis_cache.sh")
+    subprocess.Popen([str(script_path)], cwd=(get_homedir() / database_scripts_path))
 
 
 # ==================== ------ STORAGE MNGT ------- ====================
 
-def launch_storage(storage_directory: pathlib.Path = None):
-    if not storage_directory:
-        storage_directory = get_homedir()
+def launch_storage():
+    # Launch storage instance of redis. Uses a launch script
     if not check_running('storage'):
-        subprocess.Popen(["./run_redis_storage.sh"], cwd=(storage_directory / 'storage'))
+        script_path = get_homedir() / database_scripts_path / pathlib.Path("run_redis_storage.sh")
+        subprocess.Popen([str(script_path)], cwd=(get_homedir() / database_scripts_path))
 
 
-def shutdown_storage(storage_directory: pathlib.Path = None):
-    if not storage_directory:
-        storage_directory = get_homedir()
-    subprocess.Popen(["./shutdown_redis_storage.sh"], cwd=(storage_directory / 'storage'))
+def shutdown_storage():
+    script_path = get_homedir() / database_scripts_path / pathlib.Path("shutdown_redis_storage.sh")
+    subprocess.Popen([str(script_path)], cwd=(get_homedir() / database_scripts_path))
+
 
 # ==================== ------ ALL MNGT ------- ====================
 
 def launch_all_redis():
+    # Launch the cache instance of redis, and the storage instance of redis
     launch_cache()
     launch_storage()
 

@@ -10,6 +10,7 @@ import pathlib
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
 sys.path.append(os.path.abspath(os.path.pardir))
 from carlhauser_server.Helpers.environment_variable import get_homedir
+import carlhauser_server.Helpers.database_start_stop as database_start_stop
 from carlhauser_server.API.carlhauser_server import FlaskAppWrapper
 import carlhauser_server.Configuration.webservice_conf as webservice_conf
 # from . import helpers
@@ -24,10 +25,18 @@ class launcher_handler():
         self.logger = logging.getLogger(__name__)
 
     def launch(self):
-        self.logger.info(f"Launching webservice ...")
+        self.start_database()
         self.start_webservice()
 
+    def start_database(self):
+        self.logger.info(f"Launching redis database (x2) ...")
+
+        # Launch redis db (cache and storage)
+        database_start_stop.launch_all_redis()
+
     def start_webservice(self):
+        self.logger.info(f"Launching webservice ...")
+
         # Create configuration file
         ws_conf = webservice_conf.Default_webservice_conf()
         ws_conf.CERT_FILE = pathlib.Path(ws_conf.CERT_FILE).resolve()

@@ -89,20 +89,24 @@ class FlaskAppWrapper(object):
         result_json = self.add_std_info(result_json)
 
         if flask.request.method == 'PUT':
-            f = flask.request.files['image']
+            try:
+                f = flask.request.files['image']
 
-            # Compute input picture hash and convert to BMP
-            f_hash = id_generator.get_SHA1(f)
-            f_bmp = id_generator.convert_to_bmp(f)
+                # Compute input picture hash and convert to BMP
+                f_hash = id_generator.get_SHA1(f)
+                f_bmp = id_generator.convert_to_bmp(f)
 
-            # TODO : Call add picture on redis
+                # TODO : Call add picture on redis
+                # redis.add_queue(f_bmp, f_hash)
 
-            # If the filename need to be used : secure_filename(f.filename)
-            # DEBUG / f_bmp = id_generator.write_to_file(f_bmp, pathlib.Path('./' + str(f_hash) + ".bmp").resolve())
+                # If the filename need to be used : secure_filename(f.filename)
+                # DEBUG / f_bmp = id_generator.write_to_file(f_bmp, pathlib.Path('./' + str(f_hash) + ".bmp").resolve())
 
-            result_json["Status"] = "Success"
-            result_json["img_id"] = f_hash
-
+                result_json["Status"] = "Success"
+                result_json["img_id"] = f_hash
+            except:
+                result_json["Status"] = "Failure"
+                result_json["Error"] = "Error during Hash computation or database adding"
         else:
             result_json["Status"] = "Failure"
             result_json["Error"] = "BAD METHOD : use PUT instead of GET, POST, ..."

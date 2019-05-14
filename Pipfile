@@ -17,6 +17,7 @@ imutils = "*"
 imagehash = "*"
 flask = "*"
 pyopenssl = "*"
+redis = "*"
 
 [requires]
 python_version = "3.7"
