@@ -28,33 +28,36 @@ class launcher_handler():
         self.logger = logging.getLogger(__name__)
 
     def launch(self):
-        self.start_database()
-        self.start_webservice()
+        # Create configuration
+        db_conf = database_conf.Default_database_conf()
+        ws_conf = webservice_conf.Default_webservice_conf()
 
-    def start_database(self):
+        # Launch elements
+        self.start_database(db_conf)
+        self.start_webservice(ws_conf, db_conf)
+
+    def start_database(self, db_conf):
         self.logger.info(f"Launching redis database (x2) ...")
 
-        # Create configuration file
-        db_conf = database_conf.Default_database_conf()
-        self.db_handler = database_start_stop.Database_StartStop(conf=db_conf)
+        # Create database handler from configuration file
+        db_handler = database_start_stop.Database_StartStop(conf=db_conf)
 
         # Launch redis db (cache and storage)
-        self.db_handler.launch_all_redis()
+        db_handler.launch_all_redis()
 
-    def start_webservice(self):
+    def start_webservice(self, ws_conf, db_conf):
         self.logger.info(f"Launching webservice ...")
 
         # Create configuration file
-        ws_conf = webservice_conf.Default_webservice_conf()
         ws_conf.CERT_FILE = pathlib.Path(ws_conf.CERT_FILE).resolve()
         ws_conf.KEY_FILE = pathlib.Path(ws_conf.KEY_FILE).resolve()
 
-        # Create Flask endpoint
-        self.api = FlaskAppWrapper('api', conf=ws_conf)
-        self.api.add_all_endpoints()
+        # Create Flask endpoint from configuration files
+        api = FlaskAppWrapper('api', conf=ws_conf, db_conf=db_conf)
+        api.add_all_endpoints()
 
         # Run Flask API endpoint
-        self.api.run() # debug=True
+        api.run() # debug=True
 
 if __name__ == '__main__':
     launcher = launcher_handler()

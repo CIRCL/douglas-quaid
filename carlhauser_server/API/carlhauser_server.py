@@ -12,8 +12,12 @@ import logging
 
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
 sys.path.append(os.path.abspath(os.path.pardir))
+
 import carlhauser_server.Configuration.webservice_conf as webservice_conf
+import carlhauser_server.Configuration.database_conf as database_conf
+
 import carlhauser_server.Helpers.id_generator as id_generator
+import carlhauser_server.DatabaseAccessor.database_accessor as database_accessor
 
 
 # ==================== ------ SERVER Flask API definition ------- ====================
@@ -41,13 +45,15 @@ class EndpointAction(object):
 
 
 class FlaskAppWrapper(object):
-    def __init__(self, name, conf: webservice_conf):
+    def __init__(self, name, conf: webservice_conf, db_conf :database_conf):
         # STD attributes
         self.conf = conf
         self.logger = logging.getLogger(__name__)
 
         # Specific attributes
         self.app = flask.Flask(name)
+        # An accessor to push stuff in queues, mainly
+        self.db_accessor = database_accessor.Database_Accessor(conf=db_conf)
 
     def run(self):
         # Handle SLL Certificate, if they are provided = use them, else = self sign a certificate on the fly
@@ -88,6 +94,7 @@ class FlaskAppWrapper(object):
         result_json["Called_function"] = "add_picture"
         result_json = self.add_std_info(result_json)
 
+        # Answer to PUT HTTP request
         if flask.request.method == 'PUT':
             try:
                 f = flask.request.files['image']
@@ -96,8 +103,8 @@ class FlaskAppWrapper(object):
                 f_hash = id_generator.get_SHA1(f)
                 f_bmp = id_generator.convert_to_bmp(f)
 
-                # TODO : Call add picture on redis
-                # redis.add_queue(f_bmp, f_hash)
+                # TODO : Verify call add picture on redis
+                self.db_accessor.add_to_queue(queue_name="", id=f_hash, data=f_bmp)
 
                 # If the filename need to be used : secure_filename(f.filename)
                 # DEBUG / f_bmp = id_generator.write_to_file(f_bmp, pathlib.Path('./' + str(f_hash) + ".bmp").resolve())

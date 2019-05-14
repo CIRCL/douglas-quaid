@@ -16,6 +16,7 @@ from carlhauser_server.Helpers.singleton import Singleton
 from carlhauser_server.Helpers.environment_variable import get_homedir
 import carlhauser_server.Configuration.database_conf as database_conf
 
+
 # ==================== ------ PATHS ------- ====================
 
 class Database_StartStop(object, metaclass=Singleton):
@@ -31,6 +32,11 @@ class Database_StartStop(object, metaclass=Singleton):
         self.cache_socket_path = get_homedir() / self.conf.DB_SOCKETS_PATH / 'cache.sock'
         self.storage_socket_path = get_homedir() / self.conf.DB_SOCKETS_PATH / 'storage.sock'
 
+        self.launch_cache_script_path = get_homedir() / self.conf.DB_SCRIPTS_PATH / "run_redis_cache.sh"
+        self.shutdown_cache_script_path = get_homedir() / self.conf.DB_SCRIPTS_PATH / "shutdown_redis_cache.sh"
+        self.launch_storage_script_path = get_homedir() / self.conf.DB_SCRIPTS_PATH / "run_redis_storage.sh"
+        self.shutdown_storage_script_path = get_homedir() / self.conf.DB_SCRIPTS_PATH / "shutdown_redis_storage.sh"
+
     def get_socket_path(self, name: str) -> str:
         # Redis is configured to allow connection from/to Unix socket
         # Unix sockets paths for Redis are defined in cache.conf and storage.conf
@@ -38,7 +44,7 @@ class Database_StartStop(object, metaclass=Singleton):
             'cache': self.cache_socket_path,
             'storage': self.storage_socket_path,
         }
-        return str(get_homedir() / mapping[name])
+        return str(mapping[name])
 
     def check_running(self, name: str) -> bool:
         socket_path = self.get_socket_path(name)
@@ -53,32 +59,23 @@ class Database_StartStop(object, metaclass=Singleton):
 
     # ==================== ------ CACHE MNGT ------- ====================
 
-
     def launch_cache(self):
         # Launch cache instance of redis. Uses a launch script
         if not self.check_running('cache'):
-            script_path = get_homedir() / self.conf.DB_SCRIPTS_PATH / "run_redis_cache.sh"
-            subprocess.Popen([str(script_path)], cwd=(get_homedir() / self.conf.DB_SCRIPTS_PATH))
-
+            subprocess.Popen([str(self.launch_cache_script_path)], cwd=(self.launch_cache_script_path.parent))
 
     def shutdown_cache(self):
-        script_path = get_homedir() / self.conf.DB_SCRIPTS_PATH / "shutdown_redis_cache.sh"
-        subprocess.Popen([str(script_path)], cwd=(get_homedir() / self.conf.DB_SCRIPTS_PATH))
-
+        subprocess.Popen([str(self.shutdown_cache_script_path)], cwd=(self.shutdown_cache_script_path.parent))
 
     # ==================== ------ STORAGE MNGT ------- ====================
 
     def launch_storage(self):
         # Launch storage instance of redis. Uses a launch script
         if not self.check_running('storage'):
-            script_path = get_homedir() / self.conf.DB_SCRIPTS_PATH / "run_redis_storage.sh"
-            subprocess.Popen([str(script_path)], cwd=(get_homedir() / self.conf.DB_SCRIPTS_PATH))
-
+            subprocess.Popen([str(self.launch_storage_script_path)], cwd=(self.launch_storage_script_path.parent))
 
     def shutdown_storage(self):
-        script_path = get_homedir() / self.conf.DB_SCRIPTS_PATH / "shutdown_redis_storage.sh"
-        subprocess.Popen([str(script_path)], cwd=(get_homedir() / self.conf.DB_SCRIPTS_PATH))
-
+        subprocess.Popen([self.shutdown_storage_script_path], cwd=(self.shutdown_storage_script_path.parent))
 
     # ==================== ------ ALL MNGT ------- ====================
 
@@ -86,7 +83,6 @@ class Database_StartStop(object, metaclass=Singleton):
         # Launch the cache instance of redis, and the storage instance of redis
         self.launch_cache()
         self.launch_storage()
-
 
     def check_all_redis(self, stop=False):
         # Ping cache socket and storage socket
@@ -109,7 +105,6 @@ class Database_StartStop(object, metaclass=Singleton):
                 if stop and b[1]:
                     print(f"Waiting on {b[0]}")
             time.sleep(1)
-
 
     def stop_all_redis(self):
         self.shutdown_cache()
