@@ -1,0 +1,89 @@
+16377:C 14 May 2019 08:53:17.670 # oO0OoO0OoO0Oo Redis is starting oO0OoO0OoO0Oo
+16377:C 14 May 2019 08:53:17.670 # Redis version=5.0.4, bits=64, commit=00000000, modified=0, pid=16377, just started
+16377:C 14 May 2019 08:53:17.670 # Configuration loaded
+16378:M 14 May 2019 08:53:17.673 * Increased maximum number of open files to 10032 (it was originally set to 1024).
+                _._                                                  
+           _.-``__ ''-._                                             
+      _.-``    `.  `_.  ''-._           Redis 5.0.4 (00000000/0) 64 bit
+  .-`` .-```.  ```\/    _.,_ ''-._                                   
+ (    '      ,       .-`  | `,    )     Running in standalone mode
+ |`-._`-...-` __...-.``-._|'` _.-'|     Port: 0
+ |    `-._   `._    /     _.-'    |     PID: 16378
+  `-._    `-._  `-./  _.-'    _.-'                                   
+ |`-._`-._    `-.__.-'    _.-'_.-'|                                  
+ |    `-._`-._        _.-'_.-'    |           http://redis.io        
+  `-._    `-._`-.__.-'_.-'    _.-'                                   
+ |`-._`-._    `-.__.-'    _.-'_.-'|                                  
+ |    `-._`-._        _.-'_.-'    |                                  
+  `-._    `-._`-.__.-'_.-'    _.-'                                   
+      `-._    `-.__.-'    _.-'                                       
+          `-._        _.-'                                           
+              `-.__.-'                                               
+
+16378:M 14 May 2019 08:53:17.674 # WARNING: The TCP backlog setting of 511 cannot be enforced because /proc/sys/net/core/somaxconn is set to the lower value of 128.
+16378:M 14 May 2019 08:53:17.674 # Server initialized
+16378:M 14 May 2019 08:53:17.674 # WARNING overcommit_memory is set to 0! Background save may fail under low memory condition. To fix this issue add 'vm.overcommit_memory = 1' to /etc/sysctl.conf and then reboot or run the command 'sysctl vm.overcommit_memory=1' for this to take effect.
+16378:M 14 May 2019 08:53:17.674 # WARNING you have Transparent Huge Pages (THP) support enabled in your kernel. This will create latency and memory usage issues with Redis. To fix this issue run the command 'echo never > /sys/kernel/mm/transparent_hugepage/enabled' as root, and add it to your /etc/rc.local in order to retain the setting after a reboot. Redis must be restarted after THP is disabled.
+16378:M 14 May 2019 08:53:17.674 * The server is now ready to accept connections at cache.sock
+16886:C 14 May 2019 09:02:09.623 # oO0OoO0OoO0Oo Redis is starting oO0OoO0OoO0Oo
+16886:C 14 May 2019 09:02:09.623 # Redis version=5.0.4, bits=64, commit=00000000, modified=0, pid=16886, just started
+16886:C 14 May 2019 09:02:09.623 # Configuration loaded
+16887:M 14 May 2019 09:02:09.626 * Increased maximum number of open files to 10032 (it was originally set to 1024).
+                _._                                                  
+           _.-``__ ''-._                                             
+      _.-``    `.  `_.  ''-._           Redis 5.0.4 (00000000/0) 64 bit
+  .-`` .-```.  ```\/    _.,_ ''-._                                   
+ (    '      ,       .-`  | `,    )     Running in standalone mode
+ |`-._`-...-` __...-.``-._|'` _.-'|     Port: 0
+ |    `-._   `._    /     _.-'    |     PID: 16887
+  `-._    `-._  `-./  _.-'    _.-'                                   
+ |`-._`-._    `-.__.-'    _.-'_.-'|                                  
+ |    `-._`-._        _.-'_.-'    |           http://redis.io        
+  `-._    `-._`-.__.-'_.-'    _.-'                                   
+ |`-._`-._    `-.__.-'    _.-'_.-'|                                  
+ |    `-._`-._        _.-'_.-'    |                                  
+  `-._    `-._`-.__.-'_.-'    _.-'                                   
+      `-._    `-.__.-'    _.-'                                       
+          `-._        _.-'                                           
+              `-.__.-'                                               
+
+16887:M 14 May 2019 09:02:09.627 # WARNING: The TCP backlog setting of 511 cannot be enforced because /proc/sys/net/core/somaxconn is set to the lower value of 128.
+16887:M 14 May 2019 09:02:09.627 # Server initialized
+16887:M 14 May 2019 09:02:09.627 # WARNING overcommit_memory is set to 0! Background save may fail under low memory condition. To fix this issue add 'vm.overcommit_memory = 1' to /etc/sysctl.conf and then reboot or run the command 'sysctl vm.overcommit_memory=1' for this to take effect.
+16887:M 14 May 2019 09:02:09.627 # WARNING you have Transparent Huge Pages (THP) support enabled in your kernel. This will create latency and memory usage issues with Redis. To fix this issue run the command 'echo never > /sys/kernel/mm/transparent_hugepage/enabled' as root, and add it to your /etc/rc.local in order to retain the setting after a reboot. Redis must be restarted after THP is disabled.
+16887:M 14 May 2019 09:02:09.627 * The server is now ready to accept connections at ./../database_sockets/cache.sock
+15612:signal-handler (1557817349) Received SIGTERM scheduling shutdown...
+15612:M 14 May 2019 09:02:29.167 # User requested shutdown...
+15612:M 14 May 2019 09:02:29.167 * Saving the final RDB snapshot before exiting.
+15612:M 14 May 2019 09:02:29.170 * DB saved on disk
+15612:M 14 May 2019 09:02:29.170 * Removing the pid file.
+15612:M 14 May 2019 09:02:29.170 * Removing the unix socket file.
+15612:M 14 May 2019 09:02:29.170 # Redis is now ready to exit, bye bye...
+16024:signal-handler (1557817355) Received SIGTERM scheduling shutdown...
+16024:M 14 May 2019 09:02:35.586 # User requested shutdown...
+16024:M 14 May 2019 09:02:35.586 * Saving the final RDB snapshot before exiting.
+16024:M 14 May 2019 09:02:35.597 * DB saved on disk
+16024:M 14 May 2019 09:02:35.597 * Removing the pid file.
+16024:M 14 May 2019 09:02:35.597 * Removing the unix socket file.
+16024:M 14 May 2019 09:02:35.597 # Redis is now ready to exit, bye bye...
+16887:signal-handler (1557817359) Received SIGTERM scheduling shutdown...
+16887:M 14 May 2019 09:02:39.815 # User requested shutdown...
+16887:M 14 May 2019 09:02:39.815 * Saving the final RDB snapshot before exiting.
+16887:M 14 May 2019 09:02:39.841 * DB saved on disk
+16887:M 14 May 2019 09:02:39.841 * Removing the pid file.
+16887:M 14 May 2019 09:02:39.841 * Removing the unix socket file.
+16887:M 14 May 2019 09:02:39.841 # Redis is now ready to exit, bye bye...
+16378:signal-handler (1557817387) Received SIGTERM scheduling shutdown...
+16378:M 14 May 2019 09:03:07.821 # User requested shutdown...
+16378:M 14 May 2019 09:03:07.821 * Saving the final RDB snapshot before exiting.
+16378:M 14 May 2019 09:03:07.829 * DB saved on disk
+16378:M 14 May 2019 09:03:07.829 * Removing the pid file.
+16378:M 14 May 2019 09:03:07.829 * Removing the unix socket file.
+16378:M 14 May 2019 09:03:07.829 # Redis is now ready to exit, bye bye...
+16034:signal-handler (1557817481) Received SIGTERM scheduling shutdown...
+16034:M 14 May 2019 09:04:41.955 # User requested shutdown...
+16034:M 14 May 2019 09:04:41.955 * Saving the final RDB snapshot before exiting.
+16034:M 14 May 2019 09:04:41.965 * DB saved on disk
+16034:M 14 May 2019 09:04:41.965 * Removing the pid file.
+16034:M 14 May 2019 09:04:41.965 * Removing the unix socket file.
+16034:M 14 May 2019 09:04:41.965 # Redis is now ready to exit, bye bye...

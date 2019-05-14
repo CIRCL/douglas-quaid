@@ -5,11 +5,33 @@
 import sys, os
 import subprocess
 import pathlib
+import time
+import redis
+
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
 sys.path.append(os.path.abspath(os.path.pardir))
 
+from carlhauser_server.Helpers.environment_variable import get_homedir
+
+'''
+>>> r = redis.Redis(host='localhost', port=6379, db=0)
+>>> r.set('foo', 'bar')
+True
+>>> r.get('foo')
+
+'''
 
 
+def get_socket_path(name: str) -> str:
+    mapping = {
+        'cache': pathlib.Path('carlhauser_server', 'Helpers', 'database_sockets', 'cache.sock'),
+        'storage': pathlib.Path('carlhauser_server', 'Helpers', 'database_sockets', 'storage.sock'),
+    }
+    return str(get_homedir() / mapping[name])
+
+
+def check_running(name: str) -> bool:
+    socket_path = get_socket_path(name)
 
 
 # ==================== ------ CACHE MNGT ------- ====================
@@ -18,13 +40,13 @@ def launch_cache(storage_directory: pathlib.Path = None):
     if not storage_directory:
         storage_directory = get_homedir()
     if not check_running('cache'):
-        subprocess.Popen(["./run_redis.sh"], cwd=(storage_directory / 'cache'))
+        subprocess.Popen(["./run_redis_cache.sh"], cwd=(storage_directory / 'cache'))
 
 
 def shutdown_cache(storage_directory: pathlib.Path = None):
     if not storage_directory:
         storage_directory = get_homedir()
-    subprocess.Popen(["./shutdown_redis.sh"], cwd=(storage_directory / 'cache'))
+    subprocess.Popen(["./shutdown_redis_cache.sh"], cwd=(storage_directory / 'cache'))
 
 
 # ==================== ------ STORAGE MNGT ------- ====================
@@ -33,23 +55,22 @@ def launch_storage(storage_directory: pathlib.Path = None):
     if not storage_directory:
         storage_directory = get_homedir()
     if not check_running('storage'):
-        subprocess.Popen(["./run_ardb.sh"], cwd=(storage_directory / 'storage'))
+        subprocess.Popen(["./run_redis_storage.sh"], cwd=(storage_directory / 'storage'))
 
 
 def shutdown_storage(storage_directory: pathlib.Path = None):
     if not storage_directory:
         storage_directory = get_homedir()
-    subprocess.Popen(["./shutdown_ardb.sh"], cwd=(storage_directory / 'storage'))
-
+    subprocess.Popen(["./shutdown_redis_storage.sh"], cwd=(storage_directory / 'storage'))
 
 # ==================== ------ ALL MNGT ------- ====================
 
-def launch_all():
+def launch_all_redis():
     launch_cache()
     launch_storage()
 
 
-def check_all(stop=False):
+def check_all_redis(stop=False):
     backends = [['cache', False], ['storage', False]]
     while True:
         for b in backends:
@@ -71,6 +92,6 @@ def check_all(stop=False):
         time.sleep(1)
 
 
-def stop_all():
+def stop_all_redis():
     shutdown_cache()
     shutdown_storage()
