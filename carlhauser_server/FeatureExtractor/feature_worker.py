@@ -9,7 +9,6 @@ import time
 import argparse
 import pathlib
 
-
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
 sys.path.append(os.path.abspath(os.path.pardir))
 
@@ -20,38 +19,42 @@ import carlhauser_server.DatabaseAccessor.database_worker as database_accessor
 import carlhauser_server.Configuration.database_conf as database_conf
 import carlhauser_server.Configuration.feature_extractor_conf as feature_extractor_conf
 
+import carlhauser_server.FeatureExtractor.picture_hasher as picture_hasher
+
 
 class Feature_Worker(database_accessor.Database_Worker):
     # Heritate from the database accesso, and so has already built in access to cache, storage ..
 
-    def __init__(self, db_conf: database_conf, fe_conf : feature_extractor_conf):
+    def __init__(self, db_conf: database_conf, fe_conf: feature_extractor_conf):
         # STD attributes
         super().__init__(db_conf)
         self.fe_conf = fe_conf
-
+        self.picture_hasher = picture_hasher.Picture_Hasher(fe_conf)
 
     def _to_run_forever(self):
         self.process_picture()
 
     def process_picture(self):
-            to_process_picture_id = self.cache_db.lpop(self.input_queue) # Pop from to_add queue
+        to_process_picture_id = self.cache_db.lpop(self.input_queue)  # Pop from to_add queue
 
-            if not to_process_picture_id:
-                # Nothing to do
-                time.sleep(0.1)
-                return 0
+        if not to_process_picture_id:
+            # Nothing to do
+            time.sleep(0.1)
+            return 0
 
-            try:
-                self.logger.info(f"Feature worker processing {to_process_picture_id}")
-                #TODO : DO STUFF
+        try:
+            self.logger.info(f"Feature worker processing {to_process_picture_id}")
 
-                self.cache_db.rpush(self.ouput_queue, "test")  # add to next queue
+            self.picture_hasher.hash_picture()
+            # TODO : DO STUFF
 
-            except:
-                return 1
+            self.cache_db.rpush(self.ouput_queue, "test")  # add to next queue
+
+        except:
+            return 1
+
 
 # Launcher for this worker. Launch this file to launch a worker
-# NOTE THIS WORKER WON'T PERFORM ANY ACTION !
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Launch a worker for a specific task.')
     parser.add_argument("-c", '--configuration_file', dest="conf_db", type=dir_path, help='DB_configuration_file stored as json. Path')
@@ -68,15 +71,13 @@ if __name__ == '__main__':
 
     # Create the Feature Worker and run it
     feature_worker = Feature_Worker(db_conf=db_conf, fe_conf=fe_conf)
-    if args.mode == "ADD" :
+    if args.mode == "ADD":
         feature_worker.input_queue = "feature_to_add"
         feature_worker.ouput_queue = "db_to_add"
         feature_worker.run(sleep_in_sec=fe_conf.FEATURE_ADDER_WAIT_SEC)
-    elif args.mode == "REQUEST" :
+    elif args.mode == "REQUEST":
         feature_worker.input_queue = "feature_to_request"
         feature_worker.ouput_queue = "db_to_request"
         feature_worker.run(sleep_in_sec=fe_conf.FEATURE_REQUEST_WAIT_SEC)
-    else :
+    else:
         print("ARG_PARSER didn't do his job : you should provide a mode for the worker, to know what to do : from where to get pictures to hash, and here to where to put the result back")
-
-

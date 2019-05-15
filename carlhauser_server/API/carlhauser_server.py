@@ -45,7 +45,7 @@ class EndpointAction(object):
 
 
 class FlaskAppWrapper(object):
-    def __init__(self, name, conf: webservice_conf, db_conf :database_conf):
+    def __init__(self, name, conf: webservice_conf, db_conf: database_conf):
         # STD attributes
         self.conf = conf
         self.logger = logging.getLogger(__name__)

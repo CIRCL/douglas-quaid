@@ -50,18 +50,8 @@ class Database_Worker():
         # im.save(output, format=im.format)
         print("Added data: ", data)
 
-        '''
-        data = {
-          'seller_id': seller,
-          'item_id': item,
-          'price': price,
-          'buyer_id': buyer,
-          'time': time.time()        
-           }
-        
-        '''
-
         try:
+            # TODO : HSET
             self.cache_db.set(name=id + "|picture", value=data, ex=self.conf.REQUEST_EXPIRATION)  # 1 day expiration for data
             self.cache_db.rpush(queue_name, id)  # Add the id to the queue
         except:
