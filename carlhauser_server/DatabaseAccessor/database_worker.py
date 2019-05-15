@@ -90,6 +90,7 @@ class Database_Worker():
         self.logger.info(f'Shutting down {self.__class__.__name__}')
 
     def _to_run_forever(self):
+        self.logger.critical("YOU SHOULD OVERWRITE '_to_run_forever' of the database_worker class. This worker is actually doing NOTHING !")
         pass
 
     def long_sleep(self, sleep_in_sec: int, shutdown_check: int = 10) -> bool:
@@ -109,6 +110,7 @@ class Database_Worker():
 
 
 # Launcher for this worker. Launch this file to launch a worker
+# NOTE THIS WORKER WON'T PERFORM ANY ACTION !
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Launch a worker for a specific task.')
     parser.add_argument("-c", '--configuration_file', dest="conf", type=dir_path, help='DB_configuration_file stored as json. Path')
