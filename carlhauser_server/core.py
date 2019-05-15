@@ -8,6 +8,8 @@ import argparse
 import pathlib
 import subprocess
 import datetime
+import time
+
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
 sys.path.append(os.path.abspath(os.path.pardir))
 from carlhauser_server.Helpers.environment_variable import get_homedir
@@ -20,19 +22,18 @@ import carlhauser_server.Configuration.webservice_conf as webservice_conf
 
 import carlhauser_server.DatabaseAccessor.database_adder as database_adder
 import carlhauser_server.Helpers.json_import_export as json_import_export
+import carlhauser_server.Helpers.worker_start_stop as worker_start_stop
 
 # ==================== ------ PREPARATION ------- ====================
 # load the logging configuration
 logconfig_path = (get_homedir() / pathlib.Path("carlhauser_server", "logging.ini")).resolve()
 logging.config.fileConfig(str(logconfig_path))
 
+
 # ==================== ------ LAUNCHER ------- ====================
 class launcher_handler():
     def __init__(self):
         self.logger = logging.getLogger(__name__)
-
-        # Worker lists
-        self.adder_worker_list = []
 
     def launch(self):
         # Create configuration
@@ -42,7 +43,15 @@ class launcher_handler():
         # Launch elements
         self.start_database(db_conf)
         self.start_adder_workers(db_conf)
+        self.start_requester_workers(db_conf)
+        self.check_worker(db_conf)
+
+        time.sleep(1)
         self.start_webservice(ws_conf, db_conf)
+
+        # If the webservice is down, then we want to shutdown everything
+        self.shutdown_workers(db_conf)
+        self.check_worker(db_conf)
 
     def start_database(self, db_conf):
         self.logger.info(f"Launching redis database (x2) ...")
@@ -56,25 +65,26 @@ class launcher_handler():
     def start_adder_workers(self, db_conf):
         self.logger.info(f"Launching to_add worker (x{db_conf.ADDER_WORKER_NB}) ...")
 
-        # Save current configuration
-        tmp_db_conf_path = get_homedir() / "tmp_db_conf.json"
-        json_import_export.save_json(db_conf, file_path=tmp_db_conf_path)
+        # Get the Singleton instance of worker handler and start N workers
+        worker_handler = worker_start_stop.Worker_StartStop(db_conf)
+        worker_handler.start_n_adder_worker(db_conf=db_conf, nb=db_conf.ADDER_WORKER_NB)
 
-        for _ in range(db_conf.ADDER_WORKER_NB) :
-            # Create the worker and start him
-            init_date = datetime.date.today()
+    def start_requester_workers(self, db_conf):
+        self.logger.info(f"Launching to_request worker (x{db_conf.REQUESTER_WORKER_NB}) ...")
 
-            # Open the worker subprocess with the configuration argument
-            worker_path = get_homedir() / pathlib.Path('carlhauser_server','DatabaseAccessor','database_worker.py')
-            proc_worker = subprocess.Popen([str(worker_path), '-c', str(tmp_db_conf_path.resolve())])
+        # Get the Singleton instance of worker handler and start N workers
+        worker_handler = worker_start_stop.Worker_StartStop(db_conf)
+        worker_handler.start_n_requester_worker(db_conf=db_conf, nb=db_conf.REQUESTER_WORKER_NB)
 
-            # Store the reference to the worker
-            self.adder_worker_list.append([proc_worker,init_date])
+    def check_worker(self, db_conf):
+        self.logger.info(f"Checking for workers ...")
+        worker_handler = worker_start_stop.Worker_StartStop(db_conf)
+        worker_handler.check_worker()
 
-
-            # proc_worker = database_adder.Database_Adder(db_conf)
-            # proc_worker.start()
-
+    def shutdown_workers(self, db_conf):
+        self.logger.info(f"Requesting workers to stop ...")
+        worker_handler = worker_start_stop.Worker_StartStop(db_conf)
+        worker_handler.request_shutdown()
 
     def start_webservice(self, ws_conf, db_conf):
         self.logger.info(f"Launching webservice ...")
@@ -88,13 +98,12 @@ class launcher_handler():
         api.add_all_endpoints()
 
         # Run Flask API endpoint
-        api.run() # debug=True
+        api.run()  # debug=True
+
 
 if __name__ == '__main__':
     launcher = launcher_handler()
     launcher.launch()
-
-
 
 '''
 if __name__ == '__main__':

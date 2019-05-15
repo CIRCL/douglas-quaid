@@ -21,15 +21,32 @@ import carlhauser_server.Configuration.database_conf as database_conf
 import carlhauser_server.DatabaseAccessor.database_worker as database_accessor
 
 class Database_Requester(database_accessor.Database_Worker):
-    # Heritate from the database accesso, and so has already built in access to cache, storage ..
+        # Heritate from the database accesso, and so has already built in access to cache, storage ..
 
-    def __init__(self, conf: database_conf):
-        # STD attributes
-        super().__init__(conf)
+        def __init__(self, conf: database_conf):
+            # STD attributes
+            super().__init__(conf)
+
+        def _to_run_forever(self):
+            self.process_to_request()
+
+        def process_to_request(self):
+            to_process_picture_id = self.cache_db.rpop("to_request")  # Pop from to_add queue
+
+            if not to_process_picture_id:
+                # Nothing to do
+                time.sleep(0.1)
+                return 0
+
+            try:
+                self.logger.info(f"Processing {to_process_picture_id}")
+                #TODO : DO STUFF
+            except:
+                return 1
 
 # Launcher for this worker. Launch this file to launch a worker
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Launch a worker for a specific task : adding picture to database')
+    parser = argparse.ArgumentParser(description='Launch a worker for a specific task : requesting picture to database')
     parser.add_argument("-c", '--configuration_file', dest="conf", type=dir_path, help='DB_configuration_file stored as json. Path')
     args = parser.parse_args()
 
@@ -38,4 +55,4 @@ if __name__ == '__main__':
 
     # Create the Database Accessor and run it
     db_accessor = Database_Requester(conf)
-    db_accessor.run(sleep_in_sec=conf.ADDER_WAIT_SEC)
+    db_accessor.run(sleep_in_sec=conf.REQUESTER_WAIT_SEC)

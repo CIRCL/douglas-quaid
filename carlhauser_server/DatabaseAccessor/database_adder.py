@@ -41,6 +41,8 @@ class Database_Adder(database_accessor.Database_Worker):
 
             try:
                 self.logger.info(f"Processing {to_process_picture_id}")
+                #TODO : DO STUFF
+
             except:
                 return 1
 

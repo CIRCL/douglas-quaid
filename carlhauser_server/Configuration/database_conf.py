@@ -25,5 +25,9 @@ class Default_database_conf(JSON_parsable_Dict):
         self.ADDER_WORKER_NB = 2
         self.ADDER_WAIT_SEC = 1
 
+        # NB of worker on launch
+        self.REQUESTER_WORKER_NB = 2
+        self.REQUESTER_WAIT_SEC = 1
+
 def parse_from_dict(conf):
     return namedtuple("Default_database_conf", conf.keys())(*conf.values())
