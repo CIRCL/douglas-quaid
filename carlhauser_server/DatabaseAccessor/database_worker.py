@@ -26,6 +26,10 @@ class Database_Worker():
         self.logger = logging.getLogger(__name__)
         self.logger.info("Creation of a Database Accessor Worker")
 
+        # Specific
+        self.input_queue = None
+        self.ouput_queue = None
+
         # Specific attributes
         self.redis_cache = get_homedir() / self.conf.DB_DATA_PATH
         self.redis_storage = get_homedir() / self.conf.DB_DATA_PATH
@@ -78,6 +82,8 @@ class Database_Worker():
 
     def run(self, sleep_in_sec: int):
         self.logger.info(f'Launching {self.__class__.__name__}')
+        if self.input_queue is None :
+            raise Exception("No input queue set for current worker. Impossible to fetch work to do. Worker aborted.")
         while not self.is_halt_requested():
             try:
                 self._to_run_forever()

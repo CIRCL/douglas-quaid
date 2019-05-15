@@ -29,11 +29,12 @@ class Feature_Worker(database_accessor.Database_Worker):
         super().__init__(db_conf)
         self.fe_conf = fe_conf
 
-    def _to_run_forever(self):
-        self.process_to_add()
 
-    def process_to_add(self):
-            to_process_picture_id = self.cache_db.rpop("to_add") # Pop from to_add queue
+    def _to_run_forever(self):
+        self.process_picture()
+
+    def process_picture(self):
+            to_process_picture_id = self.cache_db.lpop(self.input_queue) # Pop from to_add queue
 
             if not to_process_picture_id:
                 # Nothing to do
@@ -41,8 +42,10 @@ class Feature_Worker(database_accessor.Database_Worker):
                 return 0
 
             try:
-                self.logger.info(f"Processing {to_process_picture_id}")
+                self.logger.info(f"Feature worker processing {to_process_picture_id}")
                 #TODO : DO STUFF
+
+                self.cache_db.rpush(self.ouput_queue, "test")  # add to next queue
 
             except:
                 return 1
@@ -63,11 +66,15 @@ if __name__ == '__main__':
     db_conf = database_conf.parse_from_dict(json_import_export.load_json(pathlib.Path(args.conf_db)))
     fe_conf = feature_extractor_conf.parse_from_dict(json_import_export.load_json(pathlib.Path(args.conf_fe)))
 
-    # Create the Database Accessor and run it
+    # Create the Feature Worker and run it
     feature_worker = Feature_Worker(db_conf=db_conf, fe_conf=fe_conf)
     if args.mode == "ADD" :
+        feature_worker.input_queue = "feature_to_add"
+        feature_worker.ouput_queue = "db_to_add"
         feature_worker.run(sleep_in_sec=fe_conf.FEATURE_ADDER_WAIT_SEC)
     elif args.mode == "REQUEST" :
+        feature_worker.input_queue = "feature_to_request"
+        feature_worker.ouput_queue = "db_to_request"
         feature_worker.run(sleep_in_sec=fe_conf.FEATURE_REQUEST_WAIT_SEC)
     else :
         print("ARG_PARSER didn't do his job : you should provide a mode for the worker, to know what to do : from where to get pictures to hash, and here to where to put the result back")

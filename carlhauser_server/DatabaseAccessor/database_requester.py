@@ -31,7 +31,7 @@ class Database_Requester(database_accessor.Database_Worker):
             self.process_to_request()
 
         def process_to_request(self):
-            to_process_picture_id = self.cache_db.rpop("to_request")  # Pop from to_add queue
+            to_process_picture_id = self.cache_db.lpop(self.input_queue)  # Pop from to_add queue
 
             if not to_process_picture_id:
                 # Nothing to do
@@ -39,7 +39,7 @@ class Database_Requester(database_accessor.Database_Worker):
                 return 0
 
             try:
-                self.logger.info(f"Processing {to_process_picture_id}")
+                self.logger.info(f"DB Request worker processing {to_process_picture_id}")
                 #TODO : DO STUFF
             except:
                 return 1
@@ -55,4 +55,5 @@ if __name__ == '__main__':
 
     # Create the Database Accessor and run it
     db_accessor = Database_Requester(conf)
+    db_accessor.input_queue = "db_to_request"
     db_accessor.run(sleep_in_sec=conf.REQUESTER_WAIT_SEC)

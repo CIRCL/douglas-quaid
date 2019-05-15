@@ -17,7 +17,7 @@ import carlhauser_server.Configuration.webservice_conf as webservice_conf
 import carlhauser_server.Configuration.database_conf as database_conf
 
 import carlhauser_server.Helpers.id_generator as id_generator
-import carlhauser_server.DatabaseAccessor.database_worker as database_accessor
+import carlhauser_server.DatabaseAccessor.database_worker as database_worker
 
 
 # ==================== ------ SERVER Flask API definition ------- ====================
@@ -53,7 +53,7 @@ class FlaskAppWrapper(object):
         # Specific attributes
         self.app = flask.Flask(name)
         # An accessor to push stuff in queues, mainly
-        self.db_accessor = database_accessor.Database_Worker(conf=db_conf)
+        self.database_worker = database_worker.Database_Worker(conf=db_conf)
 
     def run(self):
         # Handle SLL Certificate, if they are provided = use them, else = self sign a certificate on the fly
@@ -105,7 +105,7 @@ class FlaskAppWrapper(object):
 
                 # TODO : Verify call add picture on redis
                 # self.save_to_disk()
-                self.db_accessor.add_to_queue(queue_name="to_add", id=f_hash, data=f_bmp)
+                self.database_worker.add_to_queue(queue_name="feature_to_add", id=f_hash, data=f_bmp)
 
                 # If the filename need to be used : secure_filename(f.filename)
                 # DEBUG / f_bmp = id_generator.write_to_file(f_bmp, pathlib.Path('./' + str(f_hash) + ".bmp").resolve())
