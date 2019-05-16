@@ -21,6 +21,15 @@ class test_template(unittest.TestCase):
                             "MyObjectList": ["value1", "value2", "value3", "value4"],
                             "Path": pathlib.Path("/My/Path/")}
 
+    def tearDown(self):
+
+        outputs = [(self.test_file_path / "export_test.json")]
+
+        # Delete all created files
+        for path in outputs :
+            if path.exists() :
+                path.unlink()
+
     def test_absolute_truth_and_meaning(self):
         assert True
 
@@ -58,6 +67,26 @@ class test_template(unittest.TestCase):
 
     def test_json_import_export_consistency(self):
         # Test consistency between import and export function
+
+        try:
+            json_import_export.save_json(self.simple_object, self.test_file_path / "export_test.json")
+            obj = json_import_export.load_json(self.test_file_path / "export_test.json")
+
+            self.assertEqual(self.simple_object, obj)
+            self.assertTrue(True)
+        except Exception as e:
+            self.assertTrue(False)
+
+        try:
+            json_import_export.save_json(self.path_object, self.test_file_path / "export_test.json")
+            obj = json_import_export.load_json(self.test_file_path / "export_test.json")
+
+            # TODO : Create pathlib.Path from string path. For not, can't be equal
+            self.assertNotEqual(self.path_object, obj)
+            self.assertTrue(True)
+        except Exception as e:
+            self.assertTrue(False)
+
         return
 
 
