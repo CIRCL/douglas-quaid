@@ -37,12 +37,16 @@ class Database_StartStop(object, metaclass=Singleton):
         self.launch_storage_script_path = get_homedir() / self.conf.DB_SCRIPTS_PATH / "run_redis_storage.sh"
         self.shutdown_storage_script_path = get_homedir() / self.conf.DB_SCRIPTS_PATH / "shutdown_redis_storage.sh"
 
+        # Only for test purposes
+        self.test_socket_path = get_homedir() / self.conf.DB_SOCKETS_PATH / 'test.sock'
+
     def get_socket_path(self, name: str) -> str:
         # Redis is configured to allow connection from/to Unix socket
         # Unix sockets paths for Redis are defined in cache.conf and storage.conf
         mapping = {
             'cache': self.cache_socket_path,
             'storage': self.storage_socket_path,
+            'test': self.test_socket_path,
         }
         return str(mapping[name])
 

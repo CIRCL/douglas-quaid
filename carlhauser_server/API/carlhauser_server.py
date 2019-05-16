@@ -105,7 +105,7 @@ class FlaskAppWrapper(object):
 
                 # TODO : Verify call add picture on redis
                 # self.save_to_disk()
-                self.database_worker.add_to_queue(queue_name="feature_to_add", id=f_hash, data=f_bmp)
+                self.database_worker.add_to_queue(queue_name="feature_to_add", id=f_hash, dict_to_store={"img":f_bmp})
 
                 # If the filename need to be used : secure_filename(f.filename)
                 # DEBUG / f_bmp = id_generator.write_to_file(f_bmp, pathlib.Path('./' + str(f_hash) + ".bmp").resolve())

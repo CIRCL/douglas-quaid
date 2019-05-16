@@ -35,20 +35,34 @@ class Feature_Worker(database_accessor.Database_Worker):
         self.process_picture()
 
     def process_picture(self):
-        to_process_picture_id = self.cache_db.lpop(self.input_queue)  # Pop from to_add queue
 
-        if not to_process_picture_id:
+        tmp_id, fetched_dict = self.get_from_queue(self.input_queue)  # Pop from to_add queue
+
+        if not tmp_id:
             # Nothing to do
             time.sleep(0.1)
             return 0
 
         try:
-            self.logger.info(f"Feature worker processing {to_process_picture_id}")
+            self.logger.info(f"Feature worker processing {tmp_id}")
 
-            self.picture_hasher.hash_picture()
-            # TODO : DO STUFF
+            # Get picture from picture_id
+            picture = fetched_dict["img"]
 
-            self.cache_db.rpush(self.ouput_queue, "test")  # add to next queue
+            # Save picture
+
+            # Get hash values of picture
+            hash_dict = self.picture_hasher.hash_picture(picture)
+
+            # Get ORB values of picture
+            # orb_dict = self.picture_orber.orb_picture(picture)
+
+            # Merge dictionaries
+            # to_send = {**hash_dict, **orb_dict}
+
+            # Remove old data and send dictionnary in hashmap to redis
+            # self.push_dict_to_output_queue(to_process_picture_id, to_send)
+            # self.cache_db.rpush(self.ouput_queue, "test")  # add to next queue
 
         except:
             return 1

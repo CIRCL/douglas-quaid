@@ -43,19 +43,60 @@ class Database_Worker():
         # self.storage_root = storage_directory / 'caida'
         # self.storagedb.sadd('prefixes', self.key_prefix)
 
-    def add_to_queue(self, queue_name, id, data):
+    '''
+        def add_picture_to_queue(self, queue_name, id, data):
         # Do stuff
-        print(f"I'm adding stuff to the queue : {self.cache_db}")
-
+        print(f"I'm adding stuff to the queue : {queue_name}")
         # im.save(output, format=im.format)
-        print("Added data: ", data)
+        print("Added picture: ", data)
 
         try:
+            # Create tmp_id for this queue
+            tmp_id = '|'.join([queue_name,id])
             # TODO : HSET
-            self.cache_db.set(name=id + "|picture", value=data, ex=self.conf.REQUEST_EXPIRATION)  # 1 day expiration for data
-            self.cache_db.rpush(queue_name, id)  # Add the id to the queue
+            self.cache_db.set(name=tmp_id, value=data, ex=self.conf.REQUEST_EXPIRATION)  # 1 day expiration for data
+            self.cache_db.rpush(queue_name, tmp_id)  # Add the id to the queue
         except:
             raise Exception("Unable to add picture and hash to 'to_add' queue.")
+    '''
+
+    def add_to_queue(self, storage :redis.Redis, queue_name : str, id:str, dict_to_store : dict):
+        # Do stuff
+        print(f"I'm adding stuff to the queue : {queue_name}")
+        print("Added dict: ", dict_to_store)
+
+        try:
+            # Create tmp_id for this queue
+            tmp_id = '|'.join([queue_name, id])
+
+            # Store the dict and set an expire date
+            storage.hmset(tmp_id, dict_to_store)
+            storage.expire(tmp_id, self.conf.REQUEST_EXPIRATION)
+
+            # Add id to the queue, to be processed
+            storage.rpush(queue_name, tmp_id)  # Add the id to the queue
+        except Exception as e:
+            raise Exception(f"Unable to add picture and hash to {queue_name} queue : {e}")
+
+    def get_from_queue(self, storage:redis.Redis, queue_name : str):
+        print(f"I'm removing stuff from the queue : {queue_name}")
+
+        try:
+            # Get the next value in queue
+            tmp_id = storage.lpop(queue_name)
+
+            # If correct, fetch data behind it
+            if tmp_id :
+                fetched_dict = storage.hgetall(tmp_id)
+                stored_queue_name, stored_id  = tmp_id.split("|")
+                # TODO : Handle removal ? self.cache_db.delete(tmp_id)
+
+                return stored_id, fetched_dict
+            else :
+                return None, None
+
+        except Exception as e:
+            raise Exception(f"Unable to add picture and hash to {queue_name} queue : {e}")
 
     # ==================== ------ RUNNABLE WORKER ------- ====================
 
@@ -72,7 +113,7 @@ class Database_Worker():
 
     def run(self, sleep_in_sec: int):
         self.logger.info(f'Launching {self.__class__.__name__}')
-        if self.input_queue is None :
+        if self.input_queue is None:
             raise Exception("No input queue set for current worker. Impossible to fetch work to do. Worker aborted.")
         while not self.is_halt_requested():
             try:
