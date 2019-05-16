@@ -31,15 +31,19 @@ class Database_Requester(database_accessor.Database_Worker):
             self.process_to_request()
 
         def process_to_request(self):
-            to_process_picture_id = self.cache_db.lpop(self.input_queue)  # Pop from to_add queue
+            # Method called infinitely, in loop
 
-            if not to_process_picture_id:
+            # Trying to fetch from queue
+            fetched_id, fetched_dict = self.get_from_queue(self.cache_db, self.input_queue)
+
+            # If there is nothing fetched
+            if not fetched_id:
                 # Nothing to do
                 time.sleep(0.1)
                 return 0
 
             try:
-                self.logger.info(f"DB Request worker processing {to_process_picture_id}")
+                self.logger.info(f"DB Request worker processing {fetched_id}")
                 #TODO : DO STUFF
             except:
                 return 1

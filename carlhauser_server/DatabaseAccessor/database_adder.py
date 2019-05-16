@@ -32,19 +32,24 @@ class Database_Adder(database_accessor.Database_Worker):
         self.process_to_add()
 
     def process_to_add(self):
-            to_process_picture_id = self.cache_db.lpop(self.input_queue) # Pop from to_add queue
+        # Method called infinitely, in loop
 
-            if not to_process_picture_id:
-                # Nothing to do
-                time.sleep(0.1)
-                return 0
+        # Trying to fetch from queue (to_add)
+        fetched_id, fetched_dict = self.get_from_queue(self.cache_db, self.input_queue)
 
-            try:
-                self.logger.info(f"DB Adder worker processing {to_process_picture_id}")
-                #TODO : DO STUFF
+        # If there is nothing fetched
+        if not fetched_id:
+            # Nothing to do
+            time.sleep(0.1)
+            return 0
 
-            except:
-                return 1
+        try:
+            self.logger.info(f"DB Adder worker processing {fetched_id}")
+            # TODO : DO STUFF
+
+        except:
+            return 1
+
 
 # Launcher for this worker. Launch this file to launch a worker
 if __name__ == '__main__':

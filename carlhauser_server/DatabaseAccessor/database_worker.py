@@ -36,8 +36,8 @@ class Database_Worker():
 
         # Get sockets
         tmp_db_handler = database_start_stop.Database_StartStop(conf=conf)
-        self.storage_db = redis.Redis(unix_socket_path=tmp_db_handler.get_socket_path('storage'), decode_responses=True)
-        self.cache_db = redis.Redis(unix_socket_path=tmp_db_handler.get_socket_path('cache'), decode_responses=True)
+        self.storage_db = redis.Redis(unix_socket_path=tmp_db_handler.get_socket_path('storage')) # , decode_responses=True
+        self.cache_db = redis.Redis(unix_socket_path=tmp_db_handler.get_socket_path('cache'))
 
         # self.key_prefix = 'caida'
         # self.storage_root = storage_directory / 'caida'
@@ -62,8 +62,8 @@ class Database_Worker():
 
     def add_to_queue(self, storage :redis.Redis, queue_name : str, id:str, dict_to_store : dict):
         # Do stuff
-        print(f"I'm adding stuff to the queue : {queue_name}")
-        print("Added dict: ", dict_to_store)
+        self.logger.debug(f"Worker trying to add stuff to queue={queue_name}")
+        self.logger.debug(f"Added dict: {dict_to_store}")
 
         try:
             # Create tmp_id for this queue
@@ -79,24 +79,36 @@ class Database_Worker():
             raise Exception(f"Unable to add picture and hash to {queue_name} queue : {e}")
 
     def get_from_queue(self, storage:redis.Redis, queue_name : str):
-        print(f"I'm removing stuff from the queue : {queue_name}")
+        # self.logger.debug(f"Worker trying to remove stuff from queue={queue_name}")
 
         try:
             # Get the next value in queue
             tmp_id = storage.lpop(queue_name)
 
-            # If correct, fetch data behind it
             if tmp_id :
+                self.logger.debug(f"An ID has been fetched : {tmp_id}")
+
+                # If correct, fetch data behind it
                 fetched_dict = storage.hgetall(tmp_id)
-                stored_queue_name, stored_id  = tmp_id.split("|")
+                self.logger.debug(f"Fetched dictionnary : {fetched_dict.keys()}")
+
+                stored_queue_name, stored_id  = str(tmp_id).split("|")
                 # TODO : Handle removal ? self.cache_db.delete(tmp_id)
+                self.logger.debug(f"Stuff had been fetched from queue={queue_name}")
 
                 return stored_id, fetched_dict
             else :
                 return None, None
 
         except Exception as e:
-            raise Exception(f"Unable to add picture and hash to {queue_name} queue : {e}")
+            raise Exception(f"Unable to get picture and hash from {queue_name} queue : {e}")
+
+    '''
+    @staticmethod
+    def get_unique_key(queue_name : str, id:str):
+        return '|'.join([queue_name, id])
+    '''
+
 
     # ==================== ------ RUNNABLE WORKER ------- ====================
 

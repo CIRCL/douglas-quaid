@@ -35,16 +35,19 @@ class Feature_Worker(database_accessor.Database_Worker):
         self.process_picture()
 
     def process_picture(self):
+        # Method called infinitely, in loop
 
-        tmp_id, fetched_dict = self.get_from_queue(self.input_queue)  # Pop from to_add queue
+        # Trying to fetch from queue
+        fetched_id, fetched_dict = self.get_from_queue(self.cache_db, self.input_queue)
 
-        if not tmp_id:
+        # If there is nothing fetched
+        if not fetched_id:
             # Nothing to do
             time.sleep(0.1)
             return 0
 
         try:
-            self.logger.info(f"Feature worker processing {tmp_id}")
+            self.logger.info(f"Feature worker processing {fetched_id}")
 
             # Get picture from picture_id
             picture = fetched_dict["img"]

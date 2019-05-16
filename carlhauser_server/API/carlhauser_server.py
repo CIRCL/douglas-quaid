@@ -17,6 +17,8 @@ import carlhauser_server.Configuration.webservice_conf as webservice_conf
 import carlhauser_server.Configuration.database_conf as database_conf
 
 import carlhauser_server.Helpers.id_generator as id_generator
+import carlhauser_server.Helpers.picture_import_export as picture_import_export
+from carlhauser_server.Helpers.environment_variable import get_homedir
 import carlhauser_server.DatabaseAccessor.database_worker as database_worker
 
 
@@ -103,12 +105,12 @@ class FlaskAppWrapper(object):
                 f_hash = id_generator.get_SHA1(f)
                 f_bmp = id_generator.convert_to_bmp(f)
 
-                # TODO : Verify call add picture on redis
-                # self.save_to_disk()
-                self.database_worker.add_to_queue(queue_name="feature_to_add", id=f_hash, dict_to_store={"img":f_bmp})
-
+                # Save picture received to disk
+                picture_import_export.save_picture(f_bmp, get_homedir() / 'datasets' / 'received_pictures' / (str(f_hash) + '.bmp'))
                 # If the filename need to be used : secure_filename(f.filename)
-                # DEBUG / f_bmp = id_generator.write_to_file(f_bmp, pathlib.Path('./' + str(f_hash) + ".bmp").resolve())
+
+                # Enqueue picture to processing
+                self.database_worker.add_to_queue(self.database_worker.cache_db, queue_name="feature_to_add", id=f_hash, dict_to_store={"img":f_bmp})
 
                 result_json["Status"] = "Success"
                 result_json["img_id"] = f_hash
