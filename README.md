@@ -89,6 +89,9 @@ You can also manually generate modified datasets from your original dataset :
 ### For Developers
 
 (...)
+![alt text](./docs/carlhauser_v0.png)
+
+
 
 ## Deployment
 
