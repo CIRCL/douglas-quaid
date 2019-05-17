@@ -22,15 +22,15 @@ class test_template(unittest.TestCase):
             self.myvalue = 0
 
         def get_value_shared(self):
-            print(self.value_shared)
+            print("get shared value :", self.value_shared)
             return self.value_shared
 
         def get_myvalue(self):
-            print(self.myvalue)
+            print("get personal value :", self.myvalue)
             return self.myvalue
 
         def increment_value(self):
-            print("increment")
+            print("increment all values")
 
             self.value_shared += 1
             self.myvalue += 1

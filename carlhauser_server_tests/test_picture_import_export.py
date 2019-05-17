@@ -49,7 +49,7 @@ class test_template(unittest.TestCase):
             except Exception as e:
                 self.assertTrue(False)
 
-    def test_picture__import_export_consistency(self):
+    def test_picture_import_export_consistency(self):
         # Test consistency between import and export function
         print("Load picture ... ")
         obj = picture_import_export.load_picture(self.test_file_path / "original.bmp")
