@@ -8,7 +8,7 @@ import logging
 import time
 import argparse
 import pathlib
-
+import objsize
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
 sys.path.append(os.path.abspath(os.path.pardir))
 
@@ -37,7 +37,7 @@ class Feature_Worker(database_accessor.Database_Worker):
         # Get sockets
         tmp_db_handler = database_start_stop.Database_StartStop(conf=self.conf)
         # reconnect to storages, without decoding
-        self.storage_db = redis.Redis(unix_socket_path=tmp_db_handler.get_socket_path('storage'), decode_responses=False)  #
+        self.storage_db = redis.Redis(unix_socket_path=tmp_db_handler.get_socket_path('storage'), decode_responses=False)
         self.cache_db = redis.Redis(unix_socket_path=tmp_db_handler.get_socket_path('cache'), decode_responses=False)
 
 
@@ -73,9 +73,12 @@ class Feature_Worker(database_accessor.Database_Worker):
 
             # Merge dictionaries
             to_send = {**hash_dict, **orb_dict}
+            self.logger.debug(f"To send to db dict : {to_send}")
+
+            self.logger.debug(f"Size of storage object : {objsize.get_deep_size(to_send)}")
 
             # Remove old data and send dictionnary in hashmap to redis
-            # self.cache_db.del(fetched_id)
+            # TODO : self.cache_db.del(fetched_id)
             self.add_to_queue(self.cache_db, self.ouput_queue, fetched_id, to_send)
 
         except:
