@@ -99,11 +99,14 @@ class FlaskAppWrapper(object):
         # Answer to PUT HTTP request
         if flask.request.method == 'PUT':
             try:
+                # Received : werkzeug.datastructures.FileStorage. Should use ".read()" to get picture's value
                 f = flask.request.files['image']
+                self.logger.debug(f"Image received in server : {type(f)} ") # {f.read()}
 
                 # Compute input picture hash and convert to BMP
                 f_hash = id_generator.get_SHA1(f)
-                f_bmp = id_generator.convert_to_bmp(f)
+                f_bmp = id_generator.convert_to_bmp(f) # Returns a bytes array
+                self.logger.debug(f"Image transformed in BMP in server : {type(f_bmp)} ") # {f_bmp}
 
                 # Save picture received to disk
                 picture_import_export.save_picture(f_bmp, get_homedir() / 'datasets' / 'received_pictures' / (str(f_hash) + '.bmp'))

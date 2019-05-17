@@ -6,6 +6,7 @@ import sys, os
 import pathlib
 import logging
 import json
+import base64
 
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
 sys.path.append(os.path.abspath(os.path.pardir))

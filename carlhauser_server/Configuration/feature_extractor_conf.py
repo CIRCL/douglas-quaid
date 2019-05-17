@@ -32,6 +32,7 @@ class Default_feature_extractor_conf(JSON_parsable_Dict):
 
         # Visual Descriptors parameters
         self.ORB = True
+        self.ORB_KEYPOINTS_NB = 500
 
 
 def parse_from_dict(conf):

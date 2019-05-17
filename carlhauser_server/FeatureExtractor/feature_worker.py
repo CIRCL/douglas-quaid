@@ -20,6 +20,8 @@ import carlhauser_server.Configuration.database_conf as database_conf
 import carlhauser_server.Configuration.feature_extractor_conf as feature_extractor_conf
 
 import carlhauser_server.FeatureExtractor.picture_hasher as picture_hasher
+import carlhauser_server.FeatureExtractor.picture_orber as picture_orber
+import carlhauser_server.Helpers.database_start_stop as database_start_stop
 
 
 class Feature_Worker(database_accessor.Database_Worker):
@@ -30,6 +32,14 @@ class Feature_Worker(database_accessor.Database_Worker):
         super().__init__(db_conf)
         self.fe_conf = fe_conf
         self.picture_hasher = picture_hasher.Picture_Hasher(fe_conf)
+        self.picture_orber = picture_orber.Picture_Orber(fe_conf)
+
+        # Get sockets
+        tmp_db_handler = database_start_stop.Database_StartStop(conf=self.conf)
+        # reconnect to storages, without decoding
+        self.storage_db = redis.Redis(unix_socket_path=tmp_db_handler.get_socket_path('storage'), decode_responses=False)  #
+        self.cache_db = redis.Redis(unix_socket_path=tmp_db_handler.get_socket_path('cache'), decode_responses=False)
+
 
     def _to_run_forever(self):
         self.process_picture()
@@ -50,22 +60,23 @@ class Feature_Worker(database_accessor.Database_Worker):
             self.logger.info(f"Feature worker processing {fetched_id}")
 
             # Get picture from picture_id
-            picture = fetched_dict["img"]
-
-            # Save picture
+            picture = fetched_dict[b"img"]
+            self.logger.info(f"Loaded picture {type(picture)}")
 
             # Get hash values of picture
             hash_dict = self.picture_hasher.hash_picture(picture)
+            self.logger.debug(f"Computed hashes : {hash_dict}")
 
             # Get ORB values of picture
-            # orb_dict = self.picture_orber.orb_picture(picture)
+            orb_dict = self.picture_orber.orb_picture(picture)
+            self.logger.debug(f"Computed orb values : {orb_dict}")
 
             # Merge dictionaries
-            # to_send = {**hash_dict, **orb_dict}
+            to_send = {**hash_dict, **orb_dict}
 
             # Remove old data and send dictionnary in hashmap to redis
-            # self.push_dict_to_output_queue(to_process_picture_id, to_send)
-            # self.cache_db.rpush(self.ouput_queue, "test")  # add to next queue
+            # self.cache_db.del(fetched_id)
+            self.add_to_queue(self.cache_db, self.ouput_queue, fetched_id, to_send)
 
         except:
             return 1

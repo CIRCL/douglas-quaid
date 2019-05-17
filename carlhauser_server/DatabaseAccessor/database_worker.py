@@ -36,34 +36,17 @@ class Database_Worker():
 
         # Get sockets
         tmp_db_handler = database_start_stop.Database_StartStop(conf=conf)
-        self.storage_db = redis.Redis(unix_socket_path=tmp_db_handler.get_socket_path('storage')) # , decode_responses=True
-        self.cache_db = redis.Redis(unix_socket_path=tmp_db_handler.get_socket_path('cache'))
+        self.storage_db = redis.Redis(unix_socket_path=tmp_db_handler.get_socket_path('storage'), decode_responses=True)  #
+        self.cache_db = redis.Redis(unix_socket_path=tmp_db_handler.get_socket_path('cache'), decode_responses=True)
 
         # self.key_prefix = 'caida'
         # self.storage_root = storage_directory / 'caida'
         # self.storagedb.sadd('prefixes', self.key_prefix)
 
-    '''
-        def add_picture_to_queue(self, queue_name, id, data):
-        # Do stuff
-        print(f"I'm adding stuff to the queue : {queue_name}")
-        # im.save(output, format=im.format)
-        print("Added picture: ", data)
-
-        try:
-            # Create tmp_id for this queue
-            tmp_id = '|'.join([queue_name,id])
-            # TODO : HSET
-            self.cache_db.set(name=tmp_id, value=data, ex=self.conf.REQUEST_EXPIRATION)  # 1 day expiration for data
-            self.cache_db.rpush(queue_name, tmp_id)  # Add the id to the queue
-        except:
-            raise Exception("Unable to add picture and hash to 'to_add' queue.")
-    '''
-
-    def add_to_queue(self, storage :redis.Redis, queue_name : str, id:str, dict_to_store : dict):
+    def add_to_queue(self, storage: redis.Redis, queue_name: str, id: str, dict_to_store: dict):
         # Do stuff
         self.logger.debug(f"Worker trying to add stuff to queue={queue_name}")
-        self.logger.debug(f"Added dict: {dict_to_store}")
+        # self.logger.debug(f"Added dict: {dict_to_store}")
 
         try:
             # Create tmp_id for this queue
@@ -76,39 +59,38 @@ class Database_Worker():
             # Add id to the queue, to be processed
             storage.rpush(queue_name, tmp_id)  # Add the id to the queue
         except Exception as e:
-            raise Exception(f"Unable to add picture and hash to {queue_name} queue : {e}")
+            raise Exception(f"Unable to add dict and hash to {queue_name} queue : {e}")
 
-    def get_from_queue(self, storage:redis.Redis, queue_name : str):
+    def get_from_queue(self, storage: redis.Redis, queue_name: str):
         # self.logger.debug(f"Worker trying to remove stuff from queue={queue_name}")
 
         try:
             # Get the next value in queue
             tmp_id = storage.lpop(queue_name)
 
-            if tmp_id :
+            if tmp_id:
                 self.logger.debug(f"An ID has been fetched : {tmp_id}")
 
                 # If correct, fetch data behind it
                 fetched_dict = storage.hgetall(tmp_id)
                 self.logger.debug(f"Fetched dictionnary : {fetched_dict.keys()}")
 
-                stored_queue_name, stored_id  = str(tmp_id).split("|")
+                stored_queue_name, stored_id = str(tmp_id).split("|")
                 # TODO : Handle removal ? self.cache_db.delete(tmp_id)
                 self.logger.debug(f"Stuff had been fetched from queue={queue_name}")
 
                 return stored_id, fetched_dict
-            else :
+            else:
                 return None, None
 
         except Exception as e:
-            raise Exception(f"Unable to get picture and hash from {queue_name} queue : {e}")
+            raise Exception(f"Unable to get dict and hash from {queue_name} queue : {e}")
 
     '''
     @staticmethod
     def get_unique_key(queue_name : str, id:str):
         return '|'.join([queue_name, id])
     '''
-
 
     # ==================== ------ RUNNABLE WORKER ------- ====================
 

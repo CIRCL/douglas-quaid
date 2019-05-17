@@ -10,6 +10,8 @@ import argparse
 import pathlib
 import imagehash
 import tlsh
+import io
+import PIL.Image as Image
 
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
 sys.path.append(os.path.abspath(os.path.pardir))
@@ -31,22 +33,37 @@ class Picture_Hasher():
 
     def hash_picture(self, curr_picture):
         answer = {}
+        self.logger.info("Hashing picture ... ")
+
+        # Convert bytes in PIL image
+        pil_picture = Image.open(io.BytesIO(curr_picture))
+        self.logger.debug(f"Picture converted to PIL Image {type(pil_picture)}")
+
+        # DEBUG # pil_picture.save('/home/user/Desktop/debug_pil.bmp')
 
         try:
+            # Note : @image must be a PIL instance.
             if self.conf.A_HASH:
-                answer["A_HASH"] = self.check_null_hash(imagehash.average_hash(curr_picture))
+                self.logger.debug("A-HASH ... ")
+                answer["A_HASH"] = self.check_null_hash(imagehash.average_hash(pil_picture))
             if self.conf.P_HASH:
-                answer["P_HASH"] = self.check_null_hash(imagehash.phash(curr_picture))
+                self.logger.debug("P_HASH ... ")
+                answer["P_HASH"] = self.check_null_hash(imagehash.phash(pil_picture))
             if self.conf.P_HASH_SIMPLE:
-                answer["P_HASH_SIMPLE"] = self.check_null_hash(imagehash.phash_simple(curr_picture))
+                self.logger.debug("P_HASH_SIMPLE ... ")
+                answer["P_HASH_SIMPLE"] = self.check_null_hash(imagehash.phash_simple(pil_picture))
             if self.conf.D_HASH:
-                answer["D_HASH"] = self.check_null_hash(imagehash.dhash(curr_picture))
+                self.logger.debug("D_HASH ... ")
+                answer["D_HASH"] = self.check_null_hash(imagehash.dhash(pil_picture))
             if self.conf.D_HASH_VERTICAL:
-                answer["D_HASH_VERTICAL"] = self.check_null_hash(imagehash.dhash_vertical(curr_picture))
+                self.logger.debug("D_HASH_VERTICAL ... ")
+                answer["D_HASH_VERTICAL"] = self.check_null_hash(imagehash.dhash_vertical(pil_picture))
             if self.conf.W_HASH:
-                answer["W_HASH"] = self.check_null_hash(imagehash.whash(curr_picture))
+                self.logger.debug("W_HASH ... ")
+                answer["W_HASH"] = self.check_null_hash(imagehash.whash(pil_picture))
             if self.conf.TLSH:
-                answer["TLSH"] = self.check_null_hash(tlsh.hash(curr_picture))
+                self.logger.debug("TLSH ... ")
+                answer["TLSH"] = self.check_null_hash(tlsh.hash(pil_picture))
 
         except Exception as e:
             self.logger.error("Error during hashing : " + str(e))
@@ -55,7 +72,8 @@ class Picture_Hasher():
 
     def check_null_hash(self, hash):
         # Check if the hash provided is null/None/empty. If yes, provide a default hash
+        self.logger.debug("Checking hash ... ")
 
-        if not hash or hash is None or hash == "":
+        if not hash :
             return '0000000000000000000000000000000000000000000000000000000000000000000000'
         return hash
