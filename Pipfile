@@ -18,6 +18,7 @@ imagehash = "*"
 flask = "*"
 pyopenssl = "*"
 redis = "*"
+objsize = "*"
 
 [requires]
 python_version = "3.7"

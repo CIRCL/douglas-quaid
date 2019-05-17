@@ -72,7 +72,7 @@ class Worker_StartStop(object, metaclass=Singleton):
             init_date = datetime.datetime.now()
 
             # Open the worker subprocess with the configuration argument
-            proc_worker = subprocess.Popen([str(self.adder_worker_path), '-c', str(tmp_db_conf_path.resolve())])
+            proc_worker = subprocess.Popen([str(self.adder_worker_path), '-c', str(tmp_db_conf_path.resolve())]) # ,stderr = subprocess.PIPE ?
 
             # Store the reference to the worker
             self.adder_worker_list.append([proc_worker, init_date])

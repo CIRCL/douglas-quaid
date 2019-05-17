@@ -6,6 +6,7 @@ import carlhauser_server.Helpers.pickle_import_export as pickle_import_export
 
 import unittest
 import numpy as np
+import cv2
 
 class test_template(unittest.TestCase):
     """Basic test cases."""
@@ -13,7 +14,7 @@ class test_template(unittest.TestCase):
     def setUp(self):
         self.logger = logging.getLogger()
         # self.conf = .Default_configuration()
-        self.test_file_path = get_homedir() / pathlib.Path("carlhauser_server_tests/test_Helpers/picture_import_export")
+        self.test_file_path = get_homedir() / pathlib.Path("carlhauser_server_tests/test_Helpers/pickle_import_export")
 
     def test_absolute_truth_and_meaning(self):
         assert True
@@ -46,12 +47,12 @@ class test_template(unittest.TestCase):
         a = np.arange(15).reshape(3, 5)
         b = np.array( [[ True, True, True, False ], [ True, False, False, False ]] )
         obj = {"test_array":a, "values_bool":b}
-
+        pickler = pickle_import_export.Pickler()
         # Test consistency between import and export function
-        print("Save to pickle ... ")
-        pc = pickle_import_export.get_pickle_from_object(obj)
-        print("Load from pickle ... ")
-        obj2 = pickle_import_export.get_object_from_pickle(pc)
+        self.logger.debug("Save to pickle ... ")
+        pc = pickler.get_pickle_from_object(obj)
+        self.logger.debug("Load from pickle ... ")
+        obj2 = pickler.get_object_from_pickle(pc)
 
         self.logger.info(f"Original object : {obj}")
         self.logger.info(f"Retrieved object : {obj2}")
@@ -61,6 +62,31 @@ class test_template(unittest.TestCase):
         self.assertEqual(len(obj2["test_array"]),len(obj["test_array"]))
         self.assertEqual(type(obj2["values_bool"]),type(obj["values_bool"]))
         self.assertEqual(len(obj2["values_bool"]),len(obj["values_bool"]))
+
+
+    def test_pickle_import_export_ORB(self):
+        algo = cv2.ORB_create(nfeatures=10)
+        img = cv2.imread(str(self.test_file_path / "original.bmp"),0)
+
+        # compute the descriptors with ORB
+        kp, des = algo.detectAndCompute(img, None)
+
+        self.logger.debug(f"Keypoints : {kp}")
+        self.logger.debug(f"Example of Keypoint")
+
+        pickler = pickle_import_export.Pickler()
+        self.logger.debug("Save to pickle ... ")
+        pc = pickler.get_pickle_from_object(kp)
+        self.logger.debug("Load from pickle ... ")
+        kp2 = pickler.get_object_from_pickle(pc)
+
+        for i, k in enumerate(kp) :
+            self.assertEqual(kp[i].response,kp2[i].response)
+            self.assertEqual(kp[i].angle,kp2[i].angle)
+            self.assertEqual(kp[i].class_id,kp2[i].class_id)
+            self.assertEqual(kp[i].octave,kp2[i].octave)
+            self.assertEqual(kp[i].pt,kp2[i].pt)
+            self.assertEqual(kp[i].size,kp2[i].size)
 
 
 if __name__ == '__main__':

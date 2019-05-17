@@ -11,6 +11,8 @@ import pathlib
 import PIL.Image as Image
 import cv2
 import numpy as np
+import pickle
+
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
 sys.path.append(os.path.abspath(os.path.pardir))
 
@@ -29,7 +31,6 @@ class Picture_Orber():
         self.logger = logging.getLogger(__name__)
         self.logger.info("Creation of a Picture Hasher")
         self.algo = cv2.ORB_create(nfeatures=conf.ORB_KEYPOINTS_NB)
-
 
     def orb_picture(self, curr_picture):
         answer = {}
@@ -71,4 +72,3 @@ class Picture_Orber():
         return hash
     
     '''
-

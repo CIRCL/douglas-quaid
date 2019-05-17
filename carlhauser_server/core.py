@@ -124,8 +124,16 @@ class launcher_handler():
 
 
 if __name__ == '__main__':
-    launcher = launcher_handler()
-    launcher.launch()
+    try :
+        launcher = launcher_handler()
+        launcher.launch()
+    except KeyboardInterrupt:
+        print('Interrupted detected')
+        try:
+            #TODO : Handle interrupt and shutdown, and clean ...
+            sys.exit(0)
+        except SystemExit:
+            os._exit(0)
 
 '''
 if __name__ == '__main__':

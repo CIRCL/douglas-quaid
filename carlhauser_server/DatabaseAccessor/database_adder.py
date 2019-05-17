@@ -28,6 +28,13 @@ class Database_Adder(database_accessor.Database_Worker):
         # STD attributes
         super().__init__(conf)
 
+        # Get sockets
+        tmp_db_handler = database_start_stop.Database_StartStop(conf=self.conf)
+
+        # reconnect to storages, without decoding
+        self.storage_db = redis.Redis(unix_socket_path=tmp_db_handler.get_socket_path('storage'), decode_responses=False)
+        self.cache_db = redis.Redis(unix_socket_path=tmp_db_handler.get_socket_path('cache'), decode_responses=False)
+
     def _to_run_forever(self):
         self.process_to_add()
 
@@ -35,7 +42,7 @@ class Database_Adder(database_accessor.Database_Worker):
         # Method called infinitely, in loop
 
         # Trying to fetch from queue (to_add)
-        fetched_id, fetched_dict = self.get_from_queue(self.cache_db, self.input_queue)
+        fetched_id, fetched_dict = self.get_from_queue(self.cache_db, self.input_queue, pickle=True)
 
         # If there is nothing fetched
         if not fetched_id:
