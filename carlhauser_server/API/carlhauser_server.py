@@ -12,8 +12,14 @@ import logging
 
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
 sys.path.append(os.path.abspath(os.path.pardir))
+
 import carlhauser_server.Configuration.webservice_conf as webservice_conf
+import carlhauser_server.Configuration.database_conf as database_conf
+
 import carlhauser_server.Helpers.id_generator as id_generator
+import carlhauser_server.Helpers.picture_import_export as picture_import_export
+from carlhauser_server.Helpers.environment_variable import get_homedir
+import carlhauser_server.DatabaseAccessor.database_worker as database_worker
 
 
 # ==================== ------ SERVER Flask API definition ------- ====================
@@ -41,13 +47,15 @@ class EndpointAction(object):
 
 
 class FlaskAppWrapper(object):
-    def __init__(self, name, conf: webservice_conf):
+    def __init__(self, name, conf: webservice_conf, db_conf: database_conf):
         # STD attributes
         self.conf = conf
         self.logger = logging.getLogger(__name__)
 
         # Specific attributes
         self.app = flask.Flask(name)
+        # An accessor to push stuff in queues, mainly
+        self.database_worker = database_worker.Database_Worker(conf=db_conf)
 
     def run(self):
         # Handle SLL Certificate, if they are provided = use them, else = self sign a certificate on the fly
@@ -88,21 +96,30 @@ class FlaskAppWrapper(object):
         result_json["Called_function"] = "add_picture"
         result_json = self.add_std_info(result_json)
 
+        # Answer to PUT HTTP request
         if flask.request.method == 'PUT':
-            f = flask.request.files['image']
+            try:
+                # Received : werkzeug.datastructures.FileStorage. Should use ".read()" to get picture's value
+                f = flask.request.files['image']
+                self.logger.debug(f"Image received in server : {type(f)} ") # {f.read()}
 
-            # Compute input picture hash and convert to BMP
-            f_hash = id_generator.get_SHA1(f)
-            f_bmp = id_generator.convert_to_bmp(f)
+                # Compute input picture hash and convert to BMP
+                f_hash = id_generator.get_SHA1(f)
+                f_bmp = id_generator.convert_to_bmp(f) # Returns a bytes array
+                self.logger.debug(f"Image transformed in BMP in server : {type(f_bmp)} ") # {f_bmp}
 
-            # TODO : Call add picture on redis
+                # Save picture received to disk
+                picture_import_export.save_picture(f_bmp, get_homedir() / 'datasets' / 'received_pictures' / (str(f_hash) + '.bmp'))
+                # If the filename need to be used : secure_filename(f.filename)
 
-            # If the filename need to be used : secure_filename(f.filename)
-            # DEBUG / f_bmp = id_generator.write_to_file(f_bmp, pathlib.Path('./' + str(f_hash) + ".bmp").resolve())
+                # Enqueue picture to processing
+                self.database_worker.add_to_queue(self.database_worker.cache_db, queue_name="feature_to_add", id=f_hash, dict_to_store={"img":f_bmp})
 
-            result_json["Status"] = "Success"
-            result_json["img_id"] = f_hash
-
+                result_json["Status"] = "Success"
+                result_json["img_id"] = f_hash
+            except:
+                result_json["Status"] = "Failure"
+                result_json["Error"] = "Error during Hash computation or database adding"
         else:
             result_json["Status"] = "Failure"
             result_json["Error"] = "BAD METHOD : use PUT instead of GET, POST, ..."

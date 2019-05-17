@@ -23,4 +23,3 @@ class Default_configuration(JSON_parsable_Dict):
     def __init__(self):
         self.X = X_MODES.X
         self.Z = None
-

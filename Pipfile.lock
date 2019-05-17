@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "a9d1a826f00df25cd9ab419fdd9a5d5cf5ca15694dd3ee51a14e0351bf3af74e"
+            "sha256": "f4e687ce98dbfaedace630fabac72bcba4659a030c88bb768b689525f8f267af"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -252,6 +252,14 @@
             "index": "pypi",
             "version": "==1.16.3"
         },
+        "objsize": {
+            "hashes": [
+                "sha256:5e4e6b46d331cdc64295599fd65191a5936bba002294413bae7f6968fb181e45",
+                "sha256:9d7ce7b775d7d686fc2d1654d1cdec0ea09e22924c0d4cc935764b364531d44f"
+            ],
+            "index": "pypi",
+            "version": "==0.3.2"
+        },
         "opencv-python": {
             "hashes": [
                 "sha256:1703a296a96d3d46615e5053f224867977accb4240bcaa0fcabcb0768bf5ac13",
@@ -333,8 +341,7 @@
         },
         "pycparser": {
             "hashes": [
-                "sha256:a988718abfad80b6b157acce7bf130a30876d27603738ac39f140993246b25b3",
-                "sha256:f84493e14c7b0c2b6c1456885d91a084b63542be5c1f206b47229b26056d4b36"
+                "sha256:a988718abfad80b6b157acce7bf130a30876d27603738ac39f140993246b25b3"
             ],
             "version": "==2.19"
         },
@@ -398,6 +405,14 @@
             ],
             "version": "==1.0.3"
         },
+        "redis": {
+            "hashes": [
+                "sha256:6946b5dca72e86103edc8033019cc3814c031232d339d5f4533b02ea85685175",
+                "sha256:8ca418d2ddca1b1a850afa1680a7d2fd1f3322739271de4b704e0d4668449273"
+            ],
+            "index": "pypi",
+            "version": "==3.2.1"
+        },
         "scipy": {
             "hashes": [
                 "sha256:014cb900c003b5ac81a53f2403294e8ecf37aedc315b59a6b9370dce0aa7627a",
@@ -441,10 +456,10 @@
         },
         "werkzeug": {
             "hashes": [
-                "sha256:0a73e8bb2ff2feecfc5d56e6f458f5b99290ef34f565ffb2665801ff7de6af7a",
-                "sha256:7fad9770a8778f9576693f0cc29c7dcc36964df916b83734f4431c0e612a7fbc"
+                "sha256:865856ebb55c4dcd0630cdd8f3331a1847a819dda7e8c750d3db6f2aa6c0209c",
+                "sha256:a0b915f0815982fb2a09161cb8f31708052d0951c3ba433ccc5e1aa276507ca6"
             ],
-            "version": "==0.15.2"
+            "version": "==0.15.4"
         }
     },
     "develop": {}
