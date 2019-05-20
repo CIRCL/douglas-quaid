@@ -148,6 +148,7 @@ class Database_Worker():
         try:
             # Get the next value in queue
             tmp_id = storage.lpop(queue_name)
+            # self.logger.debug(f"Fetch from queue {tmp_id} of type {type(tmp_id)}")
 
             if tmp_id:
                 self.logger.debug(f"An ID had been fetched : {tmp_id}")
@@ -155,8 +156,8 @@ class Database_Worker():
                 # Get the stored dict
                 fetched_dict = self.get_dict_from_key(storage, tmp_id, pickle)
 
-                # Extract info from key
-                stored_queue_name, stored_id = str(tmp_id).split("|")
+                # Extract info from key (Be aware that it can be bytes, and so need to be decoded)
+                stored_queue_name, stored_id = str(tmp_id.decode('utf-8')).split("|")
 
                 # TODO : Handle removal ? self.cache_db.delete(tmp_id)
                 self.logger.debug(f"Stuff had been fetched from queue={queue_name}")

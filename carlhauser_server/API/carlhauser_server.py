@@ -113,6 +113,7 @@ class FlaskAppWrapper(object):
                 # If the filename need to be used : secure_filename(f.filename)
 
                 # Enqueue picture to processing
+                self.logger.debug(f"Adding to feature queue : {f_hash} ") # {f_bmp}
                 self.database_worker.add_to_queue(self.database_worker.cache_db, queue_name="feature_to_add", id=f_hash, dict_to_store={"img":f_bmp})
 
                 result_json["Status"] = "Success"

@@ -57,7 +57,7 @@ class Feature_Worker(database_accessor.Database_Worker):
             return 0
 
         try:
-            self.logger.info(f"Feature worker processing {fetched_id}")
+            self.logger.info(f"Feature worker processing {fetched_id} of type {type(fetched_id)}")
 
             # Get picture from picture_id
             picture = fetched_dict[b"img"]
