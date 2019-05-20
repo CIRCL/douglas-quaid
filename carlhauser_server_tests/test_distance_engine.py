@@ -5,7 +5,9 @@ import time
 import unittest
 
 import redis
+import logging
 
+from carlhauser_server.Helpers.environment_variable import get_homedir
 import carlhauser_server.Configuration.database_conf as database_conf
 import carlhauser_server.Configuration.distance_engine_conf as distance_engine_conf
 import carlhauser_server.DistanceEngine.cluster_engine as cluster_engine
