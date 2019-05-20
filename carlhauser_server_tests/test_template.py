@@ -3,7 +3,8 @@ from carlhauser_server_tests.context import *
 
 import unittest
 
-class test_template(unittest.TestCase):
+
+class testTemplate(unittest.TestCase):
     """Basic test cases."""
 
     def setUp(self):

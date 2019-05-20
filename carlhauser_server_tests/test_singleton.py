@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
-from carlhauser_server_tests.context import *
-from PIL import Image
-
-import carlhauser_server.Helpers.template_singleton as template_singleton
 
 import unittest
 
-class test_template(unittest.TestCase):
+import carlhauser_server.Helpers.template_singleton as template_singleton
+
+
+class testSingleton(unittest.TestCase):
     """Basic test cases."""
 
     def setUp(self):
@@ -53,7 +52,6 @@ class test_template(unittest.TestCase):
         classe3.increment_value()
         self.assertEqual(classe3.get_value_shared(), 2)
         self.assertEqual(classe3.get_myvalue(), 2)
-
 
 
 if __name__ == '__main__':

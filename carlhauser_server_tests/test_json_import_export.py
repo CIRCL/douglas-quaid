@@ -1,13 +1,11 @@
 # -*- coding: utf-8 -*-
-from carlhauser_server_tests.context import *
-from PIL import Image
-
-import carlhauser_server.Helpers.json_import_export as json_import_export
 
 import unittest
 
+import carlhauser_server.Helpers.json_import_export as json_import_export
 
-class test_template(unittest.TestCase):
+
+class testJSONImportExport(unittest.TestCase):
     """Basic test cases."""
 
     def setUp(self):
@@ -26,8 +24,8 @@ class test_template(unittest.TestCase):
         outputs = [(self.test_file_path / "export_test.json")]
 
         # Delete all created files
-        for path in outputs :
-            if path.exists() :
+        for path in outputs:
+            if path.exists():
                 path.unlink()
 
     def test_absolute_truth_and_meaning(self):
@@ -58,9 +56,9 @@ class test_template(unittest.TestCase):
         try:
             obj = json_import_export.load_json(self.test_file_path / "path_object.json")
             # Verify if object is correct
-            self.assertEqual(obj["myobjectname"],"ThisIsMyObject")
+            self.assertEqual(obj["myobjectname"], "ThisIsMyObject")
             self.assertEqual(obj["MyObjectList"][1], "value2")
-            self.assertEqual(obj["Path"] , "/My/Path")
+            self.assertEqual(obj["Path"], "/My/Path")
             self.assertTrue(True)
         except Exception as e:
             self.assertTrue(False)

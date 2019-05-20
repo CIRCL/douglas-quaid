@@ -1,19 +1,17 @@
 # -*- coding: utf-8 -*-
-from carlhauser_server_tests.context import *
-from PIL import Image
-
-import carlhauser_server.Helpers.template_singleton as template_singleton
-
-import unittest
-import time
-import carlhauser_server.Configuration.database_conf as database_conf
-import carlhauser_server.Helpers.database_start_stop as database_start_stop
 import subprocess
+import time
+import unittest
+
 import redis
 
+import carlhauser_server.Configuration.database_conf as database_conf
 import carlhauser_server.DatabaseAccessor.database_worker as database_worker
+import carlhauser_server.Helpers.database_start_stop as database_start_stop
+from carlhauser_server_tests.context import *
 
-class test_template(unittest.TestCase):
+
+class testCarlHauserServer(unittest.TestCase):
     """Basic test cases."""
 
     def setUp(self):
@@ -41,7 +39,7 @@ class test_template(unittest.TestCase):
     def tearDown(self):
         # Shutdown test Redis DB
         if self.db_handler.check_running('test'):
-            subprocess.Popen([str(self.db_handler.shutdown_test_script_path)], cwd=(self.db_handler.test_socket_path.parent))
+            subprocess.Popen([str(self.db_handler.shutdown_test_script_path)], cwd=self.db_handler.test_socket_path.parent)
 
         # If start and stop are too fast, then it can't stop nor start, as it can't connect
         # e.g. because the new socket couldn't be create as the last one is still here
@@ -57,7 +55,7 @@ class test_template(unittest.TestCase):
         # Create data
         queue_name = "test"
         id_to_process = str(42)
-        data_to_store = {"img":"MyPerfectPicture","test":"test_value"}
+        data_to_store = {"img": "MyPerfectPicture", "test": "test_value"}
 
         # try to store it
         db_worker.add_to_queue(test_db, queue_name, id_to_process, data_to_store)
@@ -66,13 +64,13 @@ class test_template(unittest.TestCase):
         # Verify if the data had been stored
         id_hashset = test_db.lrange(queue_name, 0, -1)
         print("Queue_list", id_hashset)
-        self.assertEqual(len(id_hashset),1)
+        self.assertEqual(len(id_hashset), 1)
         tmp_dict = test_db.hgetall(id_hashset[0])
         print("Stored values", tmp_dict)
         self.assertEqual(len(tmp_dict), 2)
         self.assertEqual(tmp_dict, data_to_store)
 
-        data_to_store = {"img":"MyPerfectPicture","test":"test_value","list":["value1","value2"]}
+        data_to_store = {"img": "MyPerfectPicture", "test": "test_value", "list": ["value1", "value2"]}
         # TODO : Please not that list in dict are not handled by pyredis
 
     def test_db_worker_get_from_queue(self):
@@ -83,10 +81,10 @@ class test_template(unittest.TestCase):
         # Create data
         queue_name = "test"
         id_to_process = str(42)
-        data_to_store = {"img":"MyPerfectPicture","test":"test_value"}
+        data_to_store = {"img": "MyPerfectPicture", "test": "test_value"}
 
         # try to store it
-        tmp_id_to_store = '|'.join([queue_name, id_to_process]) # create the key
+        tmp_id_to_store = '|'.join([queue_name, id_to_process])  # create the key
         test_db.hmset(tmp_id_to_store, data_to_store)
         test_db.rpush(queue_name, tmp_id_to_store)  # Add the id to the queue
         print("Data stored, data : ", data_to_store, " in (variable) ", tmp_id_to_store)
@@ -108,7 +106,7 @@ class test_template(unittest.TestCase):
         # Create data
         queue_name = "test"
         id_to_process = str(42)
-        data_to_store = {"img":"MyPerfectPicture","test":"test_value"}
+        data_to_store = {"img": "MyPerfectPicture", "test": "test_value"}
 
         # try to store it
         db_worker.add_to_queue(test_db, queue_name, id_to_process, data_to_store)

@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
-from carlhauser_server_tests.context import *
-from PIL import Image
-
-import carlhauser_server.Helpers.environment_variable as environment_variable
 
 import unittest
 
-class test_template(unittest.TestCase):
+import carlhauser_server.Helpers.environment_variable as environment_variable
+
+
+class TestEnvVariable(unittest.TestCase):
     """Basic test cases."""
 
     def setUp(self):
@@ -32,12 +31,12 @@ class test_template(unittest.TestCase):
         # Verify if dir path is correctly verifying if a path is a path
         try :
             self.assertRaises(environment_variable.dir_path(42), Exception)
-        except :
+        except Exception as e :
             self.assertTrue(True)
 
         try :
             self.assertRaises(environment_variable.dir_path("/test/path/"), Exception)
-        except :
+        except Exception as e :
             self.assertTrue(True)
 
 if __name__ == '__main__':
