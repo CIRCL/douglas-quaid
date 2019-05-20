@@ -10,10 +10,12 @@ from carlhauser_server.Configuration.template_conf import FORMATTER as FORMATTER
 from carlhauser_server.Configuration.template_conf import JSON_parsable_Enum, JSON_parsable_Dict
 
 
-class Default_configuration(JSON_parsable_Dict):
+class Default_distance_engine_conf(JSON_parsable_Dict):
     def __init__(self):
         # Inputs
-        self.SOURCE_DIR = None
+        self.TOP_N_CLUSTERS = 3 # Nb of "best clusters" to be matched on picture representative
+        self.TOP_N_PICTURES = 10 # Nb of "best pictures" to be returned, from TOP_N_CLUSTERS best clusters (total, not per cluster)
+        self.PICT_TO_TEST_PER_CLUSTER = 1 # Nb of "central picture" to test per cluster
 
         '''
         self.GROUND_TRUTH_PATH = None

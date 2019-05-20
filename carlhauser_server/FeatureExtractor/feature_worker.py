@@ -72,12 +72,12 @@ class Feature_Worker(database_accessor.Database_Worker):
             self.logger.debug(f"Computed orb values : {orb_dict}")
 
             # Merge dictionaries
-            to_send = {**hash_dict, **orb_dict}
-            self.logger.debug(f"To send to db dict : {to_send}")
+            merged_dict = {**hash_dict, **orb_dict}
+            self.logger.debug(f"To send to db dict : {merged_dict}")
 
-            # Remove old data and send dictionnary in hashmap to redis
+            # Remove old data and send dictionary in hashmap to redis
             # TODO : self.cache_db.del(fetched_id)
-            self.add_to_queue(self.cache_db, self.ouput_queue, fetched_id, to_send, pickle=True)
+            self.add_to_queue(self.cache_db, self.ouput_queue, fetched_id, merged_dict, pickle=True)
 
         except:
             return 1
