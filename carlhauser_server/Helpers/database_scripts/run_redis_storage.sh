@@ -4,4 +4,4 @@ set -e
 set -x
 
 # ../../redis/src/
-redis-server ./cache.conf
+redis-server ./storage.conf

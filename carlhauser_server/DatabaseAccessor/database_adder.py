@@ -59,18 +59,22 @@ class Database_Adder(database_accessor.Database_Worker):
         if not fetched_id:
             # Nothing to do
             time.sleep(0.1)
+            return 0
 
         try:
             self.logger.info(f"DB Adder worker processing {fetched_id}")
             self.logger.info(f"Fetched dict {fetched_dict}")
 
             # Add picture to storage
+            self.logger.info(f"Adding picture to storage under id {fetched_id}")
             self.ce.add_picture_to_storage(fetched_id, fetched_dict)
 
             # Get top matching clusters
+            self.logger.info(f"Getting top matching clusters for this picture")
             list_clusters = self.ce.get_top_matching_clusters(fetched_dict)
 
             # Get top matching pictures in these clusters
+            self.logger.info(f"Getting top matching pictures within these clusters")
             top_matching_pictures = self.ce.get_top_matching_pictures_from_clusters(list_clusters, fetched_dict)
 
             # Depending on the quality of the match ...
@@ -82,16 +86,19 @@ class Database_Adder(database_accessor.Database_Worker):
                 # TODO : To defer ?
                 # Re-evaluate representative picture(s) of cluster
                 self.ce.reevaluate_representative_picture_order(fetched_id, cluster_id)
+                self.logger.info(f"Picture added in existing cluster : {cluster_id}")
+
             else:
                 # Add picture to it's own cluster
                 cluster_id = self.ce.add_picture_to_new_cluster(fetched_id)
+                self.logger.info(f"Picture added in its own new cluster : {cluster_id}")
 
             # Add to a queue, to be reviewed later, when more pictures will be added
             self.ce.add_to_review(fetched_id)
 
         except Exception as e:
             self.logger.error(f"Error during picture adding {e}")
-
+        return 1
 
 # Launcher for this worker. Launch this file to launch a worker
 if __name__ == '__main__':

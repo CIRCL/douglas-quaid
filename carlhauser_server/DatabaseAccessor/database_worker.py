@@ -121,14 +121,8 @@ class Database_Worker():
             tmp_id = '|'.join([queue_name, id])
             self.logger.debug(f"About to add id = {tmp_id}")
 
-            if pickle :
-                # Pickling the dict
-                pickled_object = self.pickler.get_pickle_from_object(dict_to_store)
-                self.logger.debug(f"Size of storage object : {objsize.get_deep_size(pickled_object)}")
-                storage.set(tmp_id, pickled_object)
-            else :
-                # Store the dict
-                storage.hmset(tmp_id, dict_to_store)
+            # Store the dict
+            self.set_dict_to_key(storage, tmp_id, dict_to_store, pickle)
 
             # Set an expire date
             storage.expire(tmp_id, self.conf.REQUEST_EXPIRATION)
@@ -156,21 +150,14 @@ class Database_Worker():
             tmp_id = storage.lpop(queue_name)
 
             if tmp_id:
-                self.logger.debug(f"An ID has been fetched : {tmp_id}")
+                self.logger.debug(f"An ID had been fetched : {tmp_id}")
 
-                if pickle:
-                    # If correct, fetch data behind it
-                    pickled_object = storage.get(tmp_id)
+                # Get the stored dict
+                fetched_dict = self.get_dict_from_key(storage, tmp_id, pickle)
 
-                    # Unpickling the dict
-                    fetched_dict = self.pickler.get_object_from_pickle(pickled_object)
-                else:
-                    # If correct, fetch data behind it
-                    fetched_dict = storage.hgetall(tmp_id)
-
-                self.logger.debug(f"Fetched dictionary : {fetched_dict.keys()}")
-
+                # Extract info from key
                 stored_queue_name, stored_id = str(tmp_id).split("|")
+
                 # TODO : Handle removal ? self.cache_db.delete(tmp_id)
                 self.logger.debug(f"Stuff had been fetched from queue={queue_name}")
 
@@ -180,6 +167,36 @@ class Database_Worker():
 
         except Exception as e:
             raise Exception(f"Unable to get dict and hash from {queue_name} queue : {e}")
+
+    def get_dict_from_key(self, storage: redis.Redis, key, pickle=False):
+        # Store a dict, pickled or not
+
+        if pickle:
+            # If correct, fetch data behind it
+            pickled_object = storage.get(key)
+
+            # Unpickling the dict
+            fetched_dict = self.pickler.get_object_from_pickle(pickled_object)
+        else:
+            # If correct, fetch data behind it
+            fetched_dict = storage.hgetall(key)
+
+        self.logger.debug(f"Fetched dictionary : {fetched_dict.keys()}")
+
+        return fetched_dict
+
+    def set_dict_to_key(self, storage: redis.Redis, key, dict_to_store:dict, pickle=False):
+        # Retrieve a dict, pickled or not
+
+        if pickle:
+            # Pickling the dict
+            pickled_object = self.pickler.get_pickle_from_object(dict_to_store)
+            self.logger.debug(f"Size of storage object : {objsize.get_deep_size(pickled_object)}")
+            return storage.set(key, pickled_object)
+        else:
+            # Store the dict
+            return storage.hmset(key, dict_to_store)
+
 
     '''
     @staticmethod

@@ -117,8 +117,8 @@ class Cluster_Engine(database_accessor.Database_Worker):
 
     def add_picture_to_storage(self, id, image_dict: dict):
         # Store the dictionary of hashvalues in Redis under the given id
+        return self.set_dict_to_key(self.storage_db, id, image_dict, pickle=True)
 
-        return self.storage_db.hmset(name=id, mapping=image_dict)
 
     def add_picture_to_cluster(self, image_id, cluster_id):
         # Add a picture to a cluster

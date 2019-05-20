@@ -63,7 +63,7 @@ class Picture_Hasher():
                 answer["W_HASH"] = self.check_null_hash(imagehash.whash(pil_picture))
             if self.conf.TLSH:
                 self.logger.debug("TLSH ... ")
-                answer["TLSH"] = self.check_null_hash(tlsh.hash(pil_picture))
+                answer["TLSH"] = self.check_null_hash(tlsh.hash(curr_picture))
 
         except Exception as e:
             self.logger.error("Error during hashing : " + str(e))
