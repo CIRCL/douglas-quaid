@@ -55,7 +55,7 @@ class FlaskAppWrapper(object):
         # Specific attributes
         self.app = flask.Flask(name)
         # An accessor to push stuff in queues, mainly
-        self.database_worker = database_worker.Database_Worker(conf=db_conf)
+        self.database_worker = database_worker.Database_Worker(db_conf=db_conf)
 
     def run(self):
         # Handle SLL Certificate, if they are provided = use them, else = self sign a certificate on the fly
@@ -114,11 +114,12 @@ class FlaskAppWrapper(object):
 
                 # Enqueue picture to processing
                 self.logger.debug(f"Adding to feature queue : {f_hash} ") # {f_bmp}
-                self.database_worker.add_to_queue(self.database_worker.cache_db, queue_name="feature_to_add", id=f_hash, dict_to_store={"img":f_bmp})
+                self.database_worker.add_to_queue(self.database_worker.cache_db_decode, queue_name="feature_to_add", id=f_hash, dict_to_store={"img":f_bmp})
 
                 result_json["Status"] = "Success"
                 result_json["img_id"] = f_hash
-            except:
+            except Exception as e:
+                self.logger.error(f"Error during PUT handling {e}")
                 result_json["Status"] = "Failure"
                 result_json["Error"] = "Error during Hash computation or database adding"
         else:

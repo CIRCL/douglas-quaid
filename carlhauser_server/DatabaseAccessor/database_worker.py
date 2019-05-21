@@ -23,9 +23,9 @@ import carlhauser_server.Configuration.database_conf as database_conf
 
 class Database_Worker():
 
-    def __init__(self, conf: database_conf):
+    def __init__(self, db_conf: database_conf):
         # STD attributes
-        self.conf = conf
+        self.conf = db_conf
         self.logger = logging.getLogger(__name__)
         self.logger.info("Creation of a Database Accessor Worker")
 
@@ -38,68 +38,18 @@ class Database_Worker():
         self.redis_storage = get_homedir() / self.conf.DB_DATA_PATH
 
         # Get sockets
-        tmp_db_handler = database_start_stop.Database_StartStop(conf=conf)
-        self.storage_db = redis.Redis(unix_socket_path=tmp_db_handler.get_socket_path('storage'), decode_responses=True)  #
-        self.cache_db = redis.Redis(unix_socket_path=tmp_db_handler.get_socket_path('cache'), decode_responses=True)
+        tmp_db_handler = database_start_stop.Database_StartStop(conf=db_conf)
+        self.cache_db_decode = redis.Redis(unix_socket_path=tmp_db_handler.get_socket_path('cache'), decode_responses=True)
+        self.cache_db_no_decode = redis.Redis(unix_socket_path=tmp_db_handler.get_socket_path('cache'), decode_responses=False)
+
+        self.storage_db_decode = redis.Redis(unix_socket_path=tmp_db_handler.get_socket_path('storage'), decode_responses=True)
+        self.storage_db_no_decode = redis.Redis(unix_socket_path=tmp_db_handler.get_socket_path('storage'), decode_responses=False)
 
         # Pickler with patches
         self.pickler = pickle_import_export.Pickler()
         # self.key_prefix = 'caida'
         # self.storage_root = storage_directory / 'caida'
         # self.storagedb.sadd('prefixes', self.key_prefix)
-
-    '''
-    
-    def add_to_queue(self, storage: redis.Redis, queue_name: str, id: str, dict_to_store: dict):
-        # Do stuff
-        self.logger.debug(f"Worker trying to add stuff to queue={queue_name}")
-        # self.logger.debug(f"Added dict: {dict_to_store}")
-
-        try:
-            # Create tmp_id for this queue
-            tmp_id = '|'.join([queue_name, id])
-            self.logger.debug(f"About to add id = {tmp_id}")
-
-            # Store the dict and set an expire date
-            storage.hmset(tmp_id, dict_to_store)
-            storage.expire(tmp_id, self.conf.REQUEST_EXPIRATION)
-
-            self.logger.debug(f"Stored= {tmp_id}")
-
-            # Add id to the queue, to be processed
-            storage.rpush(queue_name, tmp_id)  # Add the id to the queue
-        except Exception as e:
-            raise Exception(f"Unable to add dict and hash to {queue_name} queue : {e}")
-
-    def get_from_queue(self, storage: redis.Redis, queue_name: str):
-        # self.logger.debug(f"Worker trying to remove stuff from queue={queue_name}")
-
-        try:
-            # Get the next value in queue
-            tmp_id = storage.lpop(queue_name)
-
-            if tmp_id:
-                self.logger.debug(f"An ID has been fetched : {tmp_id}")
-
-                # If correct, fetch data behind it
-                fetched_dict = storage.hgetall(tmp_id)
-
-                self.logger.debug(f"Fetched dictionnary : {fetched_dict.keys()}")
-
-                stored_queue_name, stored_id = str(tmp_id).split("|")
-                # TODO : Handle removal ? self.cache_db.delete(tmp_id)
-                self.logger.debug(f"Stuff had been fetched from queue={queue_name}")
-
-                return stored_id, fetched_dict
-            else:
-                return None, None
-
-        except Exception as e:
-            raise Exception(f"Unable to get dict and hash from {queue_name} queue : {e}")
-
-    
-    
-    '''
 
     def add_to_queue(self, storage: redis.Redis, queue_name: str, id: str, dict_to_store: dict, pickle=False):
         '''
@@ -157,7 +107,14 @@ class Database_Worker():
                 fetched_dict = self.get_dict_from_key(storage, tmp_id, pickle)
 
                 # Extract info from key (Be aware that it can be bytes, and so need to be decoded)
-                stored_queue_name, stored_id = str(tmp_id.decode('utf-8')).split("|")
+                if type(tmp_id) is str:
+                    # Already string, so no need to change anything
+                    to_split = tmp_id
+                else:
+                    # Raw, other than string, so needs to be decoded
+                    to_split = str(tmp_id.decode('utf-8'))
+
+                stored_queue_name, stored_id = to_split.split("|")
 
                 # TODO : Handle removal ? self.cache_db.delete(tmp_id)
                 self.logger.debug(f"Stuff had been fetched from queue={queue_name}")
@@ -186,7 +143,7 @@ class Database_Worker():
 
         return fetched_dict
 
-    def set_dict_to_key(self, storage: redis.Redis, key, dict_to_store:dict, pickle=False):
+    def set_dict_to_key(self, storage: redis.Redis, key, dict_to_store: dict, pickle=False):
         # Retrieve a dict, pickled or not
 
         if pickle:
@@ -198,6 +155,12 @@ class Database_Worker():
             # Store the dict
             return storage.hmset(key, dict_to_store)
 
+    def add_picture_to_storage(self, storage: redis.Redis, id, image_dict: dict):
+        # Store the dictionary of hashvalues in Redis under the given id
+        return self.set_dict_to_key(storage, id, image_dict, pickle=True)
+
+    def get_picture_from_storage(self, storage: redis.Redis, id):
+        return self.get_dict_from_key(storage, id, pickle=True)
 
     '''
     @staticmethod
@@ -210,7 +173,7 @@ class Database_Worker():
     def is_halt_requested(self):
         # Check if a halt had been requested
         try:
-            value = self.cache_db.get("halt")
+            value = self.cache_db_decode.get("halt")
             if not value:
                 return False
             else:  # The key has been set to something, "Now","Yes", ...

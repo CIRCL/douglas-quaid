@@ -47,8 +47,8 @@ class launcher_handler():
 
         # Launch elements
         self.start_database(db_conf)
-        self.start_adder_workers(db_conf, di_conf)
-        self.start_requester_workers(db_conf, di_conf)
+        self.start_adder_workers(db_conf, di_conf, fe_conf)
+        self.start_requester_workers(db_conf, di_conf, fe_conf)
         self.start_feature_workers(db_conf, fe_conf)
         self.check_worker(db_conf)
 
@@ -72,19 +72,19 @@ class launcher_handler():
 
     # ==================== ------ DB WORKERS ------- ====================
 
-    def start_adder_workers(self, db_conf, dist_conf):
+    def start_adder_workers(self, db_conf, dist_conf,fe_conf):
         self.logger.info(f"Launching to_add worker (x{db_conf.ADDER_WORKER_NB}) ...")
 
         # Get the Singleton instance of worker handler and start N workers
         worker_handler = worker_start_stop.Worker_StartStop(db_conf)
-        worker_handler.start_n_adder_worker(db_conf=db_conf,  dist_conf=dist_conf, nb=db_conf.ADDER_WORKER_NB)
+        worker_handler.start_n_adder_worker(db_conf=db_conf,  dist_conf=dist_conf, fe_conf=fe_conf, nb=db_conf.ADDER_WORKER_NB)
 
-    def start_requester_workers(self, db_conf, dist_conf):
+    def start_requester_workers(self, db_conf, dist_conf,fe_conf):
         self.logger.info(f"Launching to_request worker (x{db_conf.REQUESTER_WORKER_NB}) ...")
 
         # Get the Singleton instance of worker handler and start N workers
         worker_handler = worker_start_stop.Worker_StartStop(db_conf)
-        worker_handler.start_n_requester_worker(db_conf=db_conf, dist_conf=dist_conf, nb=db_conf.REQUESTER_WORKER_NB)
+        worker_handler.start_n_requester_worker(db_conf=db_conf, dist_conf=dist_conf, fe_conf=fe_conf, nb=db_conf.REQUESTER_WORKER_NB)
 
     # ==================== ------ FEATURE WORKERS ------- ====================
 

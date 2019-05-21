@@ -60,7 +60,7 @@ class Worker_StartStop(object, metaclass=Singleton):
 
     # TODO : The four next functions have a LOT of duplicated code. Idea to factorize ?
 
-    def start_n_adder_worker(self, db_conf: database_conf, dist_conf : distance_engine_conf, nb=1):
+    def start_n_adder_worker(self, db_conf: database_conf, dist_conf : distance_engine_conf, fe_conf :feature_extractor_conf, nb=1):
         # Add N worker and return the current list of worker
 
         # Save current configuration
@@ -68,6 +68,8 @@ class Worker_StartStop(object, metaclass=Singleton):
         json_import_export.save_json(db_conf, file_path=tmp_db_conf_path)
         tmp_dist_conf_path = get_homedir() / "tmp_dist_conf.json"
         json_import_export.save_json(dist_conf, file_path=tmp_dist_conf_path)
+        tmp_fe_conf_path = get_homedir() / "tmp_fe_conf.json"
+        json_import_export.save_json(fe_conf, file_path=tmp_fe_conf_path)
 
         for i in range(nb):
             self.logger.info(f"> Adding 'Adder' Worker {i} ...")
@@ -75,14 +77,14 @@ class Worker_StartStop(object, metaclass=Singleton):
             init_date = datetime.datetime.now()
 
             # Open the worker subprocess with the configuration argument
-            proc_worker = subprocess.Popen([str(self.adder_worker_path), '-dbc', str(tmp_db_conf_path.resolve()), '-distc', str(tmp_dist_conf_path.resolve())]) # ,stderr = subprocess.PIPE ?
+            proc_worker = subprocess.Popen([str(self.adder_worker_path), '-dbc', str(tmp_db_conf_path.resolve()), '-distc', str(tmp_dist_conf_path.resolve()), '-fec', str(tmp_fe_conf_path.resolve())]) # ,stderr = subprocess.PIPE ?
 
             # Store the reference to the worker
             self.adder_worker_list.append([proc_worker, init_date])
 
         return self.adder_worker_list
 
-    def start_n_requester_worker(self, db_conf: database_conf, dist_conf : distance_engine_conf, nb=1):
+    def start_n_requester_worker(self, db_conf: database_conf, dist_conf : distance_engine_conf, fe_conf : feature_extractor_conf, nb=1):
         # Add N worker and return the current list of worker
 
         # Save current configuration
@@ -90,6 +92,8 @@ class Worker_StartStop(object, metaclass=Singleton):
         json_import_export.save_json(db_conf, file_path=tmp_db_conf_path)
         tmp_dist_conf_path = get_homedir() / "tmp_dist_conf.json"
         json_import_export.save_json(dist_conf, file_path=tmp_dist_conf_path)
+        tmp_fe_conf_path = get_homedir() / "tmp_fe_conf.json"
+        json_import_export.save_json(fe_conf, file_path=tmp_fe_conf_path)
 
         for i in range(nb):
             self.logger.info(f"> Adding 'Requester' Worker {i} ...")
@@ -97,7 +101,7 @@ class Worker_StartStop(object, metaclass=Singleton):
             init_date = datetime.datetime.now()
 
             # Open the worker subprocess with the configuration argument
-            proc_worker = subprocess.Popen([str(self.requester_worker_path), '-dbc', str(tmp_db_conf_path.resolve()), '-distc', str(tmp_dist_conf_path.resolve())]) # ,stderr = subprocess.PIPE ?
+            proc_worker = subprocess.Popen([str(self.requester_worker_path), '-dbc', str(tmp_db_conf_path.resolve()), '-distc', str(tmp_dist_conf_path.resolve()), '-fec', str(tmp_fe_conf_path.resolve())]) # ,stderr = subprocess.PIPE ?
 
             # Store the reference to the worker
             self.requester_worker_list.append([proc_worker, init_date])
