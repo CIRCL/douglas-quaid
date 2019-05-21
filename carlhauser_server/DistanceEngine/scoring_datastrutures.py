@@ -37,5 +37,5 @@ class TopN():
             self.sorted = True
 
         # Return the top n elements of the list
-        return self.list_top_n_elements[:self.top_n]
+        return self.list_top_n_elements[:min(self.top_n,len(self.list_top_n_elements))]
 

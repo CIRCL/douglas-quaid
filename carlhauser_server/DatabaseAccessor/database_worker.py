@@ -162,6 +162,10 @@ class Database_Worker():
     def get_picture_from_storage(self, storage: redis.Redis, id):
         return self.get_dict_from_key(storage, id, pickle=True)
 
+    def print_storage_view(self):
+        self.logger.info("Printing REDIS Storage view")
+        self.logger.info(self.storage_db_decode.keys())
+
     '''
     @staticmethod
     def get_unique_key(queue_name : str, id:str):

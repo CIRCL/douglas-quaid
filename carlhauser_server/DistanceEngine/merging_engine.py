@@ -42,8 +42,11 @@ class Merging_Engine():
     def merge_pictures_distance(self, distance_list: list):
         # TODO : Complete merging / Improve
         self.logger.info(f"Received picture-cluster's picture distance to merge {distance_list}")
-
-        return max(distance_list)
+        if len(distance_list) != 0 :
+            return max(distance_list)
+        else :
+            self.logger.error(f"A Cluster is empty but exists. Structural behavior error detected.")
+            return None
 
     # ==================== ------ CLUSTER-CLUSTER DISTANCE ------- ====================
 

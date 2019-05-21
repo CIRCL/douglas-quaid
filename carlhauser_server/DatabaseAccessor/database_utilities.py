@@ -57,7 +57,8 @@ class DBUtilities():
             self.logger.error("A picture is added to a cluster that does not exists. Please review structural behavior.")
 
         # Add the picture to the set
-        success = self.db_access_decode.sadd(set_name, image_id)
+        # success = self.db_access_decode.sadd(set_name, image_id) # SET
+        success = self.db_access_decode.zadd(set_name, {image_id:2}) # SORTED SET
         self.logger.info(f"Added picture {image_id} to {cluster_id} cluster under set name {set_name}")
 
         return success
@@ -73,7 +74,8 @@ class DBUtilities():
         self.add_cluster(cluster_name)
 
         # Add the picture to the set
-        self.db_access_decode.sadd(set_name, image_id)
+        # self.db_access_decode.sadd(set_name, image_id) # SET
+        self.db_access_decode.zadd(set_name, {image_id:2}) # SORTED SET 2 = DEFAULT VALUE
         self.logger.info(f"Added picture {image_id} to NEW {cluster_name} cluster under set name {set_name}")
 
         return cluster_name
@@ -87,7 +89,8 @@ class DBUtilities():
             raise Exception("Invalid cluster name, not a string.")
 
         # Get the list of pictures associated of the given cluster
-        return self.db_access_decode.smembers(self.get_setname_of_cluster(cluster_name))
+        # return self.db_access_decode.smembers(self.get_setname_of_cluster(cluster_name)) # SET
+        return self.db_access_decode.zrange(self.get_setname_of_cluster(cluster_name),0,-1) # SORTED SET
 
     @staticmethod
     def get_setname_of_cluster(cluster_name):

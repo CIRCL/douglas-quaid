@@ -7,7 +7,7 @@ import os
 import pathlib
 import sys
 import time
-
+import traceback
 import redis
 import uuid
 
@@ -70,13 +70,16 @@ class Database_Adder(database_accessor.Database_Worker):
             cluster_list = self.db_utils.get_cluster_list() # DECODE
             list_clusters = self.de.get_top_matching_clusters(cluster_list, fetched_dict) # List[scoring_datastrutures.ClusterMatch]
             list_cluster_id = [i.cluster_id for i in list_clusters]
+            self.logger.info(f"Top matching clusters : {list_cluster_id}")
 
             # Get top matching pictures in these clusters
             self.logger.info(f"Getting top matching pictures within these clusters")
             top_matching_pictures = self.de.get_top_matching_pictures_from_clusters(list_cluster_id, fetched_dict)
+            self.logger.info(f"Top matching pictures : {top_matching_pictures}")
 
             # Depending on the quality of the match ...
             if len(top_matching_pictures) > 0 and self.de.match_enough(top_matching_pictures[0]):
+                self.logger.info(f"Match is good enough with at least one cluster")
                 # Add picture to best picture's cluster
                 cluster_id = top_matching_pictures[0].cluster_id
                 self.db_utils.add_picture_to_cluster(fetched_id, cluster_id)
@@ -87,15 +90,18 @@ class Database_Adder(database_accessor.Database_Worker):
                 self.logger.info(f"Picture added in existing cluster : {cluster_id}")
 
             else:
+                self.logger.info(f"Match not good enough, with any cluster")
                 # Add picture to it's own cluster
                 cluster_id = self.db_utils.add_picture_to_new_cluster(fetched_id)
                 self.logger.info(f"Picture added in its own new cluster : {cluster_id}")
 
             # Add to a queue, to be reviewed later, when more pictures will be added
-            self.db_utils.add_to_review(fetched_id) #TODO
+            self.db_utils.add_to_review(fetched_id) # TODO
 
         except Exception as e:
-            self.logger.error(f"Error during picture adding : {e}")
+            self.logger.error(f"Error in database adder : {e}")
+            self.logger.error(traceback.print_tb(e.__traceback__))
+
         return 1
 
 

@@ -28,7 +28,7 @@ import carlhauser_server.DatabaseAccessor.database_utilities as db_utils
 
 
 class Distance_Engine():
-    def __init__(self, parent : database_worker, db_conf: database_conf, dist_conf: distance_engine_conf, fe_conf: feature_extractor_conf):
+    def __init__(self, parent: database_worker, db_conf: database_conf, dist_conf: distance_engine_conf, fe_conf: feature_extractor_conf):
         # STD attributes
         self.logger = logging.getLogger(__name__)
         self.logger.info("... which is a Distance Engine")
@@ -45,7 +45,6 @@ class Distance_Engine():
         self.distance_hash = distance_hash.Distance_Hash(db_conf, dist_conf, fe_conf)
         self.distance_orb = distance_orb.Distance_ORB(db_conf, dist_conf, fe_conf)
         self.merging_engine = merging_engine.Merging_Engine(db_conf, dist_conf, fe_conf)
-
 
     # ==================== ------ INTER ALGO DISTANCE ------- ====================
     def get_distance_algos_to_algos(self, pic_package_from, pic_package_to):
@@ -93,6 +92,8 @@ class Distance_Engine():
 
         # Evaluate similarity to each cluster
         for curr_cluster in cluster_list:
+            self.logger.debug(f"Evaluating distance from current picture to cluster #{curr_cluster}")
+
             # Evaluate current distance to cluster
             tmp_dist = self.get_distance_picture_to_cluster(curr_cluster, image_dict)
 
@@ -111,12 +112,13 @@ class Distance_Engine():
         PICT_TO_TEST_PER_CLUSTER = self.dist_conf.PICT_TO_TEST_PER_CLUSTER
 
         list_dist = []
-        curr_picture_sorted_set = self.parent.db_utils.get_pictures_of_cluster(cluster_id) # DECODE
+        curr_picture_sorted_set = self.parent.db_utils.get_pictures_of_cluster(cluster_id)  # DECODE
 
-        self.logger.debug(f"Retrieved pictures of {cluster_id} are {curr_picture_sorted_set}")
+        self.logger.debug(f"Retrieved pictures of cluster #{cluster_id} are {curr_picture_sorted_set}")
 
         for i, curr_picture in enumerate(curr_picture_sorted_set):
             if i < PICT_TO_TEST_PER_CLUSTER:
+                self.logger.debug(f"Evaluating picture #{i} of current cluster")
                 # We still have pictures to test for this cluster
                 # Get picture dict
                 curr_pic_dict = self.parent.get_dict_from_key(self.parent.storage_db_no_decode, curr_picture, pickle=True)
