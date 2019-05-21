@@ -10,7 +10,8 @@ import logging
 from carlhauser_server.Helpers.environment_variable import get_homedir
 import carlhauser_server.Configuration.database_conf as database_conf
 import carlhauser_server.Configuration.distance_engine_conf as distance_engine_conf
-import carlhauser_server.DistanceEngine.cluster_engine as cluster_engine
+import carlhauser_server.Configuration.feature_extractor_conf as feature_extractor_conf
+import carlhauser_server.DistanceEngine.distance_engine as distance_engine
 import carlhauser_server.Helpers.database_start_stop as database_start_stop
 
 
@@ -24,6 +25,7 @@ class testDistanceEngine(unittest.TestCase):
 
         self.db_conf = database_conf.Default_database_conf()
         self.dist_conf = distance_engine_conf.Default_distance_engine_conf()
+        self.fe_conf = feature_extractor_conf.Default_feature_extractor_conf()
 
         # Create database handler from configuration file
         self.db_handler = database_start_stop.Database_StartStop(conf=self.db_conf)
@@ -34,9 +36,9 @@ class testDistanceEngine(unittest.TestCase):
         self.db_handler.shutdown_test_script_path = get_homedir() / self.db_conf.DB_SCRIPTS_PATH / "shutdown_redis_test.sh"
 
         # Construct a worker and get a link to redis db
-        self.ce = cluster_engine.Cluster_Engine(self.db_conf, self.dist_conf)
+        self.de = distance_engine.Distance_Engine(self.db_conf, self.dist_conf, self.fe_conf)
         test_db = redis.Redis(unix_socket_path=self.db_handler.get_socket_path('test'), decode_responses=True)
-        self.ce.storage_db = test_db
+        self.de.storage_db = test_db
 
         # Launch test Redis DB
         if not self.db_handler.check_running('test'):
@@ -56,20 +58,6 @@ class testDistanceEngine(unittest.TestCase):
 
         # TODO : Kill subprocess ?
 
-    def test_add_picture_to_storage(self):
-        id_to_process = str(42)
-        data_to_store = {"img": "MyPerfectPicture", "test": "test_value"}
-        print("Stored :", data_to_store)
-
-        # Add picture to storage
-        self.ce.add_picture_to_storage(id_to_process, data_to_store)
-
-        # Get back data
-        stored = self.ce.storage_db.hgetall(id_to_process)
-        print("Fetched :", stored)
-
-        # Checks
-        self.assertEqual(data_to_store, stored)
 
     '''
         def test_get_top_matching_clusters(self):
@@ -84,29 +72,6 @@ class testDistanceEngine(unittest.TestCase):
         self.assertEqual([0,1,2],list_clusters)
     '''
 
-    '''
-        # Get top matching clusters
-        list_clusters = self.ce.get_top_matching_clusters(fetched_dict)
-        
-        # Get top matching pictures in these clusters
-        top_matching_pictures = self.ce.get_top_matching_pictures_from_clusters(list_clusters, fetched_dict)
-        
-        # Depending on the quality of the match ...
-                    if self.ce.match_enough(top_matching_pictures[0][0]):
-                        # Add picture to best picture's cluster
-                        # TODO : NOPE = TOO COMPLEX FOR REVERSE LOOKUP. JUST STORED IN PREVIOUS RESULT cluster_id = self.ce.get_cluster(top_matching_pictures[0])
-                        cluster_id = top_matching_pictures[0][1]
-                        self.ce.add_picture_to_cluster(fetched_id, cluster_id)
-                        # TODO : To defer ?
-                        # Re-evaluate representative picture(s) of cluster
-                        self.ce.reevaluate_representative_picture_order(fetched_id, cluster_id)
-                    else:
-                        # Add picture to it's own cluster
-                        cluster_id = self.ce.add_picture_to_new_cluster(fetched_id)
-        
-                    # Add to a queue, to be reviewed later, when more pictures will be added
-                    self.ce.add_to_review(fetched_id)
-    '''
 
     def test_absolute_truth_and_meaning(self):
         assert True
