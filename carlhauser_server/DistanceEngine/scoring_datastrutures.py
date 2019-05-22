@@ -5,19 +5,20 @@
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
 
 # Datastructures to handle a list of matches
-class ClusterMatch():
-    def __init__(self, cluster_id = None, distance = None):
+class ClusterMatch:
+    def __init__(self, cluster_id=None, distance=None):
         self.cluster_id = cluster_id
         self.distance = distance
 
 
-class ImageMatch():
-    def __init__(self, image_id = None, cluster_id = None, distance = None):
+class ImageMatch:
+    def __init__(self, image_id=None, cluster_id=None, distance=None):
         self.image_id = image_id
         self.cluster_id = cluster_id
         self.distance = distance
 
-class TopN():
+
+class TopN:
     # TODO : Improve datastructure (priority queue, probably)
     def __init__(self, top_n):
         self.list_top_n_elements = []
@@ -32,10 +33,9 @@ class TopN():
         # Get the top n of the elements of the list
 
         # Sort elements if not sorted
-        if not self.sorted :
+        if not self.sorted:
             self.list_top_n_elements.sort(key=lambda x: x.distance)
             self.sorted = True
 
         # Return the top n elements of the list
-        return self.list_top_n_elements[:min(self.top_n,len(self.list_top_n_elements))]
-
+        return self.list_top_n_elements[:min(self.top_n, len(self.list_top_n_elements))]

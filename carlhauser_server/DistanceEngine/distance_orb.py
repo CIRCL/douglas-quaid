@@ -2,7 +2,8 @@
 # -*- coding: utf-8 -*-
 
 # ==================== ------ STD LIBRARIES ------- ====================
-import sys, os
+import sys
+import os
 import imagehash
 import tlsh
 import cv2
@@ -18,14 +19,14 @@ import carlhauser_server.Configuration.feature_extractor_conf as feature_extract
 import carlhauser_server.DatabaseAccessor.database_worker as database_accessor
 
 
-class Distance_ORB():
-    def __init__(self, db_conf: database_conf, dist_conf: distance_engine_conf,  fe_conf: feature_extractor_conf):
+class Distance_ORB:
+    def __init__(self, db_conf: database_conf, dist_conf: distance_engine_conf, fe_conf: feature_extractor_conf):
         # STD attributes
         self.logger = logging.getLogger(__name__)
         self.logger.info("Creation of a Distance ORB Engine")
 
         # Save configuration
-        self.db_conf = db_conf # TODO : REMOVE = NOT USEFUL FOR NOW !
+        self.db_conf = db_conf  # TODO : REMOVE = NOT USEFUL FOR NOW !
         self.dist_conf = dist_conf
         self.fe_conf = fe_conf
 
@@ -48,7 +49,8 @@ class Distance_ORB():
 
         return answer
 
-    def threeshold_distance_filter(self, matches):
+    @staticmethod
+    def threeshold_distance_filter(matches):
         dist_th = 64
         good = []
 
@@ -58,5 +60,6 @@ class Distance_ORB():
 
         return good
 
-    def max_dist(self, all_matches, good_matches):
+    @staticmethod
+    def max_dist(all_matches, good_matches):
         return 1 - len(good_matches) / (max(len(all_matches), len(all_matches)))
