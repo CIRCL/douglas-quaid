@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
-from carlhauser_server_tests.context import *
-from PIL import Image
-
-import carlhauser_server.Helpers.picture_import_export as picture_import_export
 
 import unittest
 
+import carlhauser_server.Helpers.picture_import_export as picture_import_export
+import logging
+import pathlib
 
-class test_template(unittest.TestCase):
+from carlhauser_server.Helpers.environment_variable import get_homedir
+
+class testPICTUREImportExport(unittest.TestCase):
     """Basic test cases."""
 
     def setUp(self):

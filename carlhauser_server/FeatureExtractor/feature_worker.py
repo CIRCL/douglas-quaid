@@ -30,15 +30,9 @@ class Feature_Worker(database_accessor.Database_Worker):
         # STD attributes
         super().__init__(db_conf)
         self.fe_conf = fe_conf
+
         self.picture_hasher = picture_hasher.Picture_Hasher(fe_conf)
         self.picture_orber = picture_orber.Picture_Orber(fe_conf)
-
-        # Get sockets
-        tmp_db_handler = database_start_stop.Database_StartStop(conf=self.conf)
-
-        # reconnect to storages, without decoding
-        self.storage_db = redis.Redis(unix_socket_path=tmp_db_handler.get_socket_path('storage'), decode_responses=False)
-        self.cache_db = redis.Redis(unix_socket_path=tmp_db_handler.get_socket_path('cache'), decode_responses=False)
 
 
     def _to_run_forever(self):
@@ -48,7 +42,7 @@ class Feature_Worker(database_accessor.Database_Worker):
         # Method called infinitely, in loop
 
         # Trying to fetch from queue
-        fetched_id, fetched_dict = self.get_from_queue(self.cache_db, self.input_queue)
+        fetched_id, fetched_dict = self.get_from_queue(self.cache_db_no_decode, self.input_queue)
 
         # If there is nothing fetched
         if not fetched_id:
@@ -57,7 +51,7 @@ class Feature_Worker(database_accessor.Database_Worker):
             return 0
 
         try:
-            self.logger.info(f"Feature worker processing {fetched_id}")
+            self.logger.info(f"Feature worker processing {fetched_id} of type {type(fetched_id)}")
 
             # Get picture from picture_id
             picture = fetched_dict[b"img"]
@@ -72,14 +66,15 @@ class Feature_Worker(database_accessor.Database_Worker):
             self.logger.debug(f"Computed orb values : {orb_dict}")
 
             # Merge dictionaries
-            to_send = {**hash_dict, **orb_dict}
-            self.logger.debug(f"To send to db dict : {to_send}")
+            merged_dict = {**hash_dict, **orb_dict}
+            self.logger.debug(f"To send to db dict : {merged_dict}")
 
-            # Remove old data and send dictionnary in hashmap to redis
+            # Remove old data and send dictionary in hashmap to redis
             # TODO : self.cache_db.del(fetched_id)
-            self.add_to_queue(self.cache_db, self.ouput_queue, fetched_id, to_send, pickle=True)
+            self.add_to_queue(self.cache_db_no_decode, self.ouput_queue, fetched_id, merged_dict, pickle=True)
 
-        except:
+        except Exception as e :
+            self.logger.error(e)
             return 1
 
 

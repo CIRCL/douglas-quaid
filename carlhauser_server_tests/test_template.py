@@ -3,7 +3,11 @@ from carlhauser_server_tests.context import *
 
 import unittest
 
-class test_template(unittest.TestCase):
+import logging
+import pathlib
+
+from carlhauser_server.Helpers.environment_variable import get_homedir
+class testTemplate(unittest.TestCase):
     """Basic test cases."""
 
     def setUp(self):

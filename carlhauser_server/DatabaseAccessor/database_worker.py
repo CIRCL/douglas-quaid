@@ -9,6 +9,7 @@ import argparse
 import pathlib
 import time, datetime
 import objsize
+import traceback
 
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
 sys.path.append(os.path.abspath(os.path.pardir))
@@ -23,9 +24,9 @@ import carlhauser_server.Configuration.database_conf as database_conf
 
 class Database_Worker():
 
-    def __init__(self, conf: database_conf):
+    def __init__(self, db_conf: database_conf):
         # STD attributes
-        self.conf = conf
+        self.conf = db_conf
         self.logger = logging.getLogger(__name__)
         self.logger.info("Creation of a Database Accessor Worker")
 
@@ -38,68 +39,18 @@ class Database_Worker():
         self.redis_storage = get_homedir() / self.conf.DB_DATA_PATH
 
         # Get sockets
-        tmp_db_handler = database_start_stop.Database_StartStop(conf=conf)
-        self.storage_db = redis.Redis(unix_socket_path=tmp_db_handler.get_socket_path('storage'), decode_responses=True)  #
-        self.cache_db = redis.Redis(unix_socket_path=tmp_db_handler.get_socket_path('cache'), decode_responses=True)
+        tmp_db_handler = database_start_stop.Database_StartStop(conf=db_conf)
+        self.cache_db_decode = redis.Redis(unix_socket_path=tmp_db_handler.get_socket_path('cache'), decode_responses=True)
+        self.cache_db_no_decode = redis.Redis(unix_socket_path=tmp_db_handler.get_socket_path('cache'), decode_responses=False)
+
+        self.storage_db_decode = redis.Redis(unix_socket_path=tmp_db_handler.get_socket_path('storage'), decode_responses=True)
+        self.storage_db_no_decode = redis.Redis(unix_socket_path=tmp_db_handler.get_socket_path('storage'), decode_responses=False)
 
         # Pickler with patches
         self.pickler = pickle_import_export.Pickler()
         # self.key_prefix = 'caida'
         # self.storage_root = storage_directory / 'caida'
         # self.storagedb.sadd('prefixes', self.key_prefix)
-
-    '''
-    
-    def add_to_queue(self, storage: redis.Redis, queue_name: str, id: str, dict_to_store: dict):
-        # Do stuff
-        self.logger.debug(f"Worker trying to add stuff to queue={queue_name}")
-        # self.logger.debug(f"Added dict: {dict_to_store}")
-
-        try:
-            # Create tmp_id for this queue
-            tmp_id = '|'.join([queue_name, id])
-            self.logger.debug(f"About to add id = {tmp_id}")
-
-            # Store the dict and set an expire date
-            storage.hmset(tmp_id, dict_to_store)
-            storage.expire(tmp_id, self.conf.REQUEST_EXPIRATION)
-
-            self.logger.debug(f"Stored= {tmp_id}")
-
-            # Add id to the queue, to be processed
-            storage.rpush(queue_name, tmp_id)  # Add the id to the queue
-        except Exception as e:
-            raise Exception(f"Unable to add dict and hash to {queue_name} queue : {e}")
-
-    def get_from_queue(self, storage: redis.Redis, queue_name: str):
-        # self.logger.debug(f"Worker trying to remove stuff from queue={queue_name}")
-
-        try:
-            # Get the next value in queue
-            tmp_id = storage.lpop(queue_name)
-
-            if tmp_id:
-                self.logger.debug(f"An ID has been fetched : {tmp_id}")
-
-                # If correct, fetch data behind it
-                fetched_dict = storage.hgetall(tmp_id)
-
-                self.logger.debug(f"Fetched dictionnary : {fetched_dict.keys()}")
-
-                stored_queue_name, stored_id = str(tmp_id).split("|")
-                # TODO : Handle removal ? self.cache_db.delete(tmp_id)
-                self.logger.debug(f"Stuff had been fetched from queue={queue_name}")
-
-                return stored_id, fetched_dict
-            else:
-                return None, None
-
-        except Exception as e:
-            raise Exception(f"Unable to get dict and hash from {queue_name} queue : {e}")
-
-    
-    
-    '''
 
     def add_to_queue(self, storage: redis.Redis, queue_name: str, id: str, dict_to_store: dict, pickle=False):
         '''
@@ -121,14 +72,8 @@ class Database_Worker():
             tmp_id = '|'.join([queue_name, id])
             self.logger.debug(f"About to add id = {tmp_id}")
 
-            if pickle :
-                # Pickling the dict
-                pickled_object = self.pickler.get_pickle_from_object(dict_to_store)
-                self.logger.debug(f"Size of storage object : {objsize.get_deep_size(pickled_object)}")
-                storage.set(tmp_id, pickled_object)
-            else :
-                # Store the dict
-                storage.hmset(tmp_id, dict_to_store)
+            # Store the dict
+            self.set_dict_to_key(storage, tmp_id, dict_to_store, pickle)
 
             # Set an expire date
             storage.expire(tmp_id, self.conf.REQUEST_EXPIRATION)
@@ -154,23 +99,24 @@ class Database_Worker():
         try:
             # Get the next value in queue
             tmp_id = storage.lpop(queue_name)
+            # self.logger.debug(f"Fetch from queue {tmp_id} of type {type(tmp_id)}")
 
             if tmp_id:
-                self.logger.debug(f"An ID has been fetched : {tmp_id}")
+                self.logger.debug(f"An ID had been fetched : {tmp_id}")
 
-                if pickle:
-                    # If correct, fetch data behind it
-                    pickled_object = storage.get(tmp_id)
+                # Get the stored dict
+                fetched_dict = self.get_dict_from_key(storage, tmp_id, pickle)
 
-                    # Unpickling the dict
-                    fetched_dict = self.pickler.get_object_from_pickle(pickled_object)
+                # Extract info from key (Be aware that it can be bytes, and so need to be decoded)
+                if type(tmp_id) is str:
+                    # Already string, so no need to change anything
+                    to_split = tmp_id
                 else:
-                    # If correct, fetch data behind it
-                    fetched_dict = storage.hgetall(tmp_id)
+                    # Raw, other than string, so needs to be decoded
+                    to_split = str(tmp_id.decode('utf-8'))
 
-                self.logger.debug(f"Fetched dictionary : {fetched_dict.keys()}")
+                stored_queue_name, stored_id = to_split.split("|")
 
-                stored_queue_name, stored_id = str(tmp_id).split("|")
                 # TODO : Handle removal ? self.cache_db.delete(tmp_id)
                 self.logger.debug(f"Stuff had been fetched from queue={queue_name}")
 
@@ -180,6 +126,46 @@ class Database_Worker():
 
         except Exception as e:
             raise Exception(f"Unable to get dict and hash from {queue_name} queue : {e}")
+
+    def get_dict_from_key(self, storage: redis.Redis, key, pickle=False):
+        # Store a dict, pickled or not
+
+        if pickle:
+            # If correct, fetch data behind it
+            pickled_object = storage.get(key)
+
+            # Unpickling the dict
+            fetched_dict = self.pickler.get_object_from_pickle(pickled_object)
+        else:
+            # If correct, fetch data behind it
+            fetched_dict = storage.hgetall(key)
+
+        self.logger.debug(f"Fetched dictionary : {fetched_dict.keys()}")
+
+        return fetched_dict
+
+    def set_dict_to_key(self, storage: redis.Redis, key, dict_to_store: dict, pickle=False):
+        # Retrieve a dict, pickled or not
+
+        if pickle:
+            # Pickling the dict
+            pickled_object = self.pickler.get_pickle_from_object(dict_to_store)
+            self.logger.debug(f"Size of storage object : {objsize.get_deep_size(pickled_object)}")
+            return storage.set(key, pickled_object)
+        else:
+            # Store the dict
+            return storage.hmset(key, dict_to_store)
+
+    def add_picture_to_storage(self, storage: redis.Redis, id, image_dict: dict):
+        # Store the dictionary of hashvalues in Redis under the given id
+        return self.set_dict_to_key(storage, id, image_dict, pickle=True)
+
+    def get_picture_from_storage(self, storage: redis.Redis, id):
+        return self.get_dict_from_key(storage, id, pickle=True)
+
+    def print_storage_view(self):
+        self.logger.info("Printing REDIS Storage view")
+        self.logger.info(self.storage_db_decode.keys())
 
     '''
     @staticmethod
@@ -192,26 +178,41 @@ class Database_Worker():
     def is_halt_requested(self):
         # Check if a halt had been requested
         try:
-            value = self.cache_db.get("halt")
+            value = self.cache_db_decode.get("halt")
             if not value:
                 return False
             else:  # The key has been set to something, "Now","Yes", ...
+                self.logger.info("HALT key detected. Worker received stop signal ... ")
                 return True
         except:
             self.logger.error("Impossible to know if the worker has to halt. Please review 'halt' key")
 
     def run(self, sleep_in_sec: int):
-        self.logger.info(f'Launching {self.__class__.__name__}')
-        if self.input_queue is None:
-            raise Exception("No input queue set for current worker. Impossible to fetch work to do. Worker aborted.")
-        while not self.is_halt_requested():
-            try:
-                self._to_run_forever()
-            except Exception as e:
-                self.logger.exception(f'Something went terribly wrong in {self.__class__.__name__} : {e}')
+        try :
 
-            if not self.long_sleep(sleep_in_sec):
-                break
+            self.logger.info(f'Launching {self.__class__.__name__}')
+            if self.input_queue is None:
+                raise Exception("No input queue set for current worker. Impossible to fetch work to do. Worker aborted.")
+            if self.is_halt_requested():
+                self.logger.error(f'Halt detected even before worker launch in Redis. Aborting worker launch ... ')
+
+            while not self.is_halt_requested():
+                try:
+                    self._to_run_forever()
+                except Exception as e:
+                    self.logger.error(f'Something went terribly wrong in {self.__class__.__name__} : {e}')
+
+                if not self.long_sleep(sleep_in_sec):
+                    self.logger.error(f'Halt detected in db worker. Exiting worker execution ... ')
+                    break
+
+        except KeyboardInterrupt:
+            print('Interruption detected')
+            try:
+                print('DB Worker stopped brutally. You should not do that :( ...')
+                sys.exit(0)
+            except SystemExit:
+                traceback.print_exc(file=sys.stdout)
 
         self.logger.info(f'Shutting down {self.__class__.__name__}')
 

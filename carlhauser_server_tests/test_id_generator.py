@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
-from carlhauser_server_tests.context import *
-from PIL import Image
-
-import carlhauser_server.Helpers.id_generator as id_generator
 
 import unittest
+import logging
+import pathlib
 
-class test_template(unittest.TestCase):
+from carlhauser_server.Helpers.environment_variable import get_homedir
+import carlhauser_server.Helpers.id_generator as id_generator
+
+
+class TestIDGenerator(unittest.TestCase):
     """Basic test cases."""
 
     def setUp(self):
@@ -51,6 +53,7 @@ class test_template(unittest.TestCase):
     b4b6ced60c7ed7f575ab74e4121ee55a  ./OUTPUT.tiff.bmp
     9275b0e01add0617022c94f941a64cb3  ./OUTPUT.webp.bmp
     '''
+
     def test_bmp_conversion(self):
         self.logger.info("Verify if BMP conversion does work")
 
@@ -60,17 +63,18 @@ class test_template(unittest.TestCase):
         # TODO : Missing wbmp, svg, exr
         for i in [".jpg", ".ico", ".gif", ".png", ".tga", ".tiff", ".webp", ".bmp", ".eps"]:
 
-            try :
+            try:
                 file_path_tmp = file_path_1.with_suffix(i)
                 output_path_tmp = output_path.with_suffix(i + ".bmp")
 
                 with open(str(file_path_tmp), 'rb') as img1:
                     img_bmp = id_generator.convert_to_bmp(img1)
                     # DEBUG / Write to file / id_generator.write_to_file(img_bmp, output_path_tmp)
-            except :
+            except Exception as e:
                 self.assertTrue(False)
-            else :
+            else:
                 self.assertTrue(True)
+
 
 if __name__ == '__main__':
     unittest.main()

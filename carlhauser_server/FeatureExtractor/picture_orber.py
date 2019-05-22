@@ -1,36 +1,27 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-# ==================== ------ STD LIBRARIES ------- ====================
-import sys, os
-import redis
 import logging
-import time
-import argparse
-import pathlib
-import PIL.Image as Image
+# ==================== ------ STD LIBRARIES ------- ====================
+import os
+import sys
+
 import cv2
 import numpy as np
-import pickle
 
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
 sys.path.append(os.path.abspath(os.path.pardir))
 
-from carlhauser_server.Helpers.environment_variable import get_homedir, dir_path
-import carlhauser_server.Helpers.json_import_export as json_import_export
-
-import carlhauser_server.DatabaseAccessor.database_worker as database_accessor
-import carlhauser_server.Configuration.database_conf as database_conf
 import carlhauser_server.Configuration.feature_extractor_conf as feature_extractor_conf
 
 
 class Picture_Orber():
-    def __init__(self, conf: feature_extractor_conf):
+    def __init__(self, fe_conf: feature_extractor_conf):
         # STD attributes
-        self.conf = conf
+        self.fe_conf = fe_conf
         self.logger = logging.getLogger(__name__)
         self.logger.info("Creation of a Picture Hasher")
-        self.algo = cv2.ORB_create(nfeatures=conf.ORB_KEYPOINTS_NB)
+        self.algo = cv2.ORB_create(nfeatures=fe_conf.ORB_KEYPOINTS_NB)
 
     def orb_picture(self, curr_picture):
         answer = {}
@@ -45,7 +36,7 @@ class Picture_Orber():
 
         try:
             # Note : @image must be a PIL instance.
-            if self.conf.ORB:
+            if self.fe_conf.ORB:
                 # Picture loading handled in picture load_image overwrite
                 key_points, descriptors = self.algo.detectAndCompute(orb_pic, None)
 

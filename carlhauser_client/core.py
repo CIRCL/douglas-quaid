@@ -27,7 +27,11 @@ class launcher_handler():
     def launch(self):
         self.logger.info(f"Launching webservice ...")
         self.perform_ping_check()
-        self.perform_upload()
+        self.perform_upload(pathlib.Path("./image.jpg"))
+        input()
+        self.perform_upload(pathlib.Path("./image.png"))
+        input()
+        self.perform_upload(pathlib.Path("./image.bmp"))
 
     def get_api(self):
         # Generate the API access point link to the hardcoded server
@@ -42,11 +46,12 @@ class launcher_handler():
     def perform_ping_check(self):
         self.API.ping_server()
 
-    def perform_upload(self):
-        self.API.add_picture_server(pathlib.Path("./image.jpg"))
+    def perform_upload(self, path:pathlib.Path):
+        self.API.add_picture_server(path )
 
 
 if __name__ == '__main__':
     launcher = launcher_handler()
     launcher.launch()
+
 

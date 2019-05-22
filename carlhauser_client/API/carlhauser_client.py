@@ -11,6 +11,7 @@ import logging
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
 sys.path.append(os.path.abspath(os.path.pardir))
 
+import carlhauser_server.Helpers.picture_import_export as picture_import_export
 
 # ==================== ------ SERVER Flask API CALLER ------- ====================
 class API_caller():
@@ -35,8 +36,10 @@ class API_caller():
         target_url = self.server_url + "add_picture"
 
         # Send the picture
+        # rb = Open a file for reading only in binary format. Starts reading from beginning of file.
         with open(str(file_path), 'rb') as img:
             files = {'image': (file_path.name, img, 'multipart/form-data', {'Expires': '0'})}
+            self.logger.debug(f"Image in client : {type(img)} {img}")
             with requests.Session() as s:
                 r = s.put(url=target_url, files=files, verify=self.cert)
                 self.logger.info(f"POST picture => {r.status_code} {r.reason} {r.text}")

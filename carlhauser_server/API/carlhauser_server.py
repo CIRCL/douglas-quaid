@@ -21,6 +21,9 @@ import carlhauser_server.Helpers.picture_import_export as picture_import_export
 from carlhauser_server.Helpers.environment_variable import get_homedir
 import carlhauser_server.DatabaseAccessor.database_worker as database_worker
 
+# TODO : To remove
+import carlhauser_server.Helpers.worker_start_stop as worker_start_stop
+
 
 # ==================== ------ SERVER Flask API definition ------- ====================
 
@@ -55,7 +58,7 @@ class FlaskAppWrapper(object):
         # Specific attributes
         self.app = flask.Flask(name)
         # An accessor to push stuff in queues, mainly
-        self.database_worker = database_worker.Database_Worker(conf=db_conf)
+        self.database_worker = database_worker.Database_Worker(db_conf=db_conf)
 
     def run(self):
         # Handle SLL Certificate, if they are provided = use them, else = self sign a certificate on the fly
@@ -96,6 +99,11 @@ class FlaskAppWrapper(object):
         result_json["Called_function"] = "add_picture"
         result_json = self.add_std_info(result_json)
 
+        # TODO : To remove
+        self.db_conf = database_conf.Default_database_conf()
+        worker_handler = worker_start_stop.Worker_StartStop(self.db_conf)
+        worker_handler.check_worker()
+
         # Answer to PUT HTTP request
         if flask.request.method == 'PUT':
             try:
@@ -113,11 +121,13 @@ class FlaskAppWrapper(object):
                 # If the filename need to be used : secure_filename(f.filename)
 
                 # Enqueue picture to processing
-                self.database_worker.add_to_queue(self.database_worker.cache_db, queue_name="feature_to_add", id=f_hash, dict_to_store={"img":f_bmp})
+                self.logger.debug(f"Adding to feature queue : {f_hash} ") # {f_bmp}
+                self.database_worker.add_to_queue(self.database_worker.cache_db_decode, queue_name="feature_to_add", id=f_hash, dict_to_store={"img":f_bmp})
 
                 result_json["Status"] = "Success"
                 result_json["img_id"] = f_hash
-            except:
+            except Exception as e:
+                self.logger.error(f"Error during PUT handling {e}")
                 result_json["Status"] = "Failure"
                 result_json["Error"] = "Error during Hash computation or database adding"
         else:
