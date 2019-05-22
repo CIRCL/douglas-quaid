@@ -40,8 +40,12 @@ class testDistanceEngine(unittest.TestCase):
         self.db_handler.shutdown_test_script_path = get_homedir() / self.db_conf.DB_SCRIPTS_PATH / "shutdown_redis_test.sh"
 
         # Construct a worker and overwrite link to redis db
-        self.de = distance_engine.Distance_Engine(self.db_conf, self.dist_conf, self.fe_conf)
         self.db_adder = database_adder.Database_Adder(self.db_conf, self.dist_conf, self.fe_conf)
+        self.db_adder.db_utils.db_access_decode = redis.Redis(unix_socket_path=self.db_handler.get_socket_path('test'), decode_responses=True)
+        self.db_adder.db_utils.db_access_no_decode = redis.Redis(unix_socket_path=self.db_handler.get_socket_path('test'), decode_responses=False)
+        self.db_adder.storage_db_decode = redis.Redis(unix_socket_path=self.db_handler.get_socket_path('test'), decode_responses=True)
+        self.db_adder.storage_db_no_decode = redis.Redis(unix_socket_path=self.db_handler.get_socket_path('test'), decode_responses=False)
+        self.de = distance_engine.Distance_Engine(self.db_adder, self.db_conf, self.dist_conf, self.fe_conf)
         test_db = redis.Redis(unix_socket_path=self.db_handler.get_socket_path('test'), decode_responses=True)
         self.de.storage_db = test_db
         self.db_adder.storage_db = test_db
@@ -81,23 +85,23 @@ class testDistanceEngine(unittest.TestCase):
         cluster_name_2 = "myperfectuuid_2"
 
         # Check cluster list
-        tmp_list = self.db_adder.get_cluster_list()
+        tmp_list = self.db_adder.db_utils.get_cluster_list()
         self.assertEqual(len(tmp_list), 0)
 
         # Add cluster
-        self.db_adder.add_cluster(cluster_name_1)
+        self.db_adder.db_utils.add_cluster(cluster_name_1)
 
         # Check for new cluster list
-        tmp_list = self.db_adder.get_cluster_list()
+        tmp_list = self.db_adder.db_utils.get_cluster_list()
         self.assertEqual(len(tmp_list), 1)
         self.logger.debug(tmp_list)
         self.assertEqual(set([cluster_name_1]).issubset(tmp_list), True)
 
         # Add cluster
-        self.db_adder.add_cluster(cluster_name_2)
+        self.db_adder.db_utils.add_cluster(cluster_name_2)
 
         # Check for new cluster list
-        tmp_list = self.db_adder.get_cluster_list()
+        tmp_list = self.db_adder.db_utils.get_cluster_list()
         self.assertEqual(len(tmp_list), 2)
         self.logger.debug(tmp_list)
         self.assertEqual(set([cluster_name_2]).issubset(tmp_list), True)
@@ -108,66 +112,66 @@ class testDistanceEngine(unittest.TestCase):
         cluster_name_2 = "myperfectuuid_2"
 
         # Check for cluster list
-        tmp_list = self.db_adder.get_cluster_list()
+        tmp_list = self.db_adder.db_utils.get_cluster_list()
         self.assertEqual(len(tmp_list), 0)
 
         # Add cluster
-        self.db_adder.add_cluster(cluster_name_1)
+        self.db_adder.db_utils.add_cluster(cluster_name_1)
 
         # Check for new cluster list
-        tmp_list = self.db_adder.get_cluster_list()
+        tmp_list = self.db_adder.db_utils.get_cluster_list()
         self.assertEqual(len(tmp_list), 1)
 
-        self.db_adder.add_cluster(cluster_name_1)
-        self.db_adder.add_cluster(cluster_name_1)
+        self.db_adder.db_utils.add_cluster(cluster_name_1)
+        self.db_adder.db_utils.add_cluster(cluster_name_1)
 
         # Check for new cluster list
-        tmp_list = self.db_adder.get_cluster_list()
+        tmp_list = self.db_adder.db_utils.get_cluster_list()
         self.assertEqual(len(tmp_list), 1)
 
-        self.db_adder.add_cluster(cluster_name_2)
-        self.db_adder.add_cluster(cluster_name_2)
-        self.db_adder.add_cluster(cluster_name_1)
-        self.db_adder.add_cluster(cluster_name_2)
+        self.db_adder.db_utils.add_cluster(cluster_name_2)
+        self.db_adder.db_utils.add_cluster(cluster_name_2)
+        self.db_adder.db_utils.add_cluster(cluster_name_1)
+        self.db_adder.db_utils.add_cluster(cluster_name_2)
 
         # Check for new cluster list
-        tmp_list = self.db_adder.get_cluster_list()
+        tmp_list = self.db_adder.db_utils.get_cluster_list()
         self.assertEqual(len(tmp_list), 2)
 
     def test_rem_cluster(self):
         cluster_name_1 = "myperfectuuid"
-        cluster_name_2 = "myperfectuuid_2"
+        # cluster_name_2 = "myperfectuuid_2"
 
         # Check for cluster list
-        tmp_list = self.db_adder.get_cluster_list()
+        tmp_list = self.db_adder.db_utils.get_cluster_list()
         self.assertEqual(len(tmp_list), 0)
 
         # Add cluster
-        self.db_adder.add_cluster(cluster_name_1)
+        self.db_adder.db_utils.add_cluster(cluster_name_1)
 
         # Check for new cluster list
-        tmp_list = self.db_adder.get_cluster_list()
+        tmp_list = self.db_adder.db_utils.get_cluster_list()
         self.assertEqual(len(tmp_list), 1)
 
-        self.db_adder.add_cluster(cluster_name_1)
-        self.db_adder.rem_cluster(cluster_name_1)
+        self.db_adder.db_utils.add_cluster(cluster_name_1)
+        self.db_adder.db_utils.rem_cluster(cluster_name_1)
 
         # Check for new cluster list
-        tmp_list = self.db_adder.get_cluster_list()
+        tmp_list = self.db_adder.db_utils.get_cluster_list()
         self.assertEqual(len(tmp_list), 0)
 
         # Add cluster
-        self.db_adder.add_cluster(cluster_name_1)
+        self.db_adder.db_utils.add_cluster(cluster_name_1)
 
         # Check for new cluster list
-        tmp_list = self.db_adder.get_cluster_list()
+        tmp_list = self.db_adder.db_utils.get_cluster_list()
         self.assertEqual(len(tmp_list), 1)
 
-        self.db_adder.rem_cluster(cluster_name_1)
-        self.db_adder.rem_cluster(cluster_name_1)
+        self.db_adder.db_utils.rem_cluster(cluster_name_1)
+        self.db_adder.db_utils.rem_cluster(cluster_name_1)
 
         # Check for new cluster list
-        tmp_list = self.db_adder.get_cluster_list()
+        tmp_list = self.db_adder.db_utils.get_cluster_list()
         self.assertEqual(len(tmp_list), 0)
 
 
@@ -189,10 +193,10 @@ class testDistanceEngine(unittest.TestCase):
         self.set_raw_redis()
 
         # Add picture to storage
-        self.db_adder.add_picture_to_storage(id_to_process, data_to_store)
+        self.db_adder.add_picture_to_storage(self.db_adder.storage_db_no_decode, id_to_process, data_to_store)
 
         # Get back data
-        stored = self.db_adder.get_dict_from_key(self.db_adder.storage_db, id_to_process, pickle=True)
+        stored = self.db_adder.get_dict_from_key(self.db_adder.db_utils.db_access_no_decode, id_to_process, pickle=True)
         print("Fetched :", stored)
 
         # Checks
@@ -210,22 +214,22 @@ class testDistanceEngine(unittest.TestCase):
         image_id_1 = "myimageid_1"
         image_id_2 = "myimageid_2"
 
-        pic_list = self.de.get_pictures_of_cluster(cluster_name_1)
+        pic_list = self.db_adder.db_utils.get_pictures_of_cluster(cluster_name_1)
         self.assertEqual(len(pic_list),0)
 
-        self.db_adder.add_picture_to_cluster(image_id_1, cluster_name_1)
-        pic_list = self.de.get_pictures_of_cluster(cluster_name_1)
+        self.db_adder.db_utils.add_picture_to_cluster(image_id_1, cluster_name_1)
+        pic_list = self.db_adder.db_utils.get_pictures_of_cluster(cluster_name_1)
         self.assertEqual(len(pic_list),1)
 
-        self.db_adder.add_cluster(cluster_name_1)
-        self.db_adder.add_picture_to_cluster(image_id_1, cluster_name_1)
-        pic_list = self.de.get_pictures_of_cluster(cluster_name_1)
+        self.db_adder.db_utils.add_cluster(cluster_name_1)
+        self.db_adder.db_utils.add_picture_to_cluster(image_id_1, cluster_name_1)
+        pic_list = self.db_adder.db_utils.get_pictures_of_cluster(cluster_name_1)
         self.assertEqual(len(pic_list),1)
 
-        self.db_adder.add_cluster(cluster_name_1)
-        self.db_adder.add_picture_to_cluster(image_id_2, cluster_name_1)
-        self.db_adder.add_picture_to_cluster(image_id_2, cluster_name_2)
-        pic_list = self.de.get_pictures_of_cluster(cluster_name_1)
+        self.db_adder.db_utils.add_cluster(cluster_name_1)
+        self.db_adder.db_utils.add_picture_to_cluster(image_id_2, cluster_name_1)
+        self.db_adder.db_utils.add_picture_to_cluster(image_id_2, cluster_name_2)
+        pic_list = self.db_adder.db_utils.get_pictures_of_cluster(cluster_name_1)
         self.assertEqual(len(pic_list),2)
 
     def test_add_picture_to_new_cluster(self):
@@ -233,20 +237,20 @@ class testDistanceEngine(unittest.TestCase):
         image_id_2 = "myimageid_2"
 
 
-        cluster_name = self.db_adder.add_picture_to_new_cluster(image_id_1)
-        pic_list = self.de.get_pictures_of_cluster(cluster_name)
+        cluster_name = self.db_adder.db_utils.add_picture_to_new_cluster(image_id_1)
+        pic_list = self.db_adder.db_utils.get_pictures_of_cluster(cluster_name)
         self.assertEqual(len(pic_list),1)
 
-        cluster_name = self.db_adder.add_picture_to_new_cluster(image_id_1)
-        pic_list = self.de.get_pictures_of_cluster(cluster_name)
+        cluster_name = self.db_adder.db_utils.add_picture_to_new_cluster(image_id_1)
+        pic_list = self.db_adder.db_utils.get_pictures_of_cluster(cluster_name)
         self.assertEqual(len(pic_list),1)
 
-        self.db_adder.add_picture_to_cluster(image_id_2, cluster_name)
-        pic_list = self.de.get_pictures_of_cluster(cluster_name)
+        self.db_adder.db_utils.add_picture_to_cluster(image_id_2, cluster_name)
+        pic_list = self.db_adder.db_utils.get_pictures_of_cluster(cluster_name)
         self.assertEqual(len(pic_list),2)
 
     def test_get_setname_of_cluster(self):
-        val = self.de.get_setname_of_cluster("test")
+        val = self.db_adder.db_utils.get_setname_of_cluster("test")
         self.assertEqual(val, "test|pics")
 
 

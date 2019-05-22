@@ -13,6 +13,7 @@ import carlhauser_server.Configuration.distance_engine_conf as distance_engine_c
 import carlhauser_server.Configuration.feature_extractor_conf as feature_extractor_conf
 import carlhauser_server.DistanceEngine.distance_engine as distance_engine
 import carlhauser_server.Helpers.database_start_stop as database_start_stop
+import carlhauser_server.DatabaseAccessor.database_adder as database_adder
 
 
 class testDistanceEngine(unittest.TestCase):
@@ -36,8 +37,12 @@ class testDistanceEngine(unittest.TestCase):
         self.db_handler.shutdown_test_script_path = get_homedir() / self.db_conf.DB_SCRIPTS_PATH / "shutdown_redis_test.sh"
 
         # Construct a worker and get a link to redis db
-        self.de = distance_engine.Distance_Engine(self.db_conf, self.dist_conf, self.fe_conf)
+        self.db_adder = database_adder.Database_Adder(self.db_conf, self.dist_conf, self.fe_conf)
+        self.db_adder.storage_db_decode = redis.Redis(unix_socket_path=self.db_handler.get_socket_path('test'), decode_responses=True)
+        self.db_adder.storage_db_no_decode = redis.Redis(unix_socket_path=self.db_handler.get_socket_path('test'), decode_responses=False)
+        self.de = distance_engine.Distance_Engine(self.db_adder, self.db_conf, self.dist_conf, self.fe_conf)
         test_db = redis.Redis(unix_socket_path=self.db_handler.get_socket_path('test'), decode_responses=True)
+
         self.de.storage_db = test_db
 
         # Launch test Redis DB
