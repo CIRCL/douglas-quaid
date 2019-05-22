@@ -21,6 +21,8 @@ import carlhauser_server.Configuration.distance_engine_conf as distance_engine_c
 import carlhauser_server.Configuration.feature_extractor_conf as feature_extractor_conf
 
 import carlhauser_server.DatabaseAccessor.database_worker as database_accessor
+import carlhauser_server.DistanceEngine.distance_engine as distance_engine
+import carlhauser_server.DatabaseAccessor.database_utilities as db_utils
 
 class Database_Requester(database_accessor.Database_Worker):
         # Heritate from the database accesso, and so has already built in access to cache, storage ..
@@ -28,6 +30,14 @@ class Database_Requester(database_accessor.Database_Worker):
         def __init__(self, conf: database_conf, dist_conf: distance_engine_conf, fe_conf: feature_extractor_conf):
             # STD attributes
             super().__init__(conf)
+
+            # Store configuration
+            self.dist_conf = dist_conf
+            self.fe_conf = fe_conf
+
+            # Distance engine
+            self.de = distance_engine.Distance_Engine(self, db_conf, dist_conf, fe_conf)
+            self.db_utils = db_utils.DBUtilities(db_access_decode=self.storage_db_decode, db_access_no_decode=self.storage_db_no_decode)
 
         def _to_run_forever(self):
             self.process_to_request()
@@ -46,7 +56,47 @@ class Database_Requester(database_accessor.Database_Worker):
 
             try:
                 self.logger.info(f"DB Request worker processing {fetched_id}")
-                #TODO : DO STUFF
+
+                #TODO : DO STUFF / TO REVIEW !
+
+                self.logger.info(f"DB Adder worker processing {fetched_id}")
+                self.logger.info(f"Fetched dict {fetched_dict}")
+
+                # Add picture to storage
+                self.logger.info(f"Adding picture to storage under id {fetched_id}")
+                self.add_picture_to_storage(self.storage_db_no_decode, fetched_id, fetched_dict)  # NOT DECODE
+
+                # Get top matching clusters
+                self.logger.info(f"Get top matching clusters for this picture")
+                cluster_list = self.db_utils.get_cluster_list()  # DECODE
+                list_clusters = self.de.get_top_matching_clusters(cluster_list, fetched_dict)  # List[scoring_datastrutures.ClusterMatch]
+                list_cluster_id = [i.cluster_id for i in list_clusters]
+                self.logger.info(f"Top matching clusters : {list_cluster_id}")
+
+                # Get top matching pictures in these clusters
+                self.logger.info(f"Get top matching pictures within these clusters")
+                top_matching_pictures = self.de.get_top_matching_pictures_from_clusters(list_cluster_id, fetched_dict)
+                self.logger.info(f"Top matching pictures : {top_matching_pictures}")
+
+                # Depending on the quality of the match ...
+                if len(top_matching_pictures) > 0 and self.de.match_enough(top_matching_pictures[0]):
+                    self.logger.info(f"Match is good enough with at least one cluster")
+                    # Add picture to best picture's cluster
+                    # cluster_id = top_matching_pictures[0].cluster_id
+                    # self.db_utils.add_picture_to_cluster(fetched_id, cluster_id)
+                    # TODO : Add to result set with "best matching picture is : #Hash from cluster #cluster_id/name ?"
+
+                else:
+                    self.logger.info(f"Match not good enough, with any cluster")
+                    # Add picture to it's own cluster
+                    # cluster_id = self.db_utils.add_picture_to_new_cluster(fetched_id)
+                    # self.logger.info(f"Picture added in its own new cluster : {cluster_id}")
+                    # TODO : Add to result set with "Void"
+
+                # Add to a queue, to be reviewed later, when more pictures will be added
+                # self.db_utils.add_to_review(fetched_id)  # TODO
+                self.logger.info(f"Request done.")
+
             except:
                 return 1
 
