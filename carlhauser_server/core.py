@@ -161,7 +161,7 @@ class launcher_handler(metaclass=template_singleton.Singleton):
 def exit_gracefully(signum, frame):
     # restore the original signal handler as otherwise evil things will happen
     # in raw_input when CTRL+C is pressed, and our signal handler is not re-entrant
-    # signal.signal(signal.SIGINT, original_sigint)
+    # signal.signal(signal.SIGINT, original_sigint) # TODO : To put back ?
 
     try:
         stopper = launcher_handler()
@@ -174,7 +174,7 @@ def exit_gracefully(signum, frame):
         sys.exit(1)
 
     # restore the exit gracefully handler here
-    # signal.signal(signal.SIGINT, exit_gracefully)
+    # signal.signal(signal.SIGINT, exit_gracefully) # TODO : To put back ?
 
 
 if __name__ == '__main__':

@@ -52,7 +52,7 @@ class DBUtilities():
 
         set_name = self.get_setname_of_cluster(cluster_id)
 
-        if self.db_access_decode.scard(set_name) == 0:
+        if self.db_access_decode.zcard(set_name) == 0:
             # The set does not exist, and so the cluster
             self.logger.error("A picture is added to a cluster that does not exists. Please review structural behavior.")
 
@@ -67,7 +67,7 @@ class DBUtilities():
         # Add picture to a freshly created cluster
 
         # Generate random id
-        cluster_name = str(uuid.uuid4())
+        cluster_name = self.get_new_cluster_id()
         set_name = self.get_setname_of_cluster(cluster_name)
 
         # Add cluster to cluster list
@@ -79,6 +79,10 @@ class DBUtilities():
         self.logger.info(f"Added picture {image_id} to NEW {cluster_name} cluster under set name {set_name}")
 
         return cluster_name
+
+    @staticmethod
+    def get_new_cluster_id():
+        return '|'.join(["cluster", str(uuid.uuid4())])
 
     # ==================== ------ PICTURES LIST PER CLUSTER ------- ====================
 

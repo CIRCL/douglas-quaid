@@ -21,6 +21,9 @@ import carlhauser_server.Helpers.picture_import_export as picture_import_export
 from carlhauser_server.Helpers.environment_variable import get_homedir
 import carlhauser_server.DatabaseAccessor.database_worker as database_worker
 
+# TODO : To remove
+import carlhauser_server.Helpers.worker_start_stop as worker_start_stop
+
 
 # ==================== ------ SERVER Flask API definition ------- ====================
 
@@ -95,6 +98,11 @@ class FlaskAppWrapper(object):
         result_json = {}
         result_json["Called_function"] = "add_picture"
         result_json = self.add_std_info(result_json)
+
+        # TODO : To remove
+        self.db_conf = database_conf.Default_database_conf()
+        worker_handler = worker_start_stop.Worker_StartStop(self.db_conf)
+        worker_handler.check_worker()
 
         # Answer to PUT HTTP request
         if flask.request.method == 'PUT':

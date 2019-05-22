@@ -210,22 +210,22 @@ class testDistanceEngine(unittest.TestCase):
         image_id_1 = "myimageid_1"
         image_id_2 = "myimageid_2"
 
-        pic_list = self.db_adder.get_pictures_of_cluster(cluster_name_1)
+        pic_list = self.de.get_pictures_of_cluster(cluster_name_1)
         self.assertEqual(len(pic_list),0)
 
         self.db_adder.add_picture_to_cluster(image_id_1, cluster_name_1)
-        pic_list = self.db_adder.get_pictures_of_cluster(cluster_name_1)
+        pic_list = self.de.get_pictures_of_cluster(cluster_name_1)
         self.assertEqual(len(pic_list),1)
 
         self.db_adder.add_cluster(cluster_name_1)
         self.db_adder.add_picture_to_cluster(image_id_1, cluster_name_1)
-        pic_list = self.db_adder.get_pictures_of_cluster(cluster_name_1)
+        pic_list = self.de.get_pictures_of_cluster(cluster_name_1)
         self.assertEqual(len(pic_list),1)
 
         self.db_adder.add_cluster(cluster_name_1)
         self.db_adder.add_picture_to_cluster(image_id_2, cluster_name_1)
         self.db_adder.add_picture_to_cluster(image_id_2, cluster_name_2)
-        pic_list = self.db_adder.get_pictures_of_cluster(cluster_name_1)
+        pic_list = self.de.get_pictures_of_cluster(cluster_name_1)
         self.assertEqual(len(pic_list),2)
 
     def test_add_picture_to_new_cluster(self):
@@ -234,19 +234,19 @@ class testDistanceEngine(unittest.TestCase):
 
 
         cluster_name = self.db_adder.add_picture_to_new_cluster(image_id_1)
-        pic_list = self.db_adder.get_pictures_of_cluster(cluster_name)
+        pic_list = self.de.get_pictures_of_cluster(cluster_name)
         self.assertEqual(len(pic_list),1)
 
         cluster_name = self.db_adder.add_picture_to_new_cluster(image_id_1)
-        pic_list = self.db_adder.get_pictures_of_cluster(cluster_name)
+        pic_list = self.de.get_pictures_of_cluster(cluster_name)
         self.assertEqual(len(pic_list),1)
 
         self.db_adder.add_picture_to_cluster(image_id_2, cluster_name)
-        pic_list = self.db_adder.get_pictures_of_cluster(cluster_name)
+        pic_list = self.de.get_pictures_of_cluster(cluster_name)
         self.assertEqual(len(pic_list),2)
 
     def test_get_setname_of_cluster(self):
-        val = self.db_adder.get_setname_of_cluster("test")
+        val = self.de.get_setname_of_cluster("test")
         self.assertEqual(val, "test|pics")
 
 

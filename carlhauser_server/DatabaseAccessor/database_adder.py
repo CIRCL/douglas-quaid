@@ -66,16 +66,17 @@ class Database_Adder(database_accessor.Database_Worker):
             self.add_picture_to_storage(self.storage_db_no_decode, fetched_id, fetched_dict) # NOT DECODE
 
             # Get top matching clusters
-            self.logger.info(f"Getting top matching clusters for this picture")
+            self.logger.info(f"Get top matching clusters for this picture")
             cluster_list = self.db_utils.get_cluster_list() # DECODE
             list_clusters = self.de.get_top_matching_clusters(cluster_list, fetched_dict) # List[scoring_datastrutures.ClusterMatch]
             list_cluster_id = [i.cluster_id for i in list_clusters]
             self.logger.info(f"Top matching clusters : {list_cluster_id}")
 
             # Get top matching pictures in these clusters
-            self.logger.info(f"Getting top matching pictures within these clusters")
+            self.logger.info(f"Get top matching pictures within these clusters")
             top_matching_pictures = self.de.get_top_matching_pictures_from_clusters(list_cluster_id, fetched_dict)
             self.logger.info(f"Top matching pictures : {top_matching_pictures}")
+
 
             # Depending on the quality of the match ...
             if len(top_matching_pictures) > 0 and self.de.match_enough(top_matching_pictures[0]):
@@ -97,6 +98,7 @@ class Database_Adder(database_accessor.Database_Worker):
 
             # Add to a queue, to be reviewed later, when more pictures will be added
             self.db_utils.add_to_review(fetched_id) # TODO
+            self.logger.info(f"Adding done.")
 
         except Exception as e:
             self.logger.error(f"Error in database adder : {e}")

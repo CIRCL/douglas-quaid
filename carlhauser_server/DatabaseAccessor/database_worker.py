@@ -182,6 +182,7 @@ class Database_Worker():
             if not value:
                 return False
             else:  # The key has been set to something, "Now","Yes", ...
+                self.logger.info("HALT key detected. Worker received stop signal ... ")
                 return True
         except:
             self.logger.error("Impossible to know if the worker has to halt. Please review 'halt' key")
@@ -192,13 +193,17 @@ class Database_Worker():
             self.logger.info(f'Launching {self.__class__.__name__}')
             if self.input_queue is None:
                 raise Exception("No input queue set for current worker. Impossible to fetch work to do. Worker aborted.")
+            if self.is_halt_requested():
+                self.logger.error(f'Halt detected even before worker launch in Redis. Aborting worker launch ... ')
+
             while not self.is_halt_requested():
                 try:
                     self._to_run_forever()
                 except Exception as e:
-                    self.logger.exception(f'Something went terribly wrong in {self.__class__.__name__} : {e}')
+                    self.logger.error(f'Something went terribly wrong in {self.__class__.__name__} : {e}')
 
                 if not self.long_sleep(sleep_in_sec):
+                    self.logger.error(f'Halt detected in db worker. Exiting worker execution ... ')
                     break
 
         except KeyboardInterrupt:
@@ -207,8 +212,7 @@ class Database_Worker():
                 print('DB Worker stopped brutally. You should not do that :( ...')
                 sys.exit(0)
             except SystemExit:
-                return
-                # traceback.print_exc(file=sys.stdout)
+                traceback.print_exc(file=sys.stdout)
 
         self.logger.info(f'Shutting down {self.__class__.__name__}')
 

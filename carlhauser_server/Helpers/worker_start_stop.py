@@ -77,7 +77,8 @@ class Worker_StartStop(object, metaclass=Singleton):
             init_date = datetime.datetime.now()
 
             # Open the worker subprocess with the configuration argument
-            proc_worker = subprocess.Popen([str(self.adder_worker_path), '-dbc', str(tmp_db_conf_path.resolve()), '-distc', str(tmp_dist_conf_path.resolve()), '-fec', str(tmp_fe_conf_path.resolve())]) # ,stderr = subprocess.PIPE ?
+            proc_worker = subprocess.Popen([str(self.adder_worker_path), '-dbc', str(tmp_db_conf_path.resolve()), '-distc', str(tmp_dist_conf_path.resolve()), '-fec', str(tmp_fe_conf_path.resolve())], stdout=sys.stdout, stderr=sys.stderr) # ,stderr = subprocess.PIPE ?
+            # proc_worker.communicate()
 
             # Store the reference to the worker
             self.adder_worker_list.append([proc_worker, init_date])
@@ -101,7 +102,8 @@ class Worker_StartStop(object, metaclass=Singleton):
             init_date = datetime.datetime.now()
 
             # Open the worker subprocess with the configuration argument
-            proc_worker = subprocess.Popen([str(self.requester_worker_path), '-dbc', str(tmp_db_conf_path.resolve()), '-distc', str(tmp_dist_conf_path.resolve()), '-fec', str(tmp_fe_conf_path.resolve())]) # ,stderr = subprocess.PIPE ?
+            proc_worker = subprocess.Popen([str(self.requester_worker_path), '-dbc', str(tmp_db_conf_path.resolve()), '-distc', str(tmp_dist_conf_path.resolve()), '-fec', str(tmp_fe_conf_path.resolve())], stdout=sys.stdout, stderr=sys.stderr) # ,stderr = subprocess.PIPE ?
+            # proc_worker.communicate()
 
             # Store the reference to the worker
             self.requester_worker_list.append([proc_worker, init_date])
@@ -124,7 +126,8 @@ class Worker_StartStop(object, metaclass=Singleton):
             init_date = datetime.datetime.now()
 
             # Open the worker subprocess with the configuration argument
-            proc_worker = subprocess.Popen([str(self.feature_worker_path), '-c', str(tmp_db_conf_path.resolve()), '-cfe', str(tmp_fe_conf_path.resolve()), '-m', "ADD"])
+            proc_worker = subprocess.Popen([str(self.feature_worker_path), '-c', str(tmp_db_conf_path.resolve()), '-cfe', str(tmp_fe_conf_path.resolve()), '-m', "ADD"], stdout=sys.stdout, stderr=sys.stderr)
+            # proc_worker.communicate()
 
             # Store the reference to the worker
             self.feature_adder_worker_list.append([proc_worker, init_date])
@@ -146,7 +149,8 @@ class Worker_StartStop(object, metaclass=Singleton):
             init_date = datetime.datetime.now()
 
             # Open the worker subprocess with the configuration argument
-            proc_worker = subprocess.Popen([str(self.feature_worker_path), '-c', str(tmp_db_conf_path.resolve()), '-cfe', str(tmp_fe_conf_path.resolve()), '-m', "REQUEST"])
+            proc_worker = subprocess.Popen([str(self.feature_worker_path), '-c', str(tmp_db_conf_path.resolve()), '-cfe', str(tmp_fe_conf_path.resolve()), '-m', "REQUEST"], stdout=sys.stdout, stderr=sys.stderr)
+            # proc_worker.communicate()
 
             # Store the reference to the worker
             self.feature_requester_worker_list.append([proc_worker, init_date])
