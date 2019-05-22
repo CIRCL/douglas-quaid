@@ -155,11 +155,40 @@ class Worker_StartStop(object, metaclass=Singleton):
 
 
     # ==================== ------ UTLITIES ON WORKERS ------- ====================
+    def wait_for_worker_shutdown(self):
+        # Send signal to all processes to stop (via redis database). Wait while processes are still running,
+        # in the limit of a maximal amount of time. Send back a boolean to notify if all workers had been stopped, or not.
+        self.request_shutdown()
+
+        MAX_TIME = 60 # 60 sec
+        start_time = time.time()
+
+        self.logger.warning("Waiting for workers to stop ... ")
+        # Wait for all workers to terminate
+        while len(self.get_list_running_workers()) != 0 and (time.time() - start_time) < MAX_TIME:
+            time.sleep(5)
+            self.logger.warning(" Some still running...")
+
+        return len(self.get_list_running_workers()) == 0
+
+
+    def get_list_running_workers(self):
+        all_workers = []
+
+        # For each list of process, and then each process, check if it's alive
+        for workers in [self.adder_worker_list, self.requester_worker_list, self.feature_adder_worker_list, self.feature_requester_worker_list] :
+            for worker in workers :
+                poll = worker[0].poll()
+                if poll is None:
+                    # All running workers are there
+                    all_workers.append(worker)
+
+        return all_workers
 
     def request_shutdown(self):
         # Post a HALT key in all redis instance. Worker should react "quickly" and stop themselves
-        self.cache_db.set("halt", True)
-        self.storage_db.set("halt", True)
+        self.cache_db.set("halt", "true")
+        self.storage_db.set("halt", "true")
 
     def check_worker(self):
         # Check if workers are alive, and return True if all worker are down

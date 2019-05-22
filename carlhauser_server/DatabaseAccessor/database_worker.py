@@ -9,6 +9,7 @@ import argparse
 import pathlib
 import time, datetime
 import objsize
+import traceback
 
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
 sys.path.append(os.path.abspath(os.path.pardir))
@@ -186,17 +187,28 @@ class Database_Worker():
             self.logger.error("Impossible to know if the worker has to halt. Please review 'halt' key")
 
     def run(self, sleep_in_sec: int):
-        self.logger.info(f'Launching {self.__class__.__name__}')
-        if self.input_queue is None:
-            raise Exception("No input queue set for current worker. Impossible to fetch work to do. Worker aborted.")
-        while not self.is_halt_requested():
-            try:
-                self._to_run_forever()
-            except Exception as e:
-                self.logger.exception(f'Something went terribly wrong in {self.__class__.__name__} : {e}')
+        try :
 
-            if not self.long_sleep(sleep_in_sec):
-                break
+            self.logger.info(f'Launching {self.__class__.__name__}')
+            if self.input_queue is None:
+                raise Exception("No input queue set for current worker. Impossible to fetch work to do. Worker aborted.")
+            while not self.is_halt_requested():
+                try:
+                    self._to_run_forever()
+                except Exception as e:
+                    self.logger.exception(f'Something went terribly wrong in {self.__class__.__name__} : {e}')
+
+                if not self.long_sleep(sleep_in_sec):
+                    break
+
+        except KeyboardInterrupt:
+            print('Interruption detected')
+            try:
+                print('DB Worker stopped brutally. You should not do that :( ...')
+                sys.exit(0)
+            except SystemExit:
+                return
+                # traceback.print_exc(file=sys.stdout)
 
         self.logger.info(f'Shutting down {self.__class__.__name__}')
 
