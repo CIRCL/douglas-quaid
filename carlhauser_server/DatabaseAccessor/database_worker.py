@@ -163,6 +163,21 @@ class Database_Worker():
     def get_picture_from_storage(self, storage: redis.Redis, id):
         return self.get_dict_from_key(storage, id, pickle=True)
 
+    def set_request_result(self, storage: redis.Redis, id, image_dict: dict):
+        #TODO : Create real request id ?
+
+        # Create tmp_id for this queue
+        tmp_id = '|'.join([id, "result"])
+
+        return self.set_dict_to_key(storage, tmp_id, image_dict, pickle=True)
+
+    def get_request_result(self, storage: redis.Redis, id):
+        #TODO : Create real request id ?
+
+        # Create tmp_id for this queue
+        tmp_id = '|'.join([id, "result"])
+        return self.get_dict_from_key(storage, tmp_id, pickle=True)
+
     def print_storage_view(self):
         self.logger.info("Printing REDIS Storage view")
         self.logger.info(self.storage_db_decode.keys())
@@ -172,6 +187,7 @@ class Database_Worker():
     def get_unique_key(queue_name : str, id:str):
         return '|'.join([queue_name, id])
     '''
+
 
     # ==================== ------ RUNNABLE WORKER ------- ====================
 

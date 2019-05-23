@@ -3,12 +3,13 @@
 # Inspired from : https://github.com/D4-project/IPASN-History/blob/master/website/web/__init__.py
 # If you are derouted by the lack of decorator, go there : https://stackoverflow.com/questions/17129573/can-i-use-external-methods-as-route-decorators-in-python-flask
 
+import logging
+import os
+import sys
+import time
+
 # ==================== ------ STD LIBRARIES ------- ====================
 import flask
-import sys, os
-import time
-import pathlib
-import logging
 
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
 sys.path.append(os.path.abspath(os.path.pardir))
@@ -20,9 +21,6 @@ import carlhauser_server.Helpers.id_generator as id_generator
 import carlhauser_server.Helpers.picture_import_export as picture_import_export
 from carlhauser_server.Helpers.environment_variable import get_homedir
 import carlhauser_server.DatabaseAccessor.database_worker as database_worker
-
-# TODO : To remove
-import carlhauser_server.Helpers.worker_start_stop as worker_start_stop
 
 
 # ==================== ------ SERVER Flask API definition ------- ====================
@@ -99,30 +97,25 @@ class FlaskAppWrapper(object):
         result_json["Called_function"] = "add_picture"
         result_json = self.add_std_info(result_json)
 
-        # TODO : To remove
-        self.db_conf = database_conf.Default_database_conf()
-        worker_handler = worker_start_stop.Worker_StartStop(self.db_conf)
-        worker_handler.check_worker()
-
         # Answer to PUT HTTP request
         if flask.request.method == 'PUT':
             try:
                 # Received : werkzeug.datastructures.FileStorage. Should use ".read()" to get picture's value
                 f = flask.request.files['image']
-                self.logger.debug(f"Image received in server : {type(f)} ") # {f.read()}
+                self.logger.debug(f"Image received in server : {type(f)} ")  # {f.read()}
 
                 # Compute input picture hash and convert to BMP
                 f_hash = id_generator.get_SHA1(f)
-                f_bmp = id_generator.convert_to_bmp(f) # Returns a bytes array
-                self.logger.debug(f"Image transformed in BMP in server : {type(f_bmp)} ") # {f_bmp}
+                f_bmp = id_generator.convert_to_bmp(f)  # Returns a bytes array
+                self.logger.debug(f"Image transformed in BMP in server : {type(f_bmp)} ")  # {f_bmp}
 
-                # Save picture received to disk
+                # Save received picture to disk
                 picture_import_export.save_picture(f_bmp, get_homedir() / 'datasets' / 'received_pictures' / (str(f_hash) + '.bmp'))
                 # If the filename need to be used : secure_filename(f.filename)
 
                 # Enqueue picture to processing
-                self.logger.debug(f"Adding to feature queue : {f_hash} ") # {f_bmp}
-                self.database_worker.add_to_queue(self.database_worker.cache_db_decode, queue_name="feature_to_add", id=f_hash, dict_to_store={"img":f_bmp})
+                self.logger.debug(f"Adding to feature queue : {f_hash} ")  # {f_bmp}
+                self.database_worker.add_to_queue(self.database_worker.cache_db_decode, queue_name="feature_to_add", id=f_hash, dict_to_store={"img": f_bmp})
 
                 result_json["Status"] = "Success"
                 result_json["img_id"] = f_hash
@@ -142,7 +135,38 @@ class FlaskAppWrapper(object):
         result_json["Called_function"] = "request_similar_picture"
         result_json = self.add_std_info(result_json)
 
-        # Dummy action
+        # Answer to PUT HTTP request
+        if flask.request.method == 'POST':
+            try:
+                # Received : werkzeug.datastructures.FileStorage. Should use ".read()" to get picture's value
+                f = flask.request.files['image']
+                self.logger.debug(f"Image received in server : {type(f)} ")  # {f.read()}
+
+                # Compute input picture hash and convert to BMP
+                f_hash = id_generator.get_SHA1(f)
+                f_bmp = id_generator.convert_to_bmp(f)  # Returns a bytes array
+                self.logger.debug(f"Image transformed in BMP in server : {type(f_bmp)} ")  # {f_bmp}
+
+                # Save received picture to disk
+                picture_import_export.save_picture(f_bmp, get_homedir() / 'datasets' / 'received_pictures' / (str(f_hash) + '.bmp'))
+                # If the filename need to be used : secure_filename(f.filename)
+
+                # TODO : Create request UUID ? Or keep image hash ?
+
+                # Enqueue picture to processing
+                self.logger.debug(f"Adding to feature queue : {f_hash} ")  # {f_bmp}
+                self.database_worker.add_to_queue(self.database_worker.cache_db_decode, queue_name="feature_to_request", id=f_hash, dict_to_store={"img": f_bmp})
+
+                result_json["Status"] = "Success"
+                result_json["request_id"] = f_hash
+            except Exception as e:
+                self.logger.error(f"Error during PUT handling {e}")
+                result_json["Status"] = "Failure"
+                result_json["Error"] = "Error during Hash computation or database request"
+        else:
+            result_json["Status"] = "Failure"
+            result_json["Error"] = "BAD METHOD : use POST instead of GET, PUT, ..."
+
         return result_json
         # Test it with curl 127.0.0.1:5000/request_similar_picture
 
@@ -151,7 +175,27 @@ class FlaskAppWrapper(object):
         result_json["Called_function"] = "get_results"
         result_json = self.add_std_info(result_json)
 
-        # Dummy action
+        # Answer to PUT HTTP request
+        if flask.request.method == 'GET':
+            try:
+                # Received : werkzeug.datastructures.FileStorage. Should use ".read()" to get picture's value
+                id = flask.request.args.get('request_id')
+                self.logger.debug(f"Request ID to be answered in server : {type(id)} ==> {id} ")  # {f.read()}
+
+                # Fetch results
+                result_dict = self.database_worker.get_request_result(self.database_worker.cache_db_no_decode, id)
+
+                result_json["Status"] = "Success"
+                result_json["request_id"] = id
+                result_json["results"] = result_dict
+            except Exception as e:
+                self.logger.error(f"Error during PUT handling {e}")
+                result_json["Status"] = "Failure"
+                result_json["Error"] = "Error during Hash computation or database request"
+        else:
+            result_json["Status"] = "Failure"
+            result_json["Error"] = "BAD METHOD : use POST instead of GET, PUT, ..."
+
         return result_json
         # Test it with curl 127.0.0.1:5000/get_results
 

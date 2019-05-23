@@ -17,16 +17,17 @@ import carlhauser_server.DatabaseAccessor.database_worker as database_accessor
 
 import carlhauser_server.DistanceEngine.scoring_datastrutures as scoring_datastrutures
 
-class Merging_Engine():
+
+class Merging_Engine:
     def __init__(self, db_conf: database_conf, dist_conf: distance_engine_conf, fe_conf: feature_extractor_conf):
         # STD attributes
         self.logger = logging.getLogger(__name__)
         self.logger.info("Creation of a Distance ORB Engine")
 
         # Save configuration
-        self.db_conf = db_conf # TODO : REMOVE = NOT USEFUL FOR NOW !
-        self.dist_conf = dist_conf # TODO : REMOVE = NOT USEFUL FOR NOW !
-        self.fe_conf = fe_conf # TODO : REMOVE = NOT USEFUL FOR NOW !
+        self.db_conf = db_conf  # TODO : REMOVE = NOT USEFUL FOR NOW !
+        self.dist_conf = dist_conf  # TODO : REMOVE = NOT USEFUL FOR NOW !
+        self.fe_conf = fe_conf  # TODO : REMOVE = NOT USEFUL FOR NOW !
 
     # ==================== ------ PICTURE-PICTURE DISTANCE ------- ====================
 
@@ -36,21 +37,20 @@ class Merging_Engine():
 
         return self.get_max_dict(distance_package)
 
-
     # ==================== ------ PICTURE-CLUSTER DISTANCE ------- ====================
 
     def merge_pictures_distance(self, distance_list: list):
         # TODO : Complete merging / Improve
         self.logger.info(f"Received picture-cluster's picture distance to merge {distance_list}")
-        if len(distance_list) != 0 :
+        if len(distance_list) != 0:
             return max(distance_list)
-        else :
+        else:
             self.logger.error(f"A Cluster is empty but exists. Structural behavior error detected.")
             return None
 
     # ==================== ------ CLUSTER-CLUSTER DISTANCE ------- ====================
 
     # ==================== ------ COMMON ------- ====================
-
-    def get_max_dict(self, distance_package : dict):
+    @staticmethod
+    def get_max_dict(distance_package: dict):
         return max(distance_package.values())

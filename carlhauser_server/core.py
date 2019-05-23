@@ -1,17 +1,14 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-# ==================== ------ STD LIBRARIES ------- ====================
-import sys, os
 import logging.config
-import argparse
+# ==================== ------ STD LIBRARIES ------- ====================
+import os
 import pathlib
-import subprocess
-import datetime
+import signal
+import sys
 import time
 import traceback
-import signal
-from multiprocessing import Process
 
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
 sys.path.append(os.path.abspath(os.path.pardir))
@@ -26,8 +23,6 @@ import carlhauser_server.Configuration.distance_engine_conf as distance_engine_c
 
 import carlhauser_server.Configuration.feature_extractor_conf as feature_extractor_conf
 
-import carlhauser_server.DatabaseAccessor.database_adder as database_adder
-import carlhauser_server.Helpers.json_import_export as json_import_export
 import carlhauser_server.Helpers.worker_start_stop as worker_start_stop
 import carlhauser_server.Helpers.template_singleton as template_singleton
 
@@ -73,7 +68,7 @@ class launcher_handler(metaclass=template_singleton.Singleton):
         else:
             self.logger.warning("All workers had been successfully stopped.")
 
-        self.stop_webservice() # TODO !
+        self.stop_webservice()  # TODO !
         time.sleep(2)
 
         # Shutdown database

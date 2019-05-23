@@ -100,7 +100,7 @@ class DBUtilities():
     def get_setname_of_cluster(cluster_name):
         return '|'.join([cluster_name, 'pics'])
 
-        # ==================== ------ BACKGROUND COMPUTATION ------- ====================
+    # ==================== ------ BACKGROUND COMPUTATION ------- ====================
 
     def add_to_review(self, image_id):
         # Add the picture to be reviewed in few time (100_queue, 1000_queue, ...)

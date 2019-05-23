@@ -1,14 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-# ==================== ------ STD LIBRARIES ------- ====================
-import sys, os
-import imagehash
-import tlsh
-import cv2
-from typing import List
 import logging
-import redis
+# ==================== ------ STD LIBRARIES ------- ====================
+import os
+import sys
+from typing import List
 
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
 sys.path.append(os.path.abspath(os.path.pardir))
@@ -16,7 +13,6 @@ sys.path.append(os.path.abspath(os.path.pardir))
 import carlhauser_server.Configuration.database_conf as database_conf
 import carlhauser_server.Configuration.distance_engine_conf as distance_engine_conf
 import carlhauser_server.Configuration.feature_extractor_conf as feature_extractor_conf
-import carlhauser_server.Helpers.database_start_stop as database_start_stop
 
 import carlhauser_server.DatabaseAccessor.database_worker as database_worker
 import carlhauser_server.DistanceEngine.distance_hash as distance_hash
@@ -24,10 +20,9 @@ import carlhauser_server.DistanceEngine.distance_orb as distance_orb
 import carlhauser_server.DistanceEngine.merging_engine as merging_engine
 
 import carlhauser_server.DistanceEngine.scoring_datastrutures as scoring_datastrutures
-import carlhauser_server.DatabaseAccessor.database_utilities as db_utils
 
 
-class Distance_Engine():
+class Distance_Engine:
     def __init__(self, parent: database_worker, db_conf: database_conf, dist_conf: distance_engine_conf, fe_conf: feature_extractor_conf):
         # STD attributes
         self.logger = logging.getLogger(__name__)

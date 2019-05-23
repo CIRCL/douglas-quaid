@@ -8,6 +8,7 @@ import logging
 import time
 import argparse
 import pathlib
+
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
 sys.path.append(os.path.abspath(os.path.pardir))
 
@@ -33,7 +34,6 @@ class Feature_Worker(database_accessor.Database_Worker):
 
         self.picture_hasher = picture_hasher.Picture_Hasher(fe_conf)
         self.picture_orber = picture_orber.Picture_Orber(fe_conf)
-
 
     def _to_run_forever(self):
         self.process_picture()
@@ -73,7 +73,7 @@ class Feature_Worker(database_accessor.Database_Worker):
             # TODO : self.cache_db.del(fetched_id)
             self.add_to_queue(self.cache_db_no_decode, self.ouput_queue, fetched_id, merged_dict, pickle=True)
 
-        except Exception as e :
+        except Exception as e:
             self.logger.error(e)
             return 1
 

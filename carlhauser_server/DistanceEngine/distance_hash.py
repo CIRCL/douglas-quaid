@@ -2,11 +2,13 @@
 # -*- coding: utf-8 -*-
 
 # ==================== ------ STD LIBRARIES ------- ====================
-import sys, os
+import sys
+import os
 import imagehash
 import tlsh
 import cv2
 import logging
+
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
 sys.path.append(os.path.abspath(os.path.pardir))
 
@@ -17,14 +19,14 @@ import carlhauser_server.Configuration.feature_extractor_conf as feature_extract
 import carlhauser_server.DatabaseAccessor.database_worker as database_accessor
 
 
-class Distance_Hash():
-    def __init__(self, db_conf: database_conf, dist_conf: distance_engine_conf,  fe_conf: feature_extractor_conf):
+class Distance_Hash:
+    def __init__(self, db_conf: database_conf, dist_conf: distance_engine_conf, fe_conf: feature_extractor_conf):
         # STD attributes
         self.logger = logging.getLogger(__name__)
         self.logger.info("Creation of a Distance Hash Engine")
 
         # Save configuration
-        self.db_conf = db_conf # TODO : REMOVE = NOT USEFUL FOR NOW !
+        self.db_conf = db_conf  # TODO : REMOVE = NOT USEFUL FOR NOW !
         self.dist_conf = dist_conf
         self.fe_conf = fe_conf
 
@@ -62,9 +64,11 @@ class Distance_Hash():
 
         return answer
 
-    def compute_hash_distance(self, hash1, hash2):
-        #TODO : Check if the size if accessible. Probably not.
+    @staticmethod
+    def compute_hash_distance(hash1, hash2):
+        # TODO : Check if the size if accessible. Probably not.
         return abs(hash1 - hash2) / (hash1.hash.hash.size * 4)
 
-    def compute_tlsh_distance(self, hash1, hash2):
+    @staticmethod
+    def compute_tlsh_distance(hash1, hash2):
         return tlsh.diff(hash1, hash2) / (len(hash1))

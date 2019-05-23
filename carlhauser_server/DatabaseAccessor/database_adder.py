@@ -8,8 +8,6 @@ import pathlib
 import sys
 import time
 import traceback
-import redis
-import uuid
 
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
 sys.path.append(os.path.abspath(os.path.pardir))
@@ -17,7 +15,6 @@ sys.path.append(os.path.abspath(os.path.pardir))
 from carlhauser_server.Helpers.environment_variable import dir_path
 import carlhauser_server.Helpers.json_import_export as json_import_export
 
-import carlhauser_server.Helpers.database_start_stop as database_start_stop
 import carlhauser_server.Configuration.database_conf as database_conf
 import carlhauser_server.Configuration.feature_extractor_conf as feature_extractor_conf
 import carlhauser_server.Configuration.distance_engine_conf as distance_engine_conf
@@ -63,12 +60,12 @@ class Database_Adder(database_accessor.Database_Worker):
 
             # Add picture to storage
             self.logger.info(f"Adding picture to storage under id {fetched_id}")
-            self.add_picture_to_storage(self.storage_db_no_decode, fetched_id, fetched_dict) # NOT DECODE
+            self.add_picture_to_storage(self.storage_db_no_decode, fetched_id, fetched_dict)  # NOT DECODE
 
             # Get top matching clusters
             self.logger.info(f"Get top matching clusters for this picture")
-            cluster_list = self.db_utils.get_cluster_list() # DECODE
-            list_clusters = self.de.get_top_matching_clusters(cluster_list, fetched_dict) # List[scoring_datastrutures.ClusterMatch]
+            cluster_list = self.db_utils.get_cluster_list()  # DECODE
+            list_clusters = self.de.get_top_matching_clusters(cluster_list, fetched_dict)  # List[scoring_datastrutures.ClusterMatch]
             list_cluster_id = [i.cluster_id for i in list_clusters]
             self.logger.info(f"Top matching clusters : {list_cluster_id}")
 
@@ -77,7 +74,6 @@ class Database_Adder(database_accessor.Database_Worker):
             top_matching_pictures = self.de.get_top_matching_pictures_from_clusters(list_cluster_id, fetched_dict)
             self.logger.info(f"Top matching pictures : {top_matching_pictures}")
 
-
             # Depending on the quality of the match ...
             if len(top_matching_pictures) > 0 and self.de.match_enough(top_matching_pictures[0]):
                 self.logger.info(f"Match is good enough with at least one cluster")
@@ -85,9 +81,9 @@ class Database_Adder(database_accessor.Database_Worker):
                 cluster_id = top_matching_pictures[0].cluster_id
                 self.db_utils.add_picture_to_cluster(fetched_id, cluster_id)
 
-                # TODO : To defer ? No : it's not a request. No returned value
+                # TODO : To defer ? No : it's not a request. No returned value. BUT TO COMPLETE !
                 # Re-evaluate representative picture(s) of cluster
-                self.db_utils.reevaluate_representative_picture_order(cluster_id, fetched_id=fetched_id) #TODO
+                self.db_utils.reevaluate_representative_picture_order(cluster_id, fetched_id=fetched_id)  # TODO
                 self.logger.info(f"Picture added in existing cluster : {cluster_id}")
 
             else:
@@ -97,7 +93,7 @@ class Database_Adder(database_accessor.Database_Worker):
                 self.logger.info(f"Picture added in its own new cluster : {cluster_id}")
 
             # Add to a queue, to be reviewed later, when more pictures will be added
-            self.db_utils.add_to_review(fetched_id) # TODO
+            self.db_utils.add_to_review(fetched_id)  # TODO
             self.logger.info(f"Adding done.")
 
         except Exception as e:
@@ -105,7 +101,6 @@ class Database_Adder(database_accessor.Database_Worker):
             self.logger.error(traceback.print_tb(e.__traceback__))
 
         return 1
-
 
 
 # Launcher for this worker. Launch this file to launch a worker
