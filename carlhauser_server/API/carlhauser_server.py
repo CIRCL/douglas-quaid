@@ -158,7 +158,7 @@ class FlaskAppWrapper(object):
                 self.database_worker.add_to_queue(self.database_worker.cache_db_decode, queue_name="feature_to_request", id=f_hash, dict_to_store={"img": f_bmp})
 
                 result_json["Status"] = "Success"
-                result_json["img_id"] = f_hash
+                result_json["request_id"] = f_hash
             except Exception as e:
                 self.logger.error(f"Error during PUT handling {e}")
                 result_json["Status"] = "Failure"
@@ -175,7 +175,27 @@ class FlaskAppWrapper(object):
         result_json["Called_function"] = "get_results"
         result_json = self.add_std_info(result_json)
 
-        # Dummy action
+        # Answer to PUT HTTP request
+        if flask.request.method == 'GET':
+            try:
+                # Received : werkzeug.datastructures.FileStorage. Should use ".read()" to get picture's value
+                id = flask.request.args.get('request_id')
+                self.logger.debug(f"Request ID to be answered in server : {type(id)} ==> {id} ")  # {f.read()}
+
+                # Fetch results
+                result_dict = self.database_worker.get_request_result(self.database_worker.cache_db_no_decode, id)
+
+                result_json["Status"] = "Success"
+                result_json["request_id"] = id
+                result_json["results"] = result_dict
+            except Exception as e:
+                self.logger.error(f"Error during PUT handling {e}")
+                result_json["Status"] = "Failure"
+                result_json["Error"] = "Error during Hash computation or database request"
+        else:
+            result_json["Status"] = "Failure"
+            result_json["Error"] = "BAD METHOD : use POST instead of GET, PUT, ..."
+
         return result_json
         # Test it with curl 127.0.0.1:5000/get_results
 

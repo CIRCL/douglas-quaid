@@ -35,10 +35,13 @@ class launcher_handler():
         self.perform_upload(pathlib.Path("./image.png"))
         self.logger.info(f"Request ? ")
         input()
-        self.perform_request(pathlib.Path("./image.bmp"))
+        request_id = self.perform_request(pathlib.Path("./image.bmp"))
         self.logger.info(f"Add ? ")
         input()
         self.perform_upload(pathlib.Path("./image.bmp"))
+        self.logger.info(f"Fetch result ? ")
+        input()
+        self.retrieve_request_results(request_id)
 
     def get_api(self):
         # Generate the API access point link to the hardcoded server
@@ -57,7 +60,10 @@ class launcher_handler():
         self.API.add_picture_server(path)
 
     def perform_request(self, path: pathlib.Path):
-        self.API.request_picture_server(path)
+        return self.API.request_picture_server(path)
+
+    def retrieve_request_results(self, path: pathlib.Path):
+        return self.API.retrieve_request_results(path)
 
 
 if __name__ == '__main__':

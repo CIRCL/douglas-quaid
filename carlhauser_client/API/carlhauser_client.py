@@ -27,6 +27,9 @@ class API_caller():
         r = requests.post(url=self.server_url, verify=self.cert)
         self.logger.info(f"POST request => {r.status_code} {r.reason} {r.text}")
 
+        data = r.json()  # Check the JSON Response Content documentation below
+        self.logger.info(data)
+
     def add_picture_server(self, file_path: pathlib.Path):
         # Solve the file path
         if not file_path.is_absolute():
@@ -43,7 +46,9 @@ class API_caller():
             with requests.Session() as s:
                 r = s.put(url=target_url, files=files, verify=self.cert)
                 self.logger.info(f"POST picture => {r.status_code} {r.reason} {r.text}")
+                data = r.json()  # Check the JSON Response Content documentation below
                 self.logger.info(r.content)
+                self.logger.info(data)
 
         # print(r.status_code, r.reason, r.text)
 
@@ -62,7 +67,27 @@ class API_caller():
             self.logger.debug(f"Image in client : {type(img)} {img}")
             with requests.Session() as s:
                 r = s.post(url=target_url, files=files, verify=self.cert)
-                self.logger.info(f"POST picture => {r.status_code} {r.reason} {r.text}")
+                self.logger.info(f"POST picture request => {r.status_code} {r.reason} {r.text}")
                 self.logger.info(r.content)
 
-        # print(r.status_code, r.reason, r.text)
+                data = r.json()  # Check the JSON Response Content documentation below
+                self.logger.info(data)
+
+                return data["request_id"]
+
+
+    def retrieve_request_results(self, request_id):
+        # Select the endpoint
+        target_url = self.server_url + "get_results"
+
+        # Send the request_id
+        payload = {'request_id': request_id}
+        with requests.Session() as s:
+            r = s.get(url=target_url, params=payload, verify=self.cert)
+            self.logger.info(f"GET request results => {r.status_code} {r.reason} {r.text}")
+            self.logger.info(r.content)
+
+            data = r.json()  # Check the JSON Response Content documentation below
+            self.logger.info(data)
+
+            return data["request_id"]
