@@ -35,7 +35,7 @@ Later :
 
 ### Questions
 
-- **_Can the library say there is no match or will it always give a "top N" matching pictures ?_**
+- **_Can the library say there is no match or will it always gives a "top N" matching pictures ?_**
 
 For our automated usecases, e.g. MISP, we need clear "answer" from the library, to allow automation. 
 The final goal of this library is to map all matches into one of the three categories : Accepted pictures, To-review pictures, and Rejected pictures.
