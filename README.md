@@ -91,16 +91,20 @@ You can also manually generate modified datasets from your original dataset :
 (...)
 
 ![Software architecture overview](./docs/images/overview-v1.svg)
-
-<img src="./docs/images/action1.svg" alt="Action" width="200"/>
-<img src="./docs/images/action2.svg" alt="Action" width="200"/>
+<p float="left">
+<img src="./docs/images/action1.svg" alt="Action" width="80"/>
+<img src="./docs/images/action2.svg" alt="Action" width="80"/>
 <img src="./docs/images/datastruct.svg" alt="Example of datastructure stored for one picture in Redis storage instance" width="200"/>
-<img src="./docs/images/principle1.svg" alt="Storage principle" width="200"/>
-<img src="./docs/images/principle2.svg" alt="Storage principle, Idea vs Implementation" width="200"/>
-<img src="./docs/images/principle3.svg" alt="Explanations" width="200"/>
-<img src="./docs/images/queue1.svg" alt="How queues are working" width="200"/>
-<img src="./docs/images/queue2.svg" alt="How queues are working" width="200"/>
-
+</p>
+<p float="left">
+<img src="./docs/images/principle1.svg" alt="Storage principle" width="300"/>
+<img src="./docs/images/principle2.svg" alt="Storage principle, Idea vs Implementation" width="300"/>
+<img src="./docs/images/principle3.svg" alt="Explanations" width="300"/>
+</p>
+<p float="left">
+<img src="./docs/images/queue1.svg" alt="How queues are working" width="300"/>
+<img src="./docs/images/queue2.svg" alt="How queues are working" width="300"/>
+</p>
 
 ## Deployment
 
