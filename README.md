@@ -91,19 +91,17 @@ You can also manually generate modified datasets from your original dataset :
 (...)
 
 ![Software architecture overview](./docs/images/overview-v1.svg)
+More details are given in [Documentation PDF version](./SOTA/Core_doc.pdf)
+
 <p float="left">
-<img src="./docs/images/action1.svg" alt="Action" width="80"/>
-<img src="./docs/images/action2.svg" alt="Action" width="80"/>
-<img src="./docs/images/datastruct.svg" alt="Example of datastructure stored for one picture in Redis storage instance" width="200"/>
-</p>
-<p float="left">
-<img src="./docs/images/principle1.svg" alt="Storage principle" width="300"/>
-<img src="./docs/images/principle2.svg" alt="Storage principle, Idea vs Implementation" width="300"/>
-<img src="./docs/images/principle3.svg" alt="Explanations" width="300"/>
-</p>
-<p float="left">
-<img src="./docs/images/queue1.svg" alt="How queues are working" width="300"/>
-<img src="./docs/images/queue2.svg" alt="How queues are working" width="300"/>
+<img src="./docs/images/action1.svg" alt="Action" height="100"/>
+<img src="./docs/images/action2.svg" alt="Action" height="100"/>
+<img src="./docs/images/datastruct.svg" alt="Example of datastructure stored for one picture in Redis storage instance" height="100"/>
+<img src="./docs/images/principle1.svg" alt="Storage principle" height="100"/>
+<img src="./docs/images/principle2.svg" alt="Storage principle, Idea vs Implementation" height="100"/>
+<img src="./docs/images/principle3.svg" alt="Explanations" height="100"/>
+<img src="./docs/images/queue1.svg" alt="How queues are working" height="100"/>
+<img src="./docs/images/queue2.svg" alt="How queues are working" height="100"/>
 </p>
 
 ## Deployment
