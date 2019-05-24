@@ -90,10 +90,12 @@ You can also manually generate modified datasets from your original dataset :
 
 (...)
 
+
 ![Software architecture overview](./docs/images/overview-v1.svg)
+
+<p  align="center" float="center">
 More details are given in [Documentation PDF version](./SOTA/Core_doc.pdf)
 
-<p float="left">
 <img src="./docs/images/action1.svg" alt="Action" height="100"/>
 <img src="./docs/images/action2.svg" alt="Action" height="100"/>
 <img src="./docs/images/datastruct.svg" alt="Example of datastructure stored for one picture in Redis storage instance" height="100"/>
@@ -103,6 +105,7 @@ More details are given in [Documentation PDF version](./SOTA/Core_doc.pdf)
 <img src="./docs/images/queue1.svg" alt="How queues are working" height="100"/>
 <img src="./docs/images/queue2.svg" alt="How queues are working" height="100"/>
 </p>
+
 
 ## Deployment
 
