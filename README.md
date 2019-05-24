@@ -89,8 +89,15 @@ You can also manually generate modified datasets from your original dataset :
 ### For Developers
 
 (...)
-![Software architecture overview](./docs/images/overview-v1.pdf)
-
+![Software architecture overview](./docs/images/overview-v1.svg =250x)
+![Software architecture overview](./docs/images/action1.svg =250x)
+![Software architecture overview](./docs/images/action2.svg =250x)
+![Software architecture overview](./docs/images/datastruct.svg =250x)
+![Software architecture overview](./docs/images/principle1.svg =250x)
+![Software architecture overview](./docs/images/principle2.svg =250x)
+![Software architecture overview](./docs/images/principle3.svg =250x)
+![Software architecture overview](./docs/images/queue1.svg =250x)
+![Software architecture overview](./docs/images/queue2.svg =250x)
 
 
 ## Deployment
