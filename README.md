@@ -63,7 +63,7 @@ See requirements.txt
 
 ### Installing
 
-For server installation and client launching : See [installation instruction](./installation_info.md)
+For server installation and client launch : See [installation instruction](./installation_info.md)
 
 (...)
 
