@@ -19,6 +19,7 @@ flask = "*"
 pyopenssl = "*"
 redis = "*"
 objsize = "*"
+requests = "*"
 
 [requires]
 python_version = "3.7"
