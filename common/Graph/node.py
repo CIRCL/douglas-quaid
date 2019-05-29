@@ -19,10 +19,18 @@ class Node_Meta:
     def __init__(self):
         self.labels = []
 
+    # ==================== Export / Import ====================
+
     def export_as_json(self):
         tmp_json = {}
         tmp_json["labels"] = self.labels
         return tmp_json
+
+    @staticmethod
+    def load_from_dict(input):
+        tmp_meta = Node_Meta()
+        tmp_meta.labels = input["labels"]
+        return tmp_meta
 
 
 class Node:
@@ -37,7 +45,9 @@ class Node:
 
         self.metadata = metadata
 
-    def export_as_json(self):
+    # ==================== Export / Import ====================
+
+    def export_as_dict(self):
         tmp_json = {}
         tmp_json["label"] = self.label
         tmp_json["id"] = self.id
@@ -48,3 +58,15 @@ class Node:
             tmp_json["metadata"] = self.metadata.export_as_json()
 
         return tmp_json
+
+    @staticmethod
+    def load_from_dict(input):
+
+        tmp_metadata = None
+        if "metadata" in input.keys():
+            tmp_metadata = Node_Meta.load_from_dict(input["metadata"])
+
+        tmp_node = Node(label=input["label"], id=input["id"],image=input["image"], metadata=tmp_metadata)
+        tmp_node.shape = input["shape"]
+
+        return tmp_node

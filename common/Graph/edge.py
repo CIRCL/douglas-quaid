@@ -22,7 +22,9 @@ class Edge:
 
         self.color = color
 
-    def export_as_json(self):
+    # ==================== Export / Import ====================
+
+    def export_as_dict(self):
         tmp_json = {}
 
         tmp_json["from"] = self._from
@@ -30,3 +32,8 @@ class Edge:
         tmp_json["color"] = self.color
 
         return tmp_json
+
+    @staticmethod
+    def load_from_dict(input):
+
+        return Edge(_from=input["from"], _to=input["to"], color=input["color"])

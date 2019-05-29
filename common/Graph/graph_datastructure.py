@@ -58,33 +58,35 @@ class GraphDataStruct:
             self.nodes[n.id] = n
             self.edges.append(edge.Edge(cluster.id,n.id, color))
 
-    # ==================== Export ====================
+    # ==================== Export / Import ====================
 
+    def export_as_dict(self):
+        tmp_dict = {}
+        tmp_dict["meta"] = self.meta.export_as_dict()
+        tmp_dict["clusters"] = [cluster.export_as_dict() for cluster in self.clusters.values()]
+        tmp_dict["nodes"] = [node.export_as_dict() for node in self.nodes.values()]
+        tmp_dict["edges"] = [edge.export_as_dict() for edge in self.edges]
 
-    '''
-        "nodes": [
-            {
-                "id": 0,
-                "shape": "image",
-                "image": "musk.fyi.bmp"
-            },
-        (...)
-        edges : [
-            {
-            "from": 49,
-            "to": 41,
-            "label": "rank 0 (0.0)",
-            "value": "20.0",
-            "title": 0.0
-        },
-    '''
+        return tmp_dict
 
-    def export_as_json(self):
-        json = {}
-        json["meta"] = self.meta.export_as_json()
-        json["clusters"] = [cluster.export_as_json() for cluster in self.clusters.values()]
-        json["nodes"] = [node.export_as_json() for node in self.nodes.values()]
-        json["edges"] = [edge.export_as_json() for edge in self.edges]
+    @staticmethod
+    def load_from_dict(input):
+        meta = metadata.Metadata.load_from_dict(input["meta"])
+        tmp_graph = GraphDataStruct(meta)
 
-        return json
+        tmp_clusters = [cluster.Cluster.load_from_dict(cluster_dict) for cluster_dict in input["clusters"]]
+        tmp_nodes = [node.Node.load_from_dict(node_dict) for node_dict in input["nodes"]]
+        tmp_edges = [edge.Edge.load_from_dict(edge_dict) for edge_dict in input["edges"]]
+
+        for c in tmp_clusters :
+            tmp_graph.add_cluster(c)
+
+        for n in tmp_nodes :
+            tmp_graph.add_node(n)
+
+        for e in tmp_edges :
+            tmp_graph.add_edge(e)
+
+        return tmp_graph
+
 

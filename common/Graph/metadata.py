@@ -25,9 +25,25 @@ class Metadata:
     def __init__(self, source: Source):
         self.source = source
 
-    def export_as_json(self):
+    # ==================== Export / Import ====================
+
+    def export_as_dict(self):
         tmp_json = {}
-
         tmp_json["source"] = self.source.name
-
         return tmp_json
+
+    @staticmethod
+    def load_from_dict(input):
+
+        if input["source"] == "VISJS" :
+            tmp_source = Source.VISJS
+        elif input["source"] == "REDIS" :
+            tmp_source = Source.REDIS
+        elif input["source"] == "DBDUMP" :
+            tmp_source = Source.DBDUMP
+        else :
+            raise Exception("Incorrect Source in Metadata parsing")
+
+        return Metadata(tmp_source)
+
+

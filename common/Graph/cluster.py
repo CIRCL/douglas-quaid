@@ -21,21 +21,35 @@ class Cluster(node.Node):
         super().__init__(label, id, image)
 
         # For clusters only
-        self.members = []
+        self.members = set()
         self.group = ""
 
-
     def add_member_id(self, node_id):
-        self.members.append(node_id)
+        self.members.add(node_id)
 
     def get_nb_members(self):
         return len(self.members)
 
-    def export_as_json(self):
-        tmp_json = super().export_as_json()
+    # ==================== Export / Import ====================
+
+    def export_as_dict(self):
+        tmp_json = super().export_as_dict()
         tmp_json["members"] = self.members
         tmp_json["group"] = self.group
 
         return tmp_json
 
+    @staticmethod
+    def create_from_parent(parent : node.Node):
+        return Cluster(label=parent.label, id=parent.id, image=parent.image)
 
+    @staticmethod
+    def load_from_dict(input):
+        tmp_cluster = Cluster.create_from_parent(node.Node.load_from_dict(input))
+
+        for m in input["members"]:
+            tmp_cluster.add_member_id(m)
+
+        tmp_cluster.group = input["group"]
+
+        return tmp_cluster

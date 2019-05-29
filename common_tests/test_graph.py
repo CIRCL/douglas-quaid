@@ -28,13 +28,13 @@ class test_template(unittest.TestCase):
                                             'id': 0,
                                             'image': '',
                                             'label': '',
-                                            'members': ['0_0', '0_1', '0_2'],
+                                            'members': {'0_0', '0_1', '0_2'},
                                             'shape': 'image'},
                                            {'group': '',
                                             'id': 1,
                                             'image': '',
                                             'label': '',
-                                            'members': ['1_0', '1_1', '1_2'],
+                                            'members': {'1_0', '1_1', '1_2'},
                                             'shape': 'image'}],
                               'edges': [{'color': 'gray', 'from': 0, 'to': '0_0'},
                                         {'color': 'gray', 'from': 0, 'to': '0_1'},
@@ -71,7 +71,7 @@ class test_template(unittest.TestCase):
     def test_absolute_truth_and_meaning(self):
         assert True
 
-    def test_graph(self):
+    def test_graph_export(self):
 
         # Create a graphe structure
         tmp_meta = Metadata(Source.DBDUMP)
@@ -87,7 +87,37 @@ class test_template(unittest.TestCase):
                 tmp_graph.add_node(Node(label="picture name +" + pic_id, id=pic_id, image=""))
                 tmp_graph.add_edge(Edge(_from=cluster_id, _to=pic_id))
 
-        val = tmp_graph.export_as_json()
+        print("Exported dict : ")
+        val = tmp_graph.export_as_dict()
         pprint.pprint(val)
 
         self.assertDictEqual(val, self.expected_json)
+
+    def test_graph_import_export_consistency(self):
+
+        # Create a graphe structure
+        tmp_meta = Metadata(Source.DBDUMP)
+        tmp_graph = GraphDataStruct(tmp_meta)
+
+        # For each cluster, fetch all pictures and store it
+        for cluster_id in range(0, 2):
+            tmp_graph.add_cluster(Cluster(label="", id=cluster_id, image=""))
+
+            for id in range(0, 3):
+                pic_id = str(cluster_id) + "_" + str(id)
+                # Label = picture score, here
+                tmp_graph.add_node(Node(label="picture name +" + pic_id, id=pic_id, image=""))
+                tmp_graph.add_edge(Edge(_from=cluster_id, _to=pic_id))
+
+        print("Exported dict : ")
+        val = tmp_graph.export_as_dict()
+        pprint.pprint(val)
+        print("Import graphe : ")
+        new_graph = GraphDataStruct.load_from_dict(val)
+        pprint.pprint(new_graph)
+        print("Exported dict (after import): ")
+        new_val = new_graph.export_as_dict()
+        pprint.pprint(new_val)
+
+        self.assertDictEqual(val, self.expected_json)
+        self.assertDictEqual(val, new_val)
