@@ -22,6 +22,8 @@ import carlhauser_server.Helpers.picture_import_export as picture_import_export
 from carlhauser_server.Helpers.environment_variable import get_homedir
 import carlhauser_server.DatabaseAccessor.database_worker as database_worker
 
+import carlhauser_server.Helpers.json_import_export as json_import_export
+import carlhauser_server.DatabaseAccessor.database_utilities as db_utils
 
 # ==================== ------ SERVER Flask API definition ------- ====================
 
@@ -75,6 +77,7 @@ class FlaskAppWrapper(object):
         self.add_endpoint(endpoint="/add_picture", endpoint_name="/add_picture", handler=self.add_picture)
         self.add_endpoint(endpoint="/request_similar_picture", endpoint_name="/request_similar_picture", handler=self.request_similar_picture)
         self.add_endpoint(endpoint="/get_results", endpoint_name="/get_results", handler=self.get_results)
+        self.add_endpoint(endpoint="/export_db", endpoint_name="/export_db", handler=self.export_db_as_graphe)
 
     def add_endpoint(self, endpoint=None, endpoint_name=None, handler=None):
         self.app.add_url_rule(endpoint, endpoint_name, EndpointAction(handler), methods=['GET', 'POST', 'PUT'])
@@ -198,6 +201,35 @@ class FlaskAppWrapper(object):
 
         return result_json
         # Test it with curl 127.0.0.1:5000/get_results
+
+
+    def export_db_as_graphe(self):
+        result_json = {}
+        result_json["Called_function"] = "export_db"
+        result_json = self.add_std_info(result_json)
+
+        # Answer to PUT HTTP request
+        if flask.request.method == 'GET':
+            try:
+                # Request export of the database and save it as a json graph
+                self.db_utils = db_utils.DBUtilities(db_access_decode=self.database_worker.storage_db_decode, db_access_no_decode=self.database_worker.storage_db_no_decode)
+                graphe = self.db_utils.get_db_graphe()
+
+                # Save to file
+                json_import_export.save_json(graphe, get_homedir() / "export_folder" / "db_graphe.json")
+
+                result_json["Status"] = "Success"
+                result_json["db"] = graphe
+            except Exception as e:
+                self.logger.error(f"Error during GET handling {e}")
+                result_json["Status"] = "Failure"
+                result_json["Error"] = "Error during db exportation to file"
+        else:
+            result_json["Status"] = "Failure"
+            result_json["Error"] = "BAD METHOD : use POST instead of GET, PUT, ..."
+
+        return result_json
+        # Test it with curl 127.0.0.1:5000
 
     def add_std_info(self, result_json):
         result_json["Call_method"] = flask.request.method  # 'GET' or 'POST' ...
