@@ -2,6 +2,8 @@
 
 Just follow instruction, top to bottom
 
+Tested on Ubuntu Server 18.04 LTS, clean install.
+
 ### Core product
 
 > \# Install system dependency  
