@@ -58,6 +58,35 @@ class GraphDataStruct:
             self.nodes[n.id] = n
             self.edges.append(edge.Edge(cluster.id,n.id, color))
 
+    # ==================== Conversion ====================
+
+    def replace_id_from_mapping(self, filename_to_id):
+        mapping_old_id_new_id = {}
+
+        # For all nodes
+        for n in self.nodes.values() :
+            tmp_old_id = n.id
+            # Modify the name if in the provided mapping, or keep original id
+            n.id = filename_to_id.get(n.image, n.id)
+            # Store the modification in a mapping
+            mapping_old_id_new_id[tmp_old_id] = n.id
+
+        # For all clusters and egdes updates ids
+        for c in self.clusters.values() :
+            for old, new in mapping_old_id_new_id.items():
+                c.update_member_id(old, new)
+
+        for e in self.edges :
+            for old, new in mapping_old_id_new_id.items():
+                e.update_member_id(old, new)
+
+        return mapping_old_id_new_id
+
+    def get_clusters(self):
+        return list(self.clusters.values())
+
+
+
     # ==================== Export / Import ====================
 
     def export_as_dict(self):

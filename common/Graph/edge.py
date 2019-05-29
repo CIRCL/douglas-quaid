@@ -22,6 +22,13 @@ class Edge:
 
         self.color = color
 
+    def update_member_id(self, old_id, new_id):
+        # Modify an id in the list of members. Replace old by new.
+        if self._from == old_id :
+            self._from = new_id
+        if self._to == old_id :
+            self._to = new_id
+
     # ==================== Export / Import ====================
 
     def export_as_dict(self):
@@ -36,4 +43,4 @@ class Edge:
     @staticmethod
     def load_from_dict(input):
 
-        return Edge(_from=input["from"], _to=input["to"], color=input["color"])
+        return Edge(_from=input["from"], _to=input["to"], color=input.get("color",''))

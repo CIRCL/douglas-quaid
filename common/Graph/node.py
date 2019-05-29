@@ -66,7 +66,7 @@ class Node:
         if "metadata" in input.keys():
             tmp_metadata = Node_Meta.load_from_dict(input["metadata"])
 
-        tmp_node = Node(label=input["label"], id=input["id"],image=input["image"], metadata=tmp_metadata)
+        tmp_node = Node(label=input.get("label", ""), id=input["id"],image=input["image"], metadata=tmp_metadata)
         tmp_node.shape = input["shape"]
 
         return tmp_node

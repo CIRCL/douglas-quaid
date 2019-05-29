@@ -21,6 +21,7 @@ class test_template(unittest.TestCase):
     """Basic test cases."""
 
     def setUp(self):
+        self.maxDiff = None
         self.logger = logging.getLogger()
         # self.conf = configuration.Default_configuration()
         # self.test_file_path = pathlib.Path.cwd() / pathlib.Path("tests/test_files")
@@ -28,13 +29,13 @@ class test_template(unittest.TestCase):
                                             'id': 0,
                                             'image': '',
                                             'label': '',
-                                            'members': {'0_0', '0_1', '0_2'},
+                                            'members': ['0_0', '0_1', '0_2'],
                                             'shape': 'image'},
                                            {'group': '',
                                             'id': 1,
                                             'image': '',
                                             'label': '',
-                                            'members': {'1_0', '1_1', '1_2'},
+                                            'members': ['1_0', '1_1', '1_2'],
                                             'shape': 'image'}],
                               'edges': [{'color': 'gray', 'from': 0, 'to': '0_0'},
                                         {'color': 'gray', 'from': 0, 'to': '0_1'},
@@ -67,6 +68,50 @@ class test_template(unittest.TestCase):
                                          'image': '',
                                          'label': 'picture name +1_2',
                                          'shape': 'image'}]}
+
+        self.mappedexpected = {'clusters': [{'group': '',
+                                             'id': 0,
+                                             'image': '',
+                                             'label': '',
+                                             'members': ['0_0NEW', '0_1NEW', '0_2NEW'],
+                                             'shape': 'image'},
+                                            {'group': '',
+                                             'id': 1,
+                                             'image': '',
+                                             'label': '',
+                                             'members': ['1_0NEW', '1_1NEW', '1_2NEW'],
+                                             'shape': 'image'}],
+                               'edges': [{'color': 'gray', 'from': 0, 'to': '0_0NEW'},
+                                         {'color': 'gray', 'from': 0, 'to': '0_1NEW'},
+                                         {'color': 'gray', 'from': 0, 'to': '0_2NEW'},
+                                         {'color': 'gray', 'from': 1, 'to': '1_0NEW'},
+                                         {'color': 'gray', 'from': 1, 'to': '1_1NEW'},
+                                         {'color': 'gray', 'from': 1, 'to': '1_2NEW'}],
+                               'meta': {'source': 'DBDUMP'},
+                               'nodes': [{'id': '0_0NEW',
+                                          'image': '0_0IMAGE',
+                                          'label': 'picture name +0_0OLD',
+                                          'shape': 'image'},
+                                         {'id': '0_1NEW',
+                                          'image': '0_1IMAGE',
+                                          'label': 'picture name +0_1OLD',
+                                          'shape': 'image'},
+                                         {'id': '0_2NEW',
+                                          'image': '0_2IMAGE',
+                                          'label': 'picture name +0_2OLD',
+                                          'shape': 'image'},
+                                         {'id': '1_0NEW',
+                                          'image': '1_0IMAGE',
+                                          'label': 'picture name +1_0OLD',
+                                          'shape': 'image'},
+                                         {'id': '1_1NEW',
+                                          'image': '1_1IMAGE',
+                                          'label': 'picture name +1_1OLD',
+                                          'shape': 'image'},
+                                         {'id': '1_2NEW',
+                                          'image': '1_2IMAGE',
+                                          'label': 'picture name +1_2OLD',
+                                          'shape': 'image'}]}
 
     def test_absolute_truth_and_meaning(self):
         assert True
@@ -121,3 +166,83 @@ class test_template(unittest.TestCase):
 
         self.assertDictEqual(val, self.expected_json)
         self.assertDictEqual(val, new_val)
+
+    def test_graph_image_to_id_mapping_conversion(self):
+
+        mapping = {}
+
+        # Create a graphe structure
+        tmp_meta = Metadata(Source.DBDUMP)
+        tmp_graph = GraphDataStruct(tmp_meta)
+
+        # For each cluster, fetch all pictures and store it
+        for cluster_id in range(0, 2):
+            tmp_graph.add_cluster(Cluster(label="", id=cluster_id, image=""))
+
+            for id in range(0, 3):
+                pic_id = str(cluster_id) + "_" + str(id) + "OLD"
+                pic_image = str(cluster_id) + "_" + str(id) + "IMAGE"
+
+                # Prepare mapping
+                mapping[pic_image] = str(cluster_id) + "_" + str(id) + "NEW"
+
+                # Label = picture score, here
+                tmp_graph.add_node(Node(label="picture name +" + pic_id, id=pic_id, image=pic_image))
+                tmp_graph.add_edge(Edge(_from=cluster_id, _to=pic_id))
+
+        print("Exported dict : ")
+        val = tmp_graph.export_as_dict()
+        pprint.pprint(val)
+
+        print("Mapping: ")
+        pprint.pprint(mapping)
+
+        tmp_graph.replace_id_from_mapping(mapping)
+
+        print("Mapped: ")
+        val = tmp_graph.export_as_dict()
+        pprint.pprint(val)
+
+        self.assertDictEqual(val, self.mappedexpected)
+
+    def test_get_clusters_list(self):
+
+        # Create a graphe structure
+        tmp_meta = Metadata(Source.DBDUMP)
+        tmp_graph = GraphDataStruct(tmp_meta)
+
+        # For each cluster, fetch all pictures and store it
+        for cluster_id in range(0, 2):
+            tmp_graph.add_cluster(Cluster(label="", id=cluster_id, image=""))
+
+            for id in range(0, 3):
+                pic_id = str(cluster_id) + "_" + str(id) + "OLD"
+                pic_image = str(cluster_id) + "_" + str(id) + "IMAGE"
+
+                # Label = picture score, here
+                tmp_graph.add_node(Node(label="picture name +" + pic_id, id=pic_id, image=pic_image))
+                tmp_graph.add_edge(Edge(_from=cluster_id, _to=pic_id))
+
+        print("Exported dict : ")
+        val = tmp_graph.export_as_dict()
+        pprint.pprint(val)
+
+        cluster_list = [c.export_as_dict() for c in tmp_graph.get_clusters()]
+        print("Cluster list : ")
+        pprint.pprint(cluster_list)
+
+        self.assertListEqual(cluster_list, [{'group': '',
+                                             'id': 0,
+                                             'image': '',
+                                             'label': '',
+                                             'members': ['0_0OLD', '0_1OLD', '0_2OLD'],
+                                             'shape': 'image'
+                                              },
+                                            {'group': '',
+                                             'id': 1,
+                                             'image': '',
+                                             'label': '',
+                                             'members': ['1_0OLD', '1_1OLD', '1_2OLD'],
+                                             'shape': 'image'}
+                                             ]
+                                            )

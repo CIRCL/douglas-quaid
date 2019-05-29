@@ -30,11 +30,17 @@ class Cluster(node.Node):
     def get_nb_members(self):
         return len(self.members)
 
+    def update_member_id(self, old_id, new_id):
+        # Modify an id in the list of members. Replace old by new.
+        if {old_id}.issubset(self.members):
+            self.members.remove(old_id)
+            self.members.add(new_id)
+
     # ==================== Export / Import ====================
 
     def export_as_dict(self):
         tmp_json = super().export_as_dict()
-        tmp_json["members"] = self.members
+        tmp_json["members"] = sorted(list(self.members)) # Sorted to keep order, mainly for test purposes
         tmp_json["group"] = self.group
 
         return tmp_json
