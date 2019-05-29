@@ -29,19 +29,22 @@ class launcher_handler():
     def launch(self):
         self.logger.info(f"Launching webservice ...")
         self.perform_ping_check()
-        self.perform_upload(pathlib.Path("./image.jpg"))
+        self.perform_upload(get_homedir() / "datasets" / "simple_pictures" / "image.jpg")
         self.logger.info(f"Add ? ")
         input()
-        self.perform_upload(pathlib.Path("./image.png"))
+        self.perform_upload(get_homedir() / "datasets" / "simple_pictures" / "image.png")
         self.logger.info(f"Request ? ")
         input()
-        request_id = self.perform_request(pathlib.Path("./image.bmp"))
+        request_id = self.perform_request(get_homedir() / "datasets" / "simple_pictures" / "image.bmp")
         self.logger.info(f"Add ? ")
         input()
-        self.perform_upload(pathlib.Path("./image.bmp"))
+        self.perform_upload(get_homedir() / "datasets" / "simple_pictures" / "image.bmp")
         self.logger.info(f"Fetch result ? ")
         input()
         self.retrieve_request_results(request_id)
+        self.logger.info(f"Dump DB ? ")
+        input()
+        self.export_db_server()
 
     def get_api(self):
         # Generate the API access point link to the hardcoded server
@@ -60,10 +63,13 @@ class launcher_handler():
         self.API.add_picture_server(path)
 
     def perform_request(self, path: pathlib.Path):
-        return self.API.request_picture_server(path)
+        return self.API.request_picture_server(path)[1]
 
     def retrieve_request_results(self, path: pathlib.Path):
-        return self.API.retrieve_request_results(path)
+        return self.API.retrieve_request_results(path)[1]
+
+    def export_db_server(self):
+        return self.API.export_db_server()[1]
 
 
 if __name__ == '__main__':

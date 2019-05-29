@@ -15,6 +15,11 @@ import logging
 
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
 sys.path.append(os.path.abspath(os.path.pardir))
+from common.Graph.graph_datastructure import GraphDataStruct
+from common.Graph.metadata import Metadata, Source
+from common.Graph.cluster import Cluster
+from common.Graph.edge import Edge
+from common.Graph.node import Node
 
 
 class DBUtilities():
@@ -58,7 +63,7 @@ class DBUtilities():
 
         # Add the picture to the set
         # success = self.db_access_decode.sadd(set_name, image_id) # SET
-        success = self.db_access_decode.zadd(set_name, {image_id:2}) # SORTED SET
+        success = self.db_access_decode.zadd(set_name, {image_id: 2})  # SORTED SET
         self.logger.info(f"Added picture {image_id} to {cluster_id} cluster under set name {set_name}")
 
         return success
@@ -75,7 +80,7 @@ class DBUtilities():
 
         # Add the picture to the set
         # self.db_access_decode.sadd(set_name, image_id) # SET
-        self.db_access_decode.zadd(set_name, {image_id:2}) # SORTED SET 2 = DEFAULT VALUE
+        self.db_access_decode.zadd(set_name, {image_id: 2})  # SORTED SET 2 = DEFAULT VALUE
         self.logger.info(f"Added picture {image_id} to NEW {cluster_name} cluster under set name {set_name}")
 
         return cluster_name
@@ -86,15 +91,15 @@ class DBUtilities():
 
     # ==================== ------ PICTURES LIST PER CLUSTER ------- ====================
 
-    def get_pictures_of_cluster(self, cluster_name) -> set:
+    def get_pictures_of_cluster(self, cluster_name, with_score=False) -> set:
         self.logger.debug(f"Retrieving picture list of cluster {cluster_name}")
 
-        if type(cluster_name) is not str :
+        if type(cluster_name) is not str:
             raise Exception("Invalid cluster name, not a string.")
 
         # Get the list of pictures associated of the given cluster
         # return self.db_access_decode.smembers(self.get_setname_of_cluster(cluster_name)) # SET
-        return self.db_access_decode.zrange(self.get_setname_of_cluster(cluster_name),0,-1) # SORTED SET
+        return self.db_access_decode.zrange(self.get_setname_of_cluster(cluster_name), 0, -1, withscores=with_score)  # SORTED SET
 
     @staticmethod
     def get_setname_of_cluster(cluster_name):
@@ -104,7 +109,7 @@ class DBUtilities():
 
     def add_to_review(self, image_id):
         # Add the picture to be reviewed in few time (100_queue, 1000_queue, ...)
-        #TODO
+        # TODO
         return
 
     def reevaluate_representative_picture_order(self, cluster_id, fetched_id=None):
@@ -120,4 +125,35 @@ class DBUtilities():
 
         # evaluate
         # TODO : Somewhat already done before. May be able to memoize the computed values ?
+        return
+
+    # ==================== ------ EXPORTATION ------- ====================
+
+    def get_db_graphe(self):
+
+        # Create a graphe structure
+        tmp_meta = Metadata(Source.DBDUMP)
+        tmp_graph = GraphDataStruct(tmp_meta)
+
+        # Get all clusters
+        cluster_list = self.get_cluster_list()
+
+        # For each cluster, fetch all pictures and store it
+        for cluster_id in cluster_list:
+            tmp_graph.add_cluster(Cluster(label="", id=cluster_id, image=""))
+
+            picture_list = self.get_pictures_of_cluster(cluster_id, with_score=True)
+            self.logger.info(f"Picture list : {picture_list}")
+
+            for picture in picture_list:
+                # Label = picture score, here
+                tmp_graph.add_node(Node(label=picture[1], id=picture[0], image=""))
+                tmp_graph.add_edge(Edge(_from=cluster_id, _to=picture[0]))
+
+        return tmp_graph.export_as_dict()
+
+    def export_pictures_bmp(self, path_to_save: pathlib.Path):
+
+        # TODO : To fill
+
         return
