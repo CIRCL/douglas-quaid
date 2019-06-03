@@ -86,7 +86,7 @@ class ConfusionMatrixGenerator():
         fig, ax = plt.subplots(figsize=(20, 14), dpi=200)
 
         im, cbar = self.heatmap(self.values, self.ord, self.abs, ax=ax,
-                                cmap="YlGn", cbarlabel="Similarity (1 = same)")
+                                cmap="YlGn", cbarlabel="Nb of elements in these clusters")
         texts = self.annotate_heatmap(im, data=self.values, valfmt="{x:.1f}")
 
         fig.tight_layout()

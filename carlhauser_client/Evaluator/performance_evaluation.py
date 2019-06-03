@@ -32,6 +32,8 @@ class Performance_Evaluator():
         self.logger = logging.getLogger(__name__)
 
     def evaluate_performance(self, clusters_pairs: List[List[Cluster]], total_number_element=None):
+        acc_list = []
+        F1_list = []
 
         for pair in clusters_pairs:
 
@@ -79,9 +81,12 @@ class Performance_Evaluator():
                 s.compute_FOR()
 
                 s.compute_ACC()
+                acc_list.append(s.ACC)
                 s.compute_F1()
+                F1_list.append(s.F1)
 
             s.check_sanity()
             pair.append(s)
 
-        return clusters_pairs
+        return clusters_pairs, sum(acc_list)/len(acc_list), sum(F1_list)/len(F1_list)
+

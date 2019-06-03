@@ -70,9 +70,13 @@ class Evaluator():
 
         # Compute performance regarding input graphe
         perf_eval = Performance_Evaluator()
-        matching_with_perf = perf_eval.evaluate_performance(matching, nb_pictures)  # pair of clusters ==> Quality score for each
+        matching_with_perf, ACC, F1 = perf_eval.evaluate_performance(matching, nb_pictures)  # pair of clusters ==> Quality score for each
+
+        # Store performance in a file
         save_path_perf = get_homedir() / "carlhauser_client" / "perf.json"
-        json_import_export.save_json([ [str(e[0]), str(e[1]), str(e[2]) ] for e in matching_with_perf] , save_path_perf)
+        perfs = {"scores":[ [str(e[0]), str(e[1]), str(e[2]) ] for e in matching_with_perf]}
+        perfs["overview"] = {"ACC": ACC, "F1":F1}
+        json_import_export.save_json(perfs, save_path_perf)
         self.logger.debug(f"VisJS json saved in : {save_path_perf}")
 
         # ========= RESULT VISUALIZATON =========
@@ -88,15 +92,7 @@ class Evaluator():
         output_graph = merge_graphs(visjs, db_dump, matching)
         json_import_export.save_json(output_graph, save_path_json)
         self.logger.debug(f"DB Dump json saved in : {save_path_json}")
-        '''
-        save_path_json = get_homedir() / "carlhauser_client" / "visjs.json"
-        json_import_export.save_json(visjs.export_as_dict(), save_path_json)
-        self.logger.debug(f"VisJS json saved in : {save_path_json}")
 
-        save_path_json = get_homedir() / "carlhauser_client" / "db_export.json"
-        json_import_export.save_json(db_dump.export_as_dict(), save_path_json)
-        self.logger.debug(f"DB Dump json saved in : {save_path_json}")
-        '''
         # ==============================
 
         return
