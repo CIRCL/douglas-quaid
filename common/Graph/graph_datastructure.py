@@ -157,7 +157,7 @@ def merge_graphs(visjs_graph: GraphDataStruct, db_graph: GraphDataStruct, cluste
     tmp_dict["nodes"] = [node.export_as_dict() for node in visjs_graph.nodes.values()]
 
     # Construct cluster mapping db_id => vis_id
-    pprint.pprint(cluster_mapping)
+    # DEBUG pprint.pprint(cluster_mapping)
     mapping = {cluster_pair[1].id: cluster_pair[0].id for cluster_pair in cluster_mapping}
 
     # Create dict node_id => cluster_id for vis graph and db graph
