@@ -30,6 +30,8 @@ class API_caller():
         data = r.json()  # Check the JSON Response Content documentation below
         self.logger.info(data)
 
+        return data["Called_function"] == "ping"
+
     def add_picture_server(self, file_path: pathlib.Path):
         # Solve the file path
         if not file_path.is_absolute():
@@ -49,7 +51,7 @@ class API_caller():
                 data = r.json()  # Check the JSON Response Content documentation below
                 self.logger.info(r.content)
                 self.logger.info(data)
-
+                return data["Status"] == "Success", data["img_id"]
         # print(r.status_code, r.reason, r.text)
 
     def request_picture_server(self, file_path: pathlib.Path):
@@ -73,7 +75,7 @@ class API_caller():
                 data = r.json()  # Check the JSON Response Content documentation below
                 self.logger.info(data)
 
-                return data["request_id"]
+                return data["Status"] == "Success", data["request_id"]
 
 
     def retrieve_request_results(self, request_id):
@@ -90,4 +92,19 @@ class API_caller():
             data = r.json()  # Check the JSON Response Content documentation below
             self.logger.info(data)
 
-            return data["request_id"]
+            return data["Status"] == "Success", data["results"]
+
+    def export_db_server(self):
+        # Select the endpoint
+        target_url = self.server_url + "export_db"
+
+        # Send the request_id
+        with requests.Session() as s:
+            r = s.get(url=target_url, verify=self.cert)
+            self.logger.info(f"GET request results => {r.status_code} {r.reason} {r.text}")
+            self.logger.info(r.content)
+
+            data = r.json()  # Check the JSON Response Content documentation below
+            self.logger.info(data)
+
+            return data["Status"] == "Success", data["db"]

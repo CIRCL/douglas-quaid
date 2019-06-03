@@ -7,6 +7,7 @@ import os
 import pathlib
 import sys
 import time
+
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
 sys.path.append(os.path.abspath(os.path.pardir))
 from carlhauser_client.Helpers.environment_variable import get_homedir
@@ -36,9 +37,9 @@ class Evaluator():
     def launch(self, image_folder: pathlib.Path, visjs_json_path: pathlib.Path = None):
         # ========= MANUAL EVALUATION =========
 
-        if visjs_json_path is None :
+        if visjs_json_path is None:
             raise Exception(f"VisJS ground truth path not set. Impossible to evaluate.")
-        else :
+        else:
             # 1. Load pictures to visjs = node server.js -i ./../douglas-quaid/datasets/MINI_DATASET/ -t ./TMP -o ./TMP
             # 2. Cluster manually pictures in visjs = < Do manual stuff>
             # 3. Load json graphe
@@ -48,60 +49,45 @@ class Evaluator():
         # ========= AUTO EVALUATION =========
         # Send pictures to DB and get id mapping
         mapping_old_filename_to_new_id, nb_pictures = self.add_pictures_to_db(image_folder)
-        time.sleep(4) # Let time to add pictures to db
+        time.sleep(10)  # Let time to add pictures to db
 
         # Get a DB dump
         db_dump = self.get_db_dump_as_graph()
 
         # ========= COMPARISON =========
-        # converter = Cluster_converter()
-
-        self.logger.debug(f"VisJS json (loaded) : {pformat(visjs.export_as_dict())}\n")
-        self.logger.debug(f"ID_mapping_old_to_new : {pformat(mapping_old_filename_to_new_id)}\n")
-
         # Apply name mapping to dict (find back original names)
         visjs.replace_id_from_mapping(mapping_old_filename_to_new_id)
-
-        # visjs = converter.convert_names_old_to_new(mapping_old_filename_to_new_id, visjs)
-
-        self.logger.debug(f"VisJS json (converted) : {pformat(visjs.export_as_dict())}\n")
-        self.logger.debug(f"DB Dump json (loaded) : {pformat(db_dump.export_as_dict())}\n")
 
         # Get only list of clusters
         candidate = db_dump.get_clusters()
         original = visjs.get_clusters()
 
-        self.logger.debug(f"candidate list of cluster : {pformat(candidate)}\n")
-        self.logger.debug(f"original list of cluster : {pformat(original)}\n")
-
-        # candidate = converter.convert_dump_to_clusters(db_dump) # Convert dump
-        # original = converter.convert_visjs_to_clusters(visjs) # Convert visjs graph
-
         # Match clusters
         # 1. Manually ? (Go back to visjs + rename)
         # 2. Automatically ? (Number of common elements ~)
         matcher = Cluster_matcher()
-        matching = matcher.match_clusters(original, candidate) # Matching original + Candidate ==> Group them per pair
-
-        self.logger.debug(f"Matching : {pformat(matching)}\n")
+        matching = matcher.match_clusters(original, candidate)  # Matching original + Candidate ==> Group them per pair
 
         # Compute performance regarding input graphe
         perf_eval = Performance_Evaluator()
-        matching_with_perf = perf_eval.evaluate_performance(matching, nb_pictures) # pair of clusters ==> Quality score for each
-
-        self.logger.debug(f"Matching with perf : {pformat(matching_with_perf)}\n")
+        matching_with_perf = perf_eval.evaluate_performance(matching, nb_pictures)  # pair of clusters ==> Quality score for each
+        save_path_perf = get_homedir() / "carlhauser_client" / "perf.json"
+        json_import_export.save_json([ [str(e[0]), str(e[1]), str(e[2]) ] for e in matching_with_perf] , save_path_perf)
+        self.logger.debug(f"VisJS json saved in : {save_path_perf}")
 
         # ========= RESULT VISUALIZATON =========
 
         # Convert matching with performance to confusion matrix
         matrix_creator = ConfusionMatrixGenerator()
-        matrix_creator.create_and_export_confusion_matrix(original, candidate, matching, get_homedir()/"carlhauser_client"/"matrix.pdf") # Matching original + Candidate ==> Group them per pair
+        matrix_creator.create_and_export_confusion_matrix(original, candidate, matching, get_homedir() / "carlhauser_client" / "matrix.pdf")  # Matching original + Candidate ==> Group them per pair
 
         # Convert dumped graph to visjs graphe
         # ==> red if linked made by algo, but non existant + Gray, true link that should have been created (
         # ==> Green if linked made by algo and existant
-        json_import_export.save_json(visjs.export_as_dict(),  get_homedir()/"carlhauser_client"/"merged_graph.json")
-        self.logger.debug(f"VisJS json : {pformat(visjs.export_as_dict())}\n")
+        save_path_json = get_homedir() / "carlhauser_client" / "merged_graph.json"
+
+        json_import_export.save_json(visjs.export_as_dict(), save_path_json)
+        self.logger.debug(f"VisJS json saved in : {save_path_json}")
 
         # ==============================
 
@@ -124,7 +110,7 @@ class Evaluator():
                     ID_mapping_old_to_new[image_path.name] = res[1]
                     self.logger.info(f"Mapping from {image_path.name} to {res[1]}")
                     nb_pictures += 1
-                else :
+                else:
                     self.logger.error(f"Error during upload of {image_path.name} : {res[1]}")
 
         return ID_mapping_old_to_new, nb_pictures
