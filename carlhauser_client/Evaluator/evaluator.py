@@ -18,7 +18,7 @@ from carlhauser_client.Evaluator.confusion_matrix_generator import ConfusionMatr
 import carlhauser_server.Helpers.json_import_export as json_import_export
 from pprint import pformat
 
-from common.Graph.graph_datastructure import GraphDataStruct
+from common.Graph.graph_datastructure import GraphDataStruct, merge_graphs
 
 # from . import helpers
 
@@ -85,10 +85,18 @@ class Evaluator():
         # ==> red if linked made by algo, but non existant + Gray, true link that should have been created (
         # ==> Green if linked made by algo and existant
         save_path_json = get_homedir() / "carlhauser_client" / "merged_graph.json"
-
+        output_graph = merge_graphs(visjs, db_dump, matching)
+        json_import_export.save_json(output_graph, save_path_json)
+        self.logger.debug(f"DB Dump json saved in : {save_path_json}")
+        '''
+        save_path_json = get_homedir() / "carlhauser_client" / "visjs.json"
         json_import_export.save_json(visjs.export_as_dict(), save_path_json)
         self.logger.debug(f"VisJS json saved in : {save_path_json}")
 
+        save_path_json = get_homedir() / "carlhauser_client" / "db_export.json"
+        json_import_export.save_json(db_dump.export_as_dict(), save_path_json)
+        self.logger.debug(f"DB Dump json saved in : {save_path_json}")
+        '''
         # ==============================
 
         return
@@ -108,12 +116,14 @@ class Evaluator():
                 if res[0] == True:
                     # The upload had been successful
                     ID_mapping_old_to_new[image_path.name] = res[1]
+
                     self.logger.info(f"Mapping from {image_path.name} to {res[1]}")
                     nb_pictures += 1
                 else:
                     self.logger.error(f"Error during upload of {image_path.name} : {res[1]}")
 
         return ID_mapping_old_to_new, nb_pictures
+
 
     def get_db_dump_as_graph(self) -> GraphDataStruct:
         # Ask the DB to provide a dump of its actual state (douglas Quaid API) and
