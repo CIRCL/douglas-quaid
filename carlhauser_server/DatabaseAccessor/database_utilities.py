@@ -1,17 +1,14 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import argparse
+import logging
 # ==================== ------ STD LIBRARIES ------- ====================
 import os
 import pathlib
 import sys
-import time
+import uuid
 
 import redis
-import uuid
-import redis
-import logging
 
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
 sys.path.append(os.path.abspath(os.path.pardir))

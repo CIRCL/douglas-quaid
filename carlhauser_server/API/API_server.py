@@ -6,15 +6,15 @@
 # Inspired from : https://github.com/D4-project/IPASN-History/blob/master/website/web/__init__.py
 # If you are derouted by the lack of decorator, go there : https://stackoverflow.com/questions/17129573/can-i-use-external-methods-as-route-decorators-in-python-flask
 
+import argparse
 import logging
 import os
+import pathlib
 import sys
 import time
 
 # ==================== ------ STD LIBRARIES ------- ====================
 import flask
-import argparse
-import pathlib
 
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
 sys.path.append(os.path.abspath(os.path.pardir))

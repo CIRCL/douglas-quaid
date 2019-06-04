@@ -1,15 +1,18 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-# ==================== ------ STD LIBRARIES ------- ====================
-import sys, os
-import redis
-import logging
 import argparse
+import datetime
+import logging
+# ==================== ------ STD LIBRARIES ------- ====================
+import os
 import pathlib
-import time, datetime
-import objsize
+import sys
+import time
 import traceback
+
+import objsize
+import redis
 
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
 sys.path.append(os.path.abspath(os.path.pardir))
@@ -164,7 +167,7 @@ class Database_Worker():
         return self.get_dict_from_key(storage, id, pickle=True)
 
     def set_request_result(self, storage: redis.Redis, id, image_dict: dict):
-        #TODO : Create real request id ?
+        # TODO : Create real request id ?
 
         # Create tmp_id for this queue
         tmp_id = '|'.join([id, "result"])
@@ -172,7 +175,7 @@ class Database_Worker():
         return self.set_dict_to_key(storage, tmp_id, image_dict, pickle=True)
 
     def get_request_result(self, storage: redis.Redis, id):
-        #TODO : Create real request id ?
+        # TODO : Create real request id ?
 
         # Create tmp_id for this queue
         tmp_id = '|'.join([id, "result"])
@@ -188,14 +191,13 @@ class Database_Worker():
         return '|'.join([queue_name, id])
     '''
 
-
     # ==================== ------ RUNNABLE WORKER ------- ====================
 
     def is_halt_requested(self):
         # Check if a halt had been requested
         try:
             value = self.cache_db_decode.get("halt")
-            if not value:
+            if not value or value == "":
                 return False
             else:  # The key has been set to something, "Now","Yes", ...
                 self.logger.info("HALT key detected. Worker received stop signal ... ")
@@ -204,7 +206,7 @@ class Database_Worker():
             self.logger.error("Impossible to know if the worker has to halt. Please review 'halt' key")
 
     def run(self, sleep_in_sec: int):
-        try :
+        try:
 
             self.logger.info(f'Launching {self.__class__.__name__}')
             if self.input_queue is None:
@@ -219,7 +221,7 @@ class Database_Worker():
                     self.logger.error(f'Something went terribly wrong in {self.__class__.__name__} : {e}')
 
                 if not self.long_sleep(sleep_in_sec):
-                    self.logger.error(f'Halt detected in db worker. Exiting worker execution ... ')
+                    self.logger.warning(f'Halt detected in db worker. Exiting worker execution ... ')
                     break
 
         except KeyboardInterrupt:

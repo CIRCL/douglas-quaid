@@ -176,26 +176,35 @@ class Worker_StartStop(object, metaclass=Singleton):
         self.flask_worker_list.kill_all_processus()
 
     # ==================== ------ UTLITIES ON WORKERS ------- ====================
-    def wait_for_worker_shutdown(self):
+    def wait_for_worker_shutdown(self, max_wait=60):
         # Send signal to all processes to stop (via redis database). Wait while processes are still running,
         # in the limit of a maximal amount of time. Send back a boolean to notify if all workers had been stopped, or not.
         self.request_shutdown()
 
-        MAX_TIME = 60  # 60 sec
         start_time = time.time()
-
         self.logger.warning("Waiting for workers to stop ... ")
+
         # Wait for all workers to terminate
-        while len(self.get_list_running_workers()) != 0 and (time.time() - start_time) < MAX_TIME:
+        while len(self.get_list_running_workers()) != 0 and (time.time() - start_time) < max_wait:
             time.sleep(5)
             self.logger.warning(" Some still running...")
 
-        self.logger.warning("Waiting for workers to stop expired. Killing processus ... ")
-        # Time out = kill all processus and exit
-        for curr_worker_list in self.list_of_workers_list:
-            curr_worker_list.kill_all_processus()
+        # If exited previous loop, maybe all workers are shutdown
+        if len(self.get_list_running_workers()) == 0 :
+            self.logger.info("All processus had been stopped")
+            return True
 
-        return len(self.get_list_running_workers()) == 0
+        # Or exited privous loop due to timeout : some may be still running
+        else :
+            self.logger.info("Actual processus state ... ")
+            self.check_workers()
+
+            self.logger.warning("Waiting for workers to stop expired. Killing processus ... ")
+
+            # Time out = kill all processus and exit
+            for curr_worker_list in self.list_of_workers_list:
+                curr_worker_list.kill_all_processus()
+            return len(self.get_list_running_workers()) == 0
 
     def get_list_running_workers(self):
         # Returns the list of currently running workers
