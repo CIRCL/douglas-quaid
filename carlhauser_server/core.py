@@ -17,7 +17,7 @@ from carlhauser_server.Helpers.environment_variable import get_homedir
 import carlhauser_server.Helpers.database_start_stop as database_start_stop
 import carlhauser_server.Configuration.database_conf as database_conf
 
-from carlhauser_server.API.carlhauser_server import FlaskAppWrapper
+from carlhauser_server.API.API_server import FlaskAppWrapper
 import carlhauser_server.Configuration.webservice_conf as webservice_conf
 import carlhauser_server.Configuration.distance_engine_conf as distance_engine_conf
 
@@ -56,19 +56,19 @@ class launcher_handler(metaclass=template_singleton.Singleton):
         time.sleep(2)
         self.start_webservice(self.ws_conf, self.db_conf)
 
-        # If the webservice is down, then we want to shutdown everything
-        self.shutdown_workers(self.db_conf)
-        self.check_worker(self.db_conf)
+        # TODO : # If the webservice is down, then we want to shutdown everything
+        # self.shutdown_workers(self.db_conf)
+        # self.check_worker(self.db_conf)
 
     def stop(self):
 
         # Shutdown workers
-        if not self.shutdown_workers(self.db_conf):
-            self.check_worker(self.db_conf)
+        if not self.check_worker(self.db_conf):
+            self.shutdown_workers(self.db_conf)
         else:
             self.logger.warning("All workers had been successfully stopped.")
 
-        self.stop_webservice()  # TODO !
+        self.stop_webservice(self.db_conf)  # TODO !
         time.sleep(2)
 
         # Shutdown database
@@ -93,6 +93,15 @@ class launcher_handler(metaclass=template_singleton.Singleton):
 
         # Launch redis db (cache and storage)
         db_handler.stop_all_redis()
+
+    def flush_db(self, db_conf):
+        self.logger.info(f"Flushing redis database (x2) ...")
+
+        # Create database handler from configuration file
+        db_handler = database_start_stop.Database_StartStop(conf=db_conf)
+
+        # Flush redis db (cache and storage)
+        db_handler.flush_all_redis()
 
     # ==================== ------ DB WORKERS ------- ====================
 
@@ -120,37 +129,38 @@ class launcher_handler(metaclass=template_singleton.Singleton):
         worker_handler.start_n_feature_adder_worker(db_conf=db_conf, fe_conf=fe_conf, nb=fe_conf.FEATURE_ADDER_WORKER_NB)
         worker_handler.start_n_feature_request_worker(db_conf=db_conf, fe_conf=fe_conf, nb=fe_conf.FEATURE_REQUEST_WORKER_NB)
 
-    # ==================== ------ UTLITIES ON WORKERS ------- ====================
-
-    def check_worker(self, db_conf):
-        self.logger.info(f"Checking for workers ...")
-        worker_handler = worker_start_stop.Worker_StartStop(db_conf)
-        worker_handler.check_worker()
-
-    def shutdown_workers(self, db_conf):
-        self.logger.info(f"Requesting workers to stop ...")
-        worker_handler = worker_start_stop.Worker_StartStop(db_conf)
-        worker_handler.wait_for_worker_shutdown()
-
     # ==================== ------ WEBSERVICE ------- ====================
 
     def start_webservice(self, ws_conf, db_conf):
         self.logger.info(f"Launching webservice ...")
 
         # Create configuration file
-        ws_conf.CERT_FILE = pathlib.Path(ws_conf.CERT_FILE).resolve()
-        ws_conf.KEY_FILE = pathlib.Path(ws_conf.KEY_FILE).resolve()
+        ws_conf.CERT_FILE = ws_conf.CERT_FILE.resolve()
+        ws_conf.KEY_FILE = ws_conf.KEY_FILE.resolve()
 
-        # Create Flask endpoint from configuration files
-        api = FlaskAppWrapper('api', conf=ws_conf, db_conf=db_conf)
-        api.add_all_endpoints()
+        # Get the Singleton instance of worker handler and start N Flask workers
+        worker_handler = worker_start_stop.Worker_StartStop(db_conf)
+        worker_handler.start_n_flask_worker(db_conf=db_conf, ws_conf=ws_conf, nb=1)
 
-        # Run Flask API endpoint
-        api.run()  # debug=True
-
-    def stop_webservice(self):
+    def stop_webservice(self, db_conf):
         self.logger.info(f"Stopping webservice ...")
-        # Do something ??
+
+        # Get the Singleton instance of worker handler and start N Flask workers
+        worker_handler = worker_start_stop.Worker_StartStop(db_conf)
+        worker_handler.stop_flask_workers()
+
+    # ==================== ------ UTLITIES ON WORKERS ------- ====================
+
+    def check_worker(self, db_conf):
+        self.logger.info(f"Checking for workers ...")
+        worker_handler = worker_start_stop.Worker_StartStop(db_conf)
+        return worker_handler.check_worker()
+
+    def shutdown_workers(self, db_conf):
+        self.logger.info(f"Requesting workers to stop ...")
+        worker_handler = worker_start_stop.Worker_StartStop(db_conf)
+        worker_handler.wait_for_worker_shutdown()
+
 
 
 def exit_gracefully(signum, frame):
@@ -180,6 +190,11 @@ if __name__ == '__main__':
         # original_sigint = signal.getsignal(signal.SIGINT)  # Storing original
         signal.signal(signal.SIGINT, exit_gracefully)  # Setting custom
         launcher.launch()
+        time.sleep(1)
+        print("Press any key to stop ... ")
+        input()
+        launcher.stop()
+
     except KeyboardInterrupt:
         print('Interruption detected')
         try:

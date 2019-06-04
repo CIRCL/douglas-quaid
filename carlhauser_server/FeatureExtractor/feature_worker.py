@@ -2,7 +2,8 @@
 # -*- coding: utf-8 -*-
 
 # ==================== ------ STD LIBRARIES ------- ====================
-import sys, os
+import sys
+import os
 import redis
 import logging
 import time
@@ -81,8 +82,8 @@ class Feature_Worker(database_accessor.Database_Worker):
 # Launcher for this worker. Launch this file to launch a worker
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Launch a worker for a specific task.')
-    parser.add_argument("-c", '--configuration_file', dest="conf_db", type=dir_path, help='DB_configuration_file stored as json. Path')
-    parser.add_argument("-cfe", '--feature_conf_file', dest="conf_fe", type=dir_path, help='Feature_Extrator_configuration stored as json. Path')
+    parser.add_argument("-dbc", '--configuration_file', dest="conf_db", type=dir_path, help='DB_configuration_file stored as json. Path')
+    parser.add_argument("-fec", '--feature_conf_file', dest="conf_fe", type=dir_path, help='Feature_Extrator_configuration stored as json. Path')
     parser.add_argument("-m", '--mode', dest="mode", required=True, type=str, choices={"ADD", "REQUEST"}, help='Specify queues to work from/to for the worker.')
     # parser.add_argument("-iq", '--input_queue', dest="input_queue", type=str, help='Specify input queue')
     # parser.add_argument("-oq", '--output_queue', dest="output_queue", type=str, help='Specify output queue')

@@ -21,7 +21,6 @@ import carlhauser_server.Configuration.database_conf as database_conf
 
 class Database_StartStop(object, metaclass=Singleton):
     # Singleton class that handle database access
-    # _instance = None
 
     def __init__(self, conf: database_conf):
         # STD attributes
