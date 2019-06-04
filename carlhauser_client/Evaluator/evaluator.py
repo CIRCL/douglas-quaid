@@ -34,7 +34,10 @@ class Evaluator():
         self.logger = logging.getLogger(__name__)
         self.API = self.get_api()
 
-    def launch(self, image_folder: pathlib.Path, visjs_json_path: pathlib.Path = None):
+    def launch(self, image_folder: pathlib.Path, visjs_json_path: pathlib.Path, output_path: pathlib.Path):
+        # Compute a complete run of the library on a folder, with a ground truth file, to compute metrics about the quality of the matching
+        # return metric
+
         # ========= MANUAL EVALUATION =========
 
         if visjs_json_path is None:
@@ -70,32 +73,29 @@ class Evaluator():
 
         # Compute performance regarding input graphe
         perf_eval = Performance_Evaluator()
-        matching_with_perf, ACC, F1 = perf_eval.evaluate_performance(matching, nb_pictures)  # pair of clusters ==> Quality score for each
+        matching_with_perf = perf_eval.evaluate_performance(matching, nb_pictures)  # pair of clusters ==> Quality score for each
 
         # Store performance in a file
-        save_path_perf = get_homedir() / "carlhauser_client" / "perf.json"
-        perfs = {"scores":[ [str(e[0]), str(e[1]), str(e[2]) ] for e in matching_with_perf]}
-        perfs["overview"] = {"ACC": ACC, "F1":F1}
-        json_import_export.save_json(perfs, save_path_perf)
-        self.logger.debug(f"VisJS json saved in : {save_path_perf}")
+        save_path_perf = output_path / "perf.json"
+        perf_overview = perf_eval.save_perf_results(save_path_perf)
 
         # ========= RESULT VISUALIZATON =========
 
         # Convert matching with performance to confusion matrix
         matrix_creator = ConfusionMatrixGenerator()
-        matrix_creator.create_and_export_confusion_matrix(original, candidate, matching, get_homedir() / "carlhauser_client" / "matrix.pdf")  # Matching original + Candidate ==> Group them per pair
+        matrix_creator.create_and_export_confusion_matrix(original, candidate, matching, output_path / "matrix.pdf")  # Matching original + Candidate ==> Group them per pair
 
         # Convert dumped graph to visjs graphe
         # ==> red if linked made by algo, but non existant + Gray, true link that should have been created (
         # ==> Green if linked made by algo and existant
-        save_path_json = get_homedir() / "carlhauser_client" / "merged_graph.json"
+        save_path_json = output_path / "merged_graph.json"
         output_graph = merge_graphs(visjs, db_dump, matching)
         json_import_export.save_json(output_graph, save_path_json)
         self.logger.debug(f"DB Dump json saved in : {save_path_json}")
 
         # ==============================
 
-        return
+        return perf_overview
 
     def add_pictures_to_db(self, image_folder: pathlib.Path) -> (dict, int):
         # Upload pictures to Redis Database (douglas Quaid API) and
@@ -138,7 +138,7 @@ class Evaluator():
 
     def get_api(self):
         # Generate the API access point link to the hardcoded server
-        cert = pathlib.Path("./cert.pem").resolve()
+        cert = (get_homedir() / "carlhauser_client" / "cert.pem").resolve()
 
         # See : https://stackoverflow.com/questions/10667960/python-requests-throwing-sslerror
         # To create : openssl req -x509 -newkey rsa:4096 -nodes -out cert.pem -keyout key.pem -days 365
@@ -151,4 +151,5 @@ if __name__ == '__main__':
     evaluator = Evaluator()
     image_folder = get_homedir() / "datasets" / "MINI_DATASET"
     gt = get_homedir() / "datasets" / "MINI_DATASET_VISJS.json"
-    evaluator.launch(image_folder, gt)
+    output_path =  get_homedir() / "carlhauser_client"
+    evaluator.launch(image_folder, gt, output_path)

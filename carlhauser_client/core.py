@@ -48,7 +48,7 @@ class launcher_handler():
 
     def get_api(self):
         # Generate the API access point link to the hardcoded server
-        cert = pathlib.Path("./cert.pem").resolve()
+        cert = (get_homedir() / "carlhauser_client" / "cert.pem").resolve()
 
         # See : https://stackoverflow.com/questions/10667960/python-requests-throwing-sslerror
         # To create : openssl req -x509 -newkey rsa:4096 -nodes -out cert.pem -keyout key.pem -days 365
