@@ -9,6 +9,7 @@ import time
 import redis
 import logging
 import datetime
+from typing import List
 
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
 sys.path.append(os.path.abspath(os.path.pardir))
@@ -37,7 +38,6 @@ class Worker_StartStop(object, metaclass=Singleton):
         # self.worker_path = get_homedir() / pathlib.Path('carlhauser_server', 'DatabaseAccessor', 'datanase_worker.py')
         self.adder_worker_path = get_homedir() / pathlib.Path('carlhauser_server', 'DatabaseAccessor', 'database_adder.py')
         self.requester_worker_path = get_homedir() / pathlib.Path('carlhauser_server', 'DatabaseAccessor', 'database_requester.py')
-
         self.feature_worker_path = get_homedir() / pathlib.Path('carlhauser_server', 'FeatureExtractor', 'feature_worker.py')
 
         # Worker lists
@@ -60,9 +60,55 @@ class Worker_StartStop(object, metaclass=Singleton):
 
     # TODO : The four next functions have a LOT of duplicated code. Idea to factorize ?
 
+    def start_and_add_n_worker(self, worker_path : pathlib.Path, list_to_add : List,
+                               db_conf: database_conf = None, dist_conf : distance_engine_conf = None, fe_conf :feature_extractor_conf = None,
+                               mode = None ,
+                               nb=1):
+        # Add <nb> workers to the <list_to_add> workers lists, by launching <worker_path> as a subprocess and giving <XX_conf> as parameters (many at once is possible)
+        arg_list = [str(worker_path)]
+
+        # Save current configuration
+        if db_conf is not None :
+            tmp_db_conf_path = get_homedir() / "tmp_db_conf.json"
+            json_import_export.save_json(db_conf, file_path=tmp_db_conf_path)
+            arg_list.append('-dbc')
+            arg_list.append(str(tmp_db_conf_path.resolve()))
+
+        if dist_conf is not None :
+            tmp_dist_conf_path = get_homedir() / "tmp_dist_conf.json"
+            json_import_export.save_json(dist_conf, file_path=tmp_dist_conf_path)
+            arg_list.append('-distc')
+            arg_list.append(str(tmp_dist_conf_path.resolve()))
+
+        if fe_conf is not None :
+            tmp_fe_conf_path = get_homedir() / "tmp_fe_conf.json"
+            json_import_export.save_json(fe_conf, file_path=tmp_fe_conf_path)
+            arg_list.append('-fec')
+            arg_list.append(str(tmp_fe_conf_path.resolve()))
+
+        if mode is not None :
+            arg_list.append('-m')
+            arg_list.append(mode)
+
+        # Add n workers wih this configuration
+        for i in range(nb):
+            self.logger.info(f"> Adding {worker_path.name} Worker {i} ...")
+
+            init_date = datetime.datetime.now()
+
+            # Open the worker subprocess with the configuration argument
+            proc_worker = subprocess.Popen(arg_list, stdout=sys.stdout, stderr=sys.stderr) # ,stderr = subprocess.PIPE ?
+            # proc_worker.communicate()
+
+            # Store the reference to the worker
+            list_to_add.append([proc_worker, init_date])
+
     def start_n_adder_worker(self, db_conf: database_conf, dist_conf : distance_engine_conf, fe_conf :feature_extractor_conf, nb=1):
         # Add N worker and return the current list of worker
 
+        self.start_and_add_n_worker(self.adder_worker_path, list_to_add=self.adder_worker_list, db_conf=db_conf, dist_conf=dist_conf , fe_conf=fe_conf, nb=nb)
+
+        '''
         # Save current configuration
         tmp_db_conf_path = get_homedir() / "tmp_db_conf.json"
         json_import_export.save_json(db_conf, file_path=tmp_db_conf_path)
@@ -82,12 +128,16 @@ class Worker_StartStop(object, metaclass=Singleton):
 
             # Store the reference to the worker
             self.adder_worker_list.append([proc_worker, init_date])
+        '''
 
         return self.adder_worker_list
 
     def start_n_requester_worker(self, db_conf: database_conf, dist_conf : distance_engine_conf, fe_conf : feature_extractor_conf, nb=1):
         # Add N worker and return the current list of worker
 
+        self.start_and_add_n_worker(self.requester_worker_path, list_to_add=self.requester_worker_list, db_conf=db_conf, dist_conf=dist_conf , fe_conf=fe_conf, nb=nb)
+
+        '''
         # Save current configuration
         tmp_db_conf_path = get_homedir() / "tmp_db_conf.json"
         json_import_export.save_json(db_conf, file_path=tmp_db_conf_path)
@@ -107,12 +157,18 @@ class Worker_StartStop(object, metaclass=Singleton):
 
             # Store the reference to the worker
             self.requester_worker_list.append([proc_worker, init_date])
+        '''
 
         return self.requester_worker_list
 
     # ==================== ------ FEATURE WORKERS ------- ====================
 
     def start_n_feature_adder_worker(self, db_conf: database_conf, fe_conf: feature_extractor_conf, nb=1):
+
+        self.start_and_add_n_worker(self.feature_worker_path, list_to_add=self.feature_adder_worker_list,
+                                    db_conf=db_conf, fe_conf=fe_conf, mode="ADD", nb=nb)
+
+        '''
         # Save current configuration
         tmp_db_conf_path = get_homedir() / "tmp_db_conf.json"
         json_import_export.save_json(db_conf, file_path=tmp_db_conf_path)
@@ -131,11 +187,16 @@ class Worker_StartStop(object, metaclass=Singleton):
 
             # Store the reference to the worker
             self.feature_adder_worker_list.append([proc_worker, init_date])
+        '''
 
         return self.feature_adder_worker_list
 
     def start_n_feature_request_worker(self, db_conf: database_conf, fe_conf: feature_extractor_conf, nb=1):
 
+        self.start_and_add_n_worker(self.feature_worker_path, list_to_add=self.feature_requester_worker_list,
+                                    db_conf=db_conf, fe_conf=fe_conf, mode="REQUEST", nb=nb)
+
+        '''
         # Save current configuration
         tmp_db_conf_path = get_homedir() / "tmp_db_conf.json"
         json_import_export.save_json(db_conf, file_path=tmp_db_conf_path)
@@ -154,6 +215,7 @@ class Worker_StartStop(object, metaclass=Singleton):
 
             # Store the reference to the worker
             self.feature_requester_worker_list.append([proc_worker, init_date])
+        '''
 
         return self.feature_requester_worker_list
 

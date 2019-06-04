@@ -34,8 +34,10 @@ class Database_StartStop(object, metaclass=Singleton):
 
         self.launch_cache_script_path = get_homedir() / self.conf.DB_SCRIPTS_PATH / "run_redis_cache.sh"
         self.shutdown_cache_script_path = get_homedir() / self.conf.DB_SCRIPTS_PATH / "shutdown_redis_cache.sh"
+        self.flush_cache_script_path = get_homedir() / self.conf.DB_SCRIPTS_PATH / "flush_redis_cache.sh"
         self.launch_storage_script_path = get_homedir() / self.conf.DB_SCRIPTS_PATH / "run_redis_storage.sh"
         self.shutdown_storage_script_path = get_homedir() / self.conf.DB_SCRIPTS_PATH / "shutdown_redis_storage.sh"
+        self.flush_storage_script_path = get_homedir() / self.conf.DB_SCRIPTS_PATH / "flush_redis_storage.sh"
 
         # Only for test purposes
         self.test_socket_path = get_homedir() / self.conf.DB_SOCKETS_PATH / 'test.sock'
@@ -71,6 +73,9 @@ class Database_StartStop(object, metaclass=Singleton):
     def shutdown_cache(self):
         subprocess.Popen([str(self.shutdown_cache_script_path)], cwd=(self.shutdown_cache_script_path.parent))
 
+    def flush_cache(self):
+        subprocess.Popen([str(self.flush_cache_script_path)], cwd=(self.flush_cache_script_path.parent))
+
     # ==================== ------ STORAGE MNGT ------- ====================
 
     def launch_storage(self):
@@ -80,6 +85,9 @@ class Database_StartStop(object, metaclass=Singleton):
 
     def shutdown_storage(self):
         subprocess.Popen([self.shutdown_storage_script_path], cwd=(self.shutdown_storage_script_path.parent))
+
+    def flush_storage(self):
+        subprocess.Popen([self.flush_storage_script_path], cwd=(self.flush_storage_script_path.parent))
 
     # ==================== ------ ALL MNGT ------- ====================
 
@@ -113,3 +121,7 @@ class Database_StartStop(object, metaclass=Singleton):
     def stop_all_redis(self):
         self.shutdown_cache()
         self.shutdown_storage()
+
+    def flush_all_redis(self):
+        self.flush_cache()
+        self.flush_storage()
