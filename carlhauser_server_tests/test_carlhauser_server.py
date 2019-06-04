@@ -32,7 +32,7 @@ class testCarlHauserServer(unittest.TestCase):
         self.db_handler.shutdown_test_script_path = get_homedir() / self.db_conf.DB_SCRIPTS_PATH / "shutdown_redis_test.sh"
 
         # Launch test Redis DB
-        if not self.db_handler.check_running('test'):
+        if not self.db_handler.is_running('test'):
             subprocess.Popen([str(self.db_handler.launch_test_script_path)], cwd=(self.db_handler.launch_test_script_path.parent))
 
         # Time for the socket to be opened
@@ -40,7 +40,7 @@ class testCarlHauserServer(unittest.TestCase):
 
     def tearDown(self):
         # Shutdown test Redis DB
-        if self.db_handler.check_running('test'):
+        if self.db_handler.is_running('test'):
             subprocess.Popen([str(self.db_handler.shutdown_test_script_path)], cwd=self.db_handler.test_socket_path.parent)
 
         # If start and stop are too fast, then it can't stop nor start, as it can't connect
