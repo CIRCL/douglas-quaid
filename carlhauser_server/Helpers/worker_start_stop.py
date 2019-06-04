@@ -1,15 +1,17 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-# ==================== ------ STD LIBRARIES ------- ====================
-import sys, os
-import subprocess
-import pathlib
-import time
-import redis
-import logging
 import datetime
+import logging
+# ==================== ------ STD LIBRARIES ------- ====================
+import os
+import pathlib
+import subprocess
+import sys
+import time
 from typing import List
+
+import redis
 
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
 sys.path.append(os.path.abspath(os.path.pardir))
@@ -23,8 +25,12 @@ import carlhauser_server.Configuration.feature_extractor_conf as feature_extract
 import carlhauser_server.Configuration.webservice_conf as webservice_conf
 import carlhauser_server.Helpers.database_start_stop as database_start_stop
 
+import carlhauser_server.Helpers.Processus.worker_processus as worker_processus
+import carlhauser_server.Helpers.Processus.processus_list as processus_list
+
 
 # ==================== ------ PATHS ------- ====================
+
 
 class Worker_StartStop(object, metaclass=Singleton):
     # Singleton class that handle database access
@@ -44,11 +50,13 @@ class Worker_StartStop(object, metaclass=Singleton):
 
         # Worker lists
         # self.worker_list = []
-        self.adder_worker_list = []
-        self.requester_worker_list = []
-        self.feature_adder_worker_list = []
-        self.feature_requester_worker_list = []
-        self.flask_worker_list = []
+        self.adder_worker_list = processus_list.ProcessusList("Adder Worker", [])
+        self.requester_worker_list = processus_list.ProcessusList("Requester Worker", [])
+        self.feature_adder_worker_list = processus_list.ProcessusList("Feature Adder Worker", [])
+        self.feature_requester_worker_list = processus_list.ProcessusList("Feature Requester Worker", [])
+        self.flask_worker_list = processus_list.ProcessusList("Flask/API Worker", [])
+        self.list_of_workers_list = [self.adder_worker_list, self.requester_worker_list, self.feature_adder_worker_list,
+                                     self.feature_requester_worker_list, self.flask_worker_list]
 
         # Redis access
         self.redis_cache = get_homedir() / self.conf.DB_DATA_PATH
@@ -104,64 +112,68 @@ class Worker_StartStop(object, metaclass=Singleton):
             init_date = datetime.datetime.now()
 
             # Open the worker subprocess with the configuration argument
-            proc_worker = subprocess.Popen(arg_list, stdout=sys.stdout, stderr=sys.stderr)
+            proc_worker = subprocess.Popen(arg_list, stdout=sys.stdout, stderr=sys.stderr, preexec_fn=os.setsid)
             # ,stderr = subprocess.PIPE ?
             # proc_worker.communicate()
 
             # Store the reference to the worker
-            list_to_add.append([proc_worker, init_date])
+            list_to_add.append(worker_processus.WorkerProcessus(proc_worker, init_date))
 
     # ==================== ------ DB WORKERS ------- ====================
 
     def start_n_adder_worker(self, db_conf: database_conf, dist_conf: distance_engine_conf, fe_conf: feature_extractor_conf, nb=1):
         # Add N worker and return the current list of worker
-
-        self.start_and_add_n_worker(self.adder_worker_path, list_to_add=self.adder_worker_list,
+        self.start_and_add_n_worker(self.adder_worker_path, list_to_add=self.adder_worker_list.processus_list,
                                     db_conf=db_conf, dist_conf=dist_conf, fe_conf=fe_conf, nb=nb)
 
         return self.adder_worker_list
 
     def start_n_requester_worker(self, db_conf: database_conf, dist_conf: distance_engine_conf, fe_conf: feature_extractor_conf, nb=1):
         # Add N worker and return the current list of worker
-
-        self.start_and_add_n_worker(self.requester_worker_path, list_to_add=self.requester_worker_list,
+        self.start_and_add_n_worker(self.requester_worker_path, list_to_add=self.requester_worker_list.processus_list,
                                     db_conf=db_conf, dist_conf=dist_conf, fe_conf=fe_conf, nb=nb)
 
         return self.requester_worker_list
+
+    def stop_adder_worker(self):
+        self.adder_worker_list.kill_all_processus()
+
+    def stop_requester_worker(self):
+        self.requester_worker_list.kill_all_processus()
 
     # ==================== ------ FEATURE WORKERS ------- ====================
 
     def start_n_feature_adder_worker(self, db_conf: database_conf, fe_conf: feature_extractor_conf, nb=1):
         # Add N worker and return the current list of worker
-
-        self.start_and_add_n_worker(self.feature_worker_path, list_to_add=self.feature_adder_worker_list,
+        self.start_and_add_n_worker(self.feature_worker_path, list_to_add=self.feature_adder_worker_list.processus_list,
                                     db_conf=db_conf, fe_conf=fe_conf, mode="ADD", nb=nb)
 
         return self.feature_adder_worker_list
 
     def start_n_feature_request_worker(self, db_conf: database_conf, fe_conf: feature_extractor_conf, nb=1):
         # Add N worker and return the current list of worker
-
-        self.start_and_add_n_worker(self.feature_worker_path, list_to_add=self.feature_requester_worker_list,
+        self.start_and_add_n_worker(self.feature_worker_path, list_to_add=self.feature_requester_worker_list.processus_list,
                                     db_conf=db_conf, fe_conf=fe_conf, mode="REQUEST", nb=nb)
 
         return self.feature_requester_worker_list
+
+    def stop_feature_adder_worker(self):
+        self.feature_adder_worker_list.kill_all_processus()
+
+    def stop_feature_request_worker(self):
+        self.feature_requester_worker_list.kill_all_processus()
 
     # ==================== ------ FLASK/API WORKERS ------- ====================
 
     def start_n_flask_worker(self, db_conf: database_conf, ws_conf: webservice_conf, nb=1):
         # Add N worker and return the current list of worker
-
-        self.start_and_add_n_worker(self.flask_worker_path, list_to_add=self.flask_worker_list,
+        self.start_and_add_n_worker(self.flask_worker_path, list_to_add=self.flask_worker_list.processus_list,
                                     db_conf=db_conf, ws_conf=ws_conf, nb=nb)
 
         return self.flask_worker_list
 
     def stop_flask_workers(self):
-        # End all flask worker
-
-        for proc in self.flask_worker_list:
-            proc[0].kill()
+        self.flask_worker_list.kill_all_processus()
 
     # ==================== ------ UTLITIES ON WORKERS ------- ====================
     def wait_for_worker_shutdown(self):
@@ -178,51 +190,36 @@ class Worker_StartStop(object, metaclass=Singleton):
             time.sleep(5)
             self.logger.warning(" Some still running...")
 
-        ''' # TODO : Clean way to handle all processes ? 
-        self.logger.warning("Force kill in 3,2,1 ... ")
-        for proc in self.flask_worker_list :
-            proc[1].kill()
-        '''
+        self.logger.warning("Waiting for workers to stop expired. Killing processus ... ")
+        # Time out = kill all processus and exit
+        for curr_worker_list in self.list_of_workers_list:
+            curr_worker_list.kill_all_processus()
 
         return len(self.get_list_running_workers()) == 0
 
     def get_list_running_workers(self):
-        all_workers = []
+        # Returns the list of currently running workers
+        running_workers = []
 
         # For each list of process, and then each process, check if it's alive
-        for workers in [self.adder_worker_list, self.requester_worker_list, self.feature_adder_worker_list, self.feature_requester_worker_list]:
-            for worker in workers:
-                poll = worker[0].poll()
-                if poll is None:
-                    # All running workers are there
-                    all_workers.append(worker)
+        for curr_worker_list in self.list_of_workers_list:
+            running_workers.extend(curr_worker_list.get_running_processus())
 
-        return all_workers
+        return running_workers
 
-    def request_shutdown(self):
-        # Post a HALT key in all redis instance. Worker should react "quickly" and stop themselves
-        self.cache_db.set("halt", "true")
-        self.storage_db.set("halt", "true")
-
-    def check_worker(self):
+    def check_workers(self):
         # Check if workers are alive, and return True if all worker are down
 
         all_ended = True
 
-        worker_list = [{"list": self.adder_worker_list, "name": "Adder_worker"},  # ==== CHECK for ADDER WORKERS
-                       {"list": self.requester_worker_list, "name": "Request_worker"},  # ==== CHECK for REQUESTER WORKERS
-                       {"list": self.feature_adder_worker_list, "name": "Feature_Adder_worker"},  # ==== CHECK for FEATURE ADDER WORKERS
-                       {"list": self.feature_requester_worker_list, "name": "Feature_Requester_worker"},  # ==== CHECK for FEATURE REQUEST WORKERS
-                       {"list": self.flask_worker_list, "name": "Flask_worker"}, ]  # ==== CHECK for Flask
-
         # For all kind of workers
-        for curr_worker_list in worker_list:
-            self.logger.info(f"{len(curr_worker_list['list'])} worker(s) are {curr_worker_list['name']}")
+        for curr_worker_list in self.list_of_workers_list:
+            self.logger.info(f"{len(curr_worker_list.processus_list)} worker(s) are presents in {curr_worker_list.list_name}.")
 
-            for i, curr_proc in enumerate(curr_worker_list['list']):
-                curr_str = f"==> Worker {i} : Launched on {curr_proc[1]}"
+            for i, curr_proc in enumerate(curr_worker_list.processus_list):
+                curr_str = f"==> Worker {i} : Launched on {curr_proc}"
 
-                if curr_proc[0].poll() is None:
+                if curr_proc.is_running():
                     curr_str += " status : running ..."
                     all_ended = False
                 else:
@@ -231,3 +228,15 @@ class Worker_StartStop(object, metaclass=Singleton):
                 self.logger.info(curr_str)
 
         return all_ended
+
+    # ==================== ------ SHUTDOWN WORKERS ------- ====================
+
+    def request_shutdown(self):
+        # Post a HALT key in all redis instance. Worker should react "quickly" and stop themselves
+        self.cache_db.set("halt", "true")
+        self.storage_db.set("halt", "true")
+
+    def flush_workers(self):
+        # Kill each worker and then empty lists. Very violent.
+        for curr_worker_list in self.list_of_workers_list:
+            curr_worker_list.flush_all_processus()
