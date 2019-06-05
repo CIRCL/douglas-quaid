@@ -118,18 +118,18 @@ class ParameterExplorer():
             # ========= TIDY UP FOR NEXT ROUND =========
 
             # Flush server
-            self.server_launcher.flush_db(self.server_launcher.db_conf)
+            self.server_launcher.flush_db()
 
             # Shutdown server
             self.server_launcher.stop()
 
             # Wait for shutdown (wait for workers to shutdown, usually longer than db)
-            while not self.server_launcher.check_worker(self.server_launcher.db_conf):
+            while not self.server_launcher.check_worker():
                 time.sleep(1)  # Enough ?
                 self.logger.warning("Waiting for workers to stop .. ")
 
             # Remove all workers
-            self.server_launcher.flush_workers(self.server_launcher.db_conf)
+            self.server_launcher.flush_workers()
             time.sleep(2)
 
         self.print_graph(perfs, output_folder)
