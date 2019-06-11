@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-# ==================== ------ STD LIBRARIES ------- ====================
-import sys, os
-import subprocess
-import pathlib
-import time
-import redis
 import logging
+# ==================== ------ STD LIBRARIES ------- ====================
+import os
+import subprocess
+import sys
+import time
+
+import redis
 
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
 sys.path.append(os.path.abspath(os.path.pardir))
@@ -21,7 +22,6 @@ import carlhauser_server.Configuration.database_conf as database_conf
 
 class Database_StartStop(object, metaclass=Singleton):
     # Singleton class that handle database access
-    # _instance = None
 
     def __init__(self, conf: database_conf):
         # STD attributes
@@ -32,10 +32,15 @@ class Database_StartStop(object, metaclass=Singleton):
         self.cache_socket_path = get_homedir() / self.conf.DB_SOCKETS_PATH / 'cache.sock'
         self.storage_socket_path = get_homedir() / self.conf.DB_SOCKETS_PATH / 'storage.sock'
 
+        # Cache scripts
         self.launch_cache_script_path = get_homedir() / self.conf.DB_SCRIPTS_PATH / "run_redis_cache.sh"
         self.shutdown_cache_script_path = get_homedir() / self.conf.DB_SCRIPTS_PATH / "shutdown_redis_cache.sh"
+        self.flush_cache_script_path = get_homedir() / self.conf.DB_SCRIPTS_PATH / "flush_redis_cache.sh"
+
+        # Storage scripts
         self.launch_storage_script_path = get_homedir() / self.conf.DB_SCRIPTS_PATH / "run_redis_storage.sh"
         self.shutdown_storage_script_path = get_homedir() / self.conf.DB_SCRIPTS_PATH / "shutdown_redis_storage.sh"
+        self.flush_storage_script_path = get_homedir() / self.conf.DB_SCRIPTS_PATH / "flush_redis_storage.sh"
 
         # Only for test purposes
         self.test_socket_path = get_homedir() / self.conf.DB_SOCKETS_PATH / 'test.sock'
@@ -50,7 +55,78 @@ class Database_StartStop(object, metaclass=Singleton):
         }
         return str(mapping[name])
 
-    def check_running(self, name: str) -> bool:
+    # ==================== ------ CACHE MNGT ------- ====================
+
+    def launch_cache(self):
+        # Launch cache instance of redis. Uses a launch script
+        if not self.is_running('cache'):
+            subprocess.Popen([str(self.launch_cache_script_path)], cwd=self.launch_cache_script_path.parent)
+
+    def shutdown_cache(self):
+        subprocess.Popen([str(self.shutdown_cache_script_path)], cwd=self.shutdown_cache_script_path.parent)
+
+    def flush_cache(self):
+        subprocess.Popen([str(self.flush_cache_script_path)], cwd=self.flush_cache_script_path.parent)
+
+    # ==================== ------ STORAGE MNGT ------- ====================
+
+    def launch_storage(self):
+        # Launch storage instance of redis. Uses a launch script
+        if not self.is_running('storage'):
+            subprocess.Popen([str(self.launch_storage_script_path)], cwd=self.launch_storage_script_path.parent)
+
+    def shutdown_storage(self):
+        subprocess.Popen([self.shutdown_storage_script_path], cwd=self.shutdown_storage_script_path.parent)
+
+    def flush_storage(self):
+        subprocess.Popen([self.flush_storage_script_path], cwd=self.flush_storage_script_path.parent)
+
+    # ==================== ------ CACHE AND STORAGE MNGT ------- ====================
+
+    def launch_all_redis(self):
+        # Launch the cache instance of redis, and the storage instance of redis
+        self.launch_cache()
+        self.launch_storage()
+
+    def stop_all_redis(self):
+        self.shutdown_cache()
+        self.shutdown_storage()
+
+    def flush_all_redis(self):
+        self.flush_cache()
+        self.flush_storage()
+
+    # ==================== ------ CACHE AND STORAGE CHECKS ------- ====================
+
+    def wait_until_running(self, name: str, timeout: int = 60) -> bool:
+        # Wait until the database is launch (= answer to a ping)
+        # Put timeout -1 if you don't want to function to timeout
+
+        start = time.time()
+
+        while not self.is_running(name):
+            time.sleep(5)
+            if timeout != -1 and abs(time.time() - start) > timeout:
+                self.logger.warning("Waiting for Redis database to run timeouted.")
+                return False
+
+        return True
+
+    def wait_until_stopped(self, name: str, timeout: int = 60) -> bool:
+        # Wait until the database is stopped (= does not answer to a ping)
+        # Put timeout -1 if you don't want to function to timeout
+
+        start = time.time()
+
+        while self.is_running(name):
+            time.sleep(5)
+            if timeout != -1 and abs(time.time() - start) > timeout:
+                self.logger.warning("Waiting for Redis database to stop timeouted.")
+                return False
+
+        return True
+
+    def is_running(self, name: str) -> bool:
         socket_path = self.get_socket_path(name)
         try:
             r = redis.Redis(unix_socket_path=socket_path)
@@ -61,40 +137,14 @@ class Database_StartStop(object, metaclass=Singleton):
             # logger.error(f"PING got no answer. Invalid socket. {e}")
             return False
 
-    # ==================== ------ CACHE MNGT ------- ====================
-
-    def launch_cache(self):
-        # Launch cache instance of redis. Uses a launch script
-        if not self.check_running('cache'):
-            subprocess.Popen([str(self.launch_cache_script_path)], cwd=(self.launch_cache_script_path.parent))
-
-    def shutdown_cache(self):
-        subprocess.Popen([str(self.shutdown_cache_script_path)], cwd=(self.shutdown_cache_script_path.parent))
-
-    # ==================== ------ STORAGE MNGT ------- ====================
-
-    def launch_storage(self):
-        # Launch storage instance of redis. Uses a launch script
-        if not self.check_running('storage'):
-            subprocess.Popen([str(self.launch_storage_script_path)], cwd=(self.launch_storage_script_path.parent))
-
-    def shutdown_storage(self):
-        subprocess.Popen([self.shutdown_storage_script_path], cwd=(self.shutdown_storage_script_path.parent))
-
-    # ==================== ------ ALL MNGT ------- ====================
-
-    def launch_all_redis(self):
-        # Launch the cache instance of redis, and the storage instance of redis
-        self.launch_cache()
-        self.launch_storage()
-
     def check_all_redis(self, stop=False):
+        # TODO : Review usage ?
         # Ping cache socket and storage socket
         backends = [['cache', False], ['storage', False]]
         while True:
             for b in backends:
                 try:
-                    b[1] = self.check_running(b[0])
+                    b[1] = self.is_running(b[0])
                 except Exception:
                     b[1] = False
             if stop:
@@ -109,7 +159,3 @@ class Database_StartStop(object, metaclass=Singleton):
                 if stop and b[1]:
                     print(f"Waiting on {b[0]}")
             time.sleep(1)
-
-    def stop_all_redis(self):
-        self.shutdown_cache()
-        self.shutdown_storage()

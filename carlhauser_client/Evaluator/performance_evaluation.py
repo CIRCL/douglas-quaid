@@ -18,7 +18,8 @@ from common.Graph.metadata import Metadata, Source
 from common.Graph.cluster import Cluster
 from common.Graph.edge import Edge
 from common.Graph.node import Node
-from carlhauser_client.Evaluator.scores import Scoring
+import carlhauser_client.Evaluator.scores as scores
+import carlhauser_server.Helpers.json_import_export as json_import_export
 
 # from . import helpers
 
@@ -31,57 +32,45 @@ class Performance_Evaluator():
     def __init__(self):
         self.logger = logging.getLogger(__name__)
 
+        # Tmp storage
+        self.clusters_with_perfs = []
+
+    def flush_memory(self):
+        self.clusters_with_perfs = []
+
     def evaluate_performance(self, clusters_pairs: List[List[Cluster]], total_number_element=None):
+        # Flush the internal memory of the evaluator and compute statistics over each clusters pair. Store means, etc. in internal memory.
+
+        self.flush_memory()
 
         for pair in clusters_pairs:
 
-            s = Scoring()
+            s = scores.Scoring()
 
             truth_set = pair[0].members
             candidate_set = pair[1].members
 
-            # Get number of "true element" in the dataset
-            s.P = len(truth_set)
+            # Compute all values
+            s.compute_all(truth_set, candidate_set, total_number_element)
 
-            # Compute true positive as intersection of ground truth and candidate clusters
-            intersect = truth_set.intersection(candidate_set)
-            s.TP = len(intersect)
-
-            # Compute False Positive as what is in candidate but not in ground truth (and so the intersection)
-            only_in_candidate = candidate_set.difference(intersect)
-            s.FP = len(only_in_candidate)
-
-            # Compute False Negative as what is in ground truth but not in candidate (and so the intersection)
-            only_in_ground_truth = truth_set.difference(intersect)
-            s.FN = len(only_in_ground_truth)
-
-            # Diverse other metrics
-            s.compute_TPR()
-            s.compute_PPV()
-            s.compute_FDR()
-
-            if total_number_element is None:
-                self.logger.warning("Can't compute True Negative rate : we don't know number of all elements in the system.")
-            else:
-                # Compute True negative as all elements not in the three previous sets
-                s.TN = total_number_element - s.TP - s.FP - s.FN
-
-                # Compute number of negative elements in dataset
-                s.N = total_number_element - len(truth_set)
-
-                # Diverse other metrics
-                s.compute_TNR()
-                s.compute_NPV()
-
-                s.compute_FNR()
-                s.compute_FPR()
-
-                s.compute_FOR()
-
-                s.compute_ACC()
-                s.compute_F1()
-
-            s.check_sanity()
             pair.append(s)
 
+        self.clusters_with_perfs = clusters_pairs
+
         return clusters_pairs
+
+    def save_perf_results(self, save_path_perf : pathlib.Path):
+        # Save performances results in a file as json (return the same structure)
+
+        perfs = {"scores":[ [str(e[0]), str(e[1]), str(e[2]) ] for e in self.clusters_with_perfs]}
+
+        # Compute mean score (from the list of scores)
+        total = scores.merge_scores([s[2] for s in self.clusters_with_perfs])
+
+        perfs["overview"] = vars(total)
+
+        json_import_export.save_json(perfs, save_path_perf)
+        self.logger.debug(f"Json saved in : {save_path_perf}")
+
+        return total
+

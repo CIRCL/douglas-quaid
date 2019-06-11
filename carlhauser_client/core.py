@@ -6,6 +6,7 @@ import logging.config
 import os
 import pathlib
 import sys
+import time
 
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
 sys.path.append(os.path.abspath(os.path.pardir))
@@ -48,11 +49,11 @@ class launcher_handler():
 
     def get_api(self):
         # Generate the API access point link to the hardcoded server
-        cert = pathlib.Path("./cert.pem").resolve()
+        cert = (get_homedir() / "carlhauser_client" / "cert.pem").resolve()
 
         # See : https://stackoverflow.com/questions/10667960/python-requests-throwing-sslerror
         # To create : openssl req -x509 -newkey rsa:4096 -nodes -out cert.pem -keyout key.pem -days 365
-        api = API_caller(url='https://localhost:5000/', certificate_path=cert)  # TODO : Should be =cert
+        api = API_caller(url='https://localhost:5000/', certificate_path=cert)
         logging.captureWarnings(True)  # TODO : Remove
         return api
 
@@ -70,6 +71,27 @@ class launcher_handler():
 
     def export_db_server(self):
         return self.API.export_db_server()[1]
+
+    def example(self):
+        # Generate the API access point link to the hardcoded server
+        cert = (get_homedir() / "carlhauser_client" / "cert.pem").resolve()
+        api = API_caller(url='https://localhost:5000/', certificate_path=cert)
+
+        # Ping server, and perform uploads
+        api.ping_server()
+        api.add_picture_server(get_homedir() / "datasets" / "simple_pictures" / "image.jpg")
+        # (...)
+
+        # Request a picture matches
+        request_id = api.request_picture_server(get_homedir() / "datasets" / "simple_pictures" / "image.bmp")[1]
+        # (...) wait a bit
+        time.sleep(1)
+
+        # Retrieve results of the previous request
+        api.retrieve_request_results(request_id)
+
+        # Triggers a DB export of the server as-is, to be displayed with visjsclassificator. Server-side only operation.
+        api.export_db_server()
 
 
 if __name__ == '__main__':

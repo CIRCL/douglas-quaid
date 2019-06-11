@@ -86,7 +86,7 @@ class ConfusionMatrixGenerator():
         fig, ax = plt.subplots(figsize=(20, 14), dpi=200)
 
         im, cbar = self.heatmap(self.values, self.ord, self.abs, ax=ax,
-                                cmap="YlGn", cbarlabel="Similarity (1 = same)")
+                                cmap="YlGn", cbarlabel="Nb of elements in these clusters")
         texts = self.annotate_heatmap(im, data=self.values, valfmt="{x:.1f}")
 
         fig.tight_layout()
@@ -123,6 +123,12 @@ class ConfusionMatrixGenerator():
         # TRICK TO DO MAX PER ROW
         normalized_data = data.copy()
         row_sums = normalized_data.sum(axis=1)
+        '''
+        print(type(row_sums))
+        print(normalized_data)
+        print(row_sums)
+        print(row_sums[:, np.newaxis])
+        '''
         normalized_data = normalized_data / row_sums[:, np.newaxis]
         # data = data.div(data.max(axis=1), axis=0)
 

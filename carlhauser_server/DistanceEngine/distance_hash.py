@@ -66,9 +66,9 @@ class Distance_Hash:
 
     @staticmethod
     def compute_hash_distance(hash1, hash2):
-        # TODO : Check if the size if accessible. Probably not.
-        return abs(hash1 - hash2) / (hash1.hash.hash.size * 4)
+        # TODO : Check if the size is accessible. Probably not.
+        return abs(hash1 - hash2) / (hash1.hash.size * 4)
 
     @staticmethod
     def compute_tlsh_distance(hash1, hash2):
-        return tlsh.diff(hash1, hash2) / (len(hash1))
+        return tlsh.diff(hash1, hash2) / (len(hash1)*16) # 70 hexa character

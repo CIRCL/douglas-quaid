@@ -3,6 +3,8 @@
 import subprocess
 import time
 import unittest
+import cv2
+import pathlib
 
 import redis
 import logging
@@ -22,8 +24,9 @@ class testDistanceEngine(unittest.TestCase):
     def setUp(self):
         self.logger = logging.getLogger()
         # self.conf = .Default_configuration()
-        # self.test_file_path = get_homedir() / pathlib.Path("carlhauser_server_tests/test_Helpers/environment_variable")
+        self.test_file_path = get_homedir() / pathlib.Path("carlhauser_server_tests/test_DistanceEngine/")
 
+        # Create configurations
         self.db_conf = database_conf.Default_database_conf()
         self.dist_conf = distance_engine_conf.Default_distance_engine_conf()
         self.fe_conf = feature_extractor_conf.Default_feature_extractor_conf()
@@ -31,19 +34,21 @@ class testDistanceEngine(unittest.TestCase):
         # Create database handler from configuration file
         self.db_handler = database_start_stop.Database_StartStop(conf=self.db_conf)
 
-        # Test data
+        # Scripts overwrite
         self.db_handler.test_socket_path = get_homedir() / self.db_conf.DB_SOCKETS_PATH / 'test.sock'
         self.db_handler.launch_test_script_path = get_homedir() / self.db_conf.DB_SCRIPTS_PATH / "run_redis_test.sh"
         self.db_handler.shutdown_test_script_path = get_homedir() / self.db_conf.DB_SCRIPTS_PATH / "shutdown_redis_test.sh"
 
-        # Construct a worker and get a link to redis db
+        # Construct a worker and overwrite link to redis db
         self.db_adder = database_adder.Database_Adder(self.db_conf, self.dist_conf, self.fe_conf)
+        self.db_adder.db_utils.db_access_decode = redis.Redis(unix_socket_path=self.db_handler.get_socket_path('test'), decode_responses=True)
+        self.db_adder.db_utils.db_access_no_decode = redis.Redis(unix_socket_path=self.db_handler.get_socket_path('test'), decode_responses=False)
         self.db_adder.storage_db_decode = redis.Redis(unix_socket_path=self.db_handler.get_socket_path('test'), decode_responses=True)
         self.db_adder.storage_db_no_decode = redis.Redis(unix_socket_path=self.db_handler.get_socket_path('test'), decode_responses=False)
         self.de = distance_engine.Distance_Engine(self.db_adder, self.db_conf, self.dist_conf, self.fe_conf)
         test_db = redis.Redis(unix_socket_path=self.db_handler.get_socket_path('test'), decode_responses=True)
-
         self.de.storage_db = test_db
+        self.db_adder.storage_db = test_db
 
         # Launch test Redis DB
         if not self.db_handler.is_running('test'):
@@ -51,6 +56,16 @@ class testDistanceEngine(unittest.TestCase):
 
         # Time for the socket to be opened
         time.sleep(1)
+
+    def set_decode_redis(self):
+        test_db = redis.Redis(unix_socket_path=self.db_handler.get_socket_path('test'), decode_responses=True)
+        self.de.storage_db = test_db
+        self.db_adder.storage_db = test_db
+
+    def set_raw_redis(self):
+        test_db = redis.Redis(unix_socket_path=self.db_handler.get_socket_path('test'), decode_responses=False)
+        self.de.storage_db = test_db
+        self.db_adder.storage_db = test_db
 
     def tearDown(self):
         # Shutdown test Redis DB
@@ -63,19 +78,9 @@ class testDistanceEngine(unittest.TestCase):
 
         # TODO : Kill subprocess ?
 
+    # ==================== ------ CLUSTER LIST ------- ====================
 
-    '''
-        def test_get_top_matching_clusters(self):
-        id_to_process = str(42)
-        data_to_store = {"P-HASH":"0000000111100","ORB":"orb_desriptors_list"}
-        #TODO : Make better example
 
-        # Add picture to storage
-        list_clusters = self.ce.get_top_matching_clusters(data_to_store)
-
-        # Checks
-        self.assertEqual([0,1,2],list_clusters)
-    '''
 
 
     def test_absolute_truth_and_meaning(self):

@@ -55,6 +55,56 @@ You can import the client API in your own Python software and perfom API calls t
 
 See [Client Example](https://github.com/CIRCL/douglas-quaid/blob/master/carlhauser_client/core.py) if you want to start.
 
+### TLDR ; I want it to work ! 
+
+###### Server side : 
+
+```bash
+cd ./carlhauser_server
+pipenv run python3 ./core.py   
+```
+
+###### Client side : 
+
+```bash
+cd ./carlhauser_client
+pipenv run python3 ./core.py  
+```
+
+or from your own custom python file
+
+```python
+import pathlib
+import time
+from carlhauser_client.Helpers.environment_variable import get_homedir
+from carlhauser_client.API.carlhauser_client import API_caller
+
+# Generate the API access point link to the hardcoded server
+cert = (get_homedir() / "carlhauser_client" / "cert.pem").resolve()
+api = API_caller(url='https://localhost:5000/', certificate_path=cert)
+
+# Each call to API return 2 values. 
+# First value = success boolean, Second value = json response of the server
+
+# Ping server (sanity check, not technicaly required) 
+api.ping_server()
+
+# perform uploads
+api.add_picture_server(get_homedir() / "datasets" / "simple_pictures" / "image.jpg")
+# (...)
+
+# Request a picture matches
+request_id = api.request_picture_server(get_homedir() / "datasets" / "simple_pictures" / "image.bmp")[1]
+# (...) wait a bit
+time.sleep(1)
+
+# Retrieve results of the previous request (print on screen)
+results = api.retrieve_request_results(request_id)[1]
+
+# Triggers a DB export of the server as-is, to be displayed with visjsclassificator. Server-side only operation.
+api.export_db_server()
+```
+
 ### Prerequisites
 
 See requirements.txt

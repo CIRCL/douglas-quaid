@@ -7,7 +7,7 @@ import os
 import pathlib
 import sys
 
-from typing import List
+from typing import List, Set
 from pprint import pformat
 
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
@@ -18,6 +18,7 @@ from common.Graph.metadata import Metadata, Source
 from common.Graph.cluster import Cluster
 from common.Graph.edge import Edge
 from common.Graph.node import Node
+
 # from . import helpers
 
 # ==================== ------ PREPARATION ------- ====================
@@ -33,6 +34,8 @@ class Scoring():
         # Lost ? Go there : https://en.wikipedia.org/wiki/Sensitivity_and_specificity
         self.P = None  # condition positive (P)
         self.N = None  # condition negative (N)
+
+        self.total_nb_elements = None
 
         self.TP = None  # true positive (TP)
         self.FP = None  # true negative (TN)
@@ -87,6 +90,55 @@ class Scoring():
     def compute_F1(self):
         self.F1 = (2 * self.TP) / (2 * self.TP + self.FP + self.FN)
 
+    def compute_all(self, truth_set : Set, candidate_set : Set, total_nb_elements):
+        # Compute all possible metrics, given information provided
+
+        # Store nb of elements in total
+        self.total_nb_elements = total_nb_elements
+
+        # Get number of "true element" in the dataset
+        self.P = len(truth_set)
+
+        # Compute true positive as intersection of ground truth and candidate clusters
+        intersect = truth_set.intersection(candidate_set)
+        self.TP = len(intersect)
+
+        # Compute False Positive as what is in candidate but not in ground truth (and so the intersection)
+        only_in_candidate = candidate_set.difference(intersect)
+        self.FP = len(only_in_candidate)
+
+        # Compute False Negative as what is in ground truth but not in candidate (and so the intersection)
+        only_in_ground_truth = truth_set.difference(intersect)
+        self.FN = len(only_in_ground_truth)
+
+        # Diverse other metrics
+        self.compute_TPR()
+        self.compute_PPV()
+        self.compute_FDR()
+
+        if self.total_nb_elements is None:
+            raise Exception ("Can't compute True Negative rate : we don't know number of all elements in the system.")
+        else:
+            # Compute True negative as all elements not in the three previous sets
+            self.TN = self.total_nb_elements - self.TP - self.FP - self.FN
+
+            # Compute number of negative elements in dataset
+            self.N = self.total_nb_elements - len(truth_set)
+
+            # Diverse other metrics
+            self.compute_TNR()
+            self.compute_NPV()
+
+            self.compute_FNR()
+            self.compute_FPR()
+
+            self.compute_FOR()
+
+            self.compute_ACC()
+            self.compute_F1()
+
+        self.check_sanity()
+
     def check_sanity(self):
         try:
             assert (self.P == self.FN + self.TP)
@@ -96,6 +148,17 @@ class Scoring():
 
             return True
         except Exception as e:
+            return False
+
+    # Operator overwrite
+    # TODO : Review ">" operator
+    def __gt__(self, other):
+        if (self.ACC is None or self.F1 is None or other.F1 is None or other.ACC is None):
+            # Null scores can be "greater"
+            return True
+        elif (self.ACC > other.ACC and self.F1 > other.F1):
+            return True
+        else:
             return False
 
     # Overwrite to print the content of the cluster instead of the cluster memory address
@@ -110,5 +173,24 @@ class Scoring():
         return ''.join(map(str, ['P=', self.P, ' N=', self.N,
                                  ' ACC=', self.ACC, ' F1=', self.F1,
                                  ' TP=', self.TP, ' TN=', self.TN,
-                                 ' FP=', self.FP, ' FN=', self.FN]))
+                                 ' FP=', self.FP, ' FN=', self.FN,
+                                 ' TPR=', self.TPR, ' TNR=', self.TNR,
+                                 ' PPV=', self.PPV, ' NPV=', self.NPV,
+                                 ' FNR=', self.FNR, ' FPR=', self.FPR]))
 
+
+def merge_scores(scores: List[Scoring]):
+    # Create a "mean score" out of a list of scores
+
+    total_score = Scoring()
+
+    if scores is not None and len(scores) > 0:
+        # Iterate over attributes
+        for key in vars(scores[0]):
+            # Creation of a list of all "same attribute" for all scores of the list
+            tmp = [v for v in (vars(score)[key] for score in scores) if v is not None]
+            if len(tmp) >0:
+                # Get the mean
+                vars(total_score)[key] = sum(tmp) / len(tmp)
+
+    return total_score

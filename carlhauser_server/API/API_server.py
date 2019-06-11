@@ -1,10 +1,15 @@
-#!flask/bin/python
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+## #!flask/bin/python
 
 # Inspired from : https://github.com/D4-project/IPASN-History/blob/master/website/web/__init__.py
 # If you are derouted by the lack of decorator, go there : https://stackoverflow.com/questions/17129573/can-i-use-external-methods-as-route-decorators-in-python-flask
 
+import argparse
 import logging
 import os
+import pathlib
 import sys
 import time
 
@@ -14,16 +19,18 @@ import flask
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
 sys.path.append(os.path.abspath(os.path.pardir))
 
+from carlhauser_server.Helpers.environment_variable import get_homedir, dir_path
+
 import carlhauser_server.Configuration.webservice_conf as webservice_conf
 import carlhauser_server.Configuration.database_conf as database_conf
 
 import carlhauser_server.Helpers.id_generator as id_generator
 import carlhauser_server.Helpers.picture_import_export as picture_import_export
-from carlhauser_server.Helpers.environment_variable import get_homedir
 import carlhauser_server.DatabaseAccessor.database_worker as database_worker
 
 import carlhauser_server.Helpers.json_import_export as json_import_export
 import carlhauser_server.DatabaseAccessor.database_utilities as db_utils
+
 
 # ==================== ------ SERVER Flask API definition ------- ====================
 
@@ -202,7 +209,6 @@ class FlaskAppWrapper(object):
         return result_json
         # Test it with curl 127.0.0.1:5000/get_results
 
-
     def export_db_as_graphe(self):
         result_json = {}
         result_json["Called_function"] = "export_db"
@@ -236,3 +242,23 @@ class FlaskAppWrapper(object):
         result_json["Call_time"] = time.ctime()  # 'GET' or 'POST' ...
 
         return result_json
+
+
+# Launcher for this worker. Launch this file to launch a worker
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Launch Flask API on server side')
+    parser.add_argument("-dbc", '--database_configuration_file', dest="db_conf", type=dir_path, help='DB_configuration_file stored as json. Path')
+    parser.add_argument("-wsc", '--webservice_configuration_file', dest="ws_conf", type=dir_path, help='WebService_configuration_file stored as json. Path')
+    args = parser.parse_args()
+
+    # Load the provided configuration file and create back the Configuration Object
+    db_conf = database_conf.parse_from_dict(json_import_export.load_json(pathlib.Path(args.db_conf)))
+    ws_conf = webservice_conf.parse_from_dict(json_import_export.load_json(pathlib.Path(args.ws_conf)))
+
+    # Create the Flask API and run it
+    # Create Flask endpoint from configuration files
+    api = FlaskAppWrapper('api', conf=ws_conf, db_conf=db_conf)
+    api.add_all_endpoints()
+
+    # Run Flask API endpoint
+    api.run()  # debug=True
