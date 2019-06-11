@@ -53,13 +53,9 @@ class ParameterExplorer():
         output_folder.mkdir(parents=True, exist_ok=True)
 
         # ========= GOAL =========
-        last_round_score = scores.Scoring()
-        curr_round_score = scores.Scoring()
-
         perfs = []
 
         iterations_limit = 50  # 50  # Or nb of iteration if complete exploration
-        i = 0
 
         max_threshold = 1
         min_threshold = 0

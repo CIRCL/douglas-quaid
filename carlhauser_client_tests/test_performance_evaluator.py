@@ -28,11 +28,27 @@ class TestPerformanceEvaluator(unittest.TestCase):
 
     def test_evaluate_performance(self):
 
-        cA = Cluster("A", "A", {0, 1, 2})
-        cB = Cluster("B", "B", {4,5,6,7,8,9,10})
+        cA = Cluster("A", "A", "")
+        cA.add_member_id(0)
+        cA.add_member_id(1)
+        cA.add_member_id(2)
 
-        c1 = Cluster("1", '1', {0, 2})
-        c2 = Cluster("2", "2", {4,5,8,9})
+        cB = Cluster("B", "B", "")
+        cB.add_member_id(4)
+        cB.add_member_id(5)
+        cB.add_member_id(6)
+        cB.add_member_id(7)
+        cB.add_member_id(8)
+        cB.add_member_id(9)
+        cB.add_member_id(10)
+
+        c1 = Cluster("1", '1', "")
+        for i in {0, 2} :
+            c1.add_member_id(i)
+
+        c2 = Cluster("2", "2", "")
+        for i in {4,5,8,9} :
+            c2.add_member_id(i)
 
         pair_list = [[cA, c1], [cB, c2]]
 
