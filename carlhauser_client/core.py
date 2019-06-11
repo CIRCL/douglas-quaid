@@ -37,6 +37,10 @@ class launcher_handler():
         self.logger.info(f"Request ? ")
         input()
         request_id = self.perform_request(get_homedir() / "datasets" / "simple_pictures" / "image.bmp")
+
+        self.logger.info(f"Polling ... ")
+        self.poll_until_result_ready(request_id)
+
         self.logger.info(f"Add ? ")
         input()
         self.perform_upload(get_homedir() / "datasets" / "simple_pictures" / "image.bmp")
@@ -66,8 +70,11 @@ class launcher_handler():
     def perform_request(self, path: pathlib.Path):
         return self.API.request_picture_server(path)[1]
 
-    def retrieve_request_results(self, path: pathlib.Path):
-        return self.API.retrieve_request_results(path)[1]
+    def poll_until_result_ready(self, request_id):
+        return self.API.poll_until_result_ready(request_id, max_time=60)
+
+    def retrieve_request_results(self, request_id):
+        return self.API.retrieve_request_results(request_id)[1]
 
     def export_db_server(self):
         return self.API.export_db_server()[1]
@@ -84,8 +91,10 @@ class launcher_handler():
 
         # Request a picture matches
         request_id = api.request_picture_server(get_homedir() / "datasets" / "simple_pictures" / "image.bmp")[1]
-        # (...) wait a bit
-        time.sleep(1)
+        # (...)
+
+        # Wait a bit
+        api.poll_until_result_ready(request_id, max_time=60)
 
         # Retrieve results of the previous request
         api.retrieve_request_results(request_id)

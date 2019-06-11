@@ -95,8 +95,10 @@ api.add_picture_server(get_homedir() / "datasets" / "simple_pictures" / "image.j
 
 # Request a picture matches
 request_id = api.request_picture_server(get_homedir() / "datasets" / "simple_pictures" / "image.bmp")[1]
-# (...) wait a bit
-time.sleep(1)
+# (...)
+
+# Wait a bit
+api.poll_until_result_ready(request_id, max_time=60)
 
 # Retrieve results of the previous request (print on screen)
 results = api.retrieve_request_results(request_id)[1]

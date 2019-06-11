@@ -6,7 +6,7 @@ import logging
 import os
 import pathlib
 import sys
-
+import time
 import requests
 
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
@@ -77,6 +77,40 @@ class API_caller():
 
                 return data["Status"] == "Success", data["request_id"]
 
+    def poll_until_result_ready(self, request_id, max_time=-1):
+
+        start_time = time.time()
+        self.logger.info(f"Checking if {request_id} is ready. Start polling ...")
+
+        # While the answer is not ready or we haven't timed-out
+        time_out = False
+        while not self.check_if_ready(request_id)[1] and not time_out:
+            time.sleep(2)
+            self.logger.info(f"{request_id} not ready yet, waiting ...")
+            time_out = (abs(time.time() - start_time) > max_time and max_time != -1)
+            if time_out :
+                self.logger.info(f"{request_id} has still no answer. Time out ! ...")
+                return False
+
+        self.logger.info(f"{request_id} got an answer.")
+        # Ready !
+        return True
+
+    def check_if_ready(self, request_id):
+        # Select the endpoint
+        target_url = self.server_url + "is_ready"
+
+        # Send the request_id
+        payload = {'request_id': request_id}
+        with requests.Session() as s:
+            r = s.get(url=target_url, params=payload, verify=self.cert)
+            self.logger.info(f"GET request is_ready => {r.status_code} {r.reason} {r.text}")
+            self.logger.info(r.content)
+
+            data = r.json()  # Check the JSON Response Content documentation below
+            self.logger.info(data)
+
+            return data["Status"] == "Success", data["is_ready"]
 
     def retrieve_request_results(self, request_id):
         # Select the endpoint
