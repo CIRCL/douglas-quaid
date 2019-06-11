@@ -58,7 +58,7 @@ class ParameterExplorer():
 
         perfs = []
 
-        iterations_limit = 5  # 50  # Or nb of iteration if complete exploration
+        iterations_limit = 50  # 50  # Or nb of iteration if complete exploration
         i = 0
 
         max_threshold = 1
@@ -135,21 +135,35 @@ class ParameterExplorer():
         self.print_graph(perfs, output_folder)
 
     def print_graph(self, perf_list: List[Perf], output_path: pathlib.Path):
-        self.logger.warning(perf_list)
+        self.logger.info(perf_list)
 
         plt.clf()
 
+        TPR_list = [p.score.TPR for p in perf_list]
+        TNR_list = [p.score.TNR for p in perf_list]
+        FNR_list = [p.score.FNR for p in perf_list]
+        FPR_list = [p.score.FPR for p in perf_list]
         ACC_list = [p.score.ACC for p in perf_list]
+        F1_list = [p.score.F1 for p in perf_list]
         threshold_list = [p.threshold for p in perf_list]
-        self.logger.warning(ACC_list)
-        self.logger.warning(threshold_list)
 
-        # order :  X followed by Y
+        self.logger.info(f"Perf List : {perf_list}")
+        self.logger.info(f"ACC List : {ACC_list}")
+        self.logger.info(f"Thresholds List : {threshold_list}")
+
+        # order :  absciss followed by ordinates
         plt.plot(threshold_list, ACC_list)
-        plt.legend(('True-positive'), loc='upper right')
-        plt.xlabel("Distance threshold applied to prune edges (arbitrary distance unit)")
-        plt.ylabel("True-Positive score with the given threshold \n(% true positive within original edges)")
-        plt.title("True-Positive rate regarding distance threshold")
+        plt.plot(threshold_list, TPR_list)
+        plt.plot(threshold_list, TNR_list)
+        plt.plot(threshold_list, FNR_list)
+        plt.plot(threshold_list, FPR_list)
+        plt.plot(threshold_list, F1_list)
+
+        plt.legend(('Accuracy','True Positive Rate','True Negative Rate','False Negative rate','False Positive rate','F1'), loc='upper right')
+        plt.xlabel("Threshold values [0-1]")
+        plt.ylabel("Indicator value [0-1]")
+        plt.title("Performance measure depending on threshold for cluster creation")
+
         # plt.show()
         plt.savefig(output_path / "overview.png")
         plt.clf()
