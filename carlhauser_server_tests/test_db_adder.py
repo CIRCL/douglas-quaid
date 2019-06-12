@@ -16,8 +16,10 @@ import carlhauser_server.Configuration.feature_extractor_conf as feature_extract
 import carlhauser_server.DistanceEngine.distance_engine as distance_engine
 import carlhauser_server.Helpers.database_start_stop as database_start_stop
 import carlhauser_server.DatabaseAccessor.database_adder as database_adder
+import os
 
-
+import carlhauser_server.FeatureExtractor.picture_hasher as picture_hasher
+import carlhauser_server.FeatureExtractor.picture_orber as picture_orber
 class testDistanceEngine(unittest.TestCase):
     """Basic test cases."""
 
@@ -33,6 +35,8 @@ class testDistanceEngine(unittest.TestCase):
 
         # Create database handler from configuration file
         self.db_handler = database_start_stop.Database_StartStop(conf=self.db_conf)
+        self.picture_hasher = picture_hasher.Picture_Hasher(self.fe_conf)
+        self.picture_orber = picture_orber.Picture_Orber(self.fe_conf)
 
         # Scripts overwrite
         self.db_handler.test_socket_path = get_homedir() / self.db_conf.DB_SOCKETS_PATH / 'test.sock'
@@ -177,9 +181,9 @@ class testDistanceEngine(unittest.TestCase):
 
     # ==================== ------ ADDERS ------- ====================
 
-    def get_descriptors(self):
+    def get_descriptors(self, filename  = "original.bmp"):
         self.algo = cv2.ORB_create(nfeatures=10)
-        orb_pic = cv2.imread(str(self.test_file_path/"original.bmp"),0)
+        orb_pic = cv2.imread(str(self.test_file_path/filename),0)
 
         key_points, descriptors = self.algo.detectAndCompute(orb_pic, None)
 
@@ -270,6 +274,57 @@ class testDistanceEngine(unittest.TestCase):
 
         self.assertEqual(len(pic_list),1)
         self.assertEqual(pic_list[0][1],1.0)
+
+    def upload_picture(self, filename):
+        # Upload a picture and returns an id
+        id_to_process = filename + "ID"
+
+        with open(str(self.test_file_path/filename), "rb") as binary_file:
+            # Read the whole file at once
+            image = binary_file.read()
+            # image = open(str(self.test_file_path/filename), "rb")
+
+            # Get hash values of picture
+            hash_dict = self.picture_hasher.hash_picture(image)
+            self.logger.debug(f"Computed hashes : {hash_dict}")
+
+            # Get ORB values of picture
+            orb_dict = self.picture_orber.orb_picture(image)
+            self.logger.debug(f"Computed orb values : {orb_dict}")
+
+            # Merge dictionaries
+            merged_dict = {**hash_dict, **orb_dict}
+            self.logger.debug(f"To send to db dict : {merged_dict}")
+
+            self.db_adder.add_picture_to_storage(self.db_adder.storage_db_no_decode, id_to_process, merged_dict)
+
+            # Get back data (sanity)
+            stored = self.db_adder.get_dict_from_key(self.db_adder.db_utils.db_access_no_decode, id_to_process, pickle=True)
+            print("Fetched :", stored)
+
+            return id_to_process
+
+    def test_reevaluate_representative_picture_order(self):
+        # Add pictures to storage
+        self.set_raw_redis()
+
+        id = self.upload_picture("original.bmp")
+        cluster_id = self.db_adder.db_utils.add_picture_to_new_cluster(id)
+
+        for file in ["green.bmp", "blue.bmp", "dark.bmp", "negative_dark.bmp", "yellow.bmp"]:
+            id_to_process = self.upload_picture(file)
+
+            # Add picture to storage
+            self.db_adder.db_utils.add_picture_to_cluster(id_to_process, cluster_id)
+
+        # Performs the reevaluation
+        self.db_adder.reevaluate_representative_picture_order(cluster_id)
+
+        # Get back pictures of the cluster
+        pic_list = self.db_adder.db_utils.get_pictures_of_cluster(cluster_id , with_score=True)
+        self.logger.info(pic_list)
+
+        self.assertEqual(pic_list[0][0],"original.bmpID") # The most representative picture is the original one
 
 
     def test_absolute_truth_and_meaning(self):

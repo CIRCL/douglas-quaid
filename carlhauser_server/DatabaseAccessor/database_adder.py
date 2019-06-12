@@ -77,13 +77,13 @@ class Database_Adder(database_accessor.Database_Worker):
             # Depending on the quality of the match ...
             if len(top_matching_pictures) > 0 and self.de.match_enough(top_matching_pictures[0]):
                 self.logger.info(f"Match is good enough with at least one cluster")
+
                 # Add picture to best picture's cluster
                 cluster_id = top_matching_pictures[0].cluster_id
                 self.db_utils.add_picture_to_cluster(fetched_id, cluster_id)
 
-                # TODO : To defer ? No : it's not a request. No returned value. BUT TO COMPLETE !
                 # Re-evaluate representative picture(s) of cluster
-                self.db_utils.reevaluate_representative_picture_order(cluster_id, fetched_id=fetched_id)  # TODO
+                self.reevaluate_representative_picture_order(cluster_id, fetched_id=fetched_id) # TODO : To defer ? No : it's not a request. No returned value. BUT TO COMPLETE !
                 self.logger.info(f"Picture added in existing cluster : {cluster_id}")
 
             else:
@@ -102,6 +102,56 @@ class Database_Adder(database_accessor.Database_Worker):
 
         return 1
 
+    def reevaluate_representative_picture_order(self, cluster_id, fetched_id=None):
+        # Re-evaluate the representative picture of the cluster <cluster_id>,
+        # knowing or not, that the last added and non evaluated picture of the cluster is <fetched_id>
+
+        if fetched_id is None:
+            # We don't know which picture was the last one added. Perform full re-evaluation
+            # 0(N²) operation with N being the number of elements in the cluster
+
+            # Get all picture ids of the cluster
+            pictures_sorted_set = self.db_utils.get_pictures_of_cluster(cluster_id)
+
+            for curr_pic in pictures_sorted_set:
+                # For each picture, compute its centrality and store it
+                curr_pic_dict = self.get_dict_from_key(self.storage_db_no_decode, curr_pic, pickle=True)
+                centrality_score = self.compute_centrality(pictures_sorted_set, curr_pic_dict)
+
+                # Replace the current sum (set value) of distance by the newly computed on
+                self.db_utils.update_picture_score_of_cluster(cluster_id, curr_pic, centrality_score)
+        else:
+            # We know which picture was added last, and so begin by this one.
+            # 0(2.N) operation with N being the number of elements in the cluster
+
+            # Get all picture ids of the cluster, with their actual score
+            pictures_sorted_set = self.db_utils.get_pictures_of_cluster(cluster_id, with_score=True)
+
+            # Compute the centrality of the new picture and update its score : 0(N)
+            new_pic_dict = self.get_dict_from_key(self.storage_db_no_decode, fetched_id, pickle=True)
+            centrality_score = self.compute_centrality(pictures_sorted_set, new_pic_dict)
+            self.db_utils.update_picture_score_of_cluster(cluster_id, fetched_id, centrality_score)
+
+            # And for each other picture, add the distance between itself and this new picture to its score : 0(N)
+            for curr_pic, score in pictures_sorted_set:
+                curr_target_pic_dict = self.get_dict_from_key(self.storage_db_no_decode, curr_pic, pickle=True)
+                delta_centrality = self.de.get_distance_picture_to_picture(new_pic_dict, curr_target_pic_dict)
+                # Update the centrality of the current picture with the new "added value".
+                self.db_utils.update_picture_score_of_cluster(cluster_id, curr_pic, score + delta_centrality)
+
+        # TODO : Somewhat already done before. May be able to memoize the computed values ?
+        return
+
+    def compute_centrality(self, pictures_list_id, picture_dict) -> float:
+        # Returns centrality of a picture within a list of other pictures.
+
+        curr_sum = 0
+        # For each picture, compute its distance to other picture, summing it temporary
+        for curr_target_pic in pictures_list_id:
+            curr_target_pic_dict = self.get_dict_from_key(self.storage_db_no_decode, curr_target_pic, pickle=True)
+            curr_sum += self.de.get_distance_picture_to_picture(picture_dict, curr_target_pic_dict)
+
+        return curr_sum
 
 # Launcher for this worker. Launch this file to launch a worker
 if __name__ == '__main__':

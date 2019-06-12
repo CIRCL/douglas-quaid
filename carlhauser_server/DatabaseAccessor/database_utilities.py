@@ -49,7 +49,7 @@ class DBUtilities():
 
     # ==================== ------ ADDERS ------- ====================
 
-    def add_picture_to_cluster(self, image_id, cluster_id, score=100):
+    def add_picture_to_cluster(self, image_id, cluster_id : str, score=100):
         # Add a picture to a cluster
 
         set_name = self.get_setname_of_cluster(cluster_id)
@@ -106,7 +106,7 @@ class DBUtilities():
         return self.db_access_decode.zrange(self.get_setname_of_cluster(cluster_name), 0, -1, withscores=with_score)  # SORTED SET
 
     @staticmethod
-    def get_setname_of_cluster(cluster_name):
+    def get_setname_of_cluster(cluster_name : str):
         return '|'.join([cluster_name, 'pics'])
 
     # ==================== ------ BACKGROUND COMPUTATION ------- ====================
