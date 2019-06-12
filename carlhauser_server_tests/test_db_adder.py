@@ -254,6 +254,23 @@ class testDistanceEngine(unittest.TestCase):
         self.assertEqual(val, "test|pics")
 
 
+    def test_change_picture_score(self):
+        image_id_1 = "myimageid_1"
+
+        cluster_name = self.db_adder.db_utils.add_picture_to_new_cluster(image_id_1)
+        pic_list = self.db_adder.db_utils.get_pictures_of_cluster(cluster_name , with_score=True)
+        self.logger.info(pic_list)
+
+        self.assertEqual(len(pic_list),1)
+        self.assertEqual(pic_list[0][1],100.0)
+
+        self.db_adder.db_utils.update_picture_score_of_cluster(cluster_name, pic_list[0][0], 1)
+        pic_list = self.db_adder.db_utils.get_pictures_of_cluster(cluster_name , with_score=True)
+        self.logger.info(pic_list)
+
+        self.assertEqual(len(pic_list),1)
+        self.assertEqual(pic_list[0][1],1.0)
+
 
     def test_absolute_truth_and_meaning(self):
         assert True
