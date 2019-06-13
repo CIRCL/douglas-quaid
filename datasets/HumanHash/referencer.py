@@ -24,7 +24,7 @@ class Referencer():
             self.check_correctness(f.name)
             tmp_file = f.read_bytes()
             hash_list = self.hash_file(tmp_file)
-            self.store_hash(f.name + f.suffix, hash_list)
+            self.store_hash(f.name, hash_list)
 
         self.save_json(self.already_generated, path.parent / (str(path.name) + "_references.json"))
 

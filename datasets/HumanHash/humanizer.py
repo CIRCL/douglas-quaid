@@ -42,7 +42,7 @@ class Humanizer():
         first = True
         for f in files :
 
-            new_name = self.humanize_name(f.name + f.suffix)
+            new_name = self.humanize_name(f.read_bytes(), f.name)
 
             if first :
                 print(f"The file {f.name} is going to be changed to {new_name}. \n Do you want to continue ? (Automatically approved after this first warning)")
@@ -53,18 +53,18 @@ class Humanizer():
 
         print(f"Done. {len(files)} modified.")
 
-    def humanize_name(self, name:str, collision_removal : bool =True) -> str:
-        new_name = codenamize(name, 3, 0)
+    def humanize_name(self, content:bytes, file_name:str, collision_removal : bool =True) -> str:
+        new_name = codenamize(content, 3, 0)
 
         i = 0
         while collision_removal and self.is_already_drawn(new_name) :
-            print(f"Collision found on filename {name} generating {new_name}. Adding 1 to filename.")
+            print(f"Collision found on filename {file_name} generating {new_name}. Adding 1 to filename.")
             # Modify/Create a new name
-            tmp_name = name + str(i)
+            tmp_name = content + bytes(i)
 
             # Redraw the new name
             new_name = codenamize(tmp_name, 3, 0)
-            print(f"Collision handled by renaming {name} to {tmp_name} generating {new_name}.")
+            print(f"Collision handled by renaming {file_name} to {tmp_name} generating {new_name}.")
 
         # Correct the name for eventual
         final_name = self.correct_name(new_name)
