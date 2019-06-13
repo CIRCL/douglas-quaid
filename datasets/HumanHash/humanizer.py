@@ -78,7 +78,6 @@ class Humanizer():
         # Check for space in names, etc.
         final_name = name
         for l in [" ", "'"]:
-            print("checking" + l)
             final_name = final_name.replace(l, '')
 
         if name != final_name:
