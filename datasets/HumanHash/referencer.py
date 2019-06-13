@@ -21,6 +21,7 @@ class Referencer():
         # Therefore, we are sure about the order of treatment on any machine (determinism)
 
         for f in files:
+            self.check_correctness(f.name)
             tmp_file = f.read_bytes()
             hash_list = self.hash_file(tmp_file)
             self.store_hash(f.name + f.suffix, hash_list)
@@ -28,6 +29,11 @@ class Referencer():
         self.save_json(self.already_generated, path.parent / (str(path.name) + "_references.json"))
 
         print(f"Done. {len(files)} hashed and stored in.")
+
+    @staticmethod
+    def check_correctness(name:str):
+        if " " in name :
+            print("WARNING : space detected in namespace. Are you sure you renamed file correctly ?")
 
     @staticmethod
     def hash_file(open_file) -> Dict:

@@ -66,8 +66,23 @@ class Humanizer():
             new_name = codenamize(tmp_name, 3, 0)
             print(f"Collision handled by renaming {name} to {tmp_name} generating {new_name}.")
 
-        self.already_generated.add(new_name)
-        return new_name
+        # Correct the name for eventual
+        final_name = self.correct_name(new_name)
+
+        self.already_generated.add(final_name)
+        return final_name
+
+    @staticmethod
+    def correct_name(name:str) -> str:
+        # Check for space in names, etc.
+        for l in [" ", "'"]:
+            final_name = name.replace(l, '')
+
+        if name != final_name:
+            print(f"Name was corrected from {name} to {final_name}.")
+
+        return final_name
+
 
     def is_already_drawn(self, new_name:str) -> bool:
         return {new_name}.issubset(self.already_generated)
