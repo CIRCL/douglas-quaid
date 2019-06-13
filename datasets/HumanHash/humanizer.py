@@ -23,28 +23,28 @@ TESTS
 
 '''
 
+
 class Humanizer():
 
     def __init__(self):
         self.already_generated = set({})
 
-
-    def rename_all_files(self, path : pathlib.Path):
+    def rename_all_files(self, path: pathlib.Path):
         p = path.resolve().glob('**/*')
         files = [x for x in p if x.is_file()]
 
-        files.sort() # To prevent System's way of sorting paths.
+        files.sort()  # To prevent System's way of sorting paths.
         # Therefore, we are sure about the order of treatment on any machine (determinism)
 
         print(f"Going to change names of : {files} \n Are you sure you want to continue ?")
         input()
 
         first = True
-        for f in files :
+        for f in files:
 
             new_name = self.humanize_name(f.read_bytes(), f.name)
 
-            if first :
+            if first:
                 print(f"The file {f.name} is going to be changed to {new_name}. \n Do you want to continue ? (Automatically approved after this first warning)")
                 input()
                 first = False
@@ -53,11 +53,11 @@ class Humanizer():
 
         print(f"Done. {len(files)} modified.")
 
-    def humanize_name(self, content:bytes, file_name:str, collision_removal : bool =True) -> str:
+    def humanize_name(self, content: bytes, file_name: str, collision_removal: bool = True) -> str:
         new_name = codenamize(content, 3, 0)
 
         i = 0
-        while collision_removal and self.is_already_drawn(new_name) :
+        while collision_removal and self.is_already_drawn(new_name):
             print(f"Collision found on filename {file_name} generating {new_name}. Adding 1 to filename.")
             # Modify/Create a new name
             tmp_name = content + bytes(i)
@@ -70,22 +70,25 @@ class Humanizer():
         final_name = self.correct_name(new_name)
 
         self.already_generated.add(final_name)
+
         return final_name
 
     @staticmethod
-    def correct_name(name:str) -> str:
+    def correct_name(name: str) -> str:
         # Check for space in names, etc.
+        final_name = name
         for l in [" ", "'"]:
-            final_name = name.replace(l, '')
+            print("checking" + l)
+            final_name = final_name.replace(l, '')
 
         if name != final_name:
             print(f"Name was corrected from {name} to {final_name}.")
 
         return final_name
 
-
-    def is_already_drawn(self, new_name:str) -> bool:
+    def is_already_drawn(self, new_name: str) -> bool:
         return {new_name}.issubset(self.already_generated)
+
 
 def main():
     # Usage example : python3 ./humanizer.py -p ./MINI_DATASET/
@@ -98,6 +101,10 @@ def main():
     humanizer.rename_all_files(args.path)
 
 
+def test():
+    humanizer = Humanizer()
+    print(humanizer.correct_name("toto is a test"))
+
+
 if __name__ == "__main__":
     main()
-
