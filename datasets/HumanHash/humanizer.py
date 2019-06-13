@@ -1,4 +1,11 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 from codenamize import codenamize
+# PLEASE BE AWARE THIS IMPORT IS NOT IN THE PIPENV.
+# THIS IS NOT A DEPENDENCY AS IT IS NOT REQUIRED STRICTLY TO RUN THE LIBRARY.
+# PLEASE INSTALL BY YOURSELF IF YOU NEED TO RUN THIS SCRIPT !
+# Please see : https://pypi.org/project/codenamize/ and https://github.com/jjmontesl/codenamize
 import argparse
 import pathlib
 
@@ -8,7 +15,7 @@ COLLISIONS CALCULATIONS
 3 adj (max 5 chars) = 25471468750 combinations
 3 adj (max 6 chars) = 122636229513 combinations
 3 adj (max 7 chars) = 355283372136 combinations
-3 adj (max 0 chars) = 2119641566400 combinations
+3 adj (max 0 chars) = 2119641566400 combinations <= We choose this configuration :)
 TESTS
   (*, 1 adj, max 3) => 1742 distinct results (space size is 2760)
   (*, 2 adj, max 3) => 41855 distinct results (space size is 66240)
@@ -27,7 +34,7 @@ class Humanizer():
         files = [x for x in p if x.is_file()]
 
         files.sort() # To prevent System's way of sorting paths.
-        # Therefore, we are sure about the order of treatment on any machine (deteminism)
+        # Therefore, we are sure about the order of treatment on any machine (determinism)
 
         print(f"Going to change names of : {files} \n Are you sure you want to continue ?")
         input()
@@ -66,7 +73,7 @@ class Humanizer():
         return {new_name}.issubset(self.already_generated)
 
 def main():
-
+    # Usage example : python3 ./humanizer.py -p ./MINI_DATASET/
     parser = argparse.ArgumentParser(description='Rename all files in the given directory and subdirectory')
     parser.add_argument('-p', '--path', dest='path', action='store', type=lambda p: pathlib.Path(p).absolute(), default=1, help='all path')
     parser.add_argument('--version', action='version', version='humanizer %s' % ("1.0.0"))
