@@ -9,25 +9,6 @@ from collections import deque
 import time
 import datetime
 
-'''
-# Use append like before to add elements
-numbers.append(99)  
-numbers.append(15)  
-numbers.append(82)  
-numbers.append(50)  
-numbers.append(47)
-
-# You can pop like a stack
-last_item = numbers.pop()  
-print(last_item) # 47  
-print(numbers) # deque([99, 15, 82, 50])
-
-# You can dequeue like a queue
-first_item = numbers.popleft()  
-print(first_item) # 99  
-print(numbers) # deque([15, 82, 50]) 
-'''
-
 ### LAAAAUNCH WITH ROOT ACCESS !! or with user in docker group ####
 
 class DockerCommmiter():
@@ -57,26 +38,26 @@ class DockerCommmiter():
         commit_name = self.get_commit_name()
 
         print(f"Commiting : {commit_name}")
-        tmp_image = self.client.containers.get(docker_name).commit(commit_name)
+        self.client.containers.get(docker_name).commit(commit_name)
 
-        self.deque_saves.append(tmp_image)
+        self.deque_saves.append(commit_name)
 
         return commit_name
 
     def get_commit_name(self):
         datetime_object = datetime.datetime.now()
         print("Current date : ", datetime_object)
-        commit_name = "save_" + str(self.current_save_id) + str(datetime_object).replace(" ", "_").replace(":", "_").replace("-", "_").replace(".", "_")
+        commit_name = "save_" + str(self.current_save_id) + "_" + str(datetime_object).replace(" ", "_").replace(":", "_").replace("-", "_").replace(".", "_")
         self.current_save_id += 1
         return commit_name
 
     def remove_too_old_images(self):
 
         if len(self.deque_saves) > self.saves_limit :
-            image_to_remove = self.deque_saves.popleft()
-            print(f"Too many saves. Removing save : {image_to_remove}")
+            commit_name_to_remove = self.deque_saves.popleft()
+            print(f"Too many saves. Removing save : {commit_name_to_remove}")
 
-            self.client.images.remove(image_to_remove.id)
+            self.client.images.remove(commit_name_to_remove)
         else :
             print(f"Save limit not reached for now, only {len(self.deque_saves)} saves")
 
