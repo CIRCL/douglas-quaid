@@ -71,6 +71,9 @@ class Node:
 
         return tmp_node
 
+    def copy_ids_to_image(self):
+        self.image = self.id
+
     # ==================== To string ====================
 
     # Overwrite to print the content of the cluster instead of the cluster memory address

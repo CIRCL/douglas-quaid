@@ -113,6 +113,10 @@ class GraphDataStruct:
 
     # ==================== Export / Import ====================
 
+    def copy_ids_to_image(self):
+        # Copy "id" values of nodes to their "image" field (useful if we have no image, and id are actual path)
+        [node.copy_ids_to_image() for node in self.nodes.values()]
+
     def export_as_dict(self):
         tmp_dict = {}
         tmp_dict["meta"] = self.meta.export_as_dict()
