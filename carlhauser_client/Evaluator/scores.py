@@ -8,16 +8,10 @@ import pathlib
 import sys
 
 from typing import List, Set
-from pprint import pformat
 
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
 sys.path.append(os.path.abspath(os.path.pardir))
 from carlhauser_client.Helpers.environment_variable import get_homedir
-from common.Graph.graph_datastructure import GraphDataStruct
-from common.Graph.metadata import Metadata, Source
-from common.Graph.cluster import Cluster
-from common.Graph.edge import Edge
-from common.Graph.node import Node
 
 # from . import helpers
 

@@ -8,16 +8,11 @@ import pathlib
 import sys
 
 from typing import List
-from pprint import pformat
 
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
 sys.path.append(os.path.abspath(os.path.pardir))
 from carlhauser_client.Helpers.environment_variable import get_homedir
-from common.Graph.graph_datastructure import GraphDataStruct
-from common.Graph.metadata import Metadata, Source
 from common.Graph.cluster import Cluster
-from common.Graph.edge import Edge
-from common.Graph.node import Node
 import carlhauser_client.Evaluator.scores as scores
 import carlhauser_server.Helpers.json_import_export as json_import_export
 
@@ -47,12 +42,14 @@ class Performance_Evaluator():
 
             s = scores.Scoring()
 
+            # Get members of both clusters
             truth_set = pair[0].members
             candidate_set = pair[1].members
 
-            # Compute all values
+            # Compute all values of the pair score
             s.compute_all(truth_set, candidate_set, total_number_element)
 
+            # Store the score
             pair.append(s)
 
         self.clusters_with_perfs = clusters_pairs

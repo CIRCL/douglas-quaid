@@ -6,22 +6,16 @@ import logging.config
 import os
 import pathlib
 import sys
-
 from typing import List
-from pprint import pformat
-import numpy as np
-import matplotlib.pyplot as plt
+
 import matplotlib
+import matplotlib.pyplot as plt
+import numpy as np
 
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
 sys.path.append(os.path.abspath(os.path.pardir))
 from carlhauser_client.Helpers.environment_variable import get_homedir
-from common.Graph.graph_datastructure import GraphDataStruct
-from common.Graph.metadata import Metadata, Source
 from common.Graph.cluster import Cluster
-from common.Graph.edge import Edge
-from common.Graph.node import Node
-from carlhauser_client.Evaluator.scores import Scoring
 
 # from . import helpers
 
