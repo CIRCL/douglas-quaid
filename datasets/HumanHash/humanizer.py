@@ -58,13 +58,14 @@ class Humanizer():
 
         i = 0
         while collision_removal and self.is_already_drawn(new_name):
-            print(f"Collision found on filename {file_name} generating {new_name}. Adding 1 to filename.")
+            print(f"Collision found on filename {file_name} generating {new_name}. Adding {i} to filename.")
             # Modify/Create a new name
-            tmp_name = content + bytes(i)
+            tmp_content = content + bytes(i)
 
             # Redraw the new name
-            new_name = codenamize(tmp_name, 3, 0)
-            print(f"Collision handled by renaming {file_name} to {tmp_name} generating {new_name}.")
+            new_name = codenamize(tmp_content, 3, 0)
+            print(f"Collision handled by renaming {file_name} generating {new_name}.")
+            i += 1
 
         # Correct the name for eventual
         final_name = self.correct_name(new_name)
