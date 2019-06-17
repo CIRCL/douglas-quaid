@@ -83,6 +83,7 @@ class FlaskAppWrapper(object):
         # Add action endpoints
         self.add_endpoint(endpoint="/add_picture", endpoint_name="/add_picture", handler=self.add_picture)
         self.add_endpoint(endpoint="/request_similar_picture", endpoint_name="/request_similar_picture", handler=self.request_similar_picture)
+        self.add_endpoint(endpoint="/is_ready", endpoint_name="/is_ready", handler=self.is_ready)
         self.add_endpoint(endpoint="/get_results", endpoint_name="/get_results", handler=self.get_results)
         self.add_endpoint(endpoint="/export_db", endpoint_name="/export_db", handler=self.export_db_as_graphe)
 
@@ -180,6 +181,38 @@ class FlaskAppWrapper(object):
         return result_json
         # Test it with curl 127.0.0.1:5000/request_similar_picture
 
+
+    def is_ready(self):
+        result_json = {}
+        result_json["Called_function"] = "is_ready"
+        result_json = self.add_std_info(result_json)
+
+        # Answer to PUT HTTP request
+        if flask.request.method == 'GET':
+            try:
+                # Received : werkzeug.datastructures.FileStorage. Should use ".read()" to get picture's value
+                id = flask.request.args.get('request_id')
+                self.logger.debug(f"Request ID to be checked if ready in server : {type(id)} ==> {id} ")  # {f.read()}
+
+                # Fetch results
+                # TODO : Special function for "cleaner/more performant" check ?
+                _ = self.database_worker.get_request_result(self.database_worker.cache_db_no_decode, id)
+
+                result_json["Status"] = "Success"
+                result_json["request_id"] = id
+                result_json["is_ready"] = True
+            except Exception as e:
+                self.logger.error(f"Error during GET handling {e}")
+                result_json["Status"] = "Failure"
+                result_json["Error"] = "Error during database request"
+                result_json["is_ready"] = False
+        else:
+            result_json["Status"] = "Failure"
+            result_json["Error"] = "BAD METHOD : use GET instead of POST, PUT, ..."
+
+        return result_json
+        # Test it with curl 127.0.0.1:5000/is_ready
+
     def get_results(self):
         result_json = {}
         result_json["Called_function"] = "get_results"
@@ -199,12 +232,12 @@ class FlaskAppWrapper(object):
                 result_json["request_id"] = id
                 result_json["results"] = result_dict
             except Exception as e:
-                self.logger.error(f"Error during PUT handling {e}")
+                self.logger.error(f"Error during GET handling {e}")
                 result_json["Status"] = "Failure"
                 result_json["Error"] = "Error during Hash computation or database request"
         else:
             result_json["Status"] = "Failure"
-            result_json["Error"] = "BAD METHOD : use POST instead of GET, PUT, ..."
+            result_json["Error"] = "BAD METHOD : use GET instead of POST, PUT, ..."
 
         return result_json
         # Test it with curl 127.0.0.1:5000/get_results

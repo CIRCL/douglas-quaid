@@ -65,23 +65,38 @@ pipenv run python3 ./core.py
 ```
 
 ###### Client side : 
+All approaches are equivalents. Pick the one that suits you the most.
 
 ```bash
 cd ./carlhauser_client
 pipenv run python3 ./core.py  
 ```
 
+or via CLI 
+
+```bash
+pipenv shell
+
+# Upload all pictures of folder "Pictures_folder" and create a mapping (file_name => server_side_id)
+python3 ./API/cli.py upload -p ./../datasets/Pictures_folder -o ./mapping.json
+
+# Request similar picture of one of your pictures. You can specify the mapping file to get "real names" of pictures (client-side name).
+python3 ./API/cli.py request -p ./../datasets/Other_folder/my_picture.png -o ./similar_pics.json -m ./mapping.json
+
+# Make a dump of the database as is of the server. You can specify the mapping file to get "real names" of pictures (client-side name). 
+python3 ./API/cli.py dump -o ./dbdumpfile.json -m ./mapping.json -c
+```
+
 or from your own custom python file
 
 ```python
 import pathlib
-import time
 from carlhauser_client.Helpers.environment_variable import get_homedir
-from carlhauser_client.API.carlhauser_client import API_caller
+from carlhauser_client.API.simple_api import Simple_API
 
 # Generate the API access point link to the hardcoded server
 cert = (get_homedir() / "carlhauser_client" / "cert.pem").resolve()
-api = API_caller(url='https://localhost:5000/', certificate_path=cert)
+api = Simple_API(url='https://localhost:5000/', certificate_path=cert)
 
 # Each call to API return 2 values. 
 # First value = success boolean, Second value = json response of the server
@@ -95,14 +110,39 @@ api.add_picture_server(get_homedir() / "datasets" / "simple_pictures" / "image.j
 
 # Request a picture matches
 request_id = api.request_picture_server(get_homedir() / "datasets" / "simple_pictures" / "image.bmp")[1]
-# (...) wait a bit
-time.sleep(1)
+# (...)
+
+# Wait a bit
+api.poll_until_result_ready(request_id, max_time=60)
 
 # Retrieve results of the previous request (print on screen)
 results = api.retrieve_request_results(request_id)[1]
 
 # Triggers a DB export of the server as-is, to be displayed with visjsclassificator. Server-side only operation.
 api.export_db_server()
+```
+
+or from extended API
+```python
+import pathlib
+from carlhauser_client.Helpers.environment_variable import get_homedir
+from carlhauser_client.API.extended_api import Extended_API
+
+# Generate the API access point link to the hardcoded server
+cert = (get_homedir() / "carlhauser_client" / "cert.pem").resolve()
+api = Extended_API(url='https://localhost:5000/', certificate_path=cert)
+
+# Ping server (sanity check, not technicaly required) 
+api.ping_server()
+
+# perform uploads
+api.add_pictures_to_db(get_homedir() / "datasets" / "simple_pictures")
+
+# Retrieve results of the previous request (print on screen)
+results = api.request_similar_and_wait(get_homedir() / "datasets" / "simple_pictures" / "image.bmp")
+
+# Triggers a DB export of the server as-is, to be displayed with visjsclassificator. Server-side only operation.
+db_dump = api.get_db_dump_as_graph()
 ```
 
 ### Prerequisites

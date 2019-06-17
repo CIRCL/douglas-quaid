@@ -49,7 +49,7 @@ class DBUtilities():
 
     # ==================== ------ ADDERS ------- ====================
 
-    def add_picture_to_cluster(self, image_id, cluster_id):
+    def add_picture_to_cluster(self, image_id, cluster_id : str, score=100):
         # Add a picture to a cluster
 
         set_name = self.get_setname_of_cluster(cluster_id)
@@ -60,27 +60,34 @@ class DBUtilities():
 
         # Add the picture to the set
         # success = self.db_access_decode.sadd(set_name, image_id) # SET
-        success = self.db_access_decode.zadd(set_name, {image_id: 2})  # SORTED SET
+        success = self.db_access_decode.zadd(set_name, {image_id: score})  # SORTED SET
         self.logger.info(f"Added picture {image_id} to {cluster_id} cluster under set name {set_name}")
 
         return success
 
-    def add_picture_to_new_cluster(self, image_id):
+    def add_picture_to_new_cluster(self, image_id, score=100):
         # Add picture to a freshly created cluster
 
         # Generate random id
-        cluster_name = self.get_new_cluster_id()
-        set_name = self.get_setname_of_cluster(cluster_name)
+        cluster_id = self.get_new_cluster_id()
+        set_name = self.get_setname_of_cluster(cluster_id)
 
         # Add cluster to cluster list
-        self.add_cluster(cluster_name)
+        self.add_cluster(cluster_id)
 
         # Add the picture to the set
         # self.db_access_decode.sadd(set_name, image_id) # SET
-        self.db_access_decode.zadd(set_name, {image_id: 2})  # SORTED SET 2 = DEFAULT VALUE
-        self.logger.info(f"Added picture {image_id} to NEW {cluster_name} cluster under set name {set_name}")
+        self.db_access_decode.zadd(set_name, {image_id: score})  # SORTED SET
+        self.logger.info(f"Added picture {image_id} to NEW {cluster_id} cluster under set name {set_name}")
 
-        return cluster_name
+        return cluster_id
+
+    def update_picture_score_of_cluster(self, cluster_id, image_id, new_score):
+        # Update the set "ranking" value of a picture into a cluster
+
+        set_name = self.get_setname_of_cluster(cluster_id)
+        self.db_access_decode.zadd(set_name, {image_id: new_score}, xx=True)
+
 
     @staticmethod
     def get_new_cluster_id():
@@ -99,7 +106,7 @@ class DBUtilities():
         return self.db_access_decode.zrange(self.get_setname_of_cluster(cluster_name), 0, -1, withscores=with_score)  # SORTED SET
 
     @staticmethod
-    def get_setname_of_cluster(cluster_name):
+    def get_setname_of_cluster(cluster_name : str):
         return '|'.join([cluster_name, 'pics'])
 
     # ==================== ------ BACKGROUND COMPUTATION ------- ====================
@@ -109,20 +116,6 @@ class DBUtilities():
         # TODO
         return
 
-    def reevaluate_representative_picture_order(self, cluster_id, fetched_id=None):
-        # Re-evaluate the representative picture.
-        # 0(N²) operation with N being the number of elements in the cluster
-
-        if fetched_id is None:
-            # We don't know which picture was the last one added. Perform full re-evaluation
-            pass
-        else:
-            # We know which picture was added last, and so begin by this one.
-            pass
-
-        # evaluate
-        # TODO : Somewhat already done before. May be able to memoize the computed values ?
-        return
 
     # ==================== ------ EXPORTATION ------- ====================
 

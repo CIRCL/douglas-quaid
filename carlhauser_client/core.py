@@ -11,7 +11,8 @@ import time
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
 sys.path.append(os.path.abspath(os.path.pardir))
 from carlhauser_client.Helpers.environment_variable import get_homedir
-from carlhauser_client.API.carlhauser_client import API_caller
+from carlhauser_client.API.simple_api import Simple_API
+from carlhauser_client.API.extended_api import Extended_API
 
 # from . import helpers
 
@@ -25,7 +26,7 @@ logging.config.fileConfig(str(logconfig_path))
 class launcher_handler():
     def __init__(self):
         self.logger = logging.getLogger(__name__)
-        self.API = self.get_api()
+        self.API = Extended_API.get_api()
 
     def launch(self):
         self.logger.info(f"Launching webservice ...")
@@ -37,6 +38,10 @@ class launcher_handler():
         self.logger.info(f"Request ? ")
         input()
         request_id = self.perform_request(get_homedir() / "datasets" / "simple_pictures" / "image.bmp")
+
+        self.logger.info(f"Polling ... ")
+        self.poll_until_result_ready(request_id)
+
         self.logger.info(f"Add ? ")
         input()
         self.perform_upload(get_homedir() / "datasets" / "simple_pictures" / "image.bmp")
@@ -47,16 +52,6 @@ class launcher_handler():
         input()
         self.export_db_server()
 
-    def get_api(self):
-        # Generate the API access point link to the hardcoded server
-        cert = (get_homedir() / "carlhauser_client" / "cert.pem").resolve()
-
-        # See : https://stackoverflow.com/questions/10667960/python-requests-throwing-sslerror
-        # To create : openssl req -x509 -newkey rsa:4096 -nodes -out cert.pem -keyout key.pem -days 365
-        api = API_caller(url='https://localhost:5000/', certificate_path=cert)
-        logging.captureWarnings(True)  # TODO : Remove
-        return api
-
     def perform_ping_check(self):
         self.API.ping_server()
 
@@ -66,16 +61,20 @@ class launcher_handler():
     def perform_request(self, path: pathlib.Path):
         return self.API.request_picture_server(path)[1]
 
-    def retrieve_request_results(self, path: pathlib.Path):
-        return self.API.retrieve_request_results(path)[1]
+    def poll_until_result_ready(self, request_id):
+        return self.API.poll_until_result_ready(request_id, max_time=60)
+
+    def retrieve_request_results(self, request_id):
+        return self.API.retrieve_request_results(request_id)[1]
 
     def export_db_server(self):
         return self.API.export_db_server()[1]
 
-    def example(self):
+    @staticmethod
+    def example():
         # Generate the API access point link to the hardcoded server
         cert = (get_homedir() / "carlhauser_client" / "cert.pem").resolve()
-        api = API_caller(url='https://localhost:5000/', certificate_path=cert)
+        api = Simple_API(url='https://localhost:5000/', certificate_path=cert)
 
         # Ping server, and perform uploads
         api.ping_server()
@@ -84,8 +83,10 @@ class launcher_handler():
 
         # Request a picture matches
         request_id = api.request_picture_server(get_homedir() / "datasets" / "simple_pictures" / "image.bmp")[1]
-        # (...) wait a bit
-        time.sleep(1)
+        # (...)
+
+        # Wait a bit
+        api.poll_until_result_ready(request_id, max_time=60)
 
         # Retrieve results of the previous request
         api.retrieve_request_results(request_id)

@@ -8,17 +8,11 @@ import pathlib
 import sys
 
 from typing import List
-from pprint import pformat
 
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
 sys.path.append(os.path.abspath(os.path.pardir))
 from carlhauser_client.Helpers.environment_variable import get_homedir
-from carlhauser_client.API.carlhauser_client import API_caller
-from common.Graph.graph_datastructure import GraphDataStruct
-from common.Graph.metadata import Metadata, Source
 from common.Graph.cluster import Cluster
-from common.Graph.edge import Edge
-from common.Graph.node import Node
 # from . import helpers
 from pprint import pformat
 
@@ -52,7 +46,7 @@ class Cluster_matcher():
 
             for i, curr_candidat_cluster in enumerate(candidate):
                 if len(curr_candidat_cluster.members) < max_intersect:
-                    # The current cluster and the next one can't be better that already found matching
+                    # The current cluster and the next ones can't be better that already found matching
 
                     # Remove current cluster from matching
                     # TODO : if index_best_intersect != -1 :

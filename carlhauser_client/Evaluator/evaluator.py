@@ -11,12 +11,11 @@ import time
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
 sys.path.append(os.path.abspath(os.path.pardir))
 from carlhauser_client.Helpers.environment_variable import get_homedir
-from carlhauser_client.API.carlhauser_client import API_caller
+from carlhauser_client.API.extended_api import Extended_API
 from carlhauser_client.Evaluator.cluster_matcher import Cluster_matcher
 from carlhauser_client.Evaluator.performance_evaluation import Performance_Evaluator
 from carlhauser_client.Evaluator.confusion_matrix_generator import ConfusionMatrixGenerator
 import carlhauser_server.Helpers.json_import_export as json_import_export
-from pprint import pformat
 
 from common.Graph.graph_datastructure import GraphDataStruct, merge_graphs
 
@@ -32,7 +31,7 @@ logging.config.fileConfig(str(logconfig_path))
 class Evaluator():
     def __init__(self):
         self.logger = logging.getLogger(__name__)
-        self.API = self.get_api()
+        self.API = Extended_API.get_api()
 
     def launch(self, image_folder: pathlib.Path, visjs_json_path: pathlib.Path, output_path: pathlib.Path):
         # Compute a complete run of the library on a folder, with a ground truth file, to compute metrics about the quality of the matching
@@ -51,11 +50,11 @@ class Evaluator():
 
         # ========= AUTO EVALUATION =========
         # Send pictures to DB and get id mapping
-        mapping_old_filename_to_new_id, nb_pictures = self.add_pictures_to_db(image_folder)
+        mapping_old_filename_to_new_id, nb_pictures = self.API.add_pictures_to_db(image_folder)
         time.sleep(10)  # Let time to add pictures to db
 
         # Get a DB dump
-        db_dump = self.get_db_dump_as_graph()
+        db_dump = self.API.get_db_dump_as_graph()
 
         # ========= COMPARISON =========
         # Apply name mapping to dict (find back original names)
@@ -97,59 +96,27 @@ class Evaluator():
 
         return perf_overview
 
-    def add_pictures_to_db(self, image_folder: pathlib.Path) -> (dict, int):
-        # Upload pictures to Redis Database (douglas Quaid API) and
-        # return a mapping (filename-> ID provided by server) and the number of pictures successfuly uploaded
 
-        ID_mapping_old_to_new = {}
-        nb_pictures = 0
+'''
+def main():
+    parser = argparse.ArgumentParser(description='Perform an evaluation on a dataset : Send all pictures, ')
+    parser.add_argument('-p', '--path', dest='path', action='store', type=lambda p: pathlib.Path(p).absolute(), default=1, help='all path')
+    parser.add_argument('--version', action='version', version='humanizer %s' % ("1.0.0"))
 
-        # Add pictures to DB, create mapping OLD NAME -> NEW NAME (or opposite)
-        for image_path in image_folder.iterdir():
-            if image_path.is_file():
-                # Upload the image to db
-                res = self.API.add_picture_server(image_path)
-                if res[0] == True:
-                    # The upload had been successful
-                    ID_mapping_old_to_new[image_path.name] = res[1]
+    args = parser.parse_args()
+    humanizer = Humanizer()
+    humanizer.rename_all_files(args.path)
 
-                    self.logger.info(f"Mapping from {image_path.name} to {res[1]}")
-                    nb_pictures += 1
-                else:
-                    self.logger.error(f"Error during upload of {image_path.name} : {res[1]}")
-
-        return ID_mapping_old_to_new, nb_pictures
+'''
 
 
-    def get_db_dump_as_graph(self) -> GraphDataStruct:
-        # Ask the DB to provide a dump of its actual state (douglas Quaid API) and
-        # return a graphe (common datastructure) representation of it
-
-        # Dump DB as graphe / clusters
-        res = self.API.export_db_server()
-
-        if res[0] == True:
-            # The upload had been successful
-            graphe_struct = GraphDataStruct.load_from_dict(res[1])
-        else:
-            raise Exception(f"Error during db dump of {res}")
-
-        return graphe_struct
-
-    def get_api(self):
-        # Generate the API access point link to the hardcoded server
-        cert = (get_homedir() / "carlhauser_client" / "cert.pem").resolve()
-
-        # See : https://stackoverflow.com/questions/10667960/python-requests-throwing-sslerror
-        # To create : openssl req -x509 -newkey rsa:4096 -nodes -out cert.pem -keyout key.pem -days 365
-        api = API_caller(url='https://localhost:5000/', certificate_path=cert)  # TODO : Should be =cert
-        logging.captureWarnings(True)  # TODO : Remove
-        return api
-
-
-if __name__ == '__main__':
+def test():
     evaluator = Evaluator()
     image_folder = get_homedir() / "datasets" / "MINI_DATASET"
     gt = get_homedir() / "datasets" / "MINI_DATASET_VISJS.json"
-    output_path =  get_homedir() / "carlhauser_client"
+    output_path = get_homedir() / "carlhauser_client"
     evaluator.launch(image_folder, gt, output_path)
+
+
+if __name__ == "__main__":
+    test()
