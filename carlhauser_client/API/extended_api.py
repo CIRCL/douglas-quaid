@@ -8,6 +8,7 @@ import pathlib
 import sys
 from typing import Dict, List
 import collections
+import time
 
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
 sys.path.append(os.path.abspath(os.path.pardir))
@@ -48,6 +49,7 @@ class Extended_API(Simple_API):
         return ID_mapping_old_to_new, nb_pictures
 
     def request_similar_and_wait(self, image_path: pathlib.Path, waittime=60):
+        start = time.time()
         self.logger.debug(f"Requesting similar pictures to {image_path}")
         is_success, request_id = self.request_picture_server(image_path)
         if is_success:
@@ -58,6 +60,8 @@ class Extended_API(Simple_API):
                 self.logger.debug(f"Request executed. Fetching results.")
                 is_success, results = self.retrieve_request_results(request_id)
                 if is_success:
+                    results["request_time"] = time.time() - start
+                    self.logger.info(f"Request answered in : {results['request_time']}")
                     return results
                 else:
                     self.logger.error(f"Error on results retrieval.")
