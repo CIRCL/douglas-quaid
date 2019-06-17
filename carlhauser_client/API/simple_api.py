@@ -11,10 +11,13 @@ import requests
 
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
 sys.path.append(os.path.abspath(os.path.pardir))
+from carlhauser_client.Helpers.environment_variable import get_homedir
 
 
 # ==================== ------ SERVER Flask API CALLER ------- ====================
-class API_caller():
+class Simple_API():
+    # Provides "Low-level" API calls
+
     def __init__(self, url, certificate_path):
         self.server_url = url
         self.logger = logging.getLogger(__name__)
@@ -142,3 +145,18 @@ class API_caller():
             self.logger.info(data)
 
             return data["Status"] == "Success", data["db"]
+
+    @staticmethod
+    def get_api():
+        return Simple_API.get_custom_api(Simple_API)
+
+    @staticmethod
+    def get_custom_api(api_class):
+        # Generate the API access point link to the hardcoded server
+        cert = (get_homedir() / "carlhauser_client" / "cert.pem").resolve()
+
+        # See : https://stackoverflow.com/questions/10667960/python-requests-throwing-sslerror
+        # To create : openssl req -x509 -newkey rsa:4096 -nodes -out cert.pem -keyout key.pem -days 365
+        api = api_class(url='https://localhost:5000/', certificate_path=cert)  # TODO : Should be =cert
+        logging.captureWarnings(True)  # TODO : Remove
+        return api
