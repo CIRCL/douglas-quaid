@@ -89,7 +89,7 @@ class Database_Adder(database_accessor.Database_Worker):
             else:
                 self.logger.info(f"Match not good enough, with any cluster")
                 # Add picture to it's own cluster
-                cluster_id = self.db_utils.add_picture_to_new_cluster(fetched_id)
+                cluster_id = self.db_utils.add_picture_to_new_cluster(fetched_id, score=0) # First picture is "alone" and so central
                 self.logger.info(f"Picture added in its own new cluster : {cluster_id}")
 
             # Add to a queue, to be reviewed later, when more pictures will be added
@@ -129,11 +129,13 @@ class Database_Adder(database_accessor.Database_Worker):
 
             # Compute the centrality of the new picture and update its score : 0(N)
             new_pic_dict = self.get_dict_from_key(self.storage_db_no_decode, fetched_id, pickle=True)
-            centrality_score = self.compute_centrality(pictures_sorted_set, new_pic_dict)
+            centrality_score = self.compute_centrality([i[0] for i in pictures_sorted_set], new_pic_dict)
             self.db_utils.update_picture_score_of_cluster(cluster_id, fetched_id, centrality_score)
 
             # And for each other picture, add the distance between itself and this new picture to its score : 0(N)
             for curr_pic, score in pictures_sorted_set:
+                if curr_pic == fetched_id : # Important ! Because scores are before the previous update.
+                    continue
                 curr_target_pic_dict = self.get_dict_from_key(self.storage_db_no_decode, curr_pic, pickle=True)
                 delta_centrality = self.de.get_distance_picture_to_picture(new_pic_dict, curr_target_pic_dict)
                 # Update the centrality of the current picture with the new "added value".
@@ -145,11 +147,14 @@ class Database_Adder(database_accessor.Database_Worker):
     def compute_centrality(self, pictures_list_id, picture_dict) -> float:
         # Returns centrality of a picture within a list of other pictures.
 
+        self.logger.debug(picture_dict)
         curr_sum = 0
         # For each picture, compute its distance to other picture, summing it temporary
         for curr_target_pic in pictures_list_id:
             curr_target_pic_dict = self.get_dict_from_key(self.storage_db_no_decode, curr_target_pic, pickle=True)
             curr_sum += self.de.get_distance_picture_to_picture(picture_dict, curr_target_pic_dict)
+
+        self.logger.debug(f"Computed centrality for {pictures_list_id}")
 
         return curr_sum
 

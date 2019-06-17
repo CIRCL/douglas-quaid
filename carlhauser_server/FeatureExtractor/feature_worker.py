@@ -1,19 +1,17 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import argparse
+import os
+import pathlib
 # ==================== ------ STD LIBRARIES ------- ====================
 import sys
-import os
-import redis
-import logging
 import time
-import argparse
-import pathlib
 
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
 sys.path.append(os.path.abspath(os.path.pardir))
 
-from carlhauser_server.Helpers.environment_variable import get_homedir, dir_path
+from carlhauser_server.Helpers.environment_variable import dir_path
 import carlhauser_server.Helpers.json_import_export as json_import_export
 
 import carlhauser_server.DatabaseAccessor.database_worker as database_accessor
@@ -22,11 +20,10 @@ import carlhauser_server.Configuration.feature_extractor_conf as feature_extract
 
 import carlhauser_server.FeatureExtractor.picture_hasher as picture_hasher
 import carlhauser_server.FeatureExtractor.picture_orber as picture_orber
-import carlhauser_server.Helpers.database_start_stop as database_start_stop
 
 
 class Feature_Worker(database_accessor.Database_Worker):
-    # Heritate from the database accesso, and so has already built in access to cache, storage ..
+    # Heritate from the database accessor, and so has already built in access to cache, storage ..
 
     def __init__(self, db_conf: database_conf, fe_conf: feature_extractor_conf):
         # STD attributes

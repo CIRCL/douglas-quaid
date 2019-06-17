@@ -20,6 +20,8 @@ import os
 
 import carlhauser_server.FeatureExtractor.picture_hasher as picture_hasher
 import carlhauser_server.FeatureExtractor.picture_orber as picture_orber
+
+
 class testDistanceEngine(unittest.TestCase):
     """Basic test cases."""
 
@@ -110,7 +112,6 @@ class testDistanceEngine(unittest.TestCase):
         self.logger.debug(tmp_list)
         self.assertEqual(set([cluster_name_2]).issubset(tmp_list), True)
 
-
     def test_add_cluster(self):
         cluster_name_1 = "myperfectuuid"
         cluster_name_2 = "myperfectuuid_2"
@@ -178,12 +179,11 @@ class testDistanceEngine(unittest.TestCase):
         tmp_list = self.db_adder.db_utils.get_cluster_list()
         self.assertEqual(len(tmp_list), 0)
 
-
     # ==================== ------ ADDERS ------- ====================
 
-    def get_descriptors(self, filename  = "original.bmp"):
+    def get_descriptors(self, filename="original.bmp"):
         self.algo = cv2.ORB_create(nfeatures=10)
-        orb_pic = cv2.imread(str(self.test_file_path/filename),0)
+        orb_pic = cv2.imread(str(self.test_file_path / filename), 0)
 
         key_points, descriptors = self.algo.detectAndCompute(orb_pic, None)
 
@@ -192,7 +192,7 @@ class testDistanceEngine(unittest.TestCase):
     def test_add_picture_to_storage(self):
         id_to_process = str(42)
         list_keypoints = self.get_descriptors()
-        data_to_store = {"img": "MyPerfectPicture", "test": "test_value", "keypoints":list_keypoints}
+        data_to_store = {"img": "MyPerfectPicture", "test": "test_value", "keypoints": list_keypoints}
         print("Stored :", data_to_store)
         self.set_raw_redis()
 
@@ -209,7 +209,6 @@ class testDistanceEngine(unittest.TestCase):
         self.assertEqual(len(data_to_store["keypoints"]), len(stored["keypoints"]))
         self.assertEqual(type(data_to_store["keypoints"][0]), type(stored["keypoints"][0]))
 
-
     def test_add_picture_to_cluster(self):
 
         cluster_name_1 = "myperfectuuid_1"
@@ -219,67 +218,65 @@ class testDistanceEngine(unittest.TestCase):
         image_id_2 = "myimageid_2"
 
         pic_list = self.db_adder.db_utils.get_pictures_of_cluster(cluster_name_1)
-        self.assertEqual(len(pic_list),0)
+        self.assertEqual(len(pic_list), 0)
 
         self.db_adder.db_utils.add_picture_to_cluster(image_id_1, cluster_name_1)
         pic_list = self.db_adder.db_utils.get_pictures_of_cluster(cluster_name_1)
-        self.assertEqual(len(pic_list),1)
+        self.assertEqual(len(pic_list), 1)
 
         self.db_adder.db_utils.add_cluster(cluster_name_1)
         self.db_adder.db_utils.add_picture_to_cluster(image_id_1, cluster_name_1)
         pic_list = self.db_adder.db_utils.get_pictures_of_cluster(cluster_name_1)
-        self.assertEqual(len(pic_list),1)
+        self.assertEqual(len(pic_list), 1)
 
         self.db_adder.db_utils.add_cluster(cluster_name_1)
         self.db_adder.db_utils.add_picture_to_cluster(image_id_2, cluster_name_1)
         self.db_adder.db_utils.add_picture_to_cluster(image_id_2, cluster_name_2)
         pic_list = self.db_adder.db_utils.get_pictures_of_cluster(cluster_name_1)
-        self.assertEqual(len(pic_list),2)
+        self.assertEqual(len(pic_list), 2)
 
     def test_add_picture_to_new_cluster(self):
         image_id_1 = "myimageid_1"
         image_id_2 = "myimageid_2"
 
+        cluster_name = self.db_adder.db_utils.add_picture_to_new_cluster(image_id_1)
+        pic_list = self.db_adder.db_utils.get_pictures_of_cluster(cluster_name)
+        self.assertEqual(len(pic_list), 1)
 
         cluster_name = self.db_adder.db_utils.add_picture_to_new_cluster(image_id_1)
         pic_list = self.db_adder.db_utils.get_pictures_of_cluster(cluster_name)
-        self.assertEqual(len(pic_list),1)
-
-        cluster_name = self.db_adder.db_utils.add_picture_to_new_cluster(image_id_1)
-        pic_list = self.db_adder.db_utils.get_pictures_of_cluster(cluster_name)
-        self.assertEqual(len(pic_list),1)
+        self.assertEqual(len(pic_list), 1)
 
         self.db_adder.db_utils.add_picture_to_cluster(image_id_2, cluster_name)
         pic_list = self.db_adder.db_utils.get_pictures_of_cluster(cluster_name)
-        self.assertEqual(len(pic_list),2)
+        self.assertEqual(len(pic_list), 2)
 
     def test_get_setname_of_cluster(self):
         val = self.db_adder.db_utils.get_setname_of_cluster("test")
         self.assertEqual(val, "test|pics")
 
-
     def test_change_picture_score(self):
         image_id_1 = "myimageid_1"
 
         cluster_name = self.db_adder.db_utils.add_picture_to_new_cluster(image_id_1)
-        pic_list = self.db_adder.db_utils.get_pictures_of_cluster(cluster_name , with_score=True)
+        pic_list = self.db_adder.db_utils.get_pictures_of_cluster(cluster_name, with_score=True)
         self.logger.info(pic_list)
 
-        self.assertEqual(len(pic_list),1)
-        self.assertEqual(pic_list[0][1],100.0)
+        self.assertEqual(len(pic_list), 1)
+        self.assertEqual(pic_list[0][1], 100.0)
 
         self.db_adder.db_utils.update_picture_score_of_cluster(cluster_name, pic_list[0][0], 1)
-        pic_list = self.db_adder.db_utils.get_pictures_of_cluster(cluster_name , with_score=True)
+        pic_list = self.db_adder.db_utils.get_pictures_of_cluster(cluster_name, with_score=True)
         self.logger.info(pic_list)
 
-        self.assertEqual(len(pic_list),1)
-        self.assertEqual(pic_list[0][1],1.0)
+        self.assertEqual(len(pic_list), 1)
+        self.assertEqual(pic_list[0][1], 1.0)
 
     def upload_picture(self, filename):
         # Upload a picture and returns an id
         id_to_process = filename + "ID"
 
-        with open(str(self.test_file_path/filename), "rb") as binary_file:
+        with open(str(self.test_file_path / filename), "rb") as binary_file:
             # Read the whole file at once
             image = binary_file.read()
             # image = open(str(self.test_file_path/filename), "rb")
@@ -321,11 +318,46 @@ class testDistanceEngine(unittest.TestCase):
         self.db_adder.reevaluate_representative_picture_order(cluster_id)
 
         # Get back pictures of the cluster
-        pic_list = self.db_adder.db_utils.get_pictures_of_cluster(cluster_id , with_score=True)
+        pic_list = self.db_adder.db_utils.get_pictures_of_cluster(cluster_id, with_score=True)
         self.logger.info(pic_list)
 
-        self.assertEqual(pic_list[0][0],"original.bmpID") # The most representative picture is the original one
+        self.assertEqual(pic_list[0][0], "original.bmpID")  # The most representative picture is the original one
 
+    def test_reevaluate_representative_picture_order_per_add(self):
+        # Add pictures to storage
+        self.set_raw_redis()
+
+        id = self.upload_picture("original.bmp")
+        cluster_id = self.db_adder.db_utils.add_picture_to_new_cluster(id)
+        self.logger.warning(f"Adding ... original as {id}")
+
+        self.logger.warning(f"TETS > Reevaluating representative picture ... {id}")
+        # Performs the reevaluation
+        self.db_adder.reevaluate_representative_picture_order(cluster_id, id)
+
+        self.logger.warning(f"TETS > Check all pictures of cluster ... {id}")
+        # Get back pictures of the cluster
+        pic_list = self.db_adder.db_utils.get_pictures_of_cluster(cluster_id, with_score=True)
+        self.logger.info(pic_list)
+
+        for file in ["green.bmp", "blue.bmp", "dark.bmp", "negative_dark.bmp", "yellow.bmp"]:
+            self.logger.warning(f"TETS > Adding ... {file}")
+            id_to_process = self.upload_picture(file)
+
+            self.logger.warning(f"TETS > Add picture to cluster ... {file}")
+            # Add picture to storage
+            self.db_adder.db_utils.add_picture_to_cluster(id_to_process, cluster_id)
+
+            self.logger.warning(f"TETS > Reevaluating representative picture ... {file}")
+            # Performs the reevaluation
+            self.db_adder.reevaluate_representative_picture_order(cluster_id, id_to_process)
+
+            self.logger.warning(f"TETS > Check all pictures of cluster ... {file}")
+            # Get back pictures of the cluster
+            pic_list = self.db_adder.db_utils.get_pictures_of_cluster(cluster_id, with_score=True)
+            self.logger.info(pic_list)
+
+        self.assertEqual(pic_list[0][0], "original.bmpID")  # The most representative picture is the original one
 
     def test_absolute_truth_and_meaning(self):
         assert True
