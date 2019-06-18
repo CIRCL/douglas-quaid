@@ -88,19 +88,20 @@ class Extended_API(Simple_API):
         self.logger.debug(f"Requesting similar pictures of {image_folder} to the DB.")
         # Add picture to be requested
         for image_path in image_folder.iterdir():
+            self.logger.debug(f"Working on picture #{nb_pictures}.")
+
             if image_path.is_file():
                 # Upload the image to db
-                try :
+                try:
                     results = self.request_similar_and_wait(image_path)
                     request_answers.append(results)
                     self.logger.debug(f"Successfully requested {image_path.name}.")
                     nb_pictures += 1
 
-                except Exception as e :
+                except Exception as e:
                     self.logger.error(f"Error occurred during {image_path.name} request : {e}.")
 
         return request_answers, nb_pictures
-
 
     def get_db_dump_as_graph(self) -> GraphDataStruct:
         # Ask the DB to provide a dump of its actual state (douglas Quaid API) and

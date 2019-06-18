@@ -91,10 +91,10 @@ class GraphExtractor():
 
             # We remove the picture "itself" from the matches
             tmp_clean_matches = []
-            for match in curr_request["list_pictures"] :
+            for match in curr_request.get("list_pictures", []):
                 if match["image_id"] != curr_request["request_id"]:
                     tmp_clean_matches.append(match)
-                elif match["distance"] != 0  :
+                elif match["distance"] != 0:
                     self.logger.warning(f"Picture {curr_request['request_id']} has not a distance 0 to itself. Strange.")
 
             '''
@@ -112,8 +112,9 @@ class GraphExtractor():
             for i in range(min(nb_match, len(tmp_clean_matches))):
                 graph.add_edge(Edge(_from=curr_request["request_id"],
                                     _to=tmp_clean_matches[i]["image_id"],
-                                    color={"color":color_list[i % len(color_list)]},
-                                    label=tmp_clean_matches[i]["distance"]))
+                                    color={"color": color_list[i % len(color_list)]},
+                                    label=str(tmp_clean_matches[i]["distance"]),
+                                    value=tmp_clean_matches[i]["distance"]))
 
         return graph
 
@@ -134,6 +135,9 @@ class GraphExtractor():
         requests_result = self.ext_api.apply_revert_mapping(requests_result, revert_mapping)
 
         # pprint.pprint(requests_result)
+        save_path_json = output_path / "requests_result.json"
+        json_import_export.save_json(requests_result, save_path_json)
+        self.logger.debug(f"Request results json saved in : {save_path_json}")
 
         # ========= Graph building =========
 
@@ -143,7 +147,8 @@ class GraphExtractor():
 
         save_path_json = output_path / "distance_graph.json"
         json_import_export.save_json(tmp_graph.export_as_dict(), save_path_json)
-        self.logger.debug(f"DB Dump json saved in : {save_path_json}")
+        self.logger.debug(f"Distance graph json saved in : {save_path_json}")
+
         '''
         # ========= CONSTRUCT GRAPHE =========
         # Apply name mapping to dict (find back original names)
@@ -202,7 +207,8 @@ def main():
 
 def test():
     evaluator = GraphExtractor()
-    image_folder = get_homedir() / "datasets" / "MINI_DATASET"
+    # image_folder = get_homedir() / "datasets" / "MINI_DATASET"
+    image_folder = get_homedir() / "datasets" / "raw_phishing_full"
     output_path = get_homedir() / "carlhauser_client"
     evaluator.launch(image_folder, output_path)
 
