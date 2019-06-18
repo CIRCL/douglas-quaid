@@ -59,5 +59,10 @@ class Merging_Engine:
     def get_mean_dict(distance_package: dict):
         return sum(distance_package.values())/len(distance_package.values())
 
+    @staticmethod
+    def get_weighted_mean_dict(distance_package: dict):
+        # TODO !
+        return sum(distance_package.values())/len(distance_package.values())
+
     # TODO : 90% MAX ?
 
