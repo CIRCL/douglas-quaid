@@ -7,12 +7,8 @@ import pprint
 
 from carlhauser_server.Helpers.environment_variable import get_homedir
 
-import carlhauser_client.Evaluator.scores as scores
-from common.Graph.graph_datastructure import GraphDataStruct
-from common.Graph.cluster import Cluster
-from common.Graph.edge import Edge
-from common.Graph.node import Node
-from common.Graph.metadata import Metadata, Source
+import carlhauser_client.EvaluationTools.ClassificationQuality.stats_datastruct as scores
+
 
 class TestClusterMatcher(unittest.TestCase):
     """Basic test cases."""
@@ -26,8 +22,8 @@ class TestClusterMatcher(unittest.TestCase):
         assert True
 
     def test_merge_scores(self):
-        s1 = scores.Scoring()
-        s2 = scores.Scoring()
+        s1 = scores.Stats_datastruct()
+        s2 = scores.Stats_datastruct()
 
         truth_set = set({2,3,4})
         candidate_set_1 = set({1,2,3})

@@ -43,7 +43,7 @@ class TestClusterMatcher(unittest.TestCase):
         new_value = "new"
 
         self.logger.info(f"Original dict : \n{pformat(ori_dict)}")
-        res = update_values_dict(ori_dict, futu_dict, {old_value:new_value})
+        res = update_values_dict(ori_dict, futu_dict, {old_value: new_value})
         self.logger.info(f"Replaced dict : \n{pformat(res)}")
 
         self.assertDictEqual(res, {'test': 'toto', 'aaa': 'ddddd', 'bbbb': 'new'})
@@ -64,7 +64,7 @@ class TestClusterMatcher(unittest.TestCase):
         new_value = "new"
 
         self.logger.info(f"Original dict : \n{pformat(ori_dict)}")
-        res = update_values_dict(ori_dict, futu_dict, {old_value:new_value})
+        res = update_values_dict(ori_dict, futu_dict, {old_value: new_value})
         self.logger.info(f"Replaced dict : \n{pformat(res)}")
         self.assertDictEqual(res, {'aaa': 'ddddd',
                                    'bbbb': 'new',
@@ -100,7 +100,7 @@ class TestClusterMatcher(unittest.TestCase):
         new_value = "new"
 
         self.logger.info(f"Original dict : \n{pformat(ori_dict)}")
-        res = update_values_dict(ori_dict, futu_dict, {old_value:new_value})
+        res = update_values_dict(ori_dict, futu_dict, {old_value: new_value})
         self.logger.info(f"Replaced dict : \n{pformat(res)}")
 
         self.assertDictEqual(res, {'list_cluster': [{'cluster_id': 'cluster|fa7c7ff4-e831-4acd-8b39-f48ad9ff6aeb',
@@ -112,7 +112,6 @@ class TestClusterMatcher(unittest.TestCase):
                                    'list_pictures': [{'cluster_id': 'cluster|fa7c7ff4-e831-4acd-8b39-f48ad9ff6aeb',
                                                       'distance': 0.0,
                                                       'image_id': 'new'}]})
-
 
 if __name__ == '__main__':
     unittest.main()

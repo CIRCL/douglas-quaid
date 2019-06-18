@@ -3,16 +3,12 @@
 import unittest
 import logging
 import pathlib
-from pprint import pformat
 
 from carlhauser_server.Helpers.environment_variable import get_homedir
 
-import carlhauser_client.Evaluator.confusion_matrix_generator as confusion_matrix_generator
-from common.Graph.graph_datastructure import GraphDataStruct
+import carlhauser_client.EvaluationTools.ClassificationQuality.confusion_matrix_generator as confusion_matrix_generator
 from common.Graph.cluster import Cluster
-from common.Graph.edge import Edge
-from common.Graph.node import Node
-from common.Graph.metadata import Metadata, Source
+
 
 class TestClusterMatcher(unittest.TestCase):
     """Basic test cases."""
