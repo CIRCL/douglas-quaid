@@ -13,7 +13,7 @@ sys.path.append(os.path.abspath(os.path.pardir))
 from carlhauser_client.Helpers.environment_variable import get_homedir
 from carlhauser_client.API.extended_api import Extended_API
 from carlhauser_client.Evaluator.cluster_matcher import Cluster_matcher
-from carlhauser_client.Evaluator.performance_evaluation import Performance_Evaluator
+from carlhauser_client.Evaluator.cluster_matching_quality_evaluator import ClusterMatchingQualityEvaluator
 from carlhauser_client.Evaluator.confusion_matrix_generator import ConfusionMatrixGenerator
 import carlhauser_server.Helpers.json_import_export as json_import_export
 
@@ -28,7 +28,7 @@ logging.config.fileConfig(str(logconfig_path))
 
 
 # ==================== ------ LAUNCHER ------- ====================
-class Evaluator():
+class ClassificationQualityEvaluator():
     def __init__(self):
         self.logger = logging.getLogger(__name__)
         self.API = Extended_API.get_api()
@@ -71,7 +71,7 @@ class Evaluator():
         matching = matcher.match_clusters(original, candidate)  # Matching original + Candidate ==> Group them per pair
 
         # Compute performance regarding input graphe
-        perf_eval = Performance_Evaluator()
+        perf_eval = ClusterMatchingQualityEvaluator()
         matching_with_perf = perf_eval.evaluate_performance(matching, nb_pictures)  # pair of clusters ==> Quality score for each
 
         # Store performance in a file
@@ -111,7 +111,7 @@ def main():
 
 
 def test():
-    evaluator = Evaluator()
+    evaluator = ClassificationQualityEvaluator()
     image_folder = get_homedir() / "datasets" / "MINI_DATASET"
     gt = get_homedir() / "datasets" / "MINI_DATASET_VISJS.json"
     output_path = get_homedir() / "carlhauser_client"
