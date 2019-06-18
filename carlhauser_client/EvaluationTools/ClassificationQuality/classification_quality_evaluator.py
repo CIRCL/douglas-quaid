@@ -12,9 +12,9 @@ import time
 sys.path.append(os.path.abspath(os.path.pardir))
 from carlhauser_client.Helpers.environment_variable import get_homedir
 from carlhauser_client.API.extended_api import Extended_API
-from carlhauser_client.Evaluator.cluster_matcher import Cluster_matcher
-from carlhauser_client.Evaluator.cluster_matching_quality_evaluator import ClusterMatchingQualityEvaluator
-from carlhauser_client.Evaluator.confusion_matrix_generator import ConfusionMatrixGenerator
+from carlhauser_client.EvaluationTools.ClassificationQuality.cluster_matcher import Cluster_matcher
+from carlhauser_client.EvaluationTools.ClassificationQuality.cluster_matching_quality_evaluator import ClusterMatchingQualityEvaluator
+from carlhauser_client.EvaluationTools.ClassificationQuality.confusion_matrix_generator import ConfusionMatrixGenerator
 import carlhauser_server.Helpers.json_import_export as json_import_export
 
 from common.Graph.graph_datastructure import GraphDataStruct, merge_graphs

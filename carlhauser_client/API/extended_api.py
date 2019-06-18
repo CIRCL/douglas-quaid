@@ -32,6 +32,7 @@ class Extended_API(Simple_API):
         ID_mapping_old_to_new = {}
         nb_pictures = 0
 
+        self.logger.debug(f"Sending pictures of {image_folder} in the DB.")
         # Add pictures to DB, create mapping OLD NAME -> NEW NAME (or opposite)
         for image_path in image_folder.iterdir():
             if image_path.is_file():
@@ -52,6 +53,7 @@ class Extended_API(Simple_API):
         start = time.time()
         self.logger.debug(f"Requesting similar pictures to {image_path}")
         is_success, request_id = self.request_picture_server(image_path)
+
         if is_success:
             self.logger.debug(f"Request successful. Waiting for results.")
             is_success = self.poll_until_result_ready(request_id, max_time=waittime)
@@ -59,16 +61,46 @@ class Extended_API(Simple_API):
             if is_success:
                 self.logger.debug(f"Request executed. Fetching results.")
                 is_success, results = self.retrieve_request_results(request_id)
+
                 if is_success:
                     results["request_time"] = time.time() - start
                     self.logger.info(f"Request answered in : {results['request_time']}")
                     return results
+
                 else:
                     self.logger.error(f"Error on results retrieval.")
+                    raise Exception("Error on results retrieval.")
             else:
                 self.logger.error(f"Error on results polling.")
+                raise Exception("Error on results polling.")
+
         else:
             self.logger.error(f"Error on request sending.")
+            raise Exception("Error on request sending.")
+
+    def request_pictures(self, image_folder: pathlib.Path) -> (dict, int):
+        # Upload pictures to Redis Database (douglas Quaid API) and
+        # return a mapping (filename-> ID provided by server) and the number of pictures successfully uploaded
+
+        request_answers = []
+        nb_pictures = 0
+
+        self.logger.debug(f"Requesting similar pictures of {image_folder} to the DB.")
+        # Add picture to be requested
+        for image_path in image_folder.iterdir():
+            if image_path.is_file():
+                # Upload the image to db
+                try :
+                    results = self.request_similar_and_wait(image_path)
+                    request_answers.append(results)
+                    self.logger.debug(f"Successfully requested {image_path.name}.")
+                    nb_pictures += 1
+
+                except Exception as e :
+                    self.logger.error(f"Error occurred during {image_path.name} request : {e}.")
+
+        return request_answers, nb_pictures
+
 
     def get_db_dump_as_graph(self) -> GraphDataStruct:
         # Ask the DB to provide a dump of its actual state (douglas Quaid API) and
