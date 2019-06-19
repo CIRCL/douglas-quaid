@@ -14,7 +14,6 @@ sys.path.append(os.path.abspath(os.path.pardir))
 from carlhauser_client.Helpers.environment_variable import get_homedir
 from carlhauser_client.API.extended_api import Extended_API
 from carlhauser_client.EvaluationTools.ClassificationQuality.cluster_matcher import Cluster_matcher
-from carlhauser_client.EvaluationTools.ClassificationQuality.cluster_matching_quality_evaluator import ClusterMatchingQualityEvaluator
 from carlhauser_client.EvaluationTools.ClassificationQuality.confusion_matrix_generator import ConfusionMatrixGenerator
 import carlhauser_server.Helpers.json_import_export as json_import_export
 
@@ -118,9 +117,22 @@ class GraphExtractor():
 
         return graph
 
-    def launch(self, image_folder: pathlib.Path, output_path: pathlib.Path):
+    def launch(self, image_folder: pathlib.Path, output_path: pathlib.Path, visjs_json_path: pathlib.Path = None):
         # Compute a complete run of the library on a folder, to extract the graph of proximity from/for each picture
         # Not as efficient as it could be, as it is not the normal way of work of the library
+
+        # ========= MANUAL EVALUATION =========
+
+        if visjs_json_path is None:
+            self.logger.warning(f"VisJS ground truth path not set. Impossible to evaluate.")
+        else:
+            self.logger.info(f"VisJS ground truth path set. Graph will be evaluated.")
+            # 1. Load pictures to visjs = node server.js -i ./../douglas-quaid/datasets/MINI_DATASET/ -t ./TMP -o ./TMP
+            # 2. Cluster manually pictures in visjs = < Do manual stuff>
+            # 3. Load json graphe
+            visjs = json_import_export.load_json(visjs_json_path)
+            visjs = GraphDataStruct.load_from_dict(visjs)
+
 
         # ========= AUTO EVALUATION =========
         # Send pictures to DB and get id mapping
@@ -148,6 +160,18 @@ class GraphExtractor():
         save_path_json = output_path / "distance_graph.json"
         json_import_export.save_json(tmp_graph.export_as_dict(), save_path_json)
         self.logger.debug(f"Distance graph json saved in : {save_path_json}")
+
+        if visjs_json_path is not None:
+            # ========= Graph evaluation =========
+            '''
+            perf_eval = GraphQualityEvaluator()
+            perfs = perf_eval.evaluate_performance(tmp_graph, visjs)  # graph ==> Quality score for each
+
+            save_path_json = output_path / "graph_perfs.json"
+            json_import_export.save_json(perfs, save_path_json)
+            self.logger.debug(fGraph performances json saved in : {save_path_json}")
+            
+            '''
 
         '''
         # ========= CONSTRUCT GRAPHE =========

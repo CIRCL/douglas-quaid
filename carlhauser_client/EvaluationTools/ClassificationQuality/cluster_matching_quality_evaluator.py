@@ -13,7 +13,7 @@ from typing import List
 sys.path.append(os.path.abspath(os.path.pardir))
 from carlhauser_client.Helpers.environment_variable import get_homedir
 from common.Graph.cluster import Cluster
-import carlhauser_client.EvaluationTools.ClassificationQuality.stats_datastruct as scores
+import carlhauser_client.Helpers.stats_datastruct as scores
 import carlhauser_server.Helpers.json_import_export as json_import_export
 
 # from . import helpers
