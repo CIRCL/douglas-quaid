@@ -17,7 +17,7 @@ from carlhauser_client.Helpers.environment_variable import get_homedir
 import carlhauser_server.core as core
 
 import carlhauser_client.EvaluationTools.ClassificationQuality.classification_quality_evaluator as evaluator
-import carlhauser_client.EvaluationTools.ClassificationQuality.stats_datastruct as scores
+import carlhauser_client.Helpers.stats_datastruct as scores
 
 # from . import helpers
 
