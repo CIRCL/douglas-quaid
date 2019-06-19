@@ -1,15 +1,13 @@
 # ==================== ------ STD LIBRARIES ------- ====================
-from collections import namedtuple
-from enum import Enum, auto
-import logging
-import sys, os
+import os
 import pathlib
+import sys
+from collections import namedtuple
 
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
 sys.path.append(os.path.abspath(os.path.pardir))
 
-from carlhauser_server.Configuration.template_conf import FORMATTER as FORMATTER
-from carlhauser_server.Configuration.template_conf import JSON_parsable_Enum, JSON_parsable_Dict
+from carlhauser_server.Configuration.template_conf import JSON_parsable_Dict
 
 class Default_database_conf(JSON_parsable_Dict):
     def __init__(self):
