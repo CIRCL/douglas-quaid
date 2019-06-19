@@ -1,30 +1,14 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import logging
 # ==================== ------ STD LIBRARIES ------- ====================
 import os
-import pathlib
-import sys
-import uuid
-import os
-import pathlib
 import sys
 import time
 import traceback
-import redis
-import argparse
 
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
 sys.path.append(os.path.abspath(os.path.pardir))
-from common.Graph.graph_datastructure import GraphDataStruct
-from common.Graph.metadata import Metadata, Source
-from common.Graph.cluster import Cluster
-from common.Graph.edge import Edge
-from common.Graph.node import Node
-
-from carlhauser_server.Helpers.environment_variable import dir_path
-import carlhauser_server.Helpers.json_import_export as json_import_export
 
 import carlhauser_server.Configuration.database_conf as database_conf
 import carlhauser_server.Configuration.distance_engine_conf as distance_engine_conf
@@ -33,7 +17,6 @@ import carlhauser_server.Configuration.feature_extractor_conf as feature_extract
 import carlhauser_server.DatabaseAccessor.database_worker as database_accessor
 import carlhauser_server.DistanceEngine.distance_engine as distance_engine
 import carlhauser_server.DatabaseAccessor.database_utilities as db_utils
-import carlhauser_server.DistanceEngine.scoring_datastrutures as scoring_datastrutures
 
 
 class Database_Common(database_accessor.Database_Worker):
@@ -72,3 +55,23 @@ class Database_Common(database_accessor.Database_Worker):
 
     def process_fetched_data(self, fetched_id, fetched_dict):
         self.logger.error(f"'process_fetched_data' must be overwritten ! No action performed by this worker.")
+
+    # ==== COMMON ACTION OF BOTH ADDER AND REQUESTER ====
+
+    def get_top_matching_pictures(self, fetched_dict):
+        # Get top matching clusters
+        self.logger.info(f"Get top matching clusters for this picture")
+        cluster_list = self.db_utils.get_cluster_list()  # DECODE
+        list_matching_clusters = self.de.get_top_matching_clusters(cluster_list, fetched_dict)  # List[scoring_datastrutures.ClusterMatch]
+        list_cluster_id = [i.cluster_id for i in list_matching_clusters]
+        self.logger.info(f"Top matching clusters : {list_cluster_id}")
+
+        # Get top matching pictures in these clusters
+        self.logger.info(f"Get top matching pictures within these clusters")
+        top_matching_pictures = self.de.get_top_matching_pictures_from_clusters(list_cluster_id, fetched_dict)
+        self.logger.info(f"Top matching pictures : {top_matching_pictures}")
+
+        return top_matching_pictures, list_matching_clusters
+
+    def is_good_match(self, top_matching_pictures):
+        return len(top_matching_pictures) > 0 and self.de.match_enough(top_matching_pictures[0])

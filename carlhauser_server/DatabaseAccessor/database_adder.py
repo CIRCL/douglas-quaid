@@ -6,8 +6,6 @@ import argparse
 import os
 import pathlib
 import sys
-import time
-import traceback
 
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
 sys.path.append(os.path.abspath(os.path.pardir))
@@ -19,10 +17,6 @@ import carlhauser_server.Configuration.database_conf as database_conf
 import carlhauser_server.Configuration.feature_extractor_conf as feature_extractor_conf
 import carlhauser_server.Configuration.distance_engine_conf as distance_engine_conf
 
-import carlhauser_server.DatabaseAccessor.database_worker as database_accessor
-
-import carlhauser_server.DistanceEngine.distance_engine as distance_engine
-import carlhauser_server.DatabaseAccessor.database_utilities as db_utils
 import carlhauser_server.DatabaseAccessor.database_common as database_common
 
 
@@ -42,20 +36,11 @@ class Database_Adder(database_common.Database_Common):
         self.logger.info(f"Adding picture to storage under id {fetched_id}")
         self.add_picture_to_storage(self.storage_db_no_decode, fetched_id, fetched_dict)  # NOT DECODE
 
-        # Get top matching clusters
-        self.logger.info(f"Get top matching clusters for this picture")
-        cluster_list = self.db_utils.get_cluster_list()  # DECODE
-        list_clusters = self.de.get_top_matching_clusters(cluster_list, fetched_dict)  # List[scoring_datastrutures.ClusterMatch]
-        list_cluster_id = [i.cluster_id for i in list_clusters]
-        self.logger.info(f"Top matching clusters : {list_cluster_id}")
-
-        # Get top matching pictures in these clusters
-        self.logger.info(f"Get top matching pictures within these clusters")
-        top_matching_pictures = self.de.get_top_matching_pictures_from_clusters(list_cluster_id, fetched_dict)
-        self.logger.info(f"Top matching pictures : {top_matching_pictures}")
+        # Get top matching pictures in clusters
+        top_matching_pictures, list_matching_clusters = self.get_top_matching_pictures(fetched_dict)
 
         # Depending on the quality of the match ...
-        if len(top_matching_pictures) > 0 and self.de.match_enough(top_matching_pictures[0]):
+        if self.is_good_match(top_matching_pictures):
             self.logger.info(f"Match is good enough with at least one cluster")
 
             # Add picture to best picture's cluster

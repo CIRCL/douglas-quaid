@@ -6,7 +6,6 @@ import argparse
 import os
 import pathlib
 import sys
-import time
 
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
 sys.path.append(os.path.abspath(os.path.pardir))
@@ -18,11 +17,8 @@ import carlhauser_server.Configuration.database_conf as database_conf
 import carlhauser_server.Configuration.distance_engine_conf as distance_engine_conf
 import carlhauser_server.Configuration.feature_extractor_conf as feature_extractor_conf
 
-import carlhauser_server.DatabaseAccessor.database_worker as database_accessor
 import carlhauser_server.DatabaseAccessor.database_common as database_common
-import carlhauser_server.DistanceEngine.distance_engine as distance_engine
-import carlhauser_server.DatabaseAccessor.database_utilities as db_utils
-import carlhauser_server.DistanceEngine.scoring_datastrutures as scoring_datastrutures
+import carlhauser_server.DistanceEngine.scoring_datastrutures as score_datastruct
 
 
 class Database_Requester(database_common.Database_Common):
@@ -40,26 +36,17 @@ class Database_Requester(database_common.Database_Common):
         # TODO : DO STUFF / TO REVIEW !
         # Request only : Do NOT add picture to storage
 
-        # Get top matching clusters
-        self.logger.info(f"Get top matching clusters for this picture")
-        cluster_list = self.db_utils.get_cluster_list()  # DECODE
-        list_clusters = self.de.get_top_matching_clusters(cluster_list, fetched_dict)  # List[scoring_datastrutures.ClusterMatch]
-        list_cluster_id = [i.cluster_id for i in list_clusters]
-        self.logger.info(f"Top matching clusters : {list_cluster_id}")
-
-        # Get top matching pictures in these clusters
-        self.logger.info(f"Get top matching pictures within these clusters")
-        top_matching_pictures = self.de.get_top_matching_pictures_from_clusters(list_cluster_id, fetched_dict)
-        self.logger.info(f"Top matching pictures : {top_matching_pictures}")
+        # Get top matching pictures in clusters
+        top_matching_pictures, list_matching_clusters = self.get_top_matching_pictures(fetched_dict)
 
         # Depending on the quality of the match ...
-        if len(top_matching_pictures) > 0 and self.de.match_enough(top_matching_pictures[0]):
+        if self.is_good_match(top_matching_pictures):
             self.logger.info(f"Match is good enough with at least one cluster")
-            results = scoring_datastrutures.build_response(fetched_id, list_clusters, top_matching_pictures)
+            results = score_datastruct.build_response(fetched_id, list_matching_clusters, top_matching_pictures)
             # TODO : Add to result set with "best matching picture is : #Hash from cluster #cluster_id/name ?"
         else:
             self.logger.info(f"Match not good enough, with any cluster")
-            results = scoring_datastrutures.build_response(fetched_id, [], [])  # Create an answer with void lists
+            results = score_datastruct.build_response(fetched_id, [], [])  # Create an answer with void lists
             # TODO : Add to result set with "Void"
 
         # Adding results
