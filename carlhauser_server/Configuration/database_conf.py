@@ -20,6 +20,7 @@ class Default_database_conf(JSON_parsable_Dict):
 
         # Expiration time after which a add_request, computation_request, ... is removed (satisfied or not)
         self.REQUEST_EXPIRATION = 86400
+        self.ANSWER_EXPIRATION = 86400
 
         # NB of worker on launch
         self.ADDER_WORKER_NB = 2

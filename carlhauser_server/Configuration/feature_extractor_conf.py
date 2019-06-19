@@ -17,6 +17,7 @@ class MergingMethod(JSON_parsable_Enum, Enum):
     MIN = auto()
     WEIGHTED_MEAN = auto()
 
+
 class Algo_conf(JSON_parsable_Dict):
     def __init__(self, algo_name, is_enabled, threshold_maybe, threshold_no, weight):
         self.algo_name = algo_name
@@ -28,6 +29,10 @@ class Algo_conf(JSON_parsable_Dict):
 
         # Relative weight of this algorithm in merging phase
         self.weight = weight
+
+    # Addition to answer "as a dict" in tests files
+    def get(self, attr_name, default=None):
+        return getattr(self, attr_name, default)
 
 
 # Used to export easily configuration to files, for logging
@@ -56,9 +61,9 @@ class Default_feature_extractor_conf(JSON_parsable_Dict):
 
         # Algo list
         self.list_algos = [self.A_HASH, self.P_HASH, self.P_HASH_SIMPLE,
-                      self.D_HASH, self.D_HASH_VERTICAL, self.W_HASH,
-                      self.TLSH,
-                      self.ORB]
+                           self.D_HASH, self.D_HASH_VERTICAL, self.W_HASH,
+                           self.TLSH,
+                           self.ORB]
 
         # Merging method
         self.merging_method = MergingMethod.WEIGHTED_MEAN.name

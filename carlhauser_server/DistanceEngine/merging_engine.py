@@ -88,6 +88,7 @@ class Merging_Engine:
         sum_score = 0
         sum_weight = 0
         self.logger.debug(f"Algo list {self.fe_conf.list_algos}.")
+        self.logger.debug(f"Full config {self.fe_conf}.")
 
         for curr_algo in self.fe_conf.list_algos:
             self.logger.debug(f"Current algo {curr_algo}.")
