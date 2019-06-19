@@ -3,8 +3,30 @@
 
 # ==================== ------ STD LIBRARIES ------- ====================
 from typing import List
+from carlhauser_server.Configuration.template_conf import JSON_parsable_Enum, JSON_parsable_Dict
+from enum import Enum, auto
 
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
+
+class DecisionTypes(JSON_parsable_Enum, Enum):
+    # Possible answer to the question "Are these pictures the same ?"
+    YES = auto()
+    MAYBE = auto()
+    NO = auto()
+
+class AlgoMatch :
+    # Datastructure to handle the returned values of a "distance evaluation" between two hashs, Orb ...
+    def __init__(self, name=None, distance=None, decision=None):
+        self.name = name
+        self.distance = distance
+        self.decision = decision
+
+    def to_obj(self):
+        tmp_obj = {}
+        tmp_obj["name"] = self.name
+        tmp_obj["distance"] = self.distance
+        tmp_obj["decision"] = self.decision.name
+        return tmp_obj
 
 # Datastructures to handle a list of matches
 class ClusterMatch:

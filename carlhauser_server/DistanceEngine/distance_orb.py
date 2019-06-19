@@ -1,13 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import logging
+import os
 # ==================== ------ STD LIBRARIES ------- ====================
 import sys
-import os
-import imagehash
-import tlsh
+
 import cv2
-import logging
 
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
 sys.path.append(os.path.abspath(os.path.pardir))
@@ -15,8 +14,6 @@ sys.path.append(os.path.abspath(os.path.pardir))
 import carlhauser_server.Configuration.database_conf as database_conf
 import carlhauser_server.Configuration.distance_engine_conf as distance_engine_conf
 import carlhauser_server.Configuration.feature_extractor_conf as feature_extractor_conf
-
-import carlhauser_server.DatabaseAccessor.database_worker as database_accessor
 
 
 class Distance_ORB:
