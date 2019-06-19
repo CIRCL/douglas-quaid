@@ -8,6 +8,7 @@ import imagehash
 import tlsh
 import cv2
 import logging
+import pprint
 
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
 sys.path.append(os.path.abspath(os.path.pardir))
@@ -37,25 +38,25 @@ class Distance_Hash:
         self.logger.info("Hash distance computation ... ")
 
         try:
-            if self.fe_conf.A_HASH:
+            if self.fe_conf.A_HASH.get("is_enabled", False):
                 self.logger.debug("A-HASH ... ")
                 answer["A_HASH"] = self.compute_hash_distance(pic_package_from["A_HASH"], pic_package_to["A_HASH"])
-            if self.fe_conf.P_HASH:
+            if self.fe_conf.P_HASH.get("is_enabled", False):
                 self.logger.debug("P_HASH ... ")
                 answer["P_HASH"] = self.compute_hash_distance(pic_package_from["P_HASH"], pic_package_to["P_HASH"])
-            if self.fe_conf.P_HASH_SIMPLE:
+            if self.fe_conf.P_HASH_SIMPLE.get("is_enabled", False):
                 self.logger.debug("P_HASH_SIMPLE ... ")
                 answer["P_HASH_SIMPLE"] = self.compute_hash_distance(pic_package_from["P_HASH_SIMPLE"], pic_package_to["P_HASH_SIMPLE"])
-            if self.fe_conf.D_HASH:
+            if self.fe_conf.D_HASH.get("is_enabled", False):
                 self.logger.debug("D_HASH ... ")
                 answer["D_HASH"] = self.compute_hash_distance(pic_package_from["D_HASH"], pic_package_to["D_HASH"])
-            if self.fe_conf.D_HASH_VERTICAL:
+            if self.fe_conf.D_HASH_VERTICAL.get("is_enabled", False):
                 self.logger.debug("D_HASH_VERTICAL ... ")
                 answer["D_HASH_VERTICAL"] = self.compute_hash_distance(pic_package_from["D_HASH_VERTICAL"], pic_package_to["D_HASH_VERTICAL"])
-            if self.fe_conf.W_HASH:
+            if self.fe_conf.W_HASH.get("is_enabled", False):
                 self.logger.debug("W_HASH ... ")
                 answer["W_HASH"] = self.compute_hash_distance(pic_package_from["W_HASH"], pic_package_to["W_HASH"])
-            if self.fe_conf.TLSH:
+            if self.fe_conf.TLSH.get("is_enabled", False):
                 self.logger.debug("TLSH ... ")
                 answer["TLSH"] = self.compute_tlsh_distance(pic_package_from["TLSH"], pic_package_to["TLSH"])
 
@@ -71,4 +72,4 @@ class Distance_Hash:
 
     @staticmethod
     def compute_tlsh_distance(hash1, hash2):
-        return tlsh.diff(hash1, hash2) / (len(hash1)*16) # 70 hexa character
+        return tlsh.diff(hash1, hash2) / (len(hash1) * 16)  # 70 hexa character

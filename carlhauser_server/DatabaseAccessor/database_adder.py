@@ -134,7 +134,8 @@ class Database_Adder(database_accessor.Database_Worker):
 
             # And for each other picture, add the distance between itself and this new picture to its score : 0(N)
             for curr_pic, score in pictures_sorted_set:
-                if curr_pic == fetched_id : # Important ! Because scores are before the previous update.
+                # Important ! Because current score is not updated by previous calculation (tricky race condition)
+                if curr_pic == fetched_id :
                     continue
                 curr_target_pic_dict = self.get_dict_from_key(self.storage_db_no_decode, curr_pic, pickle=True)
                 delta_centrality = self.de.get_distance_picture_to_picture(new_pic_dict, curr_target_pic_dict)

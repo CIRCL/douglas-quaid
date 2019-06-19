@@ -38,7 +38,7 @@ class Distance_ORB:
 
         try:
             # Note : @image must be a PIL instance.
-            if self.fe_conf.ORB:
+            if self.fe_conf.ORB.get("is_enabled", False):
                 # Compute matches
                 matches = self.orb_matcher.match(pic_package_from["ORB_DESCRIPTORS"], pic_package_to["ORB_DESCRIPTORS"])
 

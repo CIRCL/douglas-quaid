@@ -36,7 +36,7 @@ class Picture_Orber():
 
         try:
             # Note : @image must be a PIL instance.
-            if self.fe_conf.ORB:
+            if self.fe_conf.ORB.get("is_enabled",False):
                 # Picture loading handled in picture load_image overwrite
                 key_points, descriptors = self.algo.detectAndCompute(orb_pic, None)
 

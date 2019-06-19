@@ -16,17 +16,19 @@ FORMATTER = logging.Formatter('%(asctime)s - + %(relativeCreated)d - %(name)s - 
 class Edge:
     # Handle an edge of the graph
 
-    def __init__(self, _from, _to, color="gray"):
+    def __init__(self, _from, _to, color="gray", label=None, value=None):
         self._from = _from
         self._to = _to
 
         self.color = color
+        self.label = label
+        self.value = value
 
     def update_member_id(self, old_id, new_id):
         # Modify an id in the list of members. Replace old by new.
-        if self._from == old_id :
+        if self._from == old_id:
             self._from = new_id
-        if self._to == old_id :
+        if self._to == old_id:
             self._to = new_id
 
     # ==================== Export / Import ====================
@@ -38,12 +40,18 @@ class Edge:
         tmp_json["to"] = self._to
         tmp_json["color"] = self.color
 
+        if self.label is not None:
+            tmp_json["label"] = self.label
+        if self.value is not None:
+            tmp_json["value"] = self.value
+
         return tmp_json
 
     @staticmethod
     def load_from_dict(input):
 
-        return Edge(_from=input["from"], _to=input["to"], color=input.get("color",''))
+        return Edge(_from=input["from"], _to=input["to"], color=input.get("color", ''),
+                    label=input.get("label", None), value=input.get("value", None))
 
     # ==================== To string ====================
 
@@ -56,4 +64,3 @@ class Edge:
 
     def get_str(self):
         return ''.join(map(str, [' _from=', self._from, ' _to=', self._to, ' color=', self.color]))
-

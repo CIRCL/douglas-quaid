@@ -16,8 +16,8 @@ sys.path.append(os.path.abspath(os.path.pardir))
 from carlhauser_client.Helpers.environment_variable import get_homedir
 import carlhauser_server.core as core
 
-import carlhauser_client.Evaluator.evaluator as evaluator
-import carlhauser_client.Evaluator.scores as scores
+import carlhauser_client.EvaluationTools.ClassificationQuality.classification_quality_evaluator as evaluator
+import carlhauser_client.Helpers.stats_datastruct as scores
 
 # from . import helpers
 
@@ -28,7 +28,7 @@ logging.config.fileConfig(str(logconfig_path))
 
 
 class Perf():
-    def __init__(self, score: scores.Scoring, threshold: float):
+    def __init__(self, score: scores.Stats_datastruct, threshold: float):
         self.score = score
         self.threshold = threshold
 
@@ -103,7 +103,7 @@ class ParameterExplorer():
             time.sleep(2)
 
             # Launch client tester
-            self.client_launcher = evaluator.Evaluator()
+            self.client_launcher = evaluator.ClassificationQualityEvaluator()
             perf_overview = self.client_launcher.launch(image_folder, gt, tmp_output)
             self.logger.warning(f"Perf overview added : {perf_overview}")
 

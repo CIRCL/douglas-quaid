@@ -7,12 +7,9 @@ from pprint import pformat
 
 from carlhauser_server.Helpers.environment_variable import get_homedir
 
-import carlhauser_client.Evaluator.performance_evaluation as performance_evaluation
-from common.Graph.graph_datastructure import GraphDataStruct
+import carlhauser_client.EvaluationTools.ClassificationQuality.cluster_matching_quality_evaluator as performance_evaluation
 from common.Graph.cluster import Cluster
-from common.Graph.edge import Edge
-from common.Graph.node import Node
-from common.Graph.metadata import Metadata, Source
+
 
 class TestPerformanceEvaluator(unittest.TestCase):
     """Basic test cases."""
@@ -21,7 +18,7 @@ class TestPerformanceEvaluator(unittest.TestCase):
         self.logger = logging.getLogger()
         # self.conf = .Default_configuration()
         self.test_file_path = get_homedir() / pathlib.Path("carlhauser_client_tests/test_Helpers/id_generator")
-        self.perf = performance_evaluation.Performance_Evaluator()
+        self.perf = performance_evaluation.ClusterMatchingQualityEvaluator()
 
     def test_absolute_truth_and_meaning(self):
         assert True

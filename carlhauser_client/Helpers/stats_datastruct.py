@@ -22,7 +22,7 @@ logging.config.fileConfig(str(logconfig_path))
 
 
 # ==================== ------ LAUNCHER ------- ====================
-class Scoring():
+class Stats_datastruct():
 
     def __init__(self):
         # Lost ? Go there : https://en.wikipedia.org/wiki/Sensitivity_and_specificity
@@ -173,10 +173,10 @@ class Scoring():
                                  ' FNR=', self.FNR, ' FPR=', self.FPR]))
 
 
-def merge_scores(scores: List[Scoring]):
+def merge_scores(scores: List[Stats_datastruct]):
     # Create a "mean score" out of a list of scores
 
-    total_score = Scoring()
+    total_score = Stats_datastruct()
 
     if scores is not None and len(scores) > 0:
         # Iterate over attributes

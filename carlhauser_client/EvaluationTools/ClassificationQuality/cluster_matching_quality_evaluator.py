@@ -13,7 +13,7 @@ from typing import List
 sys.path.append(os.path.abspath(os.path.pardir))
 from carlhauser_client.Helpers.environment_variable import get_homedir
 from common.Graph.cluster import Cluster
-import carlhauser_client.Evaluator.scores as scores
+import carlhauser_client.Helpers.stats_datastruct as scores
 import carlhauser_server.Helpers.json_import_export as json_import_export
 
 # from . import helpers
@@ -23,7 +23,7 @@ import carlhauser_server.Helpers.json_import_export as json_import_export
 logconfig_path = (get_homedir() / pathlib.Path("carlhauser_client", "logging.ini")).resolve()
 logging.config.fileConfig(str(logconfig_path))
 
-class Performance_Evaluator():
+class ClusterMatchingQualityEvaluator():
     def __init__(self):
         self.logger = logging.getLogger(__name__)
 
@@ -40,7 +40,7 @@ class Performance_Evaluator():
 
         for pair in clusters_pairs:
 
-            s = scores.Scoring()
+            s = scores.Stats_datastruct()
 
             # Get members of both clusters
             truth_set = pair[0].members
