@@ -23,84 +23,58 @@ import carlhauser_server.DatabaseAccessor.database_worker as database_accessor
 
 import carlhauser_server.DistanceEngine.distance_engine as distance_engine
 import carlhauser_server.DatabaseAccessor.database_utilities as db_utils
+import carlhauser_server.DatabaseAccessor.database_common as database_common
 
 
-class Database_Adder(database_accessor.Database_Worker):
+class Database_Adder(database_common.Database_Common):
     # Heritate from the database accessor, and so has already built in access to cache, storage ..
 
     def __init__(self, db_conf: database_conf, dist_conf: distance_engine_conf, fe_conf: feature_extractor_conf):
         # STD attributes
-        super().__init__(db_conf)
-        # Store configuration
-        self.dist_conf = dist_conf
-        self.fe_conf = fe_conf
+        super().__init__(db_conf, dist_conf, fe_conf)
 
-        # Distance engine
-        self.de = distance_engine.Distance_Engine(self, db_conf, dist_conf, fe_conf)
-        self.db_utils = db_utils.DBUtilities(db_access_decode=self.storage_db_decode, db_access_no_decode=self.storage_db_no_decode)
+    def process_fetched_data(self, fetched_id, fetched_dict):
 
-    def _to_run_forever(self):
-        self.process_to_add()
+        self.logger.info(f"DB Adder worker processing {fetched_id}")
+        self.logger.info(f"Fetched dict {fetched_dict}")
 
-    def process_to_add(self):
-        # Method called infinitely, in loop
+        # Add picture to storage
+        self.logger.info(f"Adding picture to storage under id {fetched_id}")
+        self.add_picture_to_storage(self.storage_db_no_decode, fetched_id, fetched_dict)  # NOT DECODE
 
-        # Trying to fetch from queue (to_add)
-        fetched_id, fetched_dict = self.get_from_queue(self.cache_db_no_decode, self.input_queue, pickle=True)
+        # Get top matching clusters
+        self.logger.info(f"Get top matching clusters for this picture")
+        cluster_list = self.db_utils.get_cluster_list()  # DECODE
+        list_clusters = self.de.get_top_matching_clusters(cluster_list, fetched_dict)  # List[scoring_datastrutures.ClusterMatch]
+        list_cluster_id = [i.cluster_id for i in list_clusters]
+        self.logger.info(f"Top matching clusters : {list_cluster_id}")
 
-        # If there is nothing fetched
-        if not fetched_id:
-            # Nothing to do
-            time.sleep(0.1)
-            return 0
+        # Get top matching pictures in these clusters
+        self.logger.info(f"Get top matching pictures within these clusters")
+        top_matching_pictures = self.de.get_top_matching_pictures_from_clusters(list_cluster_id, fetched_dict)
+        self.logger.info(f"Top matching pictures : {top_matching_pictures}")
 
-        try:
-            self.logger.info(f"DB Adder worker processing {fetched_id}")
-            self.logger.info(f"Fetched dict {fetched_dict}")
+        # Depending on the quality of the match ...
+        if len(top_matching_pictures) > 0 and self.de.match_enough(top_matching_pictures[0]):
+            self.logger.info(f"Match is good enough with at least one cluster")
 
-            # Add picture to storage
-            self.logger.info(f"Adding picture to storage under id {fetched_id}")
-            self.add_picture_to_storage(self.storage_db_no_decode, fetched_id, fetched_dict)  # NOT DECODE
+            # Add picture to best picture's cluster
+            cluster_id = top_matching_pictures[0].cluster_id
+            self.db_utils.add_picture_to_cluster(fetched_id, cluster_id)
 
-            # Get top matching clusters
-            self.logger.info(f"Get top matching clusters for this picture")
-            cluster_list = self.db_utils.get_cluster_list()  # DECODE
-            list_clusters = self.de.get_top_matching_clusters(cluster_list, fetched_dict)  # List[scoring_datastrutures.ClusterMatch]
-            list_cluster_id = [i.cluster_id for i in list_clusters]
-            self.logger.info(f"Top matching clusters : {list_cluster_id}")
+            # Re-evaluate representative picture(s) of cluster
+            self.reevaluate_representative_picture_order(cluster_id, fetched_id=fetched_id)  # TODO : To defer ? No : it's not a request. No returned value. BUT TO COMPLETE !
+            self.logger.info(f"Picture added in existing cluster : {cluster_id}")
 
-            # Get top matching pictures in these clusters
-            self.logger.info(f"Get top matching pictures within these clusters")
-            top_matching_pictures = self.de.get_top_matching_pictures_from_clusters(list_cluster_id, fetched_dict)
-            self.logger.info(f"Top matching pictures : {top_matching_pictures}")
+        else:
+            self.logger.info(f"Match not good enough, with any cluster")
+            # Add picture to it's own cluster
+            cluster_id = self.db_utils.add_picture_to_new_cluster(fetched_id, score=0)  # First picture is "alone" and so central
+            self.logger.info(f"Picture added in its own new cluster : {cluster_id}")
 
-            # Depending on the quality of the match ...
-            if len(top_matching_pictures) > 0 and self.de.match_enough(top_matching_pictures[0]):
-                self.logger.info(f"Match is good enough with at least one cluster")
-
-                # Add picture to best picture's cluster
-                cluster_id = top_matching_pictures[0].cluster_id
-                self.db_utils.add_picture_to_cluster(fetched_id, cluster_id)
-
-                # Re-evaluate representative picture(s) of cluster
-                self.reevaluate_representative_picture_order(cluster_id, fetched_id=fetched_id) # TODO : To defer ? No : it's not a request. No returned value. BUT TO COMPLETE !
-                self.logger.info(f"Picture added in existing cluster : {cluster_id}")
-
-            else:
-                self.logger.info(f"Match not good enough, with any cluster")
-                # Add picture to it's own cluster
-                cluster_id = self.db_utils.add_picture_to_new_cluster(fetched_id, score=0) # First picture is "alone" and so central
-                self.logger.info(f"Picture added in its own new cluster : {cluster_id}")
-
-            # Add to a queue, to be reviewed later, when more pictures will be added
-            self.db_utils.add_to_review(fetched_id)  # TODO
-            self.logger.info(f"Adding done.")
-
-        except Exception as e:
-            self.logger.error(f"Error in database adder : {e}")
-            self.logger.error(traceback.print_tb(e.__traceback__))
-
-        return 1
+        # Add to a queue, to be reviewed later, when more pictures will be added
+        self.db_utils.add_to_review(fetched_id)  # TODO
+        self.logger.info(f"Adding done.")
 
     def reevaluate_representative_picture_order(self, cluster_id, fetched_id=None):
         # Re-evaluate the representative picture of the cluster <cluster_id>,
@@ -135,7 +109,7 @@ class Database_Adder(database_accessor.Database_Worker):
             # And for each other picture, add the distance between itself and this new picture to its score : 0(N)
             for curr_pic, score in pictures_sorted_set:
                 # Important ! Because current score is not updated by previous calculation (tricky race condition)
-                if curr_pic == fetched_id :
+                if curr_pic == fetched_id:
                     continue
                 curr_target_pic_dict = self.get_dict_from_key(self.storage_db_no_decode, curr_pic, pickle=True)
                 delta_centrality = self.de.get_distance_picture_to_picture(new_pic_dict, curr_target_pic_dict)
@@ -158,6 +132,7 @@ class Database_Adder(database_accessor.Database_Worker):
         self.logger.debug(f"Computed centrality for {pictures_list_id}")
 
         return curr_sum
+
 
 # Launcher for this worker. Launch this file to launch a worker
 if __name__ == '__main__':

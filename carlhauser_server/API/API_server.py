@@ -181,7 +181,6 @@ class FlaskAppWrapper(object):
         return result_json
         # Test it with curl 127.0.0.1:5000/request_similar_picture
 
-
     def is_ready(self):
         result_json = {}
         result_json["Called_function"] = "is_ready"
