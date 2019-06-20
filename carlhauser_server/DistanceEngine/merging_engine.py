@@ -111,7 +111,7 @@ class Merging_Engine:
         self.logger.debug(f"Full config {self.fe_conf}.")
 
         for curr_algo in self.fe_conf.list_algos:
-            self.logger.debug(f"Current algo {curr_algo}.")
+            # self.logger.debug(f"Current algo {curr_algo}.")
 
             # We have a value for a computed algorithm
             curr_score = matches_package.get(curr_algo.get("algo_name"))
@@ -159,8 +159,9 @@ class Merging_Engine:
         weight_to_algo = {}
         algo_list = []
 
+        # Get algo computed among all available algorithms
         for curr_algo in self.fe_conf.list_algos:
-            if matches_package.get(curr_algo.get("algo_name")) is not None :
+            if matches_package.get(curr_algo.get("algo_name")) is not None:
                 algo_list.append(curr_algo)
 
         # Create lists in dict as <weights => []>
@@ -178,14 +179,14 @@ class Merging_Engine:
 
             # We group all matches results, related to these algorithms
             tmp_list_matches = {}
-            for algo in tmp_list_algo :
+            for algo in tmp_list_algo:
                 tmp_list_matches[algo.get("algo_name")] = matches_package.get(algo.get("algo_name"))
 
             # We take a decision up to all algorithms at this weight level
             decision = self.get_majority_decision(tmp_list_matches)
 
             # If the decision is YES or NO, we stop here
-            if decision != sd.DecisionTypes.MAYBE :
+            if decision != sd.DecisionTypes.MAYBE:
                 return decision
             # Else, we continue for the "next lower level of algorithms" in next iteration
 

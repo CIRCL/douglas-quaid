@@ -7,6 +7,7 @@ import os
 import sys
 import tlsh
 from typing import Dict
+import traceback
 
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
 sys.path.append(os.path.abspath(os.path.pardir))
@@ -93,6 +94,7 @@ class Distance_Hash:
                 '''
 
         except Exception as e:
+            self.logger.error(traceback.print_tb(e.__traceback__))
             self.logger.error("Error during distance computation : " + str(e))
 
         return answer
@@ -100,22 +102,24 @@ class Distance_Hash:
     def add_results(self, algo_conf: feature_extractor_conf.Algo_conf, pic_package_from, pic_package_to, answer: Dict) -> Dict:
         # Add results to answer dict, depending on the algorithm name we want to compute
         # Ex : Input {} -> Output {"P-HASH":{"name":"P-HASH", "distance":0.3,"decision":YES}}
-        self.logger.debug(f"{algo_conf.algo_name} ... ")
+        algo_name = algo_conf.get('algo_name')
 
-        if algo_conf.algo_name != "TLSH":
+        if algo_name != "TLSH":
             # We want to compute any hash, except tlsh
-            tmp_dist = self.compute_hash_distance(pic_package_from[algo_conf.algo_name],
-                                                  pic_package_to[algo_conf.algo_name])
+            tmp_dist = self.compute_hash_distance(pic_package_from[algo_name],
+                                                  pic_package_to[algo_name])
         else:
             # We want to compute tlsh distance
-            tmp_dist = self.compute_tlsh_distance(pic_package_from[algo_conf.algo_name],
-                                                  pic_package_to[algo_conf.algo_name])
+            tmp_dist = self.compute_tlsh_distance(pic_package_from[algo_name],
+                                                  pic_package_to[algo_name])
 
         # Add the distance as an AlgoMatch
-        answer[algo_conf.algo_name] = sd.AlgoMatch(name=algo_conf.algo_name,
-                                                   distance=tmp_dist,
-                                                   decision=self.compute_decision_from_distance(algo_conf, tmp_dist))
+        answer[algo_name] = sd.AlgoMatch(name=algo_name,
+                                         distance=tmp_dist,
+                                         decision=self.compute_decision_from_distance(algo_conf, tmp_dist))
         return answer
+
+    # ==================== ------ CORE COMPUTATION FOR HASHES ------- ====================
 
     @staticmethod
     def compute_hash_distance(hash1, hash2) -> float:
@@ -126,13 +130,15 @@ class Distance_Hash:
     def compute_tlsh_distance(hash1, hash2) -> float:
         return tlsh.diff(hash1, hash2) / (len(hash1) * 16)  # 70 hexa character
 
+    # ==================== ------ DECISIONS ------- ====================
+
     def compute_decision_from_distance(self, algo_conf: feature_extractor_conf.Algo_conf, dist: float) -> sd.DecisionTypes:
         # From a distance between hashes, gives a decision : is it a match or not ? Or maybe ?
 
-        if dist <= algo_conf.threshold_maybe:
+        if dist <= algo_conf.get('threshold_maybe'):
             # It's a YES ! :)
             return sd.DecisionTypes.YES
-        elif dist <= algo_conf.threshold_no:
+        elif dist <= algo_conf.get('threshold_no'):
             # It's a MAYBE :/
             return sd.DecisionTypes.MAYBE
         else:

@@ -83,7 +83,8 @@ class Default_feature_extractor_conf(JSON_parsable_Dict):
         self.ORB = Algo_conf("ORB", True, 0.2, 0.6, distance_weight=5)
         self.ORB_KEYPOINTS_NB = 500
 
-        # Algo list
+        # Algo list # BEAWARE THAT
+        # IF YOU MODIFY PROGRAMMATICALLY ONE ELEMENT LATER, YOU NEED TO CHANGE IT IN THIS LIST TOO !
         self.list_algos = [self.A_HASH, self.P_HASH, self.P_HASH_SIMPLE,
                            self.D_HASH, self.D_HASH_VERTICAL, self.W_HASH,
                            self.TLSH,
