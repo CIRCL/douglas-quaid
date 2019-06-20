@@ -31,7 +31,7 @@ class Distance_Hash:
 
     # ==================== ------ INTER ALGO DISTANCE ------- ====================
 
-    def hash_distance(self, pic_package_from, pic_package_to):
+    def hash_distance(self, pic_package_from, pic_package_to)-> Dict[str, sd.AlgoMatch]:
         answer = {}
         self.logger.info("Hash distance computation ... ")
 

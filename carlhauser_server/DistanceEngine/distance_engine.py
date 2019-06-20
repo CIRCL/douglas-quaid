@@ -6,6 +6,7 @@ import logging
 import os
 import sys
 from typing import List
+from typing import Dict
 
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
 sys.path.append(os.path.abspath(os.path.pardir))
@@ -42,7 +43,7 @@ class Distance_Engine:
         self.merging_engine = merging_engine.Merging_Engine(db_conf, dist_conf, fe_conf)
 
     # ==================== ------ INTER ALGO DISTANCE ------- ====================
-    def get_distance_algos_to_algos(self, pic_package_from, pic_package_to):
+    def get_dist_and_decision_algos_to_algos(self, pic_package_from, pic_package_to) -> Dict[str, scoring_datastrutures.AlgoMatch]:
         # Compute a list of distance from two image representation
 
         # Get hash distances
@@ -60,10 +61,12 @@ class Distance_Engine:
         return merged_dict
 
     # ==================== ------ INTER IMAGE DISTANCE ------- ====================
-    def get_distance_picture_to_picture(self, pic_package_from, pic_package_to):
+    def get_dist_and_decision_picture_to_picture(self, pic_package_from, pic_package_to) -> [float, scoring_datastrutures.DecisionTypes]:
         # From distance between algos, obtain the distance between pictures
-        merged_dict = self.get_distance_algos_to_algos(pic_package_from, pic_package_to)
-        return self.merging_engine.merge_algos_distance(merged_dict)
+        merged_dict = self.get_dist_and_decision_algos_to_algos(pic_package_from, pic_package_to)
+        dist = self.merging_engine.merge_algos_distance(merged_dict)
+        decision = self.merging_engine.merge_algos_decision(merged_dict)
+        return dist, decision
 
     def match_enough(self, matching_picture: scoring_datastrutures.ImageMatch) -> bool:
         # Check if the matching pictures provided are "close enough" of the current picture.
@@ -90,23 +93,23 @@ class Distance_Engine:
             self.logger.debug(f"Evaluating distance from current picture to cluster #{curr_cluster}")
 
             # Evaluate current distance to cluster
-            tmp_dist = self.get_distance_picture_to_cluster(curr_cluster, image_dict)
+            tmp_dist, tmp_decision = self.get_distance_picture_to_cluster(curr_cluster, image_dict)
 
             # Store in datastructure
-            tmp_cluster_match = scoring_datastrutures.ClusterMatch(cluster_id=curr_cluster, distance=tmp_dist)
+            tmp_cluster_match = scoring_datastrutures.ClusterMatch(cluster_id=curr_cluster, distance=tmp_dist, decision=tmp_decision)
             top_n_storage.add_element(tmp_cluster_match)
 
         # get top N clusters = Ask datastructure to return its top list
         return top_n_storage.get_top_n()
 
-    def get_distance_picture_to_cluster(self, cluster_id, image_dict: dict):
+    def get_distance_picture_to_cluster(self, cluster_id, image_dict: dict) -> [float, scoring_datastrutures.DecisionTypes]:
         # Go through N first picture of given cluster, and test their distance to given image
         # Merge the result into one unified distance
         self.logger.debug(f"Computing distance between cluster {cluster_id} and current picture")
 
         PICT_TO_TEST_PER_CLUSTER = self.dist_conf.PICT_TO_TEST_PER_CLUSTER
 
-        list_dist = []
+        list_dist_decision = []
         curr_picture_sorted_set = self.parent.db_utils.get_pictures_of_cluster(cluster_id)  # DECODE
 
         self.logger.debug(f"Retrieved pictures of cluster #{cluster_id} are {curr_picture_sorted_set}")
@@ -119,13 +122,16 @@ class Distance_Engine:
                 curr_pic_dict = self.parent.get_dict_from_key(self.parent.storage_db_no_decode, curr_picture, pickle=True)
 
                 # Evaluate distance between actual picture and cluster's pictures
-                list_dist.append(self.get_distance_picture_to_picture(curr_pic_dict, image_dict))
+                list_dist_decision.append(self.get_dist_and_decision_picture_to_picture(curr_pic_dict, image_dict))
             else:
                 # We have tested the N first pictures of the cluster and so stop here
                 break
 
-        # Evaluation of the distance between pictures
-        return self.merging_engine.merge_pictures_distance(list_dist)
+        # Evaluation of the distance between pictures, and the decision
+        dist_picture_to_cluster = self.merging_engine.merge_pictures_distance([i[0] for i in list_dist_decision])
+        decision_picture_to_cluster = self.merging_engine.merge_pictures_decisions([i[1] for i in list_dist_decision])
+
+        return dist_picture_to_cluster, decision_picture_to_cluster
 
     # ==================== ------ PICTURE TO ALL PICTURES DISTANCE ------- ====================
 
@@ -148,10 +154,10 @@ class Distance_Engine:
                 curr_pic_dict = self.parent.get_dict_from_key(self.parent.storage_db_no_decode, curr_picture, pickle=True)
 
                 # Evaluate distance between actual picture and cluster's pictures
-                tmp_dist = self.get_distance_picture_to_picture(curr_pic_dict, image_dict)
+                tmp_dist, tmp_decision = self.get_dist_and_decision_picture_to_picture(curr_pic_dict, image_dict)
 
                 # Keep only N best picture = Store in datastructure
-                tmp_image_match = scoring_datastrutures.ImageMatch(image_id=curr_picture, cluster_id=curr_cluster, distance=tmp_dist)
+                tmp_image_match = scoring_datastrutures.ImageMatch(image_id=curr_picture, cluster_id=curr_cluster, distance=tmp_dist, decision=tmp_decision)
                 top_n_storage.add_element(tmp_image_match)
 
         # get top N pictures

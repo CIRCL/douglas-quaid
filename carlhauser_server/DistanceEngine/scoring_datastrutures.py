@@ -26,33 +26,82 @@ class AlgoMatch :
         tmp_obj["name"] = self.name
         tmp_obj["distance"] = self.distance
         tmp_obj["decision"] = self.decision.name
+
         return tmp_obj
+
+    # ==================== To string ====================
+
+    # Overwrite to print the content of the cluster instead of the cluster memory address
+    def __repr__(self):
+        return self.get_str()
+
+    def __str__(self):
+        return self.get_str()
+
+    def get_str(self):
+        return ''.join(map(str, [' name=', self.name,
+                                 ' distance=', self.distance,
+                                 ' decision=', self.decision]))
+
 
 # Datastructures to handle a list of matches
 class ClusterMatch:
-    def __init__(self, cluster_id=None, distance=None):
+    def __init__(self, cluster_id=None, distance=None, decision=None):
         self.cluster_id = cluster_id
         self.distance = distance
+        self.decision = decision
 
     def to_obj(self):
         tmp_obj = {}
         tmp_obj["cluster_id"] = self.cluster_id
         tmp_obj["distance"] = self.distance
+        tmp_obj["decision"] = self.decision.name
+
         return tmp_obj
 
+    # ==================== To string ====================
+
+    # Overwrite to print the content of the cluster instead of the cluster memory address
+    def __repr__(self):
+        return self.get_str()
+
+    def __str__(self):
+        return self.get_str()
+
+    def get_str(self):
+        return ''.join(map(str, [' cluster_id=', self.cluster_id,
+                                 ' distance=', self.distance,
+                                 ' decision=', self.decision]))
+
 class ImageMatch:
-    def __init__(self, image_id=None, cluster_id=None, distance=None):
+    def __init__(self, image_id=None, cluster_id=None, distance=None, decision=None):
         self.image_id = image_id
         self.cluster_id = cluster_id
         self.distance = distance
+        self.decision = decision
 
     def to_obj(self):
         tmp_obj = {}
         tmp_obj["image_id"] = self.image_id
         tmp_obj["cluster_id"] = self.cluster_id
         tmp_obj["distance"] = self.distance
-        return tmp_obj
+        tmp_obj["decision"] = self.decision.name
 
+        return tmp_obj
+    # ==================== To string ====================
+
+    # Overwrite to print the content of the cluster instead of the cluster memory address
+    def __repr__(self):
+        return self.get_str()
+
+    def __str__(self):
+        return self.get_str()
+
+    def get_str(self):
+        return ''.join(map(str, [' image_id=', self.image_id,
+                                 ' cluster_id=', self.cluster_id,
+                                 ' distance=', self.distance,
+                                 ' decision=', self.decision]))
 class TopN:
     # TODO : Improve datastructure (priority queue, probably)
     def __init__(self, top_n):

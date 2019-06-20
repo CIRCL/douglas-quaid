@@ -5,7 +5,7 @@ import logging
 # ==================== ------ STD LIBRARIES ------- ====================
 import os
 import sys
-from typing import Dict
+from typing import Dict, List
 
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
 sys.path.append(os.path.abspath(os.path.pardir))
@@ -33,7 +33,7 @@ class Merging_Engine:
 
     # ==================== ------ PICTURE-PICTURE DISTANCE ------- ====================
 
-    def merge_algos_distance(self, matches_package: Dict[str, sd.AlgoMatch]):
+    def merge_algos_distance(self, matches_package: Dict[str, sd.AlgoMatch]) -> float:
         # TODO : Complete merging / Improve
         self.logger.info(f"Received algorithms distance to merge {matches_package}")
 
@@ -57,7 +57,7 @@ class Merging_Engine:
 
         return score
 
-    def merge_algos_decision(self, matches_package: Dict[str, sd.AlgoMatch]):
+    def merge_algos_decision(self, matches_package: Dict[str, sd.AlgoMatch]) -> sd.DecisionTypes:
         # TODO : Complete merging / Improve
         self.logger.info(f"Received algorithms distance to merge {matches_package}")
 
@@ -67,7 +67,7 @@ class Merging_Engine:
         elif self.decision_merging_method == feature_extractor_conf.Decision_MergingMethod.MAJORITY:
             score = self.get_majority_decision(matches_package)
 
-        elif self.decision_merging_method == feature_extractor_conf.Decision_MergingMethod.WEIGHTED_DECISION:
+        elif self.decision_merging_method == feature_extractor_conf.Decision_MergingMethod.WEIGHTED_MAJORITY:
             score = self.get_weighted_majority_decision(matches_package)
 
         elif self.decision_merging_method == feature_extractor_conf.Decision_MergingMethod.PYRAMID:
@@ -80,11 +80,26 @@ class Merging_Engine:
 
     # ==================== ------ PICTURE-CLUSTER DISTANCE ------- ====================
 
-    def merge_pictures_distance(self, distance_list: list):
+    def merge_pictures_distance(self, distance_list: List[float]) -> float:
         # TODO : Complete merging / Improve
         self.logger.info(f"Received picture-cluster's picture distance to merge {distance_list}")
         if len(distance_list) != 0:
             return max(distance_list)
+        else:
+            self.logger.error(f"A Cluster is empty but exists. Structural behavior error detected.")
+            return None
+
+    def merge_pictures_decisions(self, decision_list: List[sd.DecisionTypes]) -> sd.DecisionTypes:
+        # TODO : Complete merging / Improve
+        self.logger.info(f"Received picture-cluster's picture decision to merge {decision_list}")
+        if len(decision_list) != 0:
+            # Cosntruct a dict : YES=0, MAYBE=0, NO=0
+            tmp_decisions = {decision.name: 0 for decision in list(sd.DecisionTypes)}
+            # Iterate to count decision
+            for curr_decision in decision_list :
+                tmp_decisions[curr_decision.name] += 1
+
+            return self.get_prevalent_decision(tmp_decisions)
         else:
             self.logger.error(f"A Cluster is empty but exists. Structural behavior error detected.")
             return None
@@ -148,12 +163,17 @@ class Merging_Engine:
     def get_majority_decision(self, matches_package: Dict[str, sd.AlgoMatch]) -> sd.DecisionTypes:
         tmp_decisions = self.get_nb_decisions(matches_package)
         # Fancy way to get the max of the dict, and parse it back as DecisionType
-        return sd.DecisionTypes[max(tmp_decisions, key=lambda key: tmp_decisions[key])]
+        # return sd.DecisionTypes[max(tmp_decisions, key=lambda key: tmp_decisions[key])]
+        return self.get_prevalent_decision(tmp_decisions)
 
     def get_weighted_majority_decision(self, matches_package: Dict[str, sd.AlgoMatch]) -> sd.DecisionTypes:
         tmp_decisions = self.get_nb_decisions(matches_package, weighted=True)
         # Fancy way to get the max of the dict, and parse it back as DecisionType
-        return sd.DecisionTypes[max(tmp_decisions, key=lambda key: tmp_decisions[key])]
+        # return sd.DecisionTypes[max(tmp_decisions, key=lambda key: tmp_decisions[key])]
+        return self.get_prevalent_decision(tmp_decisions)
+
+    def get_prevalent_decision(self, decision_counter: Dict[sd.DecisionTypes, int]) -> sd.DecisionTypes:
+        return sd.DecisionTypes[max(decision_counter, key=lambda key: decision_counter[key])]
 
     def get_pyramid_decision(self, matches_package: Dict[str, sd.AlgoMatch]) -> sd.DecisionTypes:
         weight_to_algo = {}

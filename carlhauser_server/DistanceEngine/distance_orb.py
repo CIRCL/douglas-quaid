@@ -31,7 +31,7 @@ class Distance_ORB:
 
         self.orb_matcher = cv2.BFMatcher(cv2.NORM_HAMMING, crossCheck=dist_conf.CROSSCHECK)
 
-    def orb_distance(self, pic_package_from, pic_package_to):
+    def orb_distance(self, pic_package_from, pic_package_to) -> Dict[str, sd.AlgoMatch]:
         answer = {}
         self.logger.info("Orb distance computation ... ")
 
@@ -48,7 +48,7 @@ class Distance_ORB:
                 '''
 
         except Exception as e:
-            self.logger.error(traceback.print_tb(e.__traceback__))
+            self.logger.error(traceback.print_tb(traceback.format_exc()))
             self.logger.error("Error during orbing : " + str(e))
 
         return answer
@@ -71,7 +71,11 @@ class Distance_ORB:
     def compute_orb_distance(self, descriptors_1, descriptors_2) -> float:
         matches = self.orb_matcher.match(descriptors_1, descriptors_2)
 
-        return self.max_dist(matches, self.threeshold_distance_filter(matches))
+        if len(matches) == 0 :
+            return 1
+            # raise Exception(f"No match for these descriptors list : {descriptors_1} {descriptors_2}")
+        else :
+            return self.max_dist(matches, self.threeshold_distance_filter(matches))
 
     # ==================== ------ MERGING ------- ====================
 
@@ -88,7 +92,8 @@ class Distance_ORB:
 
     @staticmethod
     def max_dist(all_matches: List, good_matches: List) -> float:
-        return 1 - len(good_matches) / (max(len(all_matches), len(all_matches)))
+        # TODO : To review. Is max usefull here ?
+        return 1 - len(good_matches) / (max(len(all_matches), len(good_matches)))
 
     # ==================== ------ DECISIONS ------- ====================
 

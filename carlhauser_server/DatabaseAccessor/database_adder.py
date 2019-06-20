@@ -6,6 +6,7 @@ import argparse
 import os
 import pathlib
 import sys
+from typing import List
 
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
 sys.path.append(os.path.abspath(os.path.pardir))
@@ -97,14 +98,14 @@ class Database_Adder(database_common.Database_Common):
                 if curr_pic == fetched_id:
                     continue
                 curr_target_pic_dict = self.get_dict_from_key(self.storage_db_no_decode, curr_pic, pickle=True)
-                delta_centrality = self.de.get_distance_picture_to_picture(new_pic_dict, curr_target_pic_dict)
+                delta_centrality, decision = self.de.get_dist_and_decision_picture_to_picture(new_pic_dict, curr_target_pic_dict)
                 # Update the centrality of the current picture with the new "added value".
                 self.db_utils.update_picture_score_of_cluster(cluster_id, curr_pic, score + delta_centrality)
 
         # TODO : Somewhat already done before. May be able to memoize the computed values ?
         return
 
-    def compute_centrality(self, pictures_list_id, picture_dict) -> float:
+    def compute_centrality(self, pictures_list_id : List, picture_dict) -> float:
         # Returns centrality of a picture within a list of other pictures.
 
         self.logger.debug(picture_dict)
@@ -112,7 +113,9 @@ class Database_Adder(database_common.Database_Common):
         # For each picture, compute its distance to other picture, summing it temporary
         for curr_target_pic in pictures_list_id:
             curr_target_pic_dict = self.get_dict_from_key(self.storage_db_no_decode, curr_target_pic, pickle=True)
-            curr_sum += self.de.get_distance_picture_to_picture(picture_dict, curr_target_pic_dict)
+            dist, decision = self.de.get_dist_and_decision_picture_to_picture(picture_dict, curr_target_pic_dict)
+            # TODO : use decision in centrality computation ?
+            curr_sum += dist
 
         self.logger.debug(f"Computed centrality for {pictures_list_id}")
 
