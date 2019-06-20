@@ -99,6 +99,10 @@ class testDistanceEngine(unittest.TestCase):
         # Visual Descriptors parameters
         self.ORB = Algo_conf("ORB", True, 0.2, 0.6, distance_weight=5)
         '''
+        self.me.fe_conf.A_HASH.decision_weight = 1
+        self.me.fe_conf.P_HASH.decision_weight = 1
+        self.me.fe_conf.D_HASH.decision_weight = 1
+        self.me.fe_conf.ORB.decision_weight = 5
 
         dict_matches = {
             "A_HASH" : sd.AlgoMatch(name="A_HASH", distance=0.0, decision=sd.DecisionTypes.YES),
@@ -141,6 +145,10 @@ class testDistanceEngine(unittest.TestCase):
         # Visual Descriptors parameters
         self.ORB = Algo_conf("ORB", True, 0.2, 0.6, distance_weight=5)
         '''
+        self.me.fe_conf.A_HASH.decision_weight = 1
+        self.me.fe_conf.P_HASH.decision_weight = 1
+        self.me.fe_conf.D_HASH.decision_weight = 1
+        self.me.fe_conf.ORB.decision_weight = 5
 
         dict_matches = {
             "A_HASH" : sd.AlgoMatch(name="A_HASH", distance=0.0, decision=sd.DecisionTypes.YES),
@@ -213,6 +221,11 @@ class testDistanceEngine(unittest.TestCase):
         self.ORB = Algo_conf("ORB", True, 0.2, 0.6, distance_weight=5)
         '''
 
+        self.me.fe_conf.A_HASH.decision_weight = 1
+        self.me.fe_conf.P_HASH.decision_weight = 1
+        self.me.fe_conf.D_HASH.decision_weight = 1
+        self.me.fe_conf.ORB.decision_weight = 5
+
         dict_matches = {
             "A_HASH" : sd.AlgoMatch(name="A_HASH", distance=0.0, decision=sd.DecisionTypes.YES),
             "P_HASH" : sd.AlgoMatch(name="P_HASH", distance=0.0, decision=sd.DecisionTypes.YES),
@@ -279,6 +292,107 @@ class testDistanceEngine(unittest.TestCase):
         self.logger.info(f"Majority YYYYN with ORB NO {answer}")
         self.assertEqual(answer, sd.DecisionTypes.NO)
 
+    def test_get_pyramid_decision(self):
+
+        '''
+        self.A_HASH = Algo_conf("A_HASH", False, 0.2, 0.6, distance_weight=1)
+        self.P_HASH = Algo_conf("P_HASH", True, 0.2, 0.6, distance_weight=1)
+        self.P_HASH_SIMPLE = Algo_conf("P_HASH_SIMPLE", False, 0.2, 0.6, distance_weight=1)
+        self.D_HASH = Algo_conf("D_HASH", True, 0.2, 0.6, distance_weight=1)
+        self.D_HASH_VERTICAL = Algo_conf("D_HASH_VERTICAL", False, 0.2, 0.6, distance_weight=1)
+        self.W_HASH = Algo_conf("W_HASH", False, 0.2, 0.6, distance_weight=1)
+        self.TLSH = Algo_conf("TLSH", True, 0.2, 0.6, distance_weight=1)
+
+        # Visual Descriptors parameters
+        self.ORB = Algo_conf("ORB", True, 0.2, 0.6, distance_weight=5)
+        '''
+
+        self.me.fe_conf.A_HASH.decision_weight = 1
+        self.me.fe_conf.P_HASH.decision_weight = 1
+        self.me.fe_conf.D_HASH.decision_weight = 1
+        self.me.fe_conf.ORB.decision_weight = 5
+
+        dict_matches = {
+            "A_HASH" : sd.AlgoMatch(name="A_HASH", distance=0.0, decision=sd.DecisionTypes.YES),
+            "P_HASH" : sd.AlgoMatch(name="P_HASH", distance=0.0, decision=sd.DecisionTypes.YES),
+            "D_HASH" : sd.AlgoMatch(name="D_HASH", distance=0.0, decision=sd.DecisionTypes.YES),
+        }
+        answer = self.me.get_pyramid_decision(dict_matches)
+        self.logger.info(f"Pyramid YYY {answer}")
+        self.assertEqual(answer, sd.DecisionTypes.YES)
+
+        dict_matches = {
+            "A_HASH" : sd.AlgoMatch(name="A_HASH", distance=0.0, decision=sd.DecisionTypes.NO),
+            "P_HASH" : sd.AlgoMatch(name="P_HASH", distance=0.0, decision=sd.DecisionTypes.NO),
+            "D_HASH" : sd.AlgoMatch(name="D_HASH", distance=0.0, decision=sd.DecisionTypes.NO),
+        }
+        answer = self.me.get_pyramid_decision(dict_matches)
+        self.logger.info(f"Pyramid NNN {answer}")
+        self.assertEqual(answer, sd.DecisionTypes.NO)
+
+        dict_matches = {
+            "A_HASH" : sd.AlgoMatch(name="A_HASH", distance=0.0, decision=sd.DecisionTypes.YES),
+            "P_HASH" : sd.AlgoMatch(name="P_HASH", distance=0.0, decision=sd.DecisionTypes.NO),
+            "D_HASH" : sd.AlgoMatch(name="D_HASH", distance=0.0, decision=sd.DecisionTypes.NO),
+        }
+        answer = self.me.get_pyramid_decision(dict_matches)
+        self.logger.info(f"Pyramid YNN {answer}")
+        self.assertEqual(answer, sd.DecisionTypes.NO)
+
+        dict_matches = {
+            "A_HASH" : sd.AlgoMatch(name="A_HASH", distance=0.0, decision=sd.DecisionTypes.MAYBE),
+            "P_HASH" : sd.AlgoMatch(name="P_HASH", distance=0.0, decision=sd.DecisionTypes.NO),
+            "D_HASH" : sd.AlgoMatch(name="D_HASH", distance=0.0, decision=sd.DecisionTypes.MAYBE),
+        }
+        answer = self.me.get_pyramid_decision(dict_matches)
+        self.logger.info(f"Pyramid MNM {answer}")
+        self.assertEqual(answer, sd.DecisionTypes.MAYBE)
+
+        dict_matches = {
+            "A_HASH" : sd.AlgoMatch(name="A_HASH", distance=0.0, decision=sd.DecisionTypes.NO),
+            "P_HASH" : sd.AlgoMatch(name="P_HASH", distance=0.0, decision=sd.DecisionTypes.YES),
+            "ORB" : sd.AlgoMatch(name="ORB", distance=0.0, decision=sd.DecisionTypes.MAYBE),
+        }
+        answer = self.me.get_pyramid_decision(dict_matches)
+        self.logger.info(f"Pyramid NYM with ORB MAYBE {answer}")
+        self.assertEqual(answer, sd.DecisionTypes.YES)
+
+        dict_matches = {
+            "A_HASH" : sd.AlgoMatch(name="A_HASH", distance=0.0, decision=sd.DecisionTypes.YES),
+            "P_HASH" : sd.AlgoMatch(name="P_HASH", distance=0.0, decision=sd.DecisionTypes.MAYBE),
+            "D_HASH" : sd.AlgoMatch(name="D_HASH", distance=0.0, decision=sd.DecisionTypes.NO),
+        }
+        answer = self.me.get_pyramid_decision(dict_matches)
+        self.logger.info(f"Pyramid YMN {answer}")
+        # Because we want false positive instead of false negative
+        self.assertEqual(answer, sd.DecisionTypes.YES)
+
+        dict_matches = {
+            "A_HASH" : sd.AlgoMatch(name="A_HASH", distance=0.0, decision=sd.DecisionTypes.YES),
+            "P_HASH" : sd.AlgoMatch(name="P_HASH", distance=0.0, decision=sd.DecisionTypes.YES),
+            "D_HASH" : sd.AlgoMatch(name="D_HASH", distance=0.0, decision=sd.DecisionTypes.YES),
+            "TLSH" : sd.AlgoMatch(name="TLSH", distance=0.0, decision=sd.DecisionTypes.YES),
+            "ORB" : sd.AlgoMatch(name="ORB", distance=0.0, decision=sd.DecisionTypes.NO),
+        }
+        answer = self.me.get_pyramid_decision(dict_matches)
+        self.logger.info(f"Pyramid YYYYN with ORB NO {answer}")
+        self.assertEqual(answer, sd.DecisionTypes.NO)
+
+        self.me.fe_conf.A_HASH.decision_weight = 1
+        self.me.fe_conf.P_HASH.decision_weight = 1
+        self.me.fe_conf.D_HASH.decision_weight = 2
+        self.me.fe_conf.ORB.decision_weight = 5
+
+        dict_matches = {
+            "A_HASH" : sd.AlgoMatch(name="A_HASH", distance=0.0, decision=sd.DecisionTypes.YES),
+            "P_HASH" : sd.AlgoMatch(name="P_HASH", distance=0.0, decision=sd.DecisionTypes.YES),
+            "D_HASH" : sd.AlgoMatch(name="D_HASH", distance=0.0, decision=sd.DecisionTypes.MAYBE),
+            "TLSH" : sd.AlgoMatch(name="TLSH", distance=0.0, decision=sd.DecisionTypes.MAYBE),
+            "ORB" : sd.AlgoMatch(name="ORB", distance=0.0, decision=sd.DecisionTypes.MAYBE),
+        }
+        answer = self.me.get_pyramid_decision(dict_matches)
+        self.logger.info(f"Pyramid YYMMM with ORB MAYBE {answer}")
+        self.assertEqual(answer, sd.DecisionTypes.YES)
 
 if __name__ == '__main__':
     unittest.main()

@@ -70,6 +70,9 @@ class Merging_Engine:
         elif self.decision_merging_method == feature_extractor_conf.Decision_MergingMethod.WEIGHTED_DECISION:
             score = self.get_weighted_majority_decision(matches_package)
 
+        elif self.decision_merging_method == feature_extractor_conf.Decision_MergingMethod.PYRAMID:
+            score = self.get_pyramid_decision(matches_package)
+
         else:
             raise Exception("Unrecognized merging method to merge algorithm output into one value. Please review configuration file.")
 
@@ -136,8 +139,8 @@ class Merging_Engine:
         nb_decisions = sum(tmp_decisions.values())
 
         # If a decision is more than 80% of all decision, return it.
-        for curr_decision in sd.DecisionTypes :
-            if tmp_decisions[curr_decision.name] > 0.8*nb_decisions :
+        for curr_decision in sd.DecisionTypes:
+            if tmp_decisions[curr_decision.name] > 0.8 * nb_decisions:
                 return curr_decision
         # else, return maybe
         return sd.DecisionTypes.MAYBE
@@ -152,6 +155,42 @@ class Merging_Engine:
         # Fancy way to get the max of the dict, and parse it back as DecisionType
         return sd.DecisionTypes[max(tmp_decisions, key=lambda key: tmp_decisions[key])]
 
+    def get_pyramid_decision(self, matches_package: Dict[str, sd.AlgoMatch]) -> sd.DecisionTypes:
+        weight_to_algo = {}
+        algo_list = []
+
+        for curr_algo in self.fe_conf.list_algos:
+            if matches_package.get(curr_algo.get("algo_name")) is not None :
+                algo_list.append(curr_algo)
+
+        # Create lists in dict as <weights => []>
+        for curr_algo in algo_list:
+            weight_to_algo[curr_algo.get("decision_weight")] = []
+
+        # Create dict <weights => [algo1, algo2, ..]>
+        for curr_algo in algo_list:
+            weight_to_algo[curr_algo.get("decision_weight")].append(curr_algo)
+
+        # We begin with "higher weight" algorithms and go on
+        for key in sorted(weight_to_algo, reverse=True):
+            # We get the list of algorithm at this "weight level"
+            tmp_list_algo = weight_to_algo[key]
+
+            # We group all matches results, related to these algorithms
+            tmp_list_matches = {}
+            for algo in tmp_list_algo :
+                tmp_list_matches[algo.get("algo_name")] = matches_package.get(algo.get("algo_name"))
+
+            # We take a decision up to all algorithms at this weight level
+            decision = self.get_majority_decision(tmp_list_matches)
+
+            # If the decision is YES or NO, we stop here
+            if decision != sd.DecisionTypes.MAYBE :
+                return decision
+            # Else, we continue for the "next lower level of algorithms" in next iteration
+
+        # If we went through all algorithms, and none were giving the same "result". We send back "MAYBE"
+        return sd.DecisionTypes.MAYBE
 
     def get_nb_decisions(self, matches_package: Dict[str, sd.AlgoMatch], weighted=False) -> Dict:
         # Create a dict : YES=0, MAYBE=0, NO=0
@@ -164,9 +203,9 @@ class Merging_Engine:
             curr_score = matches_package.get(curr_algo.get("algo_name"))
             if curr_score is not None:
                 # We add the score of this algorithm (it's weight)
-                if weighted :
+                if weighted:
                     tmp_decisions[curr_score.decision.name] += curr_algo.get("decision_weight")
-                else :
+                else:
                     tmp_decisions[curr_score.decision.name] += 1
 
         return tmp_decisions

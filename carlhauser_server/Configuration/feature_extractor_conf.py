@@ -20,6 +20,7 @@ class Decision_MergingMethod(JSON_parsable_Enum, Enum):
     PARETO = auto() # 80% Algo are the same
     MAJORITY = auto() # The most prevalent decision
     WEIGHTED_MAJORITY = auto() # The most prevalent decision, with weights
+    PYRAMID = auto() # The most prevalent decision, if unsure, then look at lower ranked
 
 
 class Algo_conf(JSON_parsable_Dict):
