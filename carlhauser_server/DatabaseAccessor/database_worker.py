@@ -132,6 +132,7 @@ class Database_Worker():
 
     def get_dict_from_key(self, storage: redis.Redis, key, pickle=False):
         # Store a dict, pickled or not
+        self.logger.debug(f"Fetching key : {key}")
 
         if pickle:
             # If correct, fetch data behind it
@@ -149,6 +150,7 @@ class Database_Worker():
 
     def set_dict_to_key(self, storage: redis.Redis, key, dict_to_store: dict, pickle=False, expire_time=None):
         # Retrieve a dict, pickled or not
+        self.logger.debug(f"Setting key : {key}")
 
         if pickle:
             # Pickling the dict

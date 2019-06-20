@@ -87,6 +87,7 @@ class Merging_Engine:
             return max(distance_list)
         else:
             self.logger.error(f"A Cluster is empty but exists. Structural behavior error detected.")
+            raise Exception("Empty cluster, but exists.")
             return None
 
     def merge_pictures_decisions(self, decision_list: List[sd.DecisionTypes]) -> sd.DecisionTypes:
@@ -102,6 +103,7 @@ class Merging_Engine:
             return self.get_prevalent_decision(tmp_decisions)
         else:
             self.logger.error(f"A Cluster is empty but exists. Structural behavior error detected.")
+            raise Exception("Empty cluster, but exists.")
             return None
 
     # ==================== ------ CLUSTER-CLUSTER DISTANCE ------- ====================
@@ -218,7 +220,7 @@ class Merging_Engine:
         tmp_decisions = {decision.name: 0 for decision in list(sd.DecisionTypes)}
 
         for curr_algo in self.fe_conf.list_algos:
-            self.logger.debug(f"Current algo {curr_algo}.")
+            # self.logger.debug(f"Current algo {curr_algo}.")
 
             # We have a value for a computed algorithm
             curr_score = matches_package.get(curr_algo.get("algo_name"))

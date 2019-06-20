@@ -36,7 +36,7 @@ class Picture_Orber():
 
         try:
             # Note : @image must be a PIL instance.
-            if self.fe_conf.ORB.get("is_enabled",False):
+            if self.fe_conf.ORB.get("is_enabled", False):
                 # Picture loading handled in picture load_image overwrite
                 key_points, descriptors = self.algo.detectAndCompute(orb_pic, None)
 
@@ -44,10 +44,12 @@ class Picture_Orber():
                 answer["ORB_KEYPOINTS"] = key_points
                 answer["ORB_DESCRIPTORS"] = descriptors
 
-                if key_points is None:
+                if key_points is None or key_points == []:
                     self.logger.warning(f"WARNING : picture has no keypoints")
-                if descriptors is None:
+                    raise Exception("NO KEYPOINTS")
+                if descriptors is None or descriptors == []:
                     self.logger.warning(f"WARNING : picture has no descriptors")
+                    raise Exception("NO DESCRIPTOR")
 
         except Exception as e:
             self.logger.error("Error during orbing : " + str(e))

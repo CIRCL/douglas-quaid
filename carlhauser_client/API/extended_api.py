@@ -1,18 +1,15 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import logging.config
 # ==================== ------ STD LIBRARIES ------- ====================
 import os
 import pathlib
 import sys
-from typing import Dict, List
-import collections
 import time
+from typing import Dict, List
 
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
 sys.path.append(os.path.abspath(os.path.pardir))
-from carlhauser_client.Helpers.environment_variable import get_homedir
 from carlhauser_client.API.simple_api import Simple_API
 
 from common.Graph.graph_datastructure import GraphDataStruct
@@ -36,6 +33,8 @@ class Extended_API(Simple_API):
         # Add pictures to DB, create mapping OLD NAME -> NEW NAME (or opposite)
         for image_path in image_folder.iterdir():
             if image_path.is_file():
+                self.logger.debug(f"Adding picture {image_path}.")
+
                 # Upload the image to db
                 res = self.add_picture_server(image_path)
                 if res[0] == True:
