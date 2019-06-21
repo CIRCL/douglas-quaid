@@ -185,15 +185,15 @@ Performance (quality and time) is served by improvements and design choices on t
 
 #### Must known
 
-The library is storing pictures within clusters of somewhat-similar pictures. 
+The library is storing pictures within clusters of somewhat-similar pictures.   
 When a picture is added in the database or a request is made, algorithms perform a comparison of the picture with all "most central"/"most representative" picture(s) of each cluster.  
 Therefore, instead of making a comparison of one pictures to all pictures of the database (O(nb_picture_in_db)), it compares the picture with all clusters (O(nb_clusters)).    
 Depending on a threshold, the picture will be matched to a cluster (in fact, the representative picture of the cluster) or not. If the picture match a representative picture of a cluster, we compare the request picture with all pictures of this cluster.   
 Therefore, instead of running O(nb_picture_in_db) comparisons, we run O(nb_clusters+nb_matched_clusters*nb_pictures_in_each_cluster)  
 This improves performances by decreasing performed comparisons.
 
-Tricky thing is the threshold which says "This picture is too distant, it must be in a new cluster" or "This picture is close enough and is in the same cluster"*[]: 
-This threshold impacts on the performance of the library (time-wise) and less/not on the quality of match.
+Tricky thing is the threshold which says "This picture is too distant, it must be in a new cluster" or "This picture is close enough and is in the same cluster":   
+This threshold impacts on the performance of the library (time-wise) and less/not on the quality of match.  
 
 <p  align="center" float="center">
 <img src="./docs/images/xkcd_performance.png" alt="Action" height="400"/>
@@ -203,24 +203,24 @@ How you must understand this "new cluster threshold".
 
 
 However, one consequence and must-known is : ** this threshold should be set once and for all at server start.** All the performance-datastructures are built on top of it. It must be consistent between adding-time and request-time. Unexpected results will occur otherwise.   
-Moreover you can't make a "wrong choice" for this threshold. At worst, it will be slow, but it will work.
+Moreover you can't make a "wrong choice" for this threshold. At worst, it will be slow, but it will work.   
 
 I repeat : 
-<h2>
+<h3>
 
 ```diff
 - MAX_DIST_FOR_NEW_CLUSTER threshold should be set once and for all at server start. -
 ```
 
-</h2>
+</h3>
 
 
-If the threshold is 1 : all pictures will be in one big cluster, so the library will always match "this cluster" and so all pictures will be compared two-by-two. (Fallback to O(nb_picture_in_db))
-If the threshold is 0 : each pictures will be in its own cluster, so the library will compare all "head of clusters" and so all pictures will be compared two-by-two. (Fallback to O(nb_picture_in_db))
-Anything in the middle will improve performance.
+If the threshold is 1 : all pictures will be in one big cluster, so the library will always match "this cluster" and so all pictures will be compared two-by-two. (Fallback to O(nb_picture_in_db))     
+If the threshold is 0 : each pictures will be in its own cluster, so the library will compare all "head of clusters" and so all pictures will be compared two-by-two. (Fallback to O(nb_picture_in_db))     
+Anything in the middle will improve performance.    
 
-Empirically, 0.2 was not a bad value. Evaluation algorithms are available if you want to get True-Positive/False-Positive/True-Negative/False-Negative/Acc/F1 measures depending on this threshold.
-If you anyway want to change this threshold, you must stop the server, drop the redis database (delete /Helpers/database_data/*), start the server, and reupload all pictures.
+Empirically, 0.2 was not a bad value. Evaluation algorithms are available if you want to get True-Positive/False-Positive/True-Negative/False-Negative/Acc/F1 measures depending on this threshold.     
+If you anyway want to change this threshold, you must stop the server, drop the redis database (delete /Helpers/database_data/*), start the server, and reupload all pictures.      
 
 #### Parameters tweaking
 
