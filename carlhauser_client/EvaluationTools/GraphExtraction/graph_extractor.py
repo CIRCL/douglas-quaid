@@ -231,8 +231,8 @@ def main():
 
 def test():
     evaluator = GraphExtractor()
-    # image_folder = get_homedir() / "datasets" / "MINI_DATASET"
-    image_folder = get_homedir() / "datasets" / "raw_phishing_full"
+    image_folder = get_homedir() / "datasets" / "MINI_DATASET"
+    # image_folder = get_homedir() / "datasets" / "raw_phishing_full"
     output_path = get_homedir() / "carlhauser_client"
     evaluator.launch(image_folder, output_path)
 

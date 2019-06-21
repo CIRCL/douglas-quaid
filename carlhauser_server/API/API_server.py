@@ -201,7 +201,7 @@ class FlaskAppWrapper(object):
                 result_json["request_id"] = id
                 result_json["is_ready"] = True
             except Exception as e:
-                self.logger.error(f"Error during GET handling {e}")
+                self.logger.error(f"Normal error during GET handling ('is_ready' request) {e}")
                 result_json["Status"] = "Failure"
                 result_json["Error"] = "Error during database request"
                 result_json["is_ready"] = False
