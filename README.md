@@ -225,14 +225,39 @@ If you anyway want to change this threshold, you must stop the server, drop the 
 #### Parameters tweaking
 
 The library has many parameters. To correctly configure the library for your own usecase, you may have to tweak these values. Therefore, you must understand them.  
-
-Each algorithm computes distance between pictures. Each algorithm has it's own way to compute this distance, but all outputs a value within range  `\[0-1\]`.  Example : A-HASH outputs a distance of `0.4` between picture A and B
+Distance are normalized euclidian distance, which means **0 = totally similar, 1 = totally different**. 
+ 
+Each algorithm computes distance between pictures. Each algorithm has it's own way to compute this distance, but all outputs a value within range  `[0-1]`. Example : A-HASH outputs a distance of `0.4` between picture A and B
 Each algorithm computes a decision about two pictures comparison. Thresholds over its own distance calculation give a YES/MAYBE/NO decision.    Example : A-HASH outputs a decision `YES (it matches)` between picture A and B, because distance between picture A and B is `0.4`, which is less than the `maybe_threshold` of A-HASH. 
 
 During two pictures comparison, configured algorithms are called. Each provides a distance and a decision.  
 A merging algorithm do merge these distances and do merge these decisions.  
-Distances can be merged with distinct approaches : max of all distances, mean of all distances, min of all distances, harmonic mean, weighted mean of all distances, etc.   
-Decisions can be merged with distinct approaches : a Pareto rule (if 80% algorithms give the same decision, we output this decision), majority rule (most prevalent decision is returned), weighted majority, pyramidal (we check for high some algorithms, and if unsure, we check others) 
+Distances can be merged with distinct approaches : 
+* Max of all distances;
+* Mean of all distances;
+* Min of all distances;
+* Harmonic mean;
+* Weighted mean of all distances, etc.   
+
+Decisions can be merged with distinct approaches : 
+* Pareto rule (if 80% algorithms give the same decision, we output this decision);
+* Majority rule (most prevalent decision is returned);
+* Weighted majority;
+* Pyramidal (we check for high some algorithms, and if unsure, we check others).
+
+Decisions are not a simple threshold over distance. If you consider two algorithms:
+ * For algorithm A, a match is meaningful if the returned distance is below `0.2`. It is a mismatch if the distance if upper than 0.8. Everything between is sometimes good, sometimes bad.
+ * For algorithm A, a match is meaningful if the returned distance is below `0.8`. It is a mismatch if the distance if upper than 0.95. Everything between is sometimes good, sometimes bad.
+
+Consider two comparison : 
+ * Algorithm A gives a distance of `0.1` (match for itself), algorithm B give a distance of `0.5` (match for itself).  
+ * Algorithm B gives a distance of `0.1` (mismatch for itself), algorithm A give a distance of `0.5` (mismatch for itself).
+ 
+Min, max, mean (`0.3`) are similar in both cases. However, in first case, all algorithms considered it as a "match". In second case, all algorithms considered it as a "mismatch".  
+This problem exists because each algorithm has its own "range of values" in which a match is a meaningful match. Normalization could have been a solution, but decisions seems more human-readable.     
+It allows to launch more algorithms depending on the decision, too.     
+
+That's why a "YES" or "MAYBE" decision can come after a "NO" decision in a distance-sorted list)
 
 #### Performance optimization process
 
