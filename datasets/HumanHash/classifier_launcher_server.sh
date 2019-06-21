@@ -22,6 +22,10 @@ cd /home/vincent/AIL_dataset_checked/
 # Serving pictures
 screen -dm -S picture_serving_python python -m SimpleHTTPServer 8000
 
+# Launch docker commiter
+screen -S python_docker_saver pipenv run python3 ./docker_committer.py -n classification_docker_from_save -s 900 -l 5
+
+
 # Please proxy on
 ip a | grep "scope global" | grep -Po '(?<=inet )[\d.]+'
 

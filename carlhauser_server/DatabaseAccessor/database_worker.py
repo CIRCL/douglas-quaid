@@ -132,6 +132,7 @@ class Database_Worker():
 
     def get_dict_from_key(self, storage: redis.Redis, key, pickle=False):
         # Store a dict, pickled or not
+        self.logger.debug(f"Fetching key : {key}")
 
         if pickle:
             # If correct, fetch data behind it
@@ -147,17 +148,24 @@ class Database_Worker():
 
         return fetched_dict
 
-    def set_dict_to_key(self, storage: redis.Redis, key, dict_to_store: dict, pickle=False):
+    def set_dict_to_key(self, storage: redis.Redis, key, dict_to_store: dict, pickle=False, expire_time=None):
         # Retrieve a dict, pickled or not
+        self.logger.debug(f"Setting key : {key}")
 
         if pickle:
             # Pickling the dict
             pickled_object = self.pickler.get_pickle_from_object(dict_to_store)
             self.logger.debug(f"Size of storage object : {objsize.get_deep_size(pickled_object)}")
-            return storage.set(key, pickled_object)
+            answer = storage.set(key, pickled_object)
         else:
             # Store the dict
-            return storage.hmset(key, dict_to_store)
+            answer = storage.hmset(key, dict_to_store)
+
+        if expire_time is not None:
+            # Set an expire date
+            storage.expire(key, expire_time)
+
+        return answer
 
     def add_picture_to_storage(self, storage: redis.Redis, id, image_dict: dict):
         # Store the dictionary of hashvalues in Redis under the given id
@@ -172,7 +180,7 @@ class Database_Worker():
         # Create tmp_id for this queue
         tmp_id = '|'.join([id, "result"])
 
-        return self.set_dict_to_key(storage, tmp_id, image_dict, pickle=True)
+        return self.set_dict_to_key(storage, tmp_id, image_dict, pickle=True, expire_time=self.conf.ANSWER_EXPIRATION)
 
     def get_request_result(self, storage: redis.Redis, id):
         # TODO : Create real request id ?

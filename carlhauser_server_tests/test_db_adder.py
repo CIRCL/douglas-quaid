@@ -35,6 +35,20 @@ class testDistanceEngine(unittest.TestCase):
         self.dist_conf = distance_engine_conf.Default_distance_engine_conf()
         self.fe_conf = feature_extractor_conf.Default_feature_extractor_conf()
 
+        self.fe_conf.A_HASH = feature_extractor_conf.Algo_conf("A_HASH", False, 0.2, 0.6, distance_weight=1)
+        self.fe_conf.P_HASH = feature_extractor_conf.Algo_conf("P_HASH", True, 0.2, 0.6, distance_weight=1)
+        self.fe_conf.P_HASH_SIMPLE = feature_extractor_conf.Algo_conf("P_HASH_SIMPLE", False, 0.2, 0.6, distance_weight=1)
+        self.fe_conf.D_HASH = feature_extractor_conf.Algo_conf("D_HASH", True, 0.2, 0.6, distance_weight=1)
+        self.fe_conf.D_HASH_VERTICAL = feature_extractor_conf.Algo_conf("D_HASH_VERTICAL", False, 0.2, 0.6, distance_weight=1)
+        self.fe_conf.W_HASH = feature_extractor_conf.Algo_conf("W_HASH", False, 0.2, 0.6, distance_weight=1)
+        self.fe_conf.TLSH = feature_extractor_conf.Algo_conf("TLSH", True, 0.2, 0.6, distance_weight=1)
+        self.fe_conf.ORB = feature_extractor_conf.Algo_conf("ORB", True, 0.2, 0.6, distance_weight=1)
+        self.fe_conf.list_algos = [self.fe_conf.A_HASH, self.fe_conf.P_HASH, self.fe_conf.P_HASH_SIMPLE,
+                                   self.fe_conf.D_HASH, self.fe_conf.D_HASH_VERTICAL, self.fe_conf.W_HASH,
+                                   self.fe_conf.TLSH,
+                                   self.fe_conf.ORB]
+        self.logger.debug(f"Configuration : {self.fe_conf.ORB}")
+
         # Create database handler from configuration file
         self.db_handler = database_start_stop.Database_StartStop(conf=self.db_conf)
         self.picture_hasher = picture_hasher.Picture_Hasher(self.fe_conf)

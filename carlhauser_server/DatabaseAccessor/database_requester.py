@@ -6,7 +6,6 @@ import argparse
 import os
 import pathlib
 import sys
-import time
 
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
 sys.path.append(os.path.abspath(os.path.pardir))
@@ -18,79 +17,42 @@ import carlhauser_server.Configuration.database_conf as database_conf
 import carlhauser_server.Configuration.distance_engine_conf as distance_engine_conf
 import carlhauser_server.Configuration.feature_extractor_conf as feature_extractor_conf
 
-import carlhauser_server.DatabaseAccessor.database_worker as database_accessor
-import carlhauser_server.DistanceEngine.distance_engine as distance_engine
-import carlhauser_server.DatabaseAccessor.database_utilities as db_utils
-import carlhauser_server.DistanceEngine.scoring_datastrutures as scoring_datastrutures
+import carlhauser_server.DatabaseAccessor.database_common as database_common
+import carlhauser_server.DistanceEngine.scoring_datastrutures as score_datastruct
 
 
-class Database_Requester(database_accessor.Database_Worker):
+class Database_Requester(database_common.Database_Common):
     # Heritate from the database accesso, and so has already built in access to cache, storage ..
 
-    def __init__(self, conf: database_conf, dist_conf: distance_engine_conf, fe_conf: feature_extractor_conf):
+    def __init__(self, db_conf: database_conf, dist_conf: distance_engine_conf, fe_conf: feature_extractor_conf):
         # STD attributes
-        super().__init__(conf)
+        super().__init__(db_conf, dist_conf, fe_conf)
 
-        # Store configuration
-        self.dist_conf = dist_conf
-        self.fe_conf = fe_conf
+    def process_fetched_data(self, fetched_id, fetched_dict):
 
-        # Distance engine
-        self.de = distance_engine.Distance_Engine(self, db_conf, dist_conf, fe_conf)
-        self.db_utils = db_utils.DBUtilities(db_access_decode=self.storage_db_decode, db_access_no_decode=self.storage_db_no_decode)
+        self.logger.info(f"DB Request worker processing {fetched_id}")
+        self.logger.info(f"Fetched dict {fetched_dict}")
 
-    def _to_run_forever(self):
-        self.process_to_request()
+        # TODO : DO STUFF / TO REVIEW !
+        # Request only : Do NOT add picture to storage
 
-    def process_to_request(self):
-        # Method called infinitely, in loop
+        # Get top matching pictures in clusters
+        top_matching_pictures, list_matching_clusters = self.get_top_matching_pictures(fetched_dict)
 
-        # Trying to fetch from queue
-        fetched_id, fetched_dict = self.get_from_queue(self.cache_db_no_decode, self.input_queue, pickle=True)
+        # Depending on the quality of the match ...
+        if self.is_good_match(top_matching_pictures):
+            self.logger.info(f"Match is good enough with at least one cluster")
+            results = score_datastruct.build_response(fetched_id, list_matching_clusters, top_matching_pictures)
+            # TODO : Add to result set with "best matching picture is : #Hash from cluster #cluster_id/name ?"
+        else:
+            self.logger.info(f"Match not good enough, with any cluster")
+            results = score_datastruct.build_response(fetched_id, [], [])  # Create an answer with void lists
+            # TODO : Add to result set with "Void"
 
-        # If there is nothing fetched
-        if not fetched_id:
-            # Nothing to do
-            time.sleep(0.1)
-            return 0
+        # Adding results
+        self.set_request_result(self.cache_db_no_decode, fetched_id, results)
 
-        try:
-            self.logger.info(f"DB Request worker processing {fetched_id}")
-            self.logger.info(f"Fetched dict {fetched_dict}")
-
-            # TODO : DO STUFF / TO REVIEW !
-            # Request only : Do NOT add picture to storage
-
-            # Get top matching clusters
-            self.logger.info(f"Get top matching clusters for this picture")
-            cluster_list = self.db_utils.get_cluster_list()  # DECODE
-            list_clusters = self.de.get_top_matching_clusters(cluster_list, fetched_dict)  # List[scoring_datastrutures.ClusterMatch]
-            list_cluster_id = [i.cluster_id for i in list_clusters]
-            self.logger.info(f"Top matching clusters : {list_cluster_id}")
-
-            # Get top matching pictures in these clusters
-            self.logger.info(f"Get top matching pictures within these clusters")
-            top_matching_pictures = self.de.get_top_matching_pictures_from_clusters(list_cluster_id, fetched_dict)
-            self.logger.info(f"Top matching pictures : {top_matching_pictures}")
-
-            # Depending on the quality of the match ...
-            results = None
-            if len(top_matching_pictures) > 0 and self.de.match_enough(top_matching_pictures[0]):
-                self.logger.info(f"Match is good enough with at least one cluster")
-                results = scoring_datastrutures.build_response(fetched_id, list_clusters, top_matching_pictures)
-                # TODO : Add to result set with "best matching picture is : #Hash from cluster #cluster_id/name ?"
-            else:
-                self.logger.info(f"Match not good enough, with any cluster")
-                results = scoring_datastrutures.build_response(fetched_id, [], [])  # Create an answer with void lists
-                # TODO : Add to result set with "Void"
-
-            # Adding results
-            self.set_request_result(self.cache_db_no_decode, fetched_id, results)
-
-            self.logger.info(f"Request done. Results written.")
-
-        except:
-            return 1
+        self.logger.info(f"Request done. Results written.")
 
 
 # Launcher for this worker. Launch this file to launch a worker

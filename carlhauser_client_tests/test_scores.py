@@ -7,7 +7,7 @@ import pprint
 
 from carlhauser_server.Helpers.environment_variable import get_homedir
 
-import carlhauser_client.EvaluationTools.ClassificationQuality.stats_datastruct as scores
+import carlhauser_client.Helpers.stats_datastruct as scores
 
 
 class TestClusterMatcher(unittest.TestCase):

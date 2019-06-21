@@ -1,12 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-# ==================== ------ STD LIBRARIES ------- ====================
-import sys, os
-import pathlib
 import logging
-import json
-import base64
+# ==================== ------ STD LIBRARIES ------- ====================
+import os
+import pathlib
+import sys
 
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
 sys.path.append(os.path.abspath(os.path.pardir))
