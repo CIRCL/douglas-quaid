@@ -245,13 +245,16 @@ Decisions can be merged with distinct approaches :
 * Weighted majority;
 * Pyramidal (we check for high some algorithms, and if unsure, we check others).
 
+#### Why decisions ?
+
 Decisions are not a simple threshold over distance. If you consider two algorithms:
- * For algorithm A, a match is meaningful if the returned distance is below `0.2`. It is a mismatch if the distance if upper than 0.8. Everything between is sometimes good, sometimes bad.
- * For algorithm A, a match is meaningful if the returned distance is below `0.8`. It is a mismatch if the distance if upper than 0.95. Everything between is sometimes good, sometimes bad.
+ * For algorithm A, a match is meaningful if the returned distance is below `0.2`. It is a mismatch if the distance if upper than `0.8`. Everything between is sometimes good, sometimes bad.
+ * For algorithm A, a match is meaningful if the returned distance is below `0.8`. It is a mismatch if the distance if upper than `0.95`. Everything between is sometimes good, sometimes bad.
 
 Consider two comparison : 
  * Algorithm A gives a distance of `0.1` (match for itself), algorithm B give a distance of `0.5` (match for itself).  
  * Algorithm B gives a distance of `0.1` (mismatch for itself), algorithm A give a distance of `0.5` (mismatch for itself).
+ EDIT : small error to be corrected here.
  
 Min, max, mean (`0.3`) are similar in both cases. However, in first case, all algorithms considered it as a "match". In second case, all algorithms considered it as a "mismatch".  
 This problem exists because each algorithm has its own "range of values" in which a match is a meaningful match. Normalization could have been a solution, but decisions seems more human-readable.     
