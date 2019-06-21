@@ -49,6 +49,39 @@ From root folder :
 OR  
 > screen -S server-api pipenv run python3 ./core.py 
 
+You should get an output like this one on launch if everything fine. (beaware, it may not be exactly up to date) : 
+```bash
+(...)
+XXX,145 - carlhauser_server.DatabaseAccessor.database_worker - INFO - Creation of a Database Accessor Worker
+XXX,145 - root - DEBUG - File loaded from /home/user/douglas-quaid/tmp_fe_conf.json.
+XXX,146 - carlhauser_server.DatabaseAccessor.database_worker - INFO - Creation of a Database Accessor Worker
+XXX,146 - carlhauser_server.DistanceEngine.distance_engine - INFO - ... which is a Distance Engine
+XXX,146 - carlhauser_server.DistanceEngine.distance_hash - INFO - Creation of a Distance Hash Engine
+XXX,146 - carlhauser_server.DistanceEngine.distance_orb - INFO - Creation of a Distance ORB Engine
+XXX,146 - carlhauser_server.DistanceEngine.merging_engine - INFO - Creation of a Distance ORB Engine
+XXX,146 - carlhauser_server.DatabaseAccessor.database_worker - INFO - Launching Database_Adder
+XXX,146 - carlhauser_server.FeatureExtractor.picture_hasher - INFO - Creation of a Picture Hasher
+XXX,146 - carlhauser_server.FeatureExtractor.picture_orber - INFO - Creation of a Picture Hasher
+XXX,146 - carlhauser_server.DatabaseAccessor.database_worker - INFO - Launching Feature_Worker
+XXX,155 - root - DEBUG - File loaded from /home/user/douglas-quaid/tmp_db_conf.json.
+XXX,155 - root - DEBUG - File loaded from /home/user/douglas-quaid/tmp_fe_conf.json.
+XXX,155 - carlhauser_server.DatabaseAccessor.database_worker - INFO - Creation of a Database Accessor Worker
+XXX,156 - carlhauser_server.FeatureExtractor.picture_hasher - INFO - Creation of a Picture Hasher
+XXX,156 - carlhauser_server.FeatureExtractor.picture_orber - INFO - Creation of a Picture Hasher
+XXX,156 - carlhauser_server.DatabaseAccessor.database_worker - INFO - Launching Feature_Worker
+XXX,296 - root - DEBUG - File loaded from /home/user/douglas-quaid/tmp_db_conf.json.
+XXX,296 - root - DEBUG - File loaded from /home/user/douglas-quaid/tmp_ws_conf.json.
+XXX,299 - carlhauser_server.DatabaseAccessor.database_worker - INFO - Creation of a Database Accessor Worker
+XXX,304 - __main__ - INFO - Provided CERT OR KEY file used : /home/user/douglas-quaid/carlhauser_server/cert.pem and /home/user/douglas-quaid/carlhauser_server/key.pem
+ * Serving Flask app "api" (lazy loading)
+ * Environment: production
+   WARNING: This is a development server. Do not use it in a production deployment.
+   Use a production WSGI server instead.
+ * Debug mode: off
+XXX,314 - werkzeug - INFO -  * Running on https://127.0.0.1:5000/ (Press CTRL+C to quit)
+Press any key to stop ... 
+```
+
 #### Client side API
 > \# Launch client side, to send API calls     
 > cd ./carlhauser_client
