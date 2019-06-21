@@ -189,14 +189,14 @@ The library is storing pictures within clusters of somewhat-similar pictures.
 When a picture is added in the database or a request is made, algorithms perform a comparison of the picture with all "most central"/"most representative" picture(s) of each cluster.  
 Therefore, instead of making a comparison of one pictures to all pictures of the database (O(nb_picture_in_db)), it compares the picture with all clusters (O(nb_clusters)).    
 Depending on a threshold, the picture will be matched to a cluster (in fact, the representative picture of the cluster) or not. If the picture match a representative picture of a cluster, we compare the request picture with all pictures of this cluster.   
-Therefore, instead of running O(nb_picture_in_db) comparisons, we run O(nb_clusters + nb_matched_clusters*nb_pictures_in_each_cluster)  
+Therefore, instead of running O(nb_picture_in_db) comparisons, we run O(nb_clusters+nb_matched_clusters*nb_pictures_in_each_cluster)  
 This improves performances by decreasing performed comparisons.
 
 Tricky thing is the threshold which says "This picture is too distant, it must be in a new cluster" or "This picture is close enough and is in the same cluster"*[]: 
 This threshold impacts on the performance of the library (time-wise) and less/not on the quality of match.
 
 <p  align="center" float="center">
-<img src="./docs/images/xkcd_performance.png" alt="Action" height="500"/>
+<img src="./docs/images/xkcd_performance.png" alt="Action" height="400"/>
 <br/>
 How you must understand this "new cluster threshold".
 </p>
@@ -209,7 +209,7 @@ I repeat :
 <h2>
 
 ```diff
-- **'MAX_DIST_FOR_NEW_CLUSTER' threshold should be set once and for all at server start.**
+- MAX_DIST_FOR_NEW_CLUSTER threshold should be set once and for all at server start. -
 ```
 
 </h2>
@@ -220,6 +220,7 @@ If the threshold is 0 : each pictures will be in its own cluster, so the library
 Anything in the middle will improve performance.
 
 Empirically, 0.2 was not a bad value. Evaluation algorithms are available if you want to get True-Positive/False-Positive/True-Negative/False-Negative/Acc/F1 measures depending on this threshold.
+If you anyway want to change this threshold, you must stop the server, drop the redis database (delete /Helpers/database_data/*), start the server, and reupload all pictures.
 
 #### Parameters tweaking
 
@@ -230,10 +231,8 @@ Each algorithm computes a decision about two pictures comparison. Thresholds ove
 
 During two pictures comparison, configured algorithms are called. Each provides a distance and a decision.  
 A merging algorithm do merge these distances and do merge these decisions.  
-Distances can be merged with distinct approaches : max of all distances, mean of all distances, min of all distances, harmonic mean, weighted mean of all distances, etc.
-Decisions can be merged with distinct approaches : a Pareto rule (if 80% algorithms give the same decision, we output this decision), majority rule (most prevalent decision is returned), weighted majority, pyramidal (we check for high some algorithms, and if unsure, we check others)
-
-
+Distances can be merged with distinct approaches : max of all distances, mean of all distances, min of all distances, harmonic mean, weighted mean of all distances, etc.   
+Decisions can be merged with distinct approaches : a Pareto rule (if 80% algorithms give the same decision, we output this decision), majority rule (most prevalent decision is returned), weighted majority, pyramidal (we check for high some algorithms, and if unsure, we check others) 
 
 #### Performance optimization process
 
