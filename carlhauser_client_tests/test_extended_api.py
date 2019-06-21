@@ -25,7 +25,7 @@ class TestClusterMatcher(unittest.TestCase):
         self.extended_api = Extended_API.get_api()
 
     def test_absolute_truth_and_meaning(self):
-        assert True
+        self.assertTrue(True)
 
     def test_dict_update(self):
         ori_dict = {"test": "toto"}

@@ -27,7 +27,7 @@ class testPICTUREImportExport(unittest.TestCase):
                 path.unlink()
 
     def test_absolute_truth_and_meaning(self):
-        assert True
+        self.assertTrue(True)
 
     def test_picture_export(self):
         # Test picture export function

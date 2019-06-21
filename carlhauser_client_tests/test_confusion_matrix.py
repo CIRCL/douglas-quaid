@@ -20,7 +20,7 @@ class TestClusterMatcher(unittest.TestCase):
         self.matrix_gen = confusion_matrix_generator.ConfusionMatrixGenerator()
 
     def test_absolute_truth_and_meaning(self):
-        assert True
+        self.assertTrue(True)
 
     def test_match_clusters_from_dump(self):
 

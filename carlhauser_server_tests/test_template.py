@@ -16,7 +16,7 @@ class testTemplate(unittest.TestCase):
         self.test_file_path = pathlib.Path.cwd() / pathlib.Path("tests/test_files")
 
     def test_absolute_truth_and_meaning(self):
-        assert True
+        self.assertTrue(True)
 
 
 if __name__ == '__main__':

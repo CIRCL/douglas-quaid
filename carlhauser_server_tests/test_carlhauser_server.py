@@ -208,7 +208,7 @@ class testCarlHauserServer(unittest.TestCase):
         self.assertEqual(tmp_id, id_to_process)
 
     def test_absolute_truth_and_meaning(self):
-        assert True
+        self.assertTrue(True)
 
 
 if __name__ == '__main__':

@@ -115,7 +115,7 @@ class test_template(unittest.TestCase):
                                           'shape': 'image'}]}
 
     def test_absolute_truth_and_meaning(self):
-        assert True
+        self.assertTrue(True)
 
     def test_graph_export(self):
 

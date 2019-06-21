@@ -20,7 +20,7 @@ class testPICKLEImportExport(unittest.TestCase):
         self.test_file_path = get_homedir() / pathlib.Path("carlhauser_server_tests/test_Helpers/pickle_import_export")
 
     def test_absolute_truth_and_meaning(self):
-        assert True
+        self.assertTrue(True)
 
     '''
     def test_pickle_export(self):

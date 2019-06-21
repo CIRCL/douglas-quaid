@@ -21,7 +21,7 @@ class TestPerformanceEvaluator(unittest.TestCase):
         self.perf = performance_evaluation.ClusterMatchingQualityEvaluator()
 
     def test_absolute_truth_and_meaning(self):
-        assert True
+        self.assertTrue(True)
 
     def test_evaluate_performance(self):
 

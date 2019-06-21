@@ -21,7 +21,7 @@ class TestClusterMatcher(unittest.TestCase):
         self.cluster_matcher = cluster_matcher.Cluster_matcher()
 
     def test_absolute_truth_and_meaning(self):
-        assert True
+        self.assertTrue(True)
 
     def test_match_clusters_simple(self):
         setA = Cluster("big", 0, "")

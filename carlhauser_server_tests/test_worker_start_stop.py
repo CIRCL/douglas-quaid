@@ -84,7 +84,7 @@ class testDistanceEngine(unittest.TestCase):
 
 
     def test_absolute_truth_and_meaning(self):
-        assert True
+        self.assertTrue(True)
 
 
 if __name__ == '__main__':

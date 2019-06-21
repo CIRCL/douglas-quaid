@@ -19,7 +19,7 @@ class TestClusterMatcher(unittest.TestCase):
         self.test_file_path = get_homedir() / pathlib.Path("carlhauser_client_tests/evaluator/confusion_matrix")
 
     def test_absolute_truth_and_meaning(self):
-        assert True
+        self.assertTrue(True)
 
     def test_merge_scores(self):
         s1 = scores.Stats_datastruct()

@@ -374,7 +374,7 @@ class testDistanceEngine(unittest.TestCase):
         self.assertEqual(pic_list[0][0], "original.bmpID")  # The most representative picture is the original one
 
     def test_absolute_truth_and_meaning(self):
-        assert True
+        self.assertTrue(True)
 
 
 if __name__ == '__main__':
