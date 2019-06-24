@@ -84,7 +84,7 @@ class Stats_datastruct():
     def compute_F1(self):
         self.F1 = (2 * self.TP) / (2 * self.TP + self.FP + self.FN)
 
-    def compute_all(self, truth_set : Set, candidate_set : Set, total_nb_elements):
+    def compute_all(self, truth_set: Set, candidate_set: Set, total_nb_elements):
         # Compute all possible metrics, given information provided
 
         # Store nb of elements in total
@@ -111,7 +111,7 @@ class Stats_datastruct():
         self.compute_FDR()
 
         if self.total_nb_elements is None:
-            raise Exception ("Can't compute True Negative rate : we don't know number of all elements in the system.")
+            raise Exception("Can't compute True Negative rate : we don't know number of all elements in the system.")
         else:
             # Compute True negative as all elements not in the three previous sets
             self.TN = self.total_nb_elements - self.TP - self.FP - self.FN
@@ -135,10 +135,10 @@ class Stats_datastruct():
 
     def check_sanity(self):
         try:
-            assert (self.P == self.FN + self.TP)
-            assert (self.N == self.FN + self.TP + self.FP)
-            assert (self.N <= self.TN)
-            assert (self.P >= self.TP)
+            if not (self.P == self.FN + self.TP): raise Exception("Positives != False negative + true positive")
+            if not (self.N == self.FN + self.TP + self.FP): raise Exception("Negatives != False negative + true positive + False positive")
+            if not (self.N <= self.TN): raise Exception("Negatives !<= True negatives")
+            if not (self.P >= self.TP): raise Exception("Positives !>= True positives")
 
             return True
         except Exception as e:
@@ -183,7 +183,7 @@ def merge_scores(scores: List[Stats_datastruct]):
         for key in vars(scores[0]):
             # Creation of a list of all "same attribute" for all scores of the list
             tmp = [v for v in (vars(score)[key] for score in scores) if v is not None]
-            if len(tmp) >0:
+            if len(tmp) > 0:
                 # Get the mean
                 vars(total_score)[key] = sum(tmp) / len(tmp)
 
