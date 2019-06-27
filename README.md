@@ -247,16 +247,19 @@ Decisions can be merged with distinct approaches :
 
 #### Why decisions ?
 
+<p  align="center" float="center">
+<img src="./docs/images/thresholdtrick.png" alt="threshold" height="250"/>
+</p>
+
 Decisions are not a simple threshold over distance. If you consider two algorithms:
- * For algorithm A, a match is meaningful if the returned distance is below `0.2`. It is a mismatch if the distance if upper than `0.8`. Everything between is sometimes good, sometimes bad.
- * For algorithm A, a match is meaningful if the returned distance is below `0.8`. It is a mismatch if the distance if upper than `0.95`. Everything between is sometimes good, sometimes bad.
+ * For algorithm A, a match is meaningful if the returned distance is below `0.25`. It is a mismatch if the distance if upper than `0.25`. 
+ * For algorithm A, a match is meaningful if the returned distance is below `0.85`. It is a mismatch if the distance if upper than `0.85`. 
 
 Consider two comparison : 
- * Algorithm A gives a distance of `0.1` (match for itself), algorithm B give a distance of `0.5` (match for itself).  
- * Algorithm B gives a distance of `0.1` (mismatch for itself), algorithm A give a distance of `0.5` (mismatch for itself).
- EDIT : small error to be corrected here.
+ * Algorithm A gives a distance of `0.2` (match for itself), algorithm B give a distance of `0.8` (match for itself).  
+ * Algorithm B gives a distance of `0.7` (match for itself), algorithm A give a distance of `0.3` (mismatch for itself).
  
-Min, max, mean (`0.3`) are similar in both cases. However, in first case, all algorithms considered it as a "match". In second case, all algorithms considered it as a "mismatch".  
+Min, max, mean (`0.5`) are similar in both cases. However, in first case, all algorithms considered it as a "match". In second case, only one algorithms considered it as a "mismatch". We do not even consider "gray zone" in this example, but only strict thresholds.  
 This problem exists because each algorithm has its own "range of values" in which a match is a meaningful match. Normalization could have been a solution, but decisions seems more human-readable.     
 It allows to launch more algorithms depending on the decision, too.     
 
