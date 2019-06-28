@@ -50,7 +50,7 @@ class testDistanceEngine(unittest.TestCase):
         self.logger.debug(f"Configuration : {self.fe_conf.ORB}")
 
         # Create database handler from configuration file
-        self.db_handler = database_start_stop.Database_StartStop(conf=self.db_conf)
+        self.db_handler = database_start_stop.Database_StartStop(db_conf=self.db_conf)
         self.picture_hasher = picture_hasher.Picture_Hasher(self.fe_conf)
         self.picture_orber = picture_orber.Picture_Orber(self.fe_conf)
 

@@ -29,7 +29,7 @@ class testDistanceEngine(unittest.TestCase):
         self.fe_conf = feature_extractor_conf.Default_feature_extractor_conf()
 
         # Create database handler from configuration file
-        self.db_handler = database_start_stop.Database_StartStop(conf=self.db_conf)
+        self.db_handler = database_start_stop.Database_StartStop(db_conf=self.db_conf)
 
         # Test data
         self.db_handler.test_socket_path = get_homedir() / self.db_conf.DB_SOCKETS_PATH / 'test.sock'
