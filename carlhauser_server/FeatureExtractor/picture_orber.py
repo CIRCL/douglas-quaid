@@ -10,9 +10,9 @@ import cv2
 import numpy as np
 
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
-sys.path.append(os.path.abspath(os.path.pardir))
-
 import carlhauser_server.Configuration.feature_extractor_conf as feature_extractor_conf
+
+sys.path.append(os.path.abspath(os.path.pardir))
 
 
 class Picture_Orber():

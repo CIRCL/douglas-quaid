@@ -6,16 +6,16 @@ import os
 # ==================== ------ STD LIBRARIES ------- ====================
 import sys
 import tlsh
-from typing import Dict
 import traceback
-
+from typing import Dict
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
-sys.path.append(os.path.abspath(os.path.pardir))
 
 import carlhauser_server.Configuration.database_conf as database_conf
 import carlhauser_server.Configuration.distance_engine_conf as distance_engine_conf
 import carlhauser_server.Configuration.feature_extractor_conf as feature_extractor_conf
 import carlhauser_server.DistanceEngine.scoring_datastrutures as sd
+
+sys.path.append(os.path.abspath(os.path.pardir))
 
 
 class Distance_Hash:
@@ -31,7 +31,7 @@ class Distance_Hash:
 
     # ==================== ------ INTER ALGO DISTANCE ------- ====================
 
-    def hash_distance(self, pic_package_from, pic_package_to)-> Dict[str, sd.AlgoMatch]:
+    def hash_distance(self, pic_package_from, pic_package_to) -> Dict[str, sd.AlgoMatch]:
         answer = {}
         self.logger.info("Hash distance computation ... ")
 

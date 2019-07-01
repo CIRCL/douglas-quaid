@@ -5,17 +5,19 @@ import logging
 import os
 # ==================== ------ STD LIBRARIES ------- ====================
 import sys
-import cv2
-from typing import Dict, List
 import traceback
+from typing import Dict, List
+
+import cv2
 
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
-sys.path.append(os.path.abspath(os.path.pardir))
 
 import carlhauser_server.Configuration.database_conf as database_conf
 import carlhauser_server.Configuration.distance_engine_conf as distance_engine_conf
 import carlhauser_server.Configuration.feature_extractor_conf as feature_extractor_conf
 import carlhauser_server.DistanceEngine.scoring_datastrutures as sd
+
+sys.path.append(os.path.abspath(os.path.pardir))
 
 
 class Distance_ORB:
@@ -36,7 +38,7 @@ class Distance_ORB:
         self.logger.info("Orb distance computation ... ")
 
         # Sanity check :
-        if pic_package_from["ORB_DESCRIPTORS"] is None or pic_package_to["ORB_DESCRIPTORS"] is None :
+        if pic_package_from["ORB_DESCRIPTORS"] is None or pic_package_to["ORB_DESCRIPTORS"] is None:
             self.logger.debug("One the ORB descriptors list is None in orb distance.")
             # raise Exception("None ORB descriptors in orb distance.")
 
@@ -58,7 +60,7 @@ class Distance_ORB:
 
         return answer
 
-    def add_results(self, algo_conf: feature_extractor_conf.Algo_conf, pic_package_from : Dict, pic_package_to : Dict, answer: Dict) -> Dict:
+    def add_results(self, algo_conf: feature_extractor_conf.Algo_conf, pic_package_from: Dict, pic_package_to: Dict, answer: Dict) -> Dict:
         # Add results to answer dict, depending on the algorithm name we want to compute
         # Ex : Input {} -> Output {"ORB":{"name":"ORB", "distance":0.3,"decision":YES}}
         algo_name = algo_conf.get('algo_name')
@@ -75,10 +77,10 @@ class Distance_ORB:
 
     def compute_orb_distance(self, descriptors_1, descriptors_2) -> float:
 
-        if descriptors_1 is None and descriptors_2 is None :
+        if descriptors_1 is None and descriptors_2 is None:
             # Both pictures don't have descriptors : the same !
             return 0
-        elif descriptors_1 is None or descriptors_2 is None :
+        elif descriptors_1 is None or descriptors_2 is None:
             # Only one picture does not have any descriptor. Not the same at all !
             return 1
 

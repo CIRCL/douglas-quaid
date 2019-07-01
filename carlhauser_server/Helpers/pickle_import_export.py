@@ -11,8 +11,8 @@ import sys
 import cv2
 
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
-sys.path.append(os.path.abspath(os.path.pardir))
 import carlhauser_server.Helpers.template_singleton as template_singleton
+sys.path.append(os.path.abspath(os.path.pardir))
 
 class Pickler(metaclass=template_singleton.Singleton):
 

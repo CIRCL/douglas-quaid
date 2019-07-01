@@ -8,12 +8,13 @@ import sys
 from typing import Dict, List
 
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
-sys.path.append(os.path.abspath(os.path.pardir))
 
 import carlhauser_server.Configuration.database_conf as database_conf
 import carlhauser_server.Configuration.distance_engine_conf as distance_engine_conf
 import carlhauser_server.Configuration.feature_extractor_conf as feature_extractor_conf
 import carlhauser_server.DistanceEngine.scoring_datastrutures as sd
+
+sys.path.append(os.path.abspath(os.path.pardir))
 
 
 class Merging_Engine:
@@ -97,7 +98,7 @@ class Merging_Engine:
             # Cosntruct a dict : YES=0, MAYBE=0, NO=0
             tmp_decisions = {decision.name: 0 for decision in list(sd.DecisionTypes)}
             # Iterate to count decision
-            for curr_decision in decision_list :
+            for curr_decision in decision_list:
                 tmp_decisions[curr_decision.name] += 1
 
             return self.get_prevalent_decision(tmp_decisions)

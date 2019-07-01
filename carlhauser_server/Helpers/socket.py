@@ -96,7 +96,10 @@ class Socket:
     def stop_workers(self):
         # Put "Halt" key in database
         redis_access = self.get_access()
-        redis_access.set("halt", "true")
+        try :
+            redis_access.set("halt", "true")
+        except Exception as e :
+            self.logger.error(f"Can't send stop signal to worker via {self.socket_path.name}, as database is not accessible : {e}")
 
     def run_script(self, script_path: pathlib.Path):
         # Run a given script file (bash)

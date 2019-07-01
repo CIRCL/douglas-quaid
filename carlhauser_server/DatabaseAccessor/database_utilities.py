@@ -11,12 +11,13 @@ import uuid
 import redis
 
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
-sys.path.append(os.path.abspath(os.path.pardir))
-from common.Graph.graph_datastructure import GraphDataStruct
-from common.Graph.metadata import Metadata, Source
 from common.Graph.cluster import Cluster
 from common.Graph.edge import Edge
+from common.Graph.graph_datastructure import GraphDataStruct
+from common.Graph.metadata import Metadata, Source
 from common.Graph.node import Node
+
+sys.path.append(os.path.abspath(os.path.pardir))
 
 
 class DBUtilities():
@@ -49,7 +50,7 @@ class DBUtilities():
 
     # ==================== ------ ADDERS ------- ====================
 
-    def add_picture_to_cluster(self, image_id, cluster_id : str, score=100):
+    def add_picture_to_cluster(self, image_id, cluster_id: str, score=100):
         # Add a picture to a cluster
 
         set_name = self.get_setname_of_cluster(cluster_id)
@@ -88,7 +89,6 @@ class DBUtilities():
         set_name = self.get_setname_of_cluster(cluster_id)
         self.db_access_decode.zadd(set_name, {image_id: new_score}, xx=True)
 
-
     @staticmethod
     def get_new_cluster_id():
         return '|'.join(["cluster", str(uuid.uuid4())])
@@ -106,7 +106,7 @@ class DBUtilities():
         return self.db_access_decode.zrange(self.get_setname_of_cluster(cluster_name), 0, -1, withscores=with_score)  # SORTED SET
 
     @staticmethod
-    def get_setname_of_cluster(cluster_name : str):
+    def get_setname_of_cluster(cluster_name: str):
         return '|'.join([cluster_name, 'pics'])
 
     # ==================== ------ BACKGROUND COMPUTATION ------- ====================
@@ -115,7 +115,6 @@ class DBUtilities():
         # Add the picture to be reviewed in few time (100_queue, 1000_queue, ...)
         # TODO
         return
-
 
     # ==================== ------ EXPORTATION ------- ====================
 

@@ -7,13 +7,13 @@ import os
 import sys
 
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
-sys.path.append(os.path.abspath(os.path.pardir))
 
 from carlhauser_server.Helpers.template_singleton import Singleton
 from carlhauser_server.Helpers.environment_variable import get_homedir
 import carlhauser_server.Helpers.socket as socket
 import carlhauser_server.Configuration.database_conf as database_conf
 
+sys.path.append(os.path.abspath(os.path.pardir))
 
 # ==================== ------ PATHS ------- ====================
 

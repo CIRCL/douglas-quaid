@@ -11,7 +11,6 @@ import time
 import logging
 
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
-sys.path.append(os.path.abspath(os.path.pardir))
 
 from carlhauser_server.Helpers.environment_variable import get_homedir
 import carlhauser_server.Configuration.database_conf as database_conf
@@ -20,6 +19,7 @@ import carlhauser_server.Configuration.feature_extractor_conf as feature_extract
 import carlhauser_server.Configuration.webservice_conf as webservice_conf
 
 import carlhauser_server.Helpers.json_import_export as json_import_export
+sys.path.append(os.path.abspath(os.path.pardir))
 
 
 # ==================== ------ PATHS ------- ====================

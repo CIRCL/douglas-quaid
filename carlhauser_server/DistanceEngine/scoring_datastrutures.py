@@ -2,11 +2,11 @@
 # -*- coding: utf-8 -*-
 
 # ==================== ------ STD LIBRARIES ------- ====================
-from typing import List
-from carlhauser_server.Configuration.template_conf import JSON_parsable_Enum, JSON_parsable_Dict
 from enum import Enum, auto
+from typing import List
 
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
+from carlhauser_server.Configuration.template_conf import JSON_parsable_Enum
 
 class DecisionTypes(JSON_parsable_Enum, Enum):
     # Possible answer to the question "Are these pictures the same ?"
@@ -14,7 +14,8 @@ class DecisionTypes(JSON_parsable_Enum, Enum):
     MAYBE = auto()
     NO = auto()
 
-class AlgoMatch :
+
+class AlgoMatch:
     # Datastructure to handle the returned values of a "distance evaluation" between two hashs, Orb ...
     def __init__(self, name=None, distance=None, decision=None):
         self.name = name
@@ -73,6 +74,7 @@ class ClusterMatch:
                                  ' distance=', self.distance,
                                  ' decision=', self.decision]))
 
+
 class ImageMatch:
     def __init__(self, image_id=None, cluster_id=None, distance=None, decision=None):
         self.image_id = image_id
@@ -88,6 +90,7 @@ class ImageMatch:
         tmp_obj["decision"] = self.decision.name
 
         return tmp_obj
+
     # ==================== To string ====================
 
     # Overwrite to print the content of the cluster instead of the cluster memory address
@@ -102,6 +105,8 @@ class ImageMatch:
                                  ' cluster_id=', self.cluster_id,
                                  ' distance=', self.distance,
                                  ' decision=', self.decision]))
+
+
 class TopN:
     # TODO : Improve datastructure (priority queue, probably)
     def __init__(self, top_n):
@@ -124,15 +129,16 @@ class TopN:
         # Return the top n elements of the list
         return self.list_top_n_elements[:min(self.top_n, len(self.list_top_n_elements))]
 
+
 # ==================== ------ BACKGROUND COMPUTATION ------- ====================
 
-def build_response(request_id, list_cluster : List[ClusterMatch], list_pictures: List[ImageMatch]) -> dict:
+def build_response(request_id, list_cluster: List[ClusterMatch], list_pictures: List[ImageMatch]) -> dict:
     results = {}
 
     # Store request id
     results["request_id"] = request_id
 
-    if len(list_pictures) > 0 :
+    if len(list_pictures) > 0:
         results["status"] = "matches_found"
 
         # Store clusters
@@ -142,7 +148,7 @@ def build_response(request_id, list_cluster : List[ClusterMatch], list_pictures:
         # Store pictures
         tmp_list = [picture.to_obj() for picture in list_pictures]
         results["list_pictures"] = tmp_list
-    else :
+    else:
         results["status"] = "matches_not_found"
 
     return results

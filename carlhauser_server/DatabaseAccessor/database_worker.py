@@ -56,9 +56,7 @@ class Database_Worker():
 
         # Pickler with patches
         self.pickler = pickle_import_export.Pickler()
-        # self.key_prefix = 'caida'
-        # self.storage_root = storage_directory / 'caida'
-        # self.storagedb.sadd('prefixes', self.key_prefix)
+
 
     def add_to_queue(self, storage: redis.Redis, queue_name: str, id: str, dict_to_store: dict, pickle=False):
         '''

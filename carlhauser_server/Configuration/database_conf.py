@@ -44,10 +44,14 @@ class Default_database_conf(JSON_parsable_Dict):
         self.REQUESTER_WORKER_NB = 2
         self.REQUESTER_WAIT_SEC = 1
 
+def parse_from_dict(conf):
+    return namedtuple("Default_database_conf", conf.keys())(*conf.values())
 
-    # ==================== To string ====================
 
-    '''
+
+# ==================== To string ====================
+
+'''
     # Overwrite to print the content of the cluster instead of the cluster memory address
     def __repr__(self):
         return self.get_str()
@@ -72,7 +76,4 @@ class Default_database_conf(JSON_parsable_Dict):
                                  ' \nREQUESTER_WORKER_NB=', self.REQUESTER_WORKER_NB,
                                  ' \nREQUESTER_WAIT_SEC=', self.REQUESTER_WAIT_SEC]))
 
-    '''
-
-def parse_from_dict(conf):
-    return namedtuple("Default_database_conf", conf.keys())(*conf.values())
+'''

@@ -9,17 +9,13 @@ import sys
 from typing import List
 
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
-sys.path.append(os.path.abspath(os.path.pardir))
-
 from carlhauser_server.Helpers.environment_variable import dir_path
 import carlhauser_server.Helpers.json_import_export as json_import_export
-
 import carlhauser_server.Configuration.database_conf as database_conf
 import carlhauser_server.Configuration.feature_extractor_conf as feature_extractor_conf
 import carlhauser_server.Configuration.distance_engine_conf as distance_engine_conf
-
 import carlhauser_server.DatabaseAccessor.database_common as database_common
-
+sys.path.append(os.path.abspath(os.path.pardir))
 
 class Database_Adder(database_common.Database_Common):
     # Heritate from the database accessor, and so has already built in access to cache, storage ..
@@ -105,7 +101,7 @@ class Database_Adder(database_common.Database_Common):
         # TODO : Somewhat already done before. May be able to memoize the computed values ?
         return
 
-    def compute_centrality(self, pictures_list_id : List, picture_dict) -> float:
+    def compute_centrality(self, pictures_list_id: List, picture_dict) -> float:
         # Returns centrality of a picture within a list of other pictures.
 
         self.logger.debug(picture_dict)

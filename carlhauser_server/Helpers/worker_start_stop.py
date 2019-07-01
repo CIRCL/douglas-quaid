@@ -8,22 +8,20 @@ import pathlib
 import sys
 from typing import List
 
-# ==================== ------ PERSONAL LIBRARIES ------- ====================
-sys.path.append(os.path.abspath(os.path.pardir))
-
-from carlhauser_server.Helpers.template_singleton import Singleton
-from carlhauser_server.Helpers.environment_variable import get_homedir
-
 import carlhauser_server.Configuration.database_conf as database_conf
 import carlhauser_server.Configuration.distance_engine_conf as distance_engine_conf
 import carlhauser_server.Configuration.feature_extractor_conf as feature_extractor_conf
 import carlhauser_server.Configuration.webservice_conf as webservice_conf
-
-import carlhauser_server.Helpers.database_start_stop as database_start_stop
-
-import carlhauser_server.Helpers.Processus.worker_processus as worker_processus
 import carlhauser_server.Helpers.Processus.processus_list as processus_list
+import carlhauser_server.Helpers.Processus.worker_processus as worker_processus
+import carlhauser_server.Helpers.database_start_stop as database_start_stop
 from carlhauser_server.Helpers.Processus.worker_types import WorkerTypes as workertype
+from carlhauser_server.Helpers.environment_variable import get_homedir
+from carlhauser_server.Helpers.template_singleton import Singleton
+
+# ==================== ------ PERSONAL LIBRARIES ------- ====================
+
+sys.path.append(os.path.abspath(os.path.pardir))
 
 
 # ==================== ------ PATHS ------- ====================
@@ -74,26 +72,26 @@ class Worker_StartStop(object, metaclass=Singleton):
         # Add <nb> workers to the <list_to_add> workers lists, by launching <worker_path> as a subprocess and giving <XX_conf> as parameters (many at once is possible)
 
         # Parse the worker type
-        mode = None # {"ADD", "REQUEST"}
+        mode = None  # {"ADD", "REQUEST"}
         self.logger.debug(f"Asked to create {worker_type}")
-        if worker_type == workertype.ADDER :
+        if worker_type == workertype.ADDER:
             worker_path = self.adder_worker_path
 
-        elif worker_type == workertype.REQUESTER :
+        elif worker_type == workertype.REQUESTER:
             worker_path = self.requester_worker_path
 
-        elif worker_type == workertype.FEATURE_REQUESTER :
+        elif worker_type == workertype.FEATURE_REQUESTER:
             worker_path = self.feature_worker_path
             mode = "REQUEST"
 
-        elif worker_type == workertype.FEATURE_ADDER :
+        elif worker_type == workertype.FEATURE_ADDER:
             worker_path = self.feature_worker_path
             mode = "ADD"
 
-        elif worker_type == workertype.FLASK :
+        elif worker_type == workertype.FLASK:
             worker_path = self.flask_worker_path
 
-        else :
+        else:
             raise Exception("Worker type not handled.")
 
         # Add n workers wih this configuration
@@ -120,6 +118,8 @@ class Worker_StartStop(object, metaclass=Singleton):
 
         self.logger.warning(f"Waiting for workers to stop. Gracetime of {max_wait}s per worker ... ")
         for curr_worker_list in list(self.mapping.values()):
+
+            self.logger.debug(f"Waiting {curr_worker_list.list_name} workers ... ")
             are_stopped = curr_worker_list.wait_until_all_stopped(timeout=max_wait)
 
             if not are_stopped:

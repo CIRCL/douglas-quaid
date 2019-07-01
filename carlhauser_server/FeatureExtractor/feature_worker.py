@@ -9,7 +9,6 @@ import sys
 import time
 
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
-sys.path.append(os.path.abspath(os.path.pardir))
 
 from carlhauser_server.Helpers.environment_variable import dir_path
 import carlhauser_server.Helpers.json_import_export as json_import_export
@@ -20,6 +19,7 @@ import carlhauser_server.Configuration.feature_extractor_conf as feature_extract
 
 import carlhauser_server.FeatureExtractor.picture_hasher as picture_hasher
 import carlhauser_server.FeatureExtractor.picture_orber as picture_orber
+sys.path.append(os.path.abspath(os.path.pardir))
 
 
 class Feature_Worker(database_accessor.Database_Worker):

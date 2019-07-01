@@ -6,19 +6,16 @@ import os
 import sys
 import time
 import traceback
-import logging
 
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
-sys.path.append(os.path.abspath(os.path.pardir))
-
 import carlhauser_server.Configuration.database_conf as database_conf
 import carlhauser_server.Configuration.distance_engine_conf as distance_engine_conf
 import carlhauser_server.Configuration.feature_extractor_conf as feature_extractor_conf
-
+import carlhauser_server.DatabaseAccessor.database_utilities as db_utils
 import carlhauser_server.DatabaseAccessor.database_worker as database_accessor
 import carlhauser_server.DistanceEngine.distance_engine as distance_engine
-import carlhauser_server.DatabaseAccessor.database_utilities as db_utils
 
+sys.path.append(os.path.abspath(os.path.pardir))
 
 class Database_Common(database_accessor.Database_Worker):
     def __init__(self, db_conf: database_conf, dist_conf: distance_engine_conf, fe_conf: feature_extractor_conf):

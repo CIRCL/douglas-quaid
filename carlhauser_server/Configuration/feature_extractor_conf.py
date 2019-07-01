@@ -94,7 +94,11 @@ class Default_feature_extractor_conf(JSON_parsable_Dict):
         self.DISTANCE_MERGING_METHOD = Distance_MergingMethod.WEIGHTED_MEAN.name
         self.DECISION_MERGING_METHOD = Decision_MergingMethod.WEIGHTED_MAJORITY.name
 
-    '''
+def parse_from_dict(conf):
+    return namedtuple("Default_feature_extractor_configuration", conf.keys())(*conf.values())
+
+
+'''
     # ==================== To string ====================
 
     # Overwrite to print the content of the cluster instead of the cluster memory address
@@ -122,7 +126,4 @@ class Default_feature_extractor_conf(JSON_parsable_Dict):
                                  ' \nDISTANCE_MERGING_METHOD=', self.DISTANCE_MERGING_METHOD,
                                  ' \nDECISION_MERGING_METHOD=', self.DECISION_MERGING_METHOD]))
 
-    '''
-
-def parse_from_dict(conf):
-    return namedtuple("Default_feature_extractor_configuration", conf.keys())(*conf.values())
+'''

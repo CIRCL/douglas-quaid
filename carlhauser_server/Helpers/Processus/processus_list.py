@@ -10,10 +10,9 @@ import time
 from typing import List
 
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
-sys.path.append(os.path.abspath(os.path.pardir))
-
 import carlhauser_server.Helpers.Processus.worker_processus as worker_processus
 
+sys.path.append(os.path.abspath(os.path.pardir))
 
 # ==================== ------ PATHS ------- ====================
 
@@ -25,7 +24,7 @@ class ProcessusList:
         self.processus_list = processus_list
         self.logger = logging.getLogger(__name__)
 
-    def append(self, process:worker_processus.WorkerProcessus):
+    def append(self, process: worker_processus.WorkerProcessus):
         self.logger.debug(f"Adding worker : {process} to processes list {self.list_name}.")
         self.processus_list.append(process)
 
