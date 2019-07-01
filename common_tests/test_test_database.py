@@ -1,14 +1,17 @@
 # -*- coding: utf-8 -*-
 
-import sys
-import os
 import logging
+import os
+import sys
+
 sys.path.append(os.path.abspath(os.path.pardir))
-from carlhauser_server_tests.context import *
-import common.TestDBHandler.test_database_handler as test_database_handler
+import common.TestDBHandler.test_instance_launcher as test_database_handler
+from carlhauser_server.Helpers.environment_variable import get_homedir
+
 import pathlib
 import unittest
 import time
+
 
 class test_template(unittest.TestCase):
     """Basic test cases."""
@@ -18,22 +21,26 @@ class test_template(unittest.TestCase):
         # self.conf = configuration.Default_configuration()
         self.test_file_path = pathlib.Path.cwd() / pathlib.Path("tests/test_files")
 
-        self.test_db_handler = test_database_handler.TestDatabaseHandler()
+        self.test_db_handler = test_database_handler.TestInstanceLauncher()
+        db_test_conf = test_database_handler.TestInstance_database_conf()
+        print("\n[TESTS] LAUNCHING DATABASE AS TEST : NOTHING WILL BE WRITEN ON STORAGE OR CACHE DATABASES [TESTS]\n")
+        self.test_db_handler.create_full_instance(db_conf=db_test_conf)
+
+    def tearDown(self):
+        print("\n[TESTS] STOPPING DATABASE AS TEST : NOTHING WILL BE REMOVED ON STORAGE OR CACHE DATABASES [TESTS]\n")
+        self.test_db_handler.tearDown()
 
     def test_absolute_truth_and_meaning(self):
         self.assertTrue(True)
+        print("\n\nRUNNNING HERE\n\n")
 
     def test_correct_test_db_launch(self):
-        test_configuration = test_database_handler.Test_database_conf()
-
-        self.test_db_handler.setUp(db_conf=test_configuration)
-
         time.sleep(6)
-        print("RUNNNING HERE")
+        print("\n\nRUNNNING HERE\n\n")
+        self.assertTrue((get_homedir() / "carlhauser_server" / "Data" / "database_sockets" / "test.sock").exists())
+        self.assertTrue(not (get_homedir() / "carlhauser_server" / "Data" / "database_sockets" / "cache.sock").exists())
+        self.assertTrue(not (get_homedir() / "carlhauser_server" / "Data" / "database_sockets" / "storage.sock").exists())
         time.sleep(6)
-
-        self.test_db_handler.tearDown()
-
 
 if __name__ == '__main__':
     unittest.main()

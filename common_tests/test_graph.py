@@ -1,12 +1,10 @@
 # -*- coding: utf-8 -*-
 
-import sys
-import os
 import logging
+import os
+import sys
 
 sys.path.append(os.path.abspath(os.path.pardir))
-from carlhauser_server_tests.context import *
-import pathlib
 import unittest
 import pprint
 
