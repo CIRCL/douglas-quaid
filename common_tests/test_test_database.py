@@ -8,6 +8,7 @@ from carlhauser_server_tests.context import *
 import common.TestDBHandler.test_database_handler as test_database_handler
 import pathlib
 import unittest
+import time
 
 class test_template(unittest.TestCase):
     """Basic test cases."""
@@ -23,7 +24,15 @@ class test_template(unittest.TestCase):
         self.assertTrue(True)
 
     def test_correct_test_db_launch(self):
-        self.test_db_handler.setUp()
+        test_configuration = test_database_handler.Test_database_conf()
+
+        self.test_db_handler.setUp(db_conf=test_configuration)
+
+        time.sleep(6)
+        print("RUNNNING HERE")
+        time.sleep(6)
+
+        self.test_db_handler.tearDown()
 
 
 if __name__ == '__main__':
