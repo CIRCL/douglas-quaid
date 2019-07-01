@@ -4,17 +4,14 @@
 import logging
 # ==================== ------ STD LIBRARIES ------- ====================
 import os
-import subprocess
 import sys
-import time
-
-import redis
 
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
 sys.path.append(os.path.abspath(os.path.pardir))
 
 from carlhauser_server.Helpers.template_singleton import Singleton
 from carlhauser_server.Helpers.environment_variable import get_homedir
+import carlhauser_server.Helpers.socket as socket
 import carlhauser_server.Configuration.database_conf as database_conf
 
 
@@ -23,44 +20,91 @@ import carlhauser_server.Configuration.database_conf as database_conf
 class Database_StartStop(object, metaclass=Singleton):
     # Singleton class that handle database access
 
-    def __init__(self, conf: database_conf):
+    def __init__(self, db_conf: database_conf, handle_test_db: bool = False):
         # STD attributes
-        self.conf = conf
+        self.db_conf = db_conf
         self.logger = logging.getLogger(__name__)
+        self.logger.critical("SINGLETON CREATED (database start stop)")
 
         # Specific attributes
-        self.cache_socket_path = get_homedir() / self.conf.DB_SOCKETS_PATH / 'cache.sock'
-        self.storage_socket_path = get_homedir() / self.conf.DB_SOCKETS_PATH / 'storage.sock'
+        self.socket_cache = socket.Socket(get_homedir() / self.db_conf.DB_SOCKETS_PATH_CACHE,
+                                          get_homedir() / self.db_conf.DB_SCRIPTS_PATH_CACHE)
+        self.socket_storage = socket.Socket(get_homedir() / self.db_conf.DB_SOCKETS_PATH_STORAGE,
+                                            get_homedir() / self.db_conf.DB_SCRIPTS_PATH_STORAGE)
 
-        # Cache scripts
-        self.launch_cache_script_path = get_homedir() / self.conf.DB_SCRIPTS_PATH / "run_redis_cache.sh"
-        self.shutdown_cache_script_path = get_homedir() / self.conf.DB_SCRIPTS_PATH / "shutdown_redis_cache.sh"
-        self.flush_cache_script_path = get_homedir() / self.conf.DB_SCRIPTS_PATH / "flush_redis_cache.sh"
+        self.handle_test_db = handle_test_db
 
-        # Storage scripts
-        self.launch_storage_script_path = get_homedir() / self.conf.DB_SCRIPTS_PATH / "run_redis_storage.sh"
-        self.shutdown_storage_script_path = get_homedir() / self.conf.DB_SCRIPTS_PATH / "shutdown_redis_storage.sh"
-        self.flush_storage_script_path = get_homedir() / self.conf.DB_SCRIPTS_PATH / "flush_redis_storage.sh"
-
-        # Only for test purposes
-        self.test_socket_path = get_homedir() / self.conf.DB_SOCKETS_PATH / 'test.sock'
+        # if self.handle_test_db:
+        self.socket_test = socket.Socket(get_homedir() / self.db_conf.DB_SOCKETS_PATH_TEST,
+                                         get_homedir() / self.db_conf.DB_SCRIPTS_PATH_TEST)
 
     def get_socket_path(self, name: str) -> str:
         # Redis is configured to allow connection from/to Unix socket
         # Unix sockets paths for Redis are defined in cache.conf and storage.conf
         mapping = {
-            'cache': self.cache_socket_path,
-            'storage': self.storage_socket_path,
-            'test': self.test_socket_path,
+            'cache': self.socket_cache.socket_path,
+            'storage': self.socket_storage.socket_path,
+            'test': self.socket_test.socket_path,
         }
         return str(mapping[name])
 
-    # ==================== ------ CACHE MNGT ------- ====================
+    # ==================== ------ CACHE AND STORAGE MNGT ------- ====================
 
+    def launch_all_redis(self):
+        # Launch the cache, storage and test instance of redis
+        self.socket_cache.launch()
+        self.socket_storage.launch()
+        if self.handle_test_db:
+            self.socket_test.launch()
+
+    def stop_all_redis(self):
+        self.socket_cache.shutdown()
+        self.socket_storage.shutdown()
+        if self.handle_test_db:
+            self.socket_test.shutdown()
+
+    def flush_all_redis(self):
+        self.socket_cache.flush()
+        self.socket_storage.flush()
+        if self.handle_test_db:
+            self.socket_test.flush()
+
+    def wait_until_all_redis_running(self):
+        # Wait until all databases are launched and return True if all are running
+        c_is_launched = self.socket_cache.wait_until_running()
+        s_is_launched = self.socket_storage.wait_until_running()
+
+        # Launch test DB if asked
+        t_is_launched = True
+        if self.handle_test_db:
+            t_is_launched = self.socket_test.wait_until_running()
+
+        # Create the boolean value
+        if not c_is_launched or not s_is_launched or not t_is_launched:
+            return False
+
+        return True
+
+    def wait_until_all_redis_stopped(self):
+        self.socket_cache.wait_until_stopped()
+        self.socket_storage.wait_until_stopped()
+        if self.handle_test_db:
+            self.socket_test.wait_until_stopped()
+
+    def request_workers_shutdown(self):
+        # Post a HALT key in all redis instance. Worker should react "quickly" and stop themselves
+        self.socket_cache.stop_workers()
+        self.socket_storage.stop_workers()
+        if self.handle_test_db:
+            self.socket_test.stop_workers()
+
+    # ==================== ------ CACHE MNGT ------- ====================
+    '''
     def launch_cache(self):
         # Launch cache instance of redis. Uses a launch script
-        if not self.is_running('cache'):
-            subprocess.Popen([str(self.launch_cache_script_path)], cwd=self.launch_cache_script_path.parent)
+        if not self.socket_cache.is_running():
+            # subprocess.Popen([str(self.launch_cache_script_path)], cwd=self.launch_cache_script_path.parent)
+            self.socket_cache.launch()
 
     def shutdown_cache(self):
         subprocess.Popen([str(self.shutdown_cache_script_path)], cwd=self.shutdown_cache_script_path.parent)
@@ -68,8 +112,11 @@ class Database_StartStop(object, metaclass=Singleton):
     def flush_cache(self):
         subprocess.Popen([str(self.flush_cache_script_path)], cwd=self.flush_cache_script_path.parent)
 
+    '''
+
     # ==================== ------ STORAGE MNGT ------- ====================
 
+    '''
     def launch_storage(self):
         # Launch storage instance of redis. Uses a launch script
         if not self.is_running('storage'):
@@ -81,23 +128,10 @@ class Database_StartStop(object, metaclass=Singleton):
     def flush_storage(self):
         subprocess.Popen([self.flush_storage_script_path], cwd=self.flush_storage_script_path.parent)
 
-    # ==================== ------ CACHE AND STORAGE MNGT ------- ====================
-
-    def launch_all_redis(self):
-        # Launch the cache instance of redis, and the storage instance of redis
-        self.launch_cache()
-        self.launch_storage()
-
-    def stop_all_redis(self):
-        self.shutdown_cache()
-        self.shutdown_storage()
-
-    def flush_all_redis(self):
-        self.flush_cache()
-        self.flush_storage()
+    '''
 
     # ==================== ------ CACHE AND STORAGE CHECKS ------- ====================
-
+    '''
     def wait_until_running(self, name: str, timeout: int = 60) -> bool:
         # Wait until the database is launch (= answer to a ping)
         # Put timeout -1 if you don't want to function to timeout
@@ -126,6 +160,7 @@ class Database_StartStop(object, metaclass=Singleton):
 
         return True
 
+
     def is_running(self, name: str) -> bool:
         socket_path = self.get_socket_path(name)
         try:
@@ -136,6 +171,7 @@ class Database_StartStop(object, metaclass=Singleton):
             # logger = logging.getLogger(__name__)
             # logger.error(f"PING got no answer. Invalid socket. {e}")
             return False
+
 
     def check_all_redis(self, stop=False):
         # TODO : Review usage ?
@@ -159,3 +195,27 @@ class Database_StartStop(object, metaclass=Singleton):
                 if stop and b[1]:
                     print(f"Waiting on {b[0]}")
             time.sleep(1)
+    
+    '''
+
+    '''
+    # Specific attributes
+    self.cache_socket_path = get_homedir() / self.db_conf.DB_SOCKETS_PATH_CACHE
+    self.storage_socket_path = get_homedir() / self.db_conf.DB_SOCKETS_PATH_STORAGE
+    self.test_socket_path = get_homedir() / self.db_conf.DB_SOCKETS_PATH_TEST
+
+    # Cache scripts
+    self.launch_cache_script_path = get_homedir() / self.db_conf.DB_SCRIPTS_PATH_CACHE / "run.sh"
+    self.shutdown_cache_script_path = get_homedir() / self.db_conf.DB_SCRIPTS_PATH_CACHE / "shutdown.sh"
+    self.flush_cache_script_path = get_homedir() / self.db_conf.DB_SCRIPTS_PATH_CACHE / "flush.sh"
+
+    # Storage scripts
+    self.launch_storage_script_path = get_homedir() / self.db_conf.DB_SCRIPTS_PATH_STORAGE / "run.sh"
+    self.shutdown_storage_script_path = get_homedir() / self.db_conf.DB_SCRIPTS_PATH_STORAGE / "shutdown.sh"
+    self.flush_storage_script_path = get_homedir() / self.db_conf.DB_SCRIPTS_PATH_STORAGE / "flush.sh"
+
+    # Test scripts
+    # self.launch_storage_script_path = get_homedir() / self.db_conf.DB_SCRIPTS_PATH_TEST / "run.sh"
+    # self.shutdown_storage_script_path = get_homedir() / self.db_conf.DB_SCRIPTS_PATH_TEST / "shutdown.sh"
+    # self.flush_storage_script_path = get_homedir() / self.db_conf.DB_SCRIPTS_PATH_TEST / "flush.sh"
+    '''

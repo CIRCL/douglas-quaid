@@ -14,4 +14,3 @@ class Singleton(type):
             cls._instances[cls] = instance
 
         return cls._instances[cls]
-
