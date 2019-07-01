@@ -13,6 +13,7 @@ import logging
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
 sys.path.append(os.path.abspath(os.path.pardir))
 
+from carlhauser_server.Helpers.environment_variable import get_homedir
 import carlhauser_server.Configuration.database_conf as database_conf
 import carlhauser_server.Configuration.distance_engine_conf as distance_engine_conf
 import carlhauser_server.Configuration.feature_extractor_conf as feature_extractor_conf
@@ -37,26 +38,27 @@ class WorkerProcessus:
         arg_list = [str(self.worker_path)]
 
         # Save current configuration in files
+        # Using self.worker_path.parent
         if db_conf is not None:
-            tmp_db_conf_path = self.worker_path.parent / "tmp_db_conf.json"
+            tmp_db_conf_path =  get_homedir() / "tmp_db_conf.json"
             json_import_export.save_json(db_conf, file_path=tmp_db_conf_path)
             arg_list.append('-dbc')
             arg_list.append(str(tmp_db_conf_path.resolve()))
 
         if dist_conf is not None:
-            tmp_dist_conf_path = self.worker_path.parent / "tmp_dist_conf.json"
+            tmp_dist_conf_path = get_homedir() / "tmp_dist_conf.json"
             json_import_export.save_json(dist_conf, file_path=tmp_dist_conf_path)
             arg_list.append('-distc')
             arg_list.append(str(tmp_dist_conf_path.resolve()))
 
         if fe_conf is not None:
-            tmp_fe_conf_path = self.worker_path.parent / "tmp_fe_conf.json"
+            tmp_fe_conf_path = get_homedir() / "tmp_fe_conf.json"
             json_import_export.save_json(fe_conf, file_path=tmp_fe_conf_path)
             arg_list.append('-fec')
             arg_list.append(str(tmp_fe_conf_path.resolve()))
 
         if ws_conf is not None:
-            tmp_ws_conf_path = self.worker_path.parent / "tmp_ws_conf.json"
+            tmp_ws_conf_path = get_homedir() / "tmp_ws_conf.json"
             json_import_export.save_json(ws_conf, file_path=tmp_ws_conf_path)
             arg_list.append('-wsc')
             arg_list.append(str(tmp_ws_conf_path.resolve()))
@@ -79,7 +81,6 @@ class WorkerProcessus:
         finally:
             try:
                 self.process.wait(timeout=grace_time)
-                self.logger.info(f"Processus exited with {self.process.returncode}")
             except subprocess.TimeoutExpired:
                 self.logger.info(f"Processus {self.process} did not terminate in time. Trying to kill it.")
             finally:

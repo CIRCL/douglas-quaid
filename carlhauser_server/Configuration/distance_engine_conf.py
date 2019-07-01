@@ -36,5 +36,24 @@ class Default_distance_engine_conf(JSON_parsable_Dict):
         self.OUTPUT_DIR = None
         '''
 
+    '''
+    # ==================== To string ====================
+
+    # Overwrite to print the content of the cluster instead of the cluster memory address
+    def __repr__(self):
+        return self.get_str()
+
+    def __str__(self):
+        return self.get_str()
+
+    def get_str(self):
+        return ''.join(map(str, [' \nTOP_N_CLUSTERS=', self.TOP_N_CLUSTERS,
+                                 ' \nTOP_N_PICTURES=', self.TOP_N_PICTURES,
+                                 ' \nPICT_TO_TEST_PER_CLUSTER=', self.PICT_TO_TEST_PER_CLUSTER,
+                                 ' \nMAX_DIST_FOR_NEW_CLUSTER=', self.MAX_DIST_FOR_NEW_CLUSTER,
+                                 ' \nCROSSCHECK=', self.CROSSCHECK]))
+
+    '''
+
 def parse_from_dict(conf):
     return namedtuple("Default_distance_engine_conf", conf.keys())(*conf.values())

@@ -74,22 +74,25 @@ class Worker_StartStop(object, metaclass=Singleton):
         # Add <nb> workers to the <list_to_add> workers lists, by launching <worker_path> as a subprocess and giving <XX_conf> as parameters (many at once is possible)
 
         # Parse the worker type
-        mode = None
+        mode = None # {"ADD", "REQUEST"}
         self.logger.debug(f"Asked to create {worker_type}")
         if worker_type == workertype.ADDER :
             worker_path = self.adder_worker_path
+
         elif worker_type == workertype.REQUESTER :
             worker_path = self.requester_worker_path
+
         elif worker_type == workertype.FEATURE_REQUESTER :
             worker_path = self.feature_worker_path
-            # {"ADD", "REQUEST"}
             mode = "REQUEST"
+
         elif worker_type == workertype.FEATURE_ADDER :
             worker_path = self.feature_worker_path
-            # {"ADD", "REQUEST"}
             mode = "ADD"
+
         elif worker_type == workertype.FLASK :
             worker_path = self.flask_worker_path
+
         else :
             raise Exception("Worker type not handled.")
 
@@ -115,7 +118,7 @@ class Worker_StartStop(object, metaclass=Singleton):
         # in the limit of a maximal amount of time. Send back a boolean to notify if all workers had been stopped, or not.
         all_have_stopped = True
 
-        self.logger.warning(f"Waiting for workers to stop. Gracetime of {max_wait} per worker ... ")
+        self.logger.warning(f"Waiting for workers to stop. Gracetime of {max_wait}s per worker ... ")
         for curr_worker_list in list(self.mapping.values()):
             are_stopped = curr_worker_list.wait_until_all_stopped(timeout=max_wait)
 

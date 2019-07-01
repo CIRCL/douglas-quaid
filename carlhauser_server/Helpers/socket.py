@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3add
 # -*- coding: utf-8 -*-
 
 import logging
@@ -48,7 +48,7 @@ class Socket:
 
     def get_access(self, decode_responses=True):
         # Get an access to the redis database behind the given socket
-        return redis.Redis(unix_socket_path=self.socket_path, decode_responses=decode_responses)
+        return redis.Redis(unix_socket_path=str(self.socket_path), decode_responses=decode_responses)
 
     def is_running(self) -> bool:
         # Check if the database is running behind the given socket

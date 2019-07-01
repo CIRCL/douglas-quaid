@@ -28,6 +28,7 @@ class Feature_Worker(database_accessor.Database_Worker):
     def __init__(self, db_conf: database_conf, fe_conf: feature_extractor_conf):
         # STD attributes
         super().__init__(db_conf)
+
         self.fe_conf = fe_conf
 
         self.picture_hasher = picture_hasher.Picture_Hasher(fe_conf)

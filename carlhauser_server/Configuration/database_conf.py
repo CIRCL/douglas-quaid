@@ -45,5 +45,34 @@ class Default_database_conf(JSON_parsable_Dict):
         self.REQUESTER_WAIT_SEC = 1
 
 
+    # ==================== To string ====================
+
+    '''
+    # Overwrite to print the content of the cluster instead of the cluster memory address
+    def __repr__(self):
+        return self.get_str()
+
+    def __str__(self):
+        return self.get_str()
+
+    def get_str(self):
+        return ''.join(map(str, [' \nDB_SCRIPTS_PATH=', self.DB_SCRIPTS_PATH,
+                                 ' \nDB_SCRIPTS_PATH_CACHE=', self.DB_SCRIPTS_PATH_CACHE,
+                                 ' \nDB_SCRIPTS_PATH_STORAGE=', self.DB_SCRIPTS_PATH_STORAGE,
+                                 ' \nDB_SCRIPTS_PATH_TEST=', self.DB_SCRIPTS_PATH_TEST,
+                                 ' \nDB_SOCKETS_PATH=', self.DB_SOCKETS_PATH,
+                                 ' \nDB_SOCKETS_PATH_CACHE=', self.DB_SOCKETS_PATH_CACHE,
+                                 ' \nDB_SOCKETS_PATH_STORAGE=', self.DB_SOCKETS_PATH_STORAGE,
+                                 ' \nDB_SOCKETS_PATH_TEST=', self.DB_SOCKETS_PATH_TEST,
+                                 ' \nDB_DATA_PATH=', self.DB_DATA_PATH,
+                                 ' \nREQUEST_EXPIRATION=', self.REQUEST_EXPIRATION,
+                                 ' \nANSWER_EXPIRATION=', self.ANSWER_EXPIRATION,
+                                 ' \nADDER_WORKER_NB=', self.ADDER_WORKER_NB,
+                                 ' \nADDER_WAIT_SEC=', self.ADDER_WAIT_SEC,
+                                 ' \nREQUESTER_WORKER_NB=', self.REQUESTER_WORKER_NB,
+                                 ' \nREQUESTER_WAIT_SEC=', self.REQUESTER_WAIT_SEC]))
+
+    '''
+
 def parse_from_dict(conf):
     return namedtuple("Default_database_conf", conf.keys())(*conf.values())

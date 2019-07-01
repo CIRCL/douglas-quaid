@@ -13,7 +13,7 @@ import traceback
 
 import objsize
 import redis
-
+import pprint
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
 sys.path.append(os.path.abspath(os.path.pardir))
 
@@ -23,6 +23,7 @@ import carlhauser_server.Helpers.database_start_stop as database_start_stop
 import carlhauser_server.Helpers.pickle_import_export as pickle_import_export
 
 import carlhauser_server.Configuration.database_conf as database_conf
+from carlhauser_server.Helpers.json_import_export import Custom_JSON_Encoder
 
 
 class Database_Worker():
@@ -32,6 +33,10 @@ class Database_Worker():
         self.conf = db_conf
         self.logger = logging.getLogger(__name__)
         self.logger.info("Creation of a Database Accessor Worker")
+
+        # Print configuration
+        json_encoder = Custom_JSON_Encoder()
+        self.logger.debug(f"Configuration db_conf (db worker) : {pprint.pformat(json_encoder.encode(self.conf))}")
 
         # Specific
         self.input_queue = None
@@ -205,6 +210,8 @@ class Database_Worker():
         # Check if a halt had been requested
         try:
             value = self.cache_db_decode.get("halt")
+            # DEBUG # self.logger.debug(f"HALT key : {value} ")
+
             if not value or value == "":
                 return False
             else:  # The key has been set to something, "Now","Yes", ...
@@ -227,7 +234,7 @@ class Database_Worker():
                 try:
                     self._to_run_forever()
                 except Exception as e:
-                    self.logger.error(f'Something went terribly wrong in {self.__class__.__name__} : {e}')
+                    self.logger.error(f'Something went terribly wrong in {self.__class__.__name__} : {e.__class__} {e}')
 
                 if not self.long_sleep(sleep_in_sec):
                     self.logger.warning(f'Halt detected in db worker. Exiting worker execution ... ')
