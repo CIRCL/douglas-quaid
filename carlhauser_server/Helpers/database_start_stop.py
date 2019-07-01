@@ -89,10 +89,21 @@ class Database_StartStop(object, metaclass=Singleton):
         return True
 
     def wait_until_all_redis_stopped(self):
-        self.socket_cache.wait_until_stopped()
-        self.socket_storage.wait_until_stopped()
+        # Wait until all databases are stopped and return True if all are stopped
+        c_is_stopped = self.socket_cache.wait_until_stopped()
+        s_is_stopped = self.socket_storage.wait_until_stopped()
+
+        # Launch test DB if asked
+        t_is_stopped = True
         if self.handle_test_db:
-            self.socket_test.wait_until_stopped()
+            t_is_stopped = self.socket_test.wait_until_stopped()
+
+        # Create the boolean value
+        if not c_is_stopped or not s_is_stopped or not t_is_stopped:
+            return False
+
+        return True
+
 
     def request_workers_shutdown(self):
         # Post a HALT key in all redis instance. Worker should react "quickly" and stop themselves
