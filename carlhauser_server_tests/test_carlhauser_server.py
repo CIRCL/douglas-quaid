@@ -12,63 +12,32 @@ import carlhauser_server.DatabaseAccessor.database_worker as database_worker
 import carlhauser_server.Helpers.database_start_stop as database_start_stop
 from carlhauser_server_tests.context import *
 
-import common.TestDBHandler.test_database_handler as test_database_handler
+import common.TestDBHandler.test_instance_launcher as test_database_handler
 
 class testCarlHauserServer(unittest.TestCase):
     """Basic test cases."""
 
     def setUp(self):
         self.logger = logging.getLogger()
-        # self.conf = .Default_configuration()
-        # self.test_file_path = get_homedir() / pathlib.Path("carlhauser_server_tests/test_Helpers/environment_variable")
 
-        self.db_conf = database_conf.Default_database_conf()
-        '''
-        # Create and setup the test database
-        self.test_db_handler = test_database_handler.TestDatabaseHandler()
-        self.test_db_handler.setUp()
+        # Create configurations
+        self.test_db_conf = test_database_handler.TestInstance_database_conf()
 
-        # TODO : Remove manual handler
-        # PROBLEME : HALT KEY !!
+        self.test_db_handler = test_database_handler.TestInstanceLauncher()
+        self.test_db_handler.create_full_instance(db_conf=self.test_db_conf)
 
-
-
-        '''
-        # Create database handler from configuration file
-        self.db_handler = database_start_stop.Database_StartStop(db_conf=self.db_conf)
-
-        # Test data
-        self.db_handler.test_socket_path = get_homedir() / self.db_conf.DB_SOCKETS_PATH / 'test.sock'
-        self.db_handler.launch_test_script_path = get_homedir() / self.db_conf.DB_SCRIPTS_PATH / "run.sh"
-        self.db_handler.shutdown_test_script_path = get_homedir() / self.db_conf.DB_SCRIPTS_PATH / "shutdown.sh"
-
-        # Launch test Redis DB
-        if not self.db_handler.is_running('test'):
-            subprocess.Popen([str(self.db_handler.launch_test_script_path)], cwd=(self.db_handler.launch_test_script_path.parent))
-
-        # Time for the socket to be opened
-        time.sleep(1)
+        # Create database handler from test instance
+        self.db_handler = self.test_db_handler.db_handler
 
     def tearDown(self):
-        '''
+        # Launch shutdown AND FLUSH script
+        print("[TESTS] STOPPING DATABASE AS TEST : NOTHING WILL BE REMOVED ON STORAGE OR CACHE DATABASES [TESTS]")
         self.test_db_handler.tearDown()
-
-        '''
-        # Shutdown test Redis DB
-        if self.db_handler.is_running('test'):
-            subprocess.Popen([str(self.db_handler.shutdown_test_script_path)], cwd=self.db_handler.test_socket_path.parent)
-
-        # If start and stop are too fast, then it can't stop nor start, as it can't connect
-        # e.g. because the new socket couldn't be create as the last one is still here
-        time.sleep(1)
-
-        # TODO : Kill subprocess ?
-
 
 
     def test_db_worker_add_queue(self):
         # Construct a worker and get a link to redis db
-        db_worker = database_worker.Database_Worker(self.db_conf)
+        db_worker = database_worker.Database_Worker(self.test_db_conf)
         test_db = redis.Redis(unix_socket_path=self.db_handler.get_socket_path('test'), decode_responses=True)
 
         # Create data
@@ -94,7 +63,7 @@ class testCarlHauserServer(unittest.TestCase):
 
     def test_db_worker_get_from_queue(self):
         # Construct a worker and get a link to redis db
-        db_worker = database_worker.Database_Worker(self.db_conf)
+        db_worker = database_worker.Database_Worker(self.test_db_conf)
         test_db = redis.Redis(unix_socket_path=self.db_handler.get_socket_path('test'), decode_responses=True)
 
         # Create data
@@ -119,7 +88,7 @@ class testCarlHauserServer(unittest.TestCase):
 
     def test_db_worker_set_get_queue_consistency(self):
         # Construct a worker and get a link to redis db
-        db_worker = database_worker.Database_Worker(self.db_conf)
+        db_worker = database_worker.Database_Worker(self.test_db_conf)
         test_db = redis.Redis(unix_socket_path=self.db_handler.get_socket_path('test'), decode_responses=True)
 
         # Create data
@@ -141,7 +110,7 @@ class testCarlHauserServer(unittest.TestCase):
 
     def test_db_worker_add_queue_no_decode(self):
         # Construct a worker and get a link to redis db
-        db_worker = database_worker.Database_Worker(self.db_conf)
+        db_worker = database_worker.Database_Worker(self.test_db_conf)
         test_db = redis.Redis(unix_socket_path=self.db_handler.get_socket_path('test'), decode_responses=False)
 
         # Create data
@@ -171,7 +140,7 @@ class testCarlHauserServer(unittest.TestCase):
 
     def test_db_worker_get_from_queue_no_decode(self):
         # Construct a worker and get a link to redis db
-        db_worker = database_worker.Database_Worker(self.db_conf)
+        db_worker = database_worker.Database_Worker(self.test_db_conf)
         test_db = redis.Redis(unix_socket_path=self.db_handler.get_socket_path('test'), decode_responses=False)
 
         # Create data
@@ -200,7 +169,7 @@ class testCarlHauserServer(unittest.TestCase):
 
     def test_db_worker_set_get_queue_consistency_no_decode(self):
         # Construct a worker and get a link to redis db
-        db_worker = database_worker.Database_Worker(self.db_conf)
+        db_worker = database_worker.Database_Worker(self.test_db_conf)
         test_db = redis.Redis(unix_socket_path=self.db_handler.get_socket_path('test'), decode_responses=False)
 
         # Create data

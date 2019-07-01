@@ -72,21 +72,7 @@ class TestInstanceLauncher():
 
     def tearDown(self):
         # Shut down the database
-
         self.core_launcher.stop()
-
-        '''
-        # Launch shutdown AND FLUSH script
-        if self.db_handler.socket_test.is_running():
-            self.db_handler.socket_test.shutdown()
-            # subprocess.Popen([str(self.db_handler.shutdown_test_script_path)],cwd=self.db_handler.test_socket_path.parent)
-
-        # If start and stop are too fast, then it can't stop nor start, as it can't connect
-        # e.g. because the new socket couldn't be create as the last one is still here
-
-        self.db_handler.socket_test.wait_until_stopped()
-        self.logger.info(f"Redis test database successfully stopped (ping verified)")
-    '''
 
     # ============================== PRECISE ACTIONS ==============================
 
@@ -118,7 +104,7 @@ class TestInstanceLauncher():
         self.db_handler = database_start_stop.Database_StartStop(db_conf=self.db_conf, handle_test_db=True)
 
         # Overwrite configuration of db handler
-        self.overwrite_socket_and_script_db_handler(self.db_handler, self.db_conf)
+        self.db_handler = self.overwrite_socket_and_script_db_handler(self.db_handler, self.db_conf)
 
         self.db_handler.launch_all_redis()
         self.db_handler.wait_until_all_redis_running()
@@ -156,6 +142,7 @@ class TestInstanceLauncher():
         db_handler.launch_test_script_path = get_homedir() / db_conf.DB_SCRIPTS_PATH / "run.sh"
         db_handler.shutdown_test_script_path = get_homedir() / db_conf.DB_SCRIPTS_PATH / "shutdown.sh"
 
+        return db_handler
 
     def create_core_launcher(self):
         ''' Create a core launcher and overwrite its configuraiton '''

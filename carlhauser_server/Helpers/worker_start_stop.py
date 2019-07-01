@@ -54,7 +54,7 @@ class Worker_StartStop(object, metaclass=Singleton):
         }
 
         # Reference to database_start_stop
-        self.db_start_stop = database_start_stop.Database_StartStop(None, False)  # It's a singleton .. so we should get its instance
+        # self.db_start_stop = database_start_stop.Database_StartStop(None, False)  # It's a singleton .. so we should get its instance
 
     def get_processes_list(self, name: workertype) -> processus_list.ProcessusList:
         # returns a workers list
@@ -73,7 +73,7 @@ class Worker_StartStop(object, metaclass=Singleton):
 
         # Parse the worker type
         mode = None  # {"ADD", "REQUEST"}
-        self.logger.debug(f"Asked to create {worker_type}")
+        self.logger.debug(f"Worker start/stop is asked to create {worker_type}")
         if worker_type == workertype.ADDER:
             worker_path = self.adder_worker_path
 
@@ -96,7 +96,7 @@ class Worker_StartStop(object, metaclass=Singleton):
 
         # Add n workers wih this configuration
         for i in range(nb):
-            self.logger.info(f"> Adding {worker_path.name} Worker {i} ...")
+            self.logger.info(f"Adding {worker_path.name} Worker {i} ...")
 
             # Create the worker
             tmp_worker_process = worker_processus.WorkerProcessus(worker_path)
@@ -157,7 +157,7 @@ class Worker_StartStop(object, metaclass=Singleton):
         return all_ended
 
     # ==================== ------ SHUTDOWN WORKERS ------- ====================
-
+    '''
     def shutdown_nicely_and_then_not(self, max_wait=60):
         self.request_shutdown()
         self.wait_for_worker_shutdown(max_wait)
@@ -179,6 +179,7 @@ class Worker_StartStop(object, metaclass=Singleton):
 
             return len(self.get_list_running_workers()) == 0
 
+
     def request_shutdown(self):
         # Post a HALT key in all redis instance. Worker should react "quickly" and stop themselves
         self.db_start_stop.request_workers_shutdown()
@@ -186,6 +187,8 @@ class Worker_StartStop(object, metaclass=Singleton):
         # TODO : to review = send the message to database start stop
         # self.cache_db.set("halt", "true")
         # self.storage_db.set("halt", "true")
+    '''
+
 
     def kill_and_flush_workers(self):
         # Kill each worker and then empty lists. Very violent.

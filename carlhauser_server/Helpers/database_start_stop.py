@@ -32,21 +32,24 @@ class Database_StartStop(object, metaclass=Singleton):
         self.socket_storage = socket.Socket(get_homedir() / self.db_conf.DB_SOCKETS_PATH_STORAGE,
                                             get_homedir() / self.db_conf.DB_SCRIPTS_PATH_STORAGE)
 
-        self.handle_test_db = handle_test_db
+        self.mapping = {
+            'cache': self.socket_cache.socket_path,
+            'storage': self.socket_storage.socket_path,
+        }
 
-        # if self.handle_test_db:
-        self.socket_test = socket.Socket(get_homedir() / self.db_conf.DB_SOCKETS_PATH_TEST,
+        self.handle_test_db = handle_test_db
+        self.logger.debug(f"Test_db is handled = {handle_test_db}")
+
+        # We are in a test mode, so we want the test database to be handled too.
+        if self.handle_test_db:
+            self.socket_test = socket.Socket(get_homedir() / self.db_conf.DB_SOCKETS_PATH_TEST,
                                          get_homedir() / self.db_conf.DB_SCRIPTS_PATH_TEST)
+            self.mapping['test'] = self.socket_test.socket_path
 
     def get_socket_path(self, name: str) -> str:
         # Redis is configured to allow connection from/to Unix socket
         # Unix sockets paths for Redis are defined in cache.conf and storage.conf
-        mapping = {
-            'cache': self.socket_cache.socket_path,
-            'storage': self.socket_storage.socket_path,
-            'test': self.socket_test.socket_path,
-        }
-        return str(mapping[name])
+        return str(self.mapping[name])
 
     # ==================== ------ CACHE AND STORAGE MNGT ------- ====================
 
