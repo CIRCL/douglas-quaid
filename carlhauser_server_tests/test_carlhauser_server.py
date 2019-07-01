@@ -12,6 +12,7 @@ import carlhauser_server.DatabaseAccessor.database_worker as database_worker
 import carlhauser_server.Helpers.database_start_stop as database_start_stop
 from carlhauser_server_tests.context import *
 
+import common.TestDBHandler.test_database_handler as test_database_handler
 
 class testCarlHauserServer(unittest.TestCase):
     """Basic test cases."""
@@ -22,14 +23,24 @@ class testCarlHauserServer(unittest.TestCase):
         # self.test_file_path = get_homedir() / pathlib.Path("carlhauser_server_tests/test_Helpers/environment_variable")
 
         self.db_conf = database_conf.Default_database_conf()
+        '''
+        # Create and setup the test database
+        self.test_db_handler = test_database_handler.TestDatabaseHandler()
+        self.test_db_handler.setUp()
 
+        # TODO : Remove manual handler
+        # PROBLEME : HALT KEY !!
+
+
+
+        '''
         # Create database handler from configuration file
-        self.db_handler = database_start_stop.Database_StartStop(conf=self.db_conf)
+        self.db_handler = database_start_stop.Database_StartStop(db_conf=self.db_conf)
 
         # Test data
         self.db_handler.test_socket_path = get_homedir() / self.db_conf.DB_SOCKETS_PATH / 'test.sock'
-        self.db_handler.launch_test_script_path = get_homedir() / self.db_conf.DB_SCRIPTS_PATH / "run_redis_test.sh"
-        self.db_handler.shutdown_test_script_path = get_homedir() / self.db_conf.DB_SCRIPTS_PATH / "shutdown_redis_test.sh"
+        self.db_handler.launch_test_script_path = get_homedir() / self.db_conf.DB_SCRIPTS_PATH / "run.sh"
+        self.db_handler.shutdown_test_script_path = get_homedir() / self.db_conf.DB_SCRIPTS_PATH / "shutdown.sh"
 
         # Launch test Redis DB
         if not self.db_handler.is_running('test'):
@@ -39,6 +50,10 @@ class testCarlHauserServer(unittest.TestCase):
         time.sleep(1)
 
     def tearDown(self):
+        '''
+        self.test_db_handler.tearDown()
+
+        '''
         # Shutdown test Redis DB
         if self.db_handler.is_running('test'):
             subprocess.Popen([str(self.db_handler.shutdown_test_script_path)], cwd=self.db_handler.test_socket_path.parent)
@@ -48,6 +63,8 @@ class testCarlHauserServer(unittest.TestCase):
         time.sleep(1)
 
         # TODO : Kill subprocess ?
+
+
 
     def test_db_worker_add_queue(self):
         # Construct a worker and get a link to redis db

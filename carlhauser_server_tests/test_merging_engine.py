@@ -35,8 +35,8 @@ class testDistanceEngine(unittest.TestCase):
 
         # Test data
         self.db_handler.test_socket_path = get_homedir() / self.db_conf.DB_SOCKETS_PATH / 'test.sock'
-        self.db_handler.launch_test_script_path = get_homedir() / self.db_conf.DB_SCRIPTS_PATH / "run_redis_test.sh"
-        self.db_handler.shutdown_test_script_path = get_homedir() / self.db_conf.DB_SCRIPTS_PATH / "shutdown_redis_test.sh"
+        self.db_handler.launch_test_script_path = get_homedir() / self.db_conf.DB_SCRIPTS_PATH / "run.sh"
+        self.db_handler.shutdown_test_script_path = get_homedir() / self.db_conf.DB_SCRIPTS_PATH / "shutdown.sh"
 
         # Construct a worker and get a link to redis db
         self.db_adder = database_adder.Database_Adder(self.db_conf, self.dist_conf, self.fe_conf)

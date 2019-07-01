@@ -21,6 +21,7 @@ class testSingleton(unittest.TestCase):
         def __init__(self):
             super().__init__()
             self.myvalue = 0
+            print("Init called")
 
         def get_value_shared(self):
             print("get shared value :", self.value_shared)
@@ -54,6 +55,15 @@ class testSingleton(unittest.TestCase):
         classe3.increment_value()
         self.assertEqual(classe3.get_value_shared(), 2)
         self.assertEqual(classe3.get_myvalue(), 2)
+
+
+    def test_singleton_instance_equality(self):
+        classe1 = self.Derived()
+        classe2 = self.Derived()
+        classe3 = self.Derived()
+
+        self.assertEqual(classe1, classe2)
+        self.assertEqual(classe2, classe3)
 
 
 if __name__ == '__main__':
