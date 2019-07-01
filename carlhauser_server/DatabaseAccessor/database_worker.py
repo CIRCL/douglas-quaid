@@ -42,7 +42,7 @@ class Database_Worker():
         self.redis_storage = get_homedir() / self.conf.DB_DATA_PATH
 
         # Get sockets
-        tmp_db_handler = database_start_stop.Database_StartStop(conf=db_conf)
+        tmp_db_handler = database_start_stop.Database_StartStop(db_conf=db_conf)
         self.cache_db_decode = redis.Redis(unix_socket_path=tmp_db_handler.get_socket_path('cache'), decode_responses=True)
         self.cache_db_no_decode = redis.Redis(unix_socket_path=tmp_db_handler.get_socket_path('cache'), decode_responses=False)
 
@@ -210,8 +210,9 @@ class Database_Worker():
             else:  # The key has been set to something, "Now","Yes", ...
                 self.logger.info("HALT key detected. Worker received stop signal ... ")
                 return True
-        except:
-            self.logger.error("Impossible to know if the worker has to halt. Please review 'halt' key")
+        except Exception as e :
+            self.logger.error(f"Impossible to know if the worker has to halt. Please review 'halt' key : {e}")
+            return False
 
     def run(self, sleep_in_sec: int):
         try:
