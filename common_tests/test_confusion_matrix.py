@@ -4,9 +4,9 @@ import unittest
 import logging
 import pathlib
 
-from carlhauser_server.Helpers.environment_variable import get_homedir
+from common.environment_variable import get_homedir
 
-import carlhauser_client.EvaluationTools.ClassificationQuality.confusion_matrix_generator as confusion_matrix_generator
+import common.ChartMaker.confusion_matrix_generator as confusion_matrix_generator
 from common.Graph.cluster import Cluster
 
 

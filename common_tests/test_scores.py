@@ -5,9 +5,9 @@ import logging
 import pathlib
 import pprint
 
-from carlhauser_server.Helpers.environment_variable import get_homedir
+from common.environment_variable import get_homedir
 
-import carlhauser_client.Helpers.stats_datastruct as scores
+import common.PerformanceDatastructs.stats_datastruct as scores
 
 
 class TestClusterMatcher(unittest.TestCase):

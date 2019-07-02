@@ -9,8 +9,8 @@ import carlhauser_server.Configuration.feature_extractor_conf as feature_extract
 import carlhauser_server.Configuration.webservice_conf as webservice_conf
 import carlhauser_server.Helpers.database_start_stop as database_start_stop
 import carlhauser_server.core as core
-from carlhauser_server.Helpers.environment_variable import get_homedir
-from carlhauser_server.Helpers.json_import_export import Custom_JSON_Encoder
+from common.environment_variable import get_homedir
+from common.ImportExport.json_import_export import Custom_JSON_Encoder
 
 
 class TestInstance_database_conf(database_conf.Default_database_conf):

@@ -6,14 +6,14 @@ import sys
 
 sys.path.append(os.path.abspath(os.path.pardir))
 import common.TestDBHandler.test_instance_launcher as test_database_handler
-from carlhauser_server.Helpers.environment_variable import get_homedir
+from common.environment_variable import get_homedir
 
 import pathlib
 import unittest
 import time
 
 
-class test_template(unittest.TestCase):
+class test_tests_database_launcher(unittest.TestCase):
     """Basic test cases."""
 
     def setUp(self):
