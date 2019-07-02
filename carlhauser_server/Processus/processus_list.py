@@ -10,7 +10,7 @@ import time
 from typing import List
 
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
-import carlhauser_server.Helpers.Processus.worker_processus as worker_processus
+import carlhauser_server.Processus.worker_processus as worker_processus
 
 sys.path.append(os.path.abspath(os.path.pardir))
 
