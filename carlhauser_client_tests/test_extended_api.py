@@ -1,18 +1,12 @@
 # -*- coding: utf-8 -*-
 
-import unittest
 import logging
 import pathlib
+import unittest
 from pprint import pformat
 
-from carlhauser_server.Helpers.environment_variable import get_homedir
-
 from carlhauser_client.API.extended_api import Extended_API, update_values_dict
-from common.Graph.graph_datastructure import GraphDataStruct
-from common.Graph.cluster import Cluster
-from common.Graph.edge import Edge
-from common.Graph.node import Node
-from common.Graph.metadata import Metadata, Source
+from common.environment_variable import get_homedir
 
 
 class TestClusterMatcher(unittest.TestCase):
@@ -25,7 +19,7 @@ class TestClusterMatcher(unittest.TestCase):
         self.extended_api = Extended_API.get_api()
 
     def test_absolute_truth_and_meaning(self):
-        assert True
+        self.assertTrue(True)
 
     def test_dict_update(self):
         ori_dict = {"test": "toto"}

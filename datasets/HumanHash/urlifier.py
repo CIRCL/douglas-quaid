@@ -2,12 +2,11 @@
 # -*- coding: utf-8 -*-
 
 import argparse
-import pathlib
-from typing import List, Dict
-import hashlib
 import json
+import pathlib
 
-class Referencer():
+
+class Referencer:
 
     def __init__(self, ip, port):
         self.ip = ip
@@ -62,7 +61,7 @@ def main():
     parser.add_argument('-p', '--path', dest='path', action='store', type=lambda p: pathlib.Path(p).absolute(), default=1, help='all path')
     parser.add_argument('-i', '--ip', dest='ip', action='store', type=str, default=1, help='IP of the server to serve')
     parser.add_argument('-t', '--port', dest='port', action='store', type=str, default=1, help='port of the server to serve')
-    parser.add_argument('--version', action='version', version='humanizer %s' % ("1.0.0"))
+    parser.add_argument('--version', action='version', version='humanizer %s' % "1.0.0")
 
     args = parser.parse_args()
     referencer = Referencer(args.ip, args.port)

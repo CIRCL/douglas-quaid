@@ -57,16 +57,31 @@ You can import the client API in your own Python software and perfom API calls t
 
 See [Client Example](https://github.com/CIRCL/douglas-quaid/blob/master/carlhauser_client/core.py) if you want to start.
 
-### TLDR ; I want it to work ! 
+### Installing
 
-###### Server side : 
+For server and client, installation and launch : See [detailed installation instruction](./installation_info.md)  
+
+### TLDR ; I want it to work ! 
+Please follow 'detailed installation instruction' if you meet any issue.
+
+###### Installation : 
+
+```bash
+pipenv install
+pipenv shell  
+chmod +x ./tlsh_install.sh    
+sudo ./tlsh_install.sh     
+sudo apt-get install redis
+```
+
+###### Server side launch : 
 
 ```bash
 cd ./carlhauser_server
 pipenv run python3 ./core.py   
 ```
 
-###### Client side : 
+###### Client side launch : 
 All approaches are equivalents. Pick the one that suits you the most.
 
 ```bash
@@ -153,12 +168,6 @@ See requirements.txt
 
 (...)
 
-### Installing
-
-For server installation and client launch : See [installation instruction](./installation_info.md)
-
-(...)
-
 ## Running the tests
 
 (...)
@@ -170,7 +179,93 @@ Current library is a step behind [Carl-Hauser](https://github.com/CIRCL/carl-hau
 - TLSH
 - ORB
 
-Performance (quality and time) is served by improvements and choices on top of these algorithms.
+Performance (quality and time) is served by improvements and design choices on top of these algorithms.
+
+## Configuration and Tweaking
+
+#### Must known
+
+The library is storing pictures within clusters of somewhat-similar pictures.   
+When a picture is added in the database or a request is made, algorithms perform a comparison of the picture with all "most central"/"most representative" picture(s) of each cluster.  
+Therefore, instead of making a comparison of one pictures to all pictures of the database (`O(nb_picture_in_db)`), it compares the picture with all clusters (`O(nb_clusters)`).    
+Depending on a threshold, the picture will be matched to a cluster (in fact, the representative picture of the cluster) or not. If the picture match a representative picture of a cluster, we compare the request picture with all pictures of this cluster.   
+Therefore, instead of running `O(nb_picture_in_db)` comparisons, we run `O(nb_clusters+nb_matched_clusters*nb_pictures_in_each_cluster)`  
+This improves performances by decreasing performed comparisons.
+
+Tricky thing is the threshold which says "This picture is too distant, it must be in a new cluster" or "This picture is close enough and is in the same cluster":   
+This threshold impacts on the performance of the library (time-wise) and less/not on the quality of match.  
+
+<p  align="center" float="center">
+<img src="./docs/images/xkcd_performance.png" alt="Action" height="400"/>
+<br/>
+How you must understand this "new cluster threshold".
+</p>
+
+
+However, one consequence and must-known is : **this threshold should be set once and for all at server start.** All the performance-datastructures are built on top of it. It must be consistent between adding-time and request-time. Unexpected results will occur otherwise.   
+Moreover you can't make a "wrong choice" for this threshold. At worst, it will be slow, but it will work.   
+
+I repeat : 
+<h3>
+
+```diff
+- MAX_DIST_FOR_NEW_CLUSTER threshold should be set once and for all at server start. -
+```
+
+</h3>
+
+
+If the `threshold is 1` : all pictures will be in one big cluster, so the library will always match "this cluster" and so all pictures will be compared two-by-two. (Fallback to `O(nb_picture_in_db)`)     
+If the `threshold is 0` : each pictures will be in its own cluster, so the library will compare all "head of clusters" and so all pictures will be compared two-by-two. (Fallback to `O(nb_picture_in_db)`)     
+Anything in the middle will improve performance.    
+
+Empirically, `0.2` was not a bad value. Evaluation algorithms are available if you want to get `True-Positive/False-Positive/True-Negative/False-Negative/Acc/F1` measures depending on this threshold.     
+If you anyway want to change this threshold, you must stop the server, drop the redis database (delete `/Helpers/database_data/*`), start the server, and reupload all pictures.      
+
+#### Parameters tweaking
+
+The library has many parameters. To correctly configure the library for your own usecase, you may have to tweak these values. Therefore, you must understand them.  
+Distance are normalized euclidian distance, which means **0 = totally similar, 1 = totally different**. 
+ 
+Each algorithm computes distance between pictures. Each algorithm has it's own way to compute this distance, but all outputs a value within range  `[0-1]`. Example : A-HASH outputs a distance of `0.4` between picture A and B
+Each algorithm computes a decision about two pictures comparison. Thresholds over its own distance calculation give a YES/MAYBE/NO decision.    Example : A-HASH outputs a decision `YES (it matches)` between picture A and B, because distance between picture A and B is `0.4`, which is less than the `maybe_threshold` of A-HASH. 
+
+During two pictures comparison, configured algorithms are called. Each provides a distance and a decision.  
+A merging algorithm do merge these distances and do merge these decisions.  
+Distances can be merged with distinct approaches : 
+* Max of all distances;
+* Mean of all distances;
+* Min of all distances;
+* Harmonic mean;
+* Weighted mean of all distances, etc.   
+
+Decisions can be merged with distinct approaches : 
+* Pareto rule (if 80% algorithms give the same decision, we output this decision);
+* Majority rule (most prevalent decision is returned);
+* Weighted majority;
+* Pyramidal (we check for high some algorithms, and if unsure, we check others).
+
+#### Why decisions ?
+
+<p  align="center" float="center">
+<img src="./docs/images/thresholdtrick.png" alt="threshold" height="250"/>
+</p>
+
+Decisions are not a simple threshold over distance. If you consider two algorithms:
+ * For algorithm A, a match is meaningful if the returned distance is below `0.25`. It is a mismatch if the distance if upper than `0.25`. 
+ * For algorithm A, a match is meaningful if the returned distance is below `0.85`. It is a mismatch if the distance if upper than `0.85`. 
+
+Consider two comparison : 
+ * Algorithm A gives a distance of `0.2` (match for itself), algorithm B give a distance of `0.8` (match for itself).  
+ * Algorithm B gives a distance of `0.7` (match for itself), algorithm A give a distance of `0.3` (mismatch for itself).
+ 
+Min, max, mean (`0.5`) are similar in both cases. However, in first case, all algorithms considered it as a "match". In second case, only one algorithms considered it as a "mismatch". We do not even consider "gray zone" in this example, but only strict thresholds.  
+This problem exists because each algorithm has its own "range of values" in which a match is a meaningful match. Normalization could have been a solution, but decisions seems more human-readable.     
+It allows to launch more algorithms depending on the decision, too.     
+
+That's why a "YES" or "MAYBE" decision can come after a "NO" decision in a distance-sorted list)
+
+#### Performance optimization process
 
 ### For Developers
 

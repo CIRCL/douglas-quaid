@@ -4,7 +4,7 @@ import unittest
 import logging
 import pathlib
 
-from carlhauser_server.Helpers.environment_variable import get_homedir
+from common.environment_variable import get_homedir
 import carlhauser_server.Helpers.id_generator as id_generator
 
 
@@ -17,7 +17,7 @@ class TestIDGenerator(unittest.TestCase):
         self.test_file_path = get_homedir() / pathlib.Path("carlhauser_server_tests/test_Helpers/id_generator")
 
     def test_absolute_truth_and_meaning(self):
-        assert True
+        self.assertTrue(True)
 
     def test_exif_and_hash(self):
         self.logger.info("Verify if two pictures which are equal, but with different EXIF data, have the same hash or not \n Expected result : they do not have the same hash value")

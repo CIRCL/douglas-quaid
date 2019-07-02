@@ -11,7 +11,7 @@ import datetime
 
 ### LAAAAUNCH WITH ROOT ACCESS !! or with user in docker group ####
 
-class DockerCommmiter():
+class DockerCommmiter:
 
     def __init__(self, saves_limit):
         self.client = docker.from_env()
@@ -91,7 +91,7 @@ def main():
     parser.add_argument('-n', '--name', dest='docker_name', action='store', type=str, default=1, help='Docker name to monitor')
     parser.add_argument('-s', '--sec', dest='seconds', action='store', type=int, default=1, help='Seconds between each commit')
     parser.add_argument('-l', '--limit', dest='save_limit', action='store', type=int, default=1, help='Number of saves to keep')
-    parser.add_argument('--version', action='version', version='humanizer %s' % ("1.0.0"))
+    parser.add_argument('--version', action='version', version='humanizer %s' % "1.0.0")
 
     args = parser.parse_args()
     dockermng = DockerCommmiter(args.save_limit)

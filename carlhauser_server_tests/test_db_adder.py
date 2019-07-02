@@ -1,37 +1,34 @@
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import subprocess
-import time
-import unittest
-import cv2
-import pathlib
 
-import redis
 import logging
+import pathlib
+import unittest
 
-from carlhauser_server.Helpers.environment_variable import get_homedir
-import carlhauser_server.Configuration.database_conf as database_conf
+import cv2
+import redis
+
 import carlhauser_server.Configuration.distance_engine_conf as distance_engine_conf
 import carlhauser_server.Configuration.feature_extractor_conf as feature_extractor_conf
-import carlhauser_server.DistanceEngine.distance_engine as distance_engine
-import carlhauser_server.Helpers.database_start_stop as database_start_stop
 import carlhauser_server.DatabaseAccessor.database_adder as database_adder
-import os
-
+import carlhauser_server.DistanceEngine.distance_engine as distance_engine
 import carlhauser_server.FeatureExtractor.picture_hasher as picture_hasher
 import carlhauser_server.FeatureExtractor.picture_orber as picture_orber
+import common.TestDBHandler.test_instance_launcher as test_database_handler
+from common.environment_variable import get_homedir
 
 
-class testDistanceEngine(unittest.TestCase):
+class testDBAdder(unittest.TestCase):
     """Basic test cases."""
 
     def setUp(self):
+
         self.logger = logging.getLogger()
-        # self.conf = .Default_configuration()
         self.test_file_path = get_homedir() / pathlib.Path("carlhauser_server_tests/test_DistanceEngine/")
 
         # Create configurations
-        self.db_conf = database_conf.Default_database_conf()
+        self.test_db_conf = test_database_handler.TestInstance_database_conf()
         self.dist_conf = distance_engine_conf.Default_distance_engine_conf()
         self.fe_conf = feature_extractor_conf.Default_feature_extractor_conf()
 
@@ -49,54 +46,32 @@ class testDistanceEngine(unittest.TestCase):
                                    self.fe_conf.ORB]
         self.logger.debug(f"Configuration : {self.fe_conf.ORB}")
 
-        # Create database handler from configuration file
-        self.db_handler = database_start_stop.Database_StartStop(conf=self.db_conf)
+        self.test_db_handler = test_database_handler.TestInstanceLauncher()
+        self.test_db_handler.create_full_instance(db_conf=self.test_db_conf, dist_conf=self.dist_conf, fe_conf=self.fe_conf)
+
+        # Create database handler from test instance
+        self.db_handler = self.test_db_handler.db_handler
         self.picture_hasher = picture_hasher.Picture_Hasher(self.fe_conf)
         self.picture_orber = picture_orber.Picture_Orber(self.fe_conf)
 
-        # Scripts overwrite
-        self.db_handler.test_socket_path = get_homedir() / self.db_conf.DB_SOCKETS_PATH / 'test.sock'
-        self.db_handler.launch_test_script_path = get_homedir() / self.db_conf.DB_SCRIPTS_PATH / "run_redis_test.sh"
-        self.db_handler.shutdown_test_script_path = get_homedir() / self.db_conf.DB_SCRIPTS_PATH / "shutdown_redis_test.sh"
-
         # Construct a worker and overwrite link to redis db
-        self.db_adder = database_adder.Database_Adder(self.db_conf, self.dist_conf, self.fe_conf)
-        self.db_adder.db_utils.db_access_decode = redis.Redis(unix_socket_path=self.db_handler.get_socket_path('test'), decode_responses=True)
-        self.db_adder.db_utils.db_access_no_decode = redis.Redis(unix_socket_path=self.db_handler.get_socket_path('test'), decode_responses=False)
-        self.db_adder.storage_db_decode = redis.Redis(unix_socket_path=self.db_handler.get_socket_path('test'), decode_responses=True)
-        self.db_adder.storage_db_no_decode = redis.Redis(unix_socket_path=self.db_handler.get_socket_path('test'), decode_responses=False)
-        self.de = distance_engine.Distance_Engine(self.db_adder, self.db_conf, self.dist_conf, self.fe_conf)
-        test_db = redis.Redis(unix_socket_path=self.db_handler.get_socket_path('test'), decode_responses=True)
-        self.de.storage_db = test_db
-        self.db_adder.storage_db = test_db
-
-        # Launch test Redis DB
-        if not self.db_handler.is_running('test'):
-            subprocess.Popen([str(self.db_handler.launch_test_script_path)], cwd=self.db_handler.launch_test_script_path.parent)
-
-        # Time for the socket to be opened
-        time.sleep(1)
+        self.db_adder = database_adder.Database_Adder(self.test_db_conf, self.dist_conf, self.fe_conf)
+        self.distance_engine = distance_engine.Distance_Engine(self.db_adder, self.test_db_conf, self.dist_conf, self.fe_conf)
 
     def set_decode_redis(self):
         test_db = redis.Redis(unix_socket_path=self.db_handler.get_socket_path('test'), decode_responses=True)
-        self.de.storage_db = test_db
+        self.distance_engine.storage_db = test_db
         self.db_adder.storage_db = test_db
 
     def set_raw_redis(self):
         test_db = redis.Redis(unix_socket_path=self.db_handler.get_socket_path('test'), decode_responses=False)
-        self.de.storage_db = test_db
+        self.distance_engine.storage_db = test_db
         self.db_adder.storage_db = test_db
 
     def tearDown(self):
-        # Shutdown test Redis DB
-        if self.db_handler.is_running('test'):
-            subprocess.Popen([str(self.db_handler.shutdown_test_script_path)], cwd=self.db_handler.test_socket_path.parent)
-
-        # If start and stop are too fast, then it can't stop nor start, as it can't connect
-        # e.g. because the new socket couldn't be create as the last one is still here
-        time.sleep(1)
-
-        # TODO : Kill subprocess ?
+        # Launch shutdown AND FLUSH script
+        print("[TESTS] STOPPING DATABASE AS TEST : NOTHING WILL BE REMOVED ON STORAGE OR CACHE DATABASES [TESTS]")
+        self.test_db_handler.tearDown()
 
     # ==================== ------ CLUSTER LIST ------- ====================
 
@@ -374,7 +349,7 @@ class testDistanceEngine(unittest.TestCase):
         self.assertEqual(pic_list[0][0], "original.bmpID")  # The most representative picture is the original one
 
     def test_absolute_truth_and_meaning(self):
-        assert True
+        self.assertTrue(True)
 
 
 if __name__ == '__main__':

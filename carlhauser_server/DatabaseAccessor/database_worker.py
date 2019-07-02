@@ -13,25 +13,31 @@ import traceback
 
 import objsize
 import redis
+import pprint
 
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
 sys.path.append(os.path.abspath(os.path.pardir))
 
-from carlhauser_server.Helpers.environment_variable import get_homedir, dir_path
-import carlhauser_server.Helpers.json_import_export as json_import_export
-import carlhauser_server.Helpers.database_start_stop as database_start_stop
+from common.environment_variable import get_homedir, dir_path
+import common.ImportExport.json_import_export as json_import_export
+import carlhauser_server.Singletons.database_start_stop as database_start_stop
 import carlhauser_server.Helpers.pickle_import_export as pickle_import_export
 
 import carlhauser_server.Configuration.database_conf as database_conf
+from common.ImportExport.json_import_export import Custom_JSON_Encoder
 
 
-class Database_Worker():
+class Database_Worker:
 
     def __init__(self, db_conf: database_conf):
         # STD attributes
         self.conf = db_conf
         self.logger = logging.getLogger(__name__)
         self.logger.info("Creation of a Database Accessor Worker")
+
+        # Print configuration
+        json_encoder = Custom_JSON_Encoder()
+        self.logger.debug(f"Configuration db_conf (db worker) : {pprint.pformat(json_encoder.encode(self.conf))}")
 
         # Specific
         self.input_queue = None
@@ -42,7 +48,7 @@ class Database_Worker():
         self.redis_storage = get_homedir() / self.conf.DB_DATA_PATH
 
         # Get sockets
-        tmp_db_handler = database_start_stop.Database_StartStop(conf=db_conf)
+        tmp_db_handler = database_start_stop.Database_StartStop(db_conf=db_conf)
         self.cache_db_decode = redis.Redis(unix_socket_path=tmp_db_handler.get_socket_path('cache'), decode_responses=True)
         self.cache_db_no_decode = redis.Redis(unix_socket_path=tmp_db_handler.get_socket_path('cache'), decode_responses=False)
 
@@ -51,12 +57,9 @@ class Database_Worker():
 
         # Pickler with patches
         self.pickler = pickle_import_export.Pickler()
-        # self.key_prefix = 'caida'
-        # self.storage_root = storage_directory / 'caida'
-        # self.storagedb.sadd('prefixes', self.key_prefix)
 
     def add_to_queue(self, storage: redis.Redis, queue_name: str, id: str, dict_to_store: dict, pickle=False):
-        '''
+        """
         Push data to a specified queue, with a specific id. Wrapper to handle queuing of id(s) and separated storage of data linked to this id(s).
         Transparent way to push data to a queue
         :param storage: Redis storage to use
@@ -65,7 +68,7 @@ class Database_Worker():
         :param dict_to_store: dictionary to store in the queue
         :param pickle: Do pickle the pushed data. Turn to 'False' if the data has bytes_array, even nested.
         :return: (void)
-        '''
+        """
         # Do stuff
         self.logger.debug(f"Worker trying to add stuff to queue={queue_name}")
         # self.logger.debug(f"Added dict: {dict_to_store}")
@@ -89,14 +92,14 @@ class Database_Worker():
             raise Exception(f"Unable to add dict and hash to {queue_name} queue : {e}")
 
     def get_from_queue(self, storage: redis.Redis, queue_name: str, pickle=False):
-        '''
+        """
         Fetch data from a specified queue. Wrapper to handle queuing of id(s) and separated storage of data linked to this id(s).
         Transparent way to pull data from a queue
         :param storage: Redis storage to use
         :param queue_name: Source queue name
         :param pickle: Do unpickle the fetched data. Turn to 'False' if the data has bytes_array, even nested.
         :return: The dict fetched from queue
-        '''
+        """
         # self.logger.debug(f"Worker trying to remove stuff from queue={queue_name}")
 
         try:
@@ -205,13 +208,16 @@ class Database_Worker():
         # Check if a halt had been requested
         try:
             value = self.cache_db_decode.get("halt")
+            # DEBUG # self.logger.debug(f"HALT key : {value} ")
+
             if not value or value == "":
                 return False
             else:  # The key has been set to something, "Now","Yes", ...
                 self.logger.info("HALT key detected. Worker received stop signal ... ")
                 return True
-        except:
-            self.logger.error("Impossible to know if the worker has to halt. Please review 'halt' key")
+        except Exception as e:
+            self.logger.error(f"Impossible to know if the worker has to halt. Please review 'halt' key : {e}")
+            return False
 
     def run(self, sleep_in_sec: int):
         try:
@@ -226,7 +232,7 @@ class Database_Worker():
                 try:
                     self._to_run_forever()
                 except Exception as e:
-                    self.logger.error(f'Something went terribly wrong in {self.__class__.__name__} : {e}')
+                    self.logger.error(f'Something went terribly wrong in {self.__class__.__name__} : {e.__class__} {e}')
 
                 if not self.long_sleep(sleep_in_sec):
                     self.logger.warning(f'Halt detected in db worker. Exiting worker execution ... ')
@@ -244,7 +250,6 @@ class Database_Worker():
 
     def _to_run_forever(self):
         self.logger.critical("YOU SHOULD OVERWRITE '_to_run_forever' of the database_worker class. This worker is actually doing NOTHING !")
-        pass
 
     def long_sleep(self, sleep_in_sec: int, shutdown_check: int = 10) -> bool:
         # Check shutdown at least as fast as sleep waiting time

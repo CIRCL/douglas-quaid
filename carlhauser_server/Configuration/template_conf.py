@@ -9,10 +9,10 @@ sys.path.append(os.path.abspath(os.path.pardir))
 FORMATTER = logging.Formatter('%(asctime)s - + %(relativeCreated)d - %(name)s - %(levelname)s - %(message)s')
 
 # Both clases are used by a custom parser to import/export JSON
-class JSON_parsable_Enum():
+class JSON_parsable_Enum:
     pass
 
-class JSON_parsable_Dict():
+class JSON_parsable_Dict:
     pass
 
 class X_MODES(JSON_parsable_Enum, Enum):

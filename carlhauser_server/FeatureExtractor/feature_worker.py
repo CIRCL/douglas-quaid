@@ -9,10 +9,9 @@ import sys
 import time
 
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
-sys.path.append(os.path.abspath(os.path.pardir))
 
-from carlhauser_server.Helpers.environment_variable import dir_path
-import carlhauser_server.Helpers.json_import_export as json_import_export
+from common.environment_variable import dir_path
+import common.ImportExport.json_import_export as json_import_export
 
 import carlhauser_server.DatabaseAccessor.database_worker as database_accessor
 import carlhauser_server.Configuration.database_conf as database_conf
@@ -20,6 +19,7 @@ import carlhauser_server.Configuration.feature_extractor_conf as feature_extract
 
 import carlhauser_server.FeatureExtractor.picture_hasher as picture_hasher
 import carlhauser_server.FeatureExtractor.picture_orber as picture_orber
+sys.path.append(os.path.abspath(os.path.pardir))
 
 
 class Feature_Worker(database_accessor.Database_Worker):
@@ -28,6 +28,7 @@ class Feature_Worker(database_accessor.Database_Worker):
     def __init__(self, db_conf: database_conf, fe_conf: feature_extractor_conf):
         # STD attributes
         super().__init__(db_conf)
+
         self.fe_conf = fe_conf
 
         self.picture_hasher = picture_hasher.Picture_Hasher(fe_conf)

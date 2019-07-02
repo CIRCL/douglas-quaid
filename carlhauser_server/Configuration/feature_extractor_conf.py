@@ -94,6 +94,36 @@ class Default_feature_extractor_conf(JSON_parsable_Dict):
         self.DISTANCE_MERGING_METHOD = Distance_MergingMethod.WEIGHTED_MEAN.name
         self.DECISION_MERGING_METHOD = Decision_MergingMethod.WEIGHTED_MAJORITY.name
 
-
 def parse_from_dict(conf):
     return namedtuple("Default_feature_extractor_configuration", conf.keys())(*conf.values())
+
+
+'''
+    # ==================== To string ====================
+
+    # Overwrite to print the content of the cluster instead of the cluster memory address
+    def __repr__(self):
+        return self.get_str()
+
+    def __str__(self):
+        return self.get_str()
+
+    def get_str(self):
+        return ''.join(map(str, [' \nFEATURE_ADDER_WORKER_NB=', self.FEATURE_ADDER_WORKER_NB,
+                                 ' \nFEATURE_ADDER_WAIT_SEC=', self.FEATURE_ADDER_WAIT_SEC,
+                                 ' \nFEATURE_REQUEST_WORKER_NB=', self.FEATURE_REQUEST_WORKER_NB,
+                                 ' \nFEATURE_REQUEST_WAIT_SEC=', self.FEATURE_REQUEST_WAIT_SEC,
+                                 ' \nA_HASH=', self.A_HASH,
+                                 ' \nP_HASH=', self.P_HASH,
+                                 ' \nP_HASH_SIMPLE=', self.P_HASH_SIMPLE,
+                                 ' \nD_HASH=', self.D_HASH,
+                                 ' \nD_HASH_VERTICAL=', self.D_HASH_VERTICAL,
+                                 ' \nW_HASH=', self.W_HASH,
+                                 ' \nTLSH=', self.TLSH,
+                                 ' \nORB=', self.ORB,
+                                 ' \nORB_KEYPOINTS_NB=', self.ORB_KEYPOINTS_NB,
+                                 ' \nTLSH=', self.TLSH,
+                                 ' \nDISTANCE_MERGING_METHOD=', self.DISTANCE_MERGING_METHOD,
+                                 ' \nDECISION_MERGING_METHOD=', self.DECISION_MERGING_METHOD]))
+
+'''

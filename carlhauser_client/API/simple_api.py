@@ -11,11 +11,11 @@ import requests
 
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
 sys.path.append(os.path.abspath(os.path.pardir))
-from carlhauser_client.Helpers.environment_variable import get_homedir
+from common.environment_variable import get_homedir
 
 
 # ==================== ------ SERVER Flask API CALLER ------- ====================
-class Simple_API():
+class Simple_API:
     # Provides "Low-level" API calls
 
     def __init__(self, url, certificate_path):

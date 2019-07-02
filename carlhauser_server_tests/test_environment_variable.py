@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
 
-import unittest
 import logging
+import unittest
 
-from carlhauser_server.Helpers.environment_variable import get_homedir
-import carlhauser_server.Helpers.environment_variable as environment_variable
+import common.environment_variable as environment_variable
 
 
 class TestEnvVariable(unittest.TestCase):
@@ -16,7 +15,7 @@ class TestEnvVariable(unittest.TestCase):
         # self.test_file_path = get_homedir() / pathlib.Path("carlhauser_server_tests/test_Helpers/environment_variable")
 
     def test_absolute_truth_and_meaning(self):
-        assert True
+        self.assertTrue(True)
 
     def test_env_variable_presence(self):
         # Verify if Environment variable are correctly set

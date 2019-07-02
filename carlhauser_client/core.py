@@ -6,11 +6,10 @@ import logging.config
 import os
 import pathlib
 import sys
-import time
 
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
 sys.path.append(os.path.abspath(os.path.pardir))
-from carlhauser_client.Helpers.environment_variable import get_homedir
+from common.environment_variable import get_homedir
 from carlhauser_client.API.simple_api import Simple_API
 from carlhauser_client.API.extended_api import Extended_API
 
@@ -23,7 +22,7 @@ logging.config.fileConfig(str(logconfig_path))
 
 
 # ==================== ------ LAUNCHER ------- ====================
-class launcher_handler():
+class launcher_handler:
     def __init__(self):
         self.logger = logging.getLogger(__name__)
         self.API = Extended_API.get_api()

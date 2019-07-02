@@ -1,0 +1,7 @@
+In the folder is one folder per database type. One for storage, one for cache, one for test ...
+Each folder contains at least scripts named :
+- run.sh
+- flush.sh
+- shutdown.sh
+- xxx.conf
+

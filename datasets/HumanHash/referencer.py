@@ -2,12 +2,13 @@
 # -*- coding: utf-8 -*-
 
 import argparse
-import pathlib
-from typing import List, Dict
 import hashlib
 import json
+import pathlib
+from typing import Dict
 
-class Referencer():
+
+class Referencer:
 
     def __init__(self):
         self.already_generated = {}
@@ -63,7 +64,7 @@ def main():
     # Usage example : python3 ./referencer.py -p ./MINI_DATASET/
     parser = argparse.ArgumentParser(description='Hash all files in the given directory and subdirectories, and saves a summary in a <Foldername>_references.json> at same level as target folder.')
     parser.add_argument('-p', '--path', dest='path', action='store', type=lambda p: pathlib.Path(p).absolute(), default=1, help='all path')
-    parser.add_argument('--version', action='version', version='humanizer %s' % ("1.0.0"))
+    parser.add_argument('--version', action='version', version='humanizer %s' % "1.0.0")
 
     args = parser.parse_args()
     referencer = Referencer()

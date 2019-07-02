@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-## #!flask/bin/python
-
+# Not that this could use : flask/bin/python
 # Inspired from : https://github.com/D4-project/IPASN-History/blob/master/website/web/__init__.py
 # If you are derouted by the lack of decorator, go there : https://stackoverflow.com/questions/17129573/can-i-use-external-methods-as-route-decorators-in-python-flask
 
@@ -19,16 +18,16 @@ import flask
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
 sys.path.append(os.path.abspath(os.path.pardir))
 
-from carlhauser_server.Helpers.environment_variable import get_homedir, dir_path
+from common.environment_variable import get_homedir, dir_path
 
 import carlhauser_server.Configuration.webservice_conf as webservice_conf
 import carlhauser_server.Configuration.database_conf as database_conf
 
 import carlhauser_server.Helpers.id_generator as id_generator
-import carlhauser_server.Helpers.picture_import_export as picture_import_export
+import common.ImportExport.picture_import_export as picture_import_export
 import carlhauser_server.DatabaseAccessor.database_worker as database_worker
 
-import carlhauser_server.Helpers.json_import_export as json_import_export
+import common.ImportExport.json_import_export as json_import_export
 import carlhauser_server.DatabaseAccessor.database_utilities as db_utils
 
 
@@ -57,15 +56,16 @@ class EndpointAction(object):
 
 
 class FlaskAppWrapper(object):
-    def __init__(self, name, conf: webservice_conf, db_conf: database_conf):
+    def __init__(self, name, ws_conf: webservice_conf, db_conf: database_conf):
         # STD attributes
-        self.conf = conf
+        self.conf = ws_conf
         self.logger = logging.getLogger(__name__)
 
         # Specific attributes
         self.app = flask.Flask(name)
         # An accessor to push stuff in queues, mainly
         self.database_worker = database_worker.Database_Worker(db_conf=db_conf)
+        self.db_utils = None
 
     def run(self):
         # Handle SLL Certificate, if they are provided = use them, else = self sign a certificate on the fly
@@ -201,7 +201,7 @@ class FlaskAppWrapper(object):
                 result_json["request_id"] = id
                 result_json["is_ready"] = True
             except Exception as e:
-                self.logger.error(f"Error during GET handling {e}")
+                self.logger.error(f"Normal error during GET handling ('is_ready' request) {e}")
                 result_json["Status"] = "Failure"
                 result_json["Error"] = "Error during database request"
                 result_json["is_ready"] = False
@@ -269,7 +269,8 @@ class FlaskAppWrapper(object):
         return result_json
         # Test it with curl 127.0.0.1:5000
 
-    def add_std_info(self, result_json):
+    @staticmethod
+    def add_std_info(result_json):
         result_json["Call_method"] = flask.request.method  # 'GET' or 'POST' ...
         result_json["Call_time"] = time.ctime()  # 'GET' or 'POST' ...
 
@@ -289,7 +290,7 @@ if __name__ == '__main__':
 
     # Create the Flask API and run it
     # Create Flask endpoint from configuration files
-    api = FlaskAppWrapper('api', conf=ws_conf, db_conf=db_conf)
+    api = FlaskAppWrapper('api', ws_conf=ws_conf, db_conf=db_conf)
     api.add_all_endpoints()
 
     # Run Flask API endpoint

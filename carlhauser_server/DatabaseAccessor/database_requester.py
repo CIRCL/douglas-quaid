@@ -7,18 +7,16 @@ import os
 import pathlib
 import sys
 
-# ==================== ------ PERSONAL LIBRARIES ------- ====================
-sys.path.append(os.path.abspath(os.path.pardir))
-
-from carlhauser_server.Helpers.environment_variable import dir_path
-import carlhauser_server.Helpers.json_import_export as json_import_export
-
 import carlhauser_server.Configuration.database_conf as database_conf
 import carlhauser_server.Configuration.distance_engine_conf as distance_engine_conf
 import carlhauser_server.Configuration.feature_extractor_conf as feature_extractor_conf
-
 import carlhauser_server.DatabaseAccessor.database_common as database_common
 import carlhauser_server.DistanceEngine.scoring_datastrutures as score_datastruct
+import common.ImportExport.json_import_export as json_import_export
+# ==================== ------ PERSONAL LIBRARIES ------- ====================
+from common.environment_variable import dir_path
+
+sys.path.append(os.path.abspath(os.path.pardir))
 
 
 class Database_Requester(database_common.Database_Common):

@@ -5,22 +5,20 @@ import logging
 # ==================== ------ STD LIBRARIES ------- ====================
 import os
 import sys
-from typing import List
 from typing import Dict
+from typing import List
 
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
-sys.path.append(os.path.abspath(os.path.pardir))
-
 import carlhauser_server.Configuration.database_conf as database_conf
 import carlhauser_server.Configuration.distance_engine_conf as distance_engine_conf
 import carlhauser_server.Configuration.feature_extractor_conf as feature_extractor_conf
-
 import carlhauser_server.DatabaseAccessor.database_worker as database_worker
 import carlhauser_server.DistanceEngine.distance_hash as distance_hash
 import carlhauser_server.DistanceEngine.distance_orb as distance_orb
 import carlhauser_server.DistanceEngine.merging_engine as merging_engine
-
 import carlhauser_server.DistanceEngine.scoring_datastrutures as scoring_datastrutures
+
+sys.path.append(os.path.abspath(os.path.pardir))
 
 
 class Distance_Engine:
