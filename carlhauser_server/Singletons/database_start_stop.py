@@ -8,7 +8,7 @@ import sys
 
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
 
-from carlhauser_server.Helpers.template_singleton import Singleton
+from carlhauser_server.Singletons.template_singleton import Singleton
 from common.environment_variable import get_homedir
 import carlhauser_server.Helpers.socket as socket
 import carlhauser_server.Configuration.database_conf as database_conf

@@ -16,7 +16,7 @@ import carlhauser_server.Helpers.Processus.processus_list as processus_list
 import carlhauser_server.Helpers.Processus.worker_processus as worker_processus
 from carlhauser_server.Helpers.Processus.worker_types import WorkerTypes as workertype
 from common.environment_variable import get_homedir
-from carlhauser_server.Helpers.template_singleton import Singleton
+from carlhauser_server.Singletons.template_singleton import Singleton
 
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
 

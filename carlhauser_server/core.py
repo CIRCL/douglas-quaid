@@ -14,7 +14,7 @@ import traceback
 sys.path.append(os.path.abspath(os.path.pardir))
 from common.environment_variable import get_homedir
 
-import carlhauser_server.Helpers.database_start_stop as database_start_stop
+import carlhauser_server.Singletons.database_start_stop as database_start_stop
 import carlhauser_server.Configuration.database_conf as database_conf
 
 import carlhauser_server.Configuration.webservice_conf as webservice_conf
@@ -22,8 +22,8 @@ import carlhauser_server.Configuration.distance_engine_conf as distance_engine_c
 
 import carlhauser_server.Configuration.feature_extractor_conf as feature_extractor_conf
 
-import carlhauser_server.Helpers.worker_start_stop as worker_start_stop
-import carlhauser_server.Helpers.template_singleton as template_singleton
+import carlhauser_server.Singletons.worker_start_stop as worker_start_stop
+import carlhauser_server.Singletons.template_singleton as template_singleton
 from carlhauser_server.Helpers.Processus.worker_types import WorkerTypes as workertype
 
 # ==================== ------ PREPARATION ------- ====================

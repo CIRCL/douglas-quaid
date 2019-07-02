@@ -20,7 +20,7 @@ sys.path.append(os.path.abspath(os.path.pardir))
 
 from common.environment_variable import get_homedir, dir_path
 import common.ImportExport.json_import_export as json_import_export
-import carlhauser_server.Helpers.database_start_stop as database_start_stop
+import carlhauser_server.Singletons.database_start_stop as database_start_stop
 import carlhauser_server.Helpers.pickle_import_export as pickle_import_export
 
 import carlhauser_server.Configuration.database_conf as database_conf
