@@ -12,7 +12,7 @@ import traceback
 
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
 sys.path.append(os.path.abspath(os.path.pardir))
-from carlhauser_server.Helpers.environment_variable import get_homedir
+from common.environment_variable import get_homedir
 
 import carlhauser_server.Helpers.database_start_stop as database_start_stop
 import carlhauser_server.Configuration.database_conf as database_conf

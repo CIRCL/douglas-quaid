@@ -12,13 +12,13 @@ import logging
 
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
 
-from carlhauser_server.Helpers.environment_variable import get_homedir
+from common.environment_variable import get_homedir
 import carlhauser_server.Configuration.database_conf as database_conf
 import carlhauser_server.Configuration.distance_engine_conf as distance_engine_conf
 import carlhauser_server.Configuration.feature_extractor_conf as feature_extractor_conf
 import carlhauser_server.Configuration.webservice_conf as webservice_conf
 
-import carlhauser_server.Helpers.json_import_export as json_import_export
+import common.ImportExport.json_import_export as json_import_export
 sys.path.append(os.path.abspath(os.path.pardir))
 
 
@@ -71,6 +71,7 @@ class WorkerProcessus:
         self.start_time = datetime.datetime.now()
 
         # Launch worker
+        self.logger.debug(f"launching process as : {arg_list}")
         self.process = subprocess.Popen(arg_list)
 
     def shutdown(self, grace_time=10):

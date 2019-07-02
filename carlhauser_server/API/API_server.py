@@ -1,5 +1,7 @@
-## #!flask/bin/python
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 
+# Not that this could use : flask/bin/python
 # Inspired from : https://github.com/D4-project/IPASN-History/blob/master/website/web/__init__.py
 # If you are derouted by the lack of decorator, go there : https://stackoverflow.com/questions/17129573/can-i-use-external-methods-as-route-decorators-in-python-flask
 
@@ -16,16 +18,16 @@ import flask
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
 sys.path.append(os.path.abspath(os.path.pardir))
 
-from carlhauser_server.Helpers.environment_variable import get_homedir, dir_path
+from common.environment_variable import get_homedir, dir_path
 
 import carlhauser_server.Configuration.webservice_conf as webservice_conf
 import carlhauser_server.Configuration.database_conf as database_conf
 
 import carlhauser_server.Helpers.id_generator as id_generator
-import carlhauser_server.Helpers.picture_import_export as picture_import_export
+import common.ImportExport.picture_import_export as picture_import_export
 import carlhauser_server.DatabaseAccessor.database_worker as database_worker
 
-import carlhauser_server.Helpers.json_import_export as json_import_export
+import common.ImportExport.json_import_export as json_import_export
 import carlhauser_server.DatabaseAccessor.database_utilities as db_utils
 
 

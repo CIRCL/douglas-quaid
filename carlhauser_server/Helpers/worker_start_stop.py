@@ -15,7 +15,7 @@ import carlhauser_server.Configuration.webservice_conf as webservice_conf
 import carlhauser_server.Helpers.Processus.processus_list as processus_list
 import carlhauser_server.Helpers.Processus.worker_processus as worker_processus
 from carlhauser_server.Helpers.Processus.worker_types import WorkerTypes as workertype
-from carlhauser_server.Helpers.environment_variable import get_homedir
+from common.environment_variable import get_homedir
 from carlhauser_server.Helpers.template_singleton import Singleton
 
 # ==================== ------ PERSONAL LIBRARIES ------- ====================

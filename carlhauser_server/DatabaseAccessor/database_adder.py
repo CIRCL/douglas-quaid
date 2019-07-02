@@ -9,8 +9,8 @@ import sys
 from typing import List
 
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
-from carlhauser_server.Helpers.environment_variable import dir_path
-import carlhauser_server.Helpers.json_import_export as json_import_export
+from common.environment_variable import dir_path
+import common.ImportExport.json_import_export as json_import_export
 import carlhauser_server.Configuration.database_conf as database_conf
 import carlhauser_server.Configuration.feature_extractor_conf as feature_extractor_conf
 import carlhauser_server.Configuration.distance_engine_conf as distance_engine_conf

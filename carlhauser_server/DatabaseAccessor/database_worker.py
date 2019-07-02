@@ -18,13 +18,13 @@ import pprint
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
 sys.path.append(os.path.abspath(os.path.pardir))
 
-from carlhauser_server.Helpers.environment_variable import get_homedir, dir_path
-import carlhauser_server.Helpers.json_import_export as json_import_export
+from common.environment_variable import get_homedir, dir_path
+import common.ImportExport.json_import_export as json_import_export
 import carlhauser_server.Helpers.database_start_stop as database_start_stop
 import carlhauser_server.Helpers.pickle_import_export as pickle_import_export
 
 import carlhauser_server.Configuration.database_conf as database_conf
-from carlhauser_server.Helpers.json_import_export import Custom_JSON_Encoder
+from common.ImportExport.json_import_export import Custom_JSON_Encoder
 
 
 class Database_Worker:

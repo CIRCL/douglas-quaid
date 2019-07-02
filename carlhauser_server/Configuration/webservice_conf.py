@@ -7,7 +7,7 @@ from collections import namedtuple
 sys.path.append(os.path.abspath(os.path.pardir))
 
 from carlhauser_server.Configuration.template_conf import JSON_parsable_Dict
-from carlhauser_server.Helpers.environment_variable import get_homedir
+from common.environment_variable import get_homedir
 
 class Default_webservice_conf(JSON_parsable_Dict):
     def __init__(self):

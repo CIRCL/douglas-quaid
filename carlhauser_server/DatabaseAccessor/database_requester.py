@@ -12,9 +12,9 @@ import carlhauser_server.Configuration.distance_engine_conf as distance_engine_c
 import carlhauser_server.Configuration.feature_extractor_conf as feature_extractor_conf
 import carlhauser_server.DatabaseAccessor.database_common as database_common
 import carlhauser_server.DistanceEngine.scoring_datastrutures as score_datastruct
-import carlhauser_server.Helpers.json_import_export as json_import_export
+import common.ImportExport.json_import_export as json_import_export
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
-from carlhauser_server.Helpers.environment_variable import dir_path
+from common.environment_variable import dir_path
 
 sys.path.append(os.path.abspath(os.path.pardir))
 

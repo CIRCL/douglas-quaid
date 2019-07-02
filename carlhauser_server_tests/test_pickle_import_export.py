@@ -10,7 +10,7 @@ import carlhauser_server.Helpers.pickle_import_export as pickle_import_export
 import logging
 import pathlib
 
-from carlhauser_server.Helpers.environment_variable import get_homedir
+from common.environment_variable import get_homedir
 class testPICKLEImportExport(unittest.TestCase):
     """Basic test cases."""
 

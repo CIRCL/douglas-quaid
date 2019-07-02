@@ -10,8 +10,8 @@ import time
 
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
 
-from carlhauser_server.Helpers.environment_variable import dir_path
-import carlhauser_server.Helpers.json_import_export as json_import_export
+from common.environment_variable import dir_path
+import common.ImportExport.json_import_export as json_import_export
 
 import carlhauser_server.DatabaseAccessor.database_worker as database_accessor
 import carlhauser_server.Configuration.database_conf as database_conf

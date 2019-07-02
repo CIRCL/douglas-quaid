@@ -3,7 +3,7 @@
 import logging
 import unittest
 
-import carlhauser_server.Helpers.environment_variable as environment_variable
+import common.environment_variable as environment_variable
 
 
 class TestEnvVariable(unittest.TestCase):

@@ -16,7 +16,7 @@ import carlhauser_server.DistanceEngine.distance_engine as distance_engine
 import carlhauser_server.FeatureExtractor.picture_hasher as picture_hasher
 import carlhauser_server.FeatureExtractor.picture_orber as picture_orber
 import common.TestDBHandler.test_instance_launcher as test_database_handler
-from carlhauser_server.Helpers.environment_variable import get_homedir
+from common.environment_variable import get_homedir
 
 
 class testDBAdder(unittest.TestCase):
