@@ -250,7 +250,6 @@ class Database_Worker:
 
     def _to_run_forever(self):
         self.logger.critical("YOU SHOULD OVERWRITE '_to_run_forever' of the database_worker class. This worker is actually doing NOTHING !")
-        pass
 
     def long_sleep(self, sleep_in_sec: int, shutdown_check: int = 10) -> bool:
         # Check shutdown at least as fast as sleep waiting time
