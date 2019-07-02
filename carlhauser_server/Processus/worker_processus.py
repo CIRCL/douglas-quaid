@@ -122,6 +122,7 @@ class WorkerProcessus:
                 self.logger.warning("Waiting for worker to stop has timeout-ed.")
                 return False
 
+        self.logger.debug(f"Worker stopped after {round(abs(time.time() - start),3)}s.")
         return True
 
     # ==================== To string ====================

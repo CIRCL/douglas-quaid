@@ -45,7 +45,8 @@ class Default_database_conf(JSON_parsable_Dict):
         self.REQUESTER_WAIT_SEC: int = 1
 
         # ============================== TEST and EVALUATION PURPOSES ==============================
-        self.handle_test_db: bool = False
+        # Nothing will be writen on storage or cache databases. Made for automatic evaluation, etc.
+        self.ONLY_TEST_DB: bool = False
 
 
 def parse_from_dict(conf):

@@ -50,6 +50,7 @@ class launcher_handler(metaclass=template_singleton.Singleton):
     def launch(self):
         # Launch elements
         self.start_database(wait=True)  # Wait for launch
+        self.prevent_workers_shutdown()
 
         self.start_adder_workers()
         self.start_requester_workers()
@@ -75,6 +76,7 @@ class launcher_handler(metaclass=template_singleton.Singleton):
 
         # Shutdown database
         self.stop_database(wait=True)  # Wait for stop
+        self.flush_workers()
 
     # ==================== ------ DB ------- ====================
     def check_db_handler(self):
@@ -175,6 +177,11 @@ class launcher_handler(metaclass=template_singleton.Singleton):
         self.logger.info(f"Requesting workers to stop ...")
         self.db_handler.request_workers_shutdown()
         return self.worker_handler.wait_for_worker_shutdown()
+
+    def prevent_workers_shutdown(self):
+        self.logger.info(f"Remove halt order to prevent workers to stop on launch...")
+        self.db_handler.prevent_workers_shutdown()
+        return
 
     def flush_workers(self):
         self.check_worker_handler()
