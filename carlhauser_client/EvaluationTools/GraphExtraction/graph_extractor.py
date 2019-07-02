@@ -10,9 +10,9 @@ import time
 
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
 sys.path.append(os.path.abspath(os.path.pardir))
-from carlhauser_client.Helpers.environment_variable import get_homedir
+from common.environment_variable import get_homedir
 from carlhauser_client.API.extended_api import Extended_API
-import carlhauser_server.Helpers.json_import_export as json_import_export
+import common.ImportExport.json_import_export as json_import_export
 
 from common.Graph.graph_datastructure import GraphDataStruct
 from common.Graph.metadata import Metadata, Source

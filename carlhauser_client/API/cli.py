@@ -12,7 +12,7 @@ import sys
 sys.path.append(os.path.abspath(os.path.pardir))
 from carlhauser_client.Helpers.environment_variable import get_homedir
 from carlhauser_client.API.extended_api import Extended_API
-from carlhauser_server.Helpers.json_import_export import save_json, load_json
+from common.ImportExport.json_import_export import save_json, load_json
 
 # from . import helpers
 

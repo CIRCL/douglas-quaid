@@ -9,12 +9,12 @@ import sys
 import time
 
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
-from carlhauser_client.Helpers.environment_variable import get_homedir
+from common.environment_variable import get_homedir
 from carlhauser_client.API.extended_api import Extended_API
-from carlhauser_client.EvaluationTools.ClassificationQuality.cluster_matcher import Cluster_matcher
-from carlhauser_client.EvaluationTools.ClassificationQuality.cluster_matching_quality_evaluator import ClusterMatchingQualityEvaluator
-from carlhauser_client.EvaluationTools.ClassificationQuality.confusion_matrix_generator import ConfusionMatrixGenerator
-import carlhauser_server.Helpers.json_import_export as json_import_export
+from carlhauser_client.EvaluationTools.Internal_clustering_Quality_Evaluator.cluster_matcher import Cluster_matcher
+from carlhauser_client.EvaluationTools.Internal_clustering_Quality_Evaluator.cluster_matching_quality_evaluator import ClusterMatchingQualityEvaluator
+from common.ChartMaker.confusion_matrix_generator import ConfusionMatrixGenerator
+import common.ImportExport.json_import_export as json_import_export
 
 from common.Graph.graph_datastructure import GraphDataStruct, merge_graphs
 
@@ -29,13 +29,13 @@ logging.config.fileConfig(str(logconfig_path))
 
 
 # ==================== ------ LAUNCHER ------- ====================
-class ClassificationQualityEvaluator:
+class InternalClusteringQualityEvaluator:
     def __init__(self):
         self.logger = logging.getLogger(__name__)
         self.API = Extended_API.get_api()
 
     def launch(self, image_folder: pathlib.Path, visjs_json_path: pathlib.Path, output_path: pathlib.Path):
-        # Compute a complete run of the library on a folder, with a ground truth file, to compute metrics about the quality of the matching
+        # Compute a complete run of the library on a folder, with a ground truth file, to compute metrics about the quality of the internal clustering of an already launched (and empty) server.
         # return metric
 
         # ========= MANUAL EVALUATION =========
@@ -112,7 +112,7 @@ def main():
 
 
 def test():
-    evaluator = ClassificationQualityEvaluator()
+    evaluator = InternalClusteringQualityEvaluator()
     image_folder = get_homedir() / "datasets" / "MINI_DATASET"
     gt = get_homedir() / "datasets" / "MINI_DATASET_VISJS.json"
     output_path = get_homedir() / "carlhauser_client"

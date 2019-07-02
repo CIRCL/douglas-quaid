@@ -11,10 +11,10 @@ from typing import List
 
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
 sys.path.append(os.path.abspath(os.path.pardir))
-from carlhauser_client.Helpers.environment_variable import get_homedir
+from common.environment_variable import get_homedir
 from common.Graph.cluster import Cluster
-import carlhauser_client.Helpers.stats_datastruct as scores
-import carlhauser_server.Helpers.json_import_export as json_import_export
+import common.PerformanceDatastructs.stats_datastruct as scores
+import common.ImportExport.json_import_export as json_import_export
 
 # from . import helpers
 
