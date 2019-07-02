@@ -12,9 +12,9 @@ import carlhauser_server.Configuration.database_conf as database_conf
 import carlhauser_server.Configuration.distance_engine_conf as distance_engine_conf
 import carlhauser_server.Configuration.feature_extractor_conf as feature_extractor_conf
 import carlhauser_server.Configuration.webservice_conf as webservice_conf
-import carlhauser_server.Helpers.Processus.processus_list as processus_list
-import carlhauser_server.Helpers.Processus.worker_processus as worker_processus
-from carlhauser_server.Helpers.Processus.worker_types import WorkerTypes as workertype
+import carlhauser_server.Processus.processus_list as processus_list
+import carlhauser_server.Processus.worker_processus as worker_processus
+from carlhauser_server.Processus.worker_types import WorkerTypes as workertype
 from common.environment_variable import get_homedir
 from carlhauser_server.Singletons.template_singleton import Singleton
 

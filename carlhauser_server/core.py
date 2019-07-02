@@ -24,7 +24,7 @@ import carlhauser_server.Configuration.feature_extractor_conf as feature_extract
 
 import carlhauser_server.Singletons.worker_start_stop as worker_start_stop
 import carlhauser_server.Singletons.template_singleton as template_singleton
-from carlhauser_server.Helpers.Processus.worker_types import WorkerTypes as workertype
+from carlhauser_server.Processus.worker_types import WorkerTypes as workertype
 
 # ==================== ------ PREPARATION ------- ====================
 # load the logging configuration
