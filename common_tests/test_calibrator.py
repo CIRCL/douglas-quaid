@@ -6,7 +6,7 @@ import sys
 
 sys.path.append(os.path.abspath(os.path.pardir))
 from common.environment_variable import get_homedir
-from common.Calibrator.Calibrator import Calibrator
+from common.Calibrator.threshold_calibrator import Calibrator
 
 import unittest
 
@@ -20,8 +20,8 @@ class test_calibrator(unittest.TestCase):
         # self.test_file_path = pathlib.Path.cwd() / pathlib.Path("tests/test_files")
         self.calibrator_instance = Calibrator()
 
-        self.micro_dataset_input_path = get_homedir() / "common_tests" / "Calibrator_tests" / "MINI_DATASET"
-        self.micro_dataset_gt_path = get_homedir() / "common_tests" / "Calibrator_tests" / "MINI_DATASET_VISJS.json"
+        self.micro_dataset_input_path = get_homedir() / "common_tests" / "Calibrator_tests" / "MICRO_DATASET"
+        self.micro_dataset_gt_path = get_homedir() / "common_tests" / "Calibrator_tests" / "MICRO_DATASET_VISJS.json"
         self.micro_dataset_output_path = get_homedir() / "common_tests" / "Calibrator_tests" / "OUTPUT"
 
     def tearDown(self):

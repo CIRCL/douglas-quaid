@@ -12,26 +12,6 @@ import carlhauser_server.core as core
 from common.environment_variable import get_homedir
 from common.ImportExport.json_import_export import Custom_JSON_Encoder
 
-
-class TestInstance_database_conf(database_conf.Default_database_conf):
-    def __init__(self):
-        super().__init__()
-
-        # ============================== SCRIPTS ==============================
-        self.DB_SCRIPTS_PATH = pathlib.Path('carlhauser_server', 'Data', 'database_scripts')
-        # Cache, storage and test scripts directories
-        self.DB_SCRIPTS_PATH_CACHE = pathlib.Path('carlhauser_server', 'Data', 'database_scripts', 'test')
-        self.DB_SCRIPTS_PATH_STORAGE = pathlib.Path('carlhauser_server', 'Data', 'database_scripts', 'test')
-        self.DB_SCRIPTS_PATH_TEST = pathlib.Path('carlhauser_server', 'Data', 'database_scripts', 'test')
-
-        # ============================== SOCKETS ==============================
-        self.DB_SOCKETS_PATH = pathlib.Path('carlhauser_server', 'Data', 'database_sockets')
-        # Cache, storage and test scripts directories
-        self.DB_SOCKETS_PATH_CACHE = pathlib.Path('carlhauser_server', 'Data', 'database_sockets', 'test.sock')
-        self.DB_SOCKETS_PATH_STORAGE = pathlib.Path('carlhauser_server', 'Data', 'database_sockets', 'test.sock')
-        self.DB_SOCKETS_PATH_TEST = pathlib.Path('carlhauser_server', 'Data', 'database_sockets', 'test.sock')
-
-
 class TestInstanceLauncher:
     """ Create a running instance of douglas-quaid, all linked on a unique test database
         Modify the behavior of the core launcher handler, to use only one database. """
@@ -40,16 +20,16 @@ class TestInstanceLauncher:
         self.logger = logging.getLogger()
 
         # TMP and modified version of handlers that will overwrite core-launcher's ones.
-        self.db_handler = None
-        self.worker_handler = None
+        self.db_handler : database_start_stop.Database_StartStop = None
+        # self.worker_handler : = None
 
         # Configurations files
-        self.db_conf = None
-        self.dist_conf = None
-        self.fe_conf = None
-        self.ws_conf = None
+        self.db_conf : database_conf.Default_database_conf = None
+        self.dist_conf :distance_engine_conf.Default_distance_engine_conf = None
+        self.fe_conf : feature_extractor_conf.Default_feature_extractor_conf = None
+        self.ws_conf : webservice_conf.Default_webservice_conf = None
 
-        self.core_launcher = None
+        self.core_launcher : core.launcher_handler = None
 
     # ============================== LAUNCHER ACTIONS ==============================
     def create_full_instance(self, db_conf: database_conf.Default_database_conf = None,
@@ -101,7 +81,7 @@ class TestInstanceLauncher:
         """ Create a database handler (start/stop), modify its configuration and launch the DB """
 
         # Create database handler from configuration file
-        self.db_handler = database_start_stop.Database_StartStop(db_conf=self.db_conf, handle_test_db=True)
+        self.db_handler = database_start_stop.Database_StartStop(db_conf=self.db_conf)
 
         # Overwrite configuration of db handler
         self.db_handler = self.overwrite_socket_and_script_db_handler(self.db_handler, self.db_conf)
@@ -162,6 +142,8 @@ class TestInstanceLauncher:
 
     def launcher_core_launcher(self):
         """ Launch the whole "ecosystem" of workers around the database. Handled by the core """
+
+        self.core_launcher.prevent_workers_shutdown()
 
         self.core_launcher.start_adder_workers()
         self.core_launcher.start_requester_workers()
