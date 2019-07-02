@@ -5,9 +5,9 @@ import logging
 import pathlib
 from pprint import pformat
 
-from carlhauser_server.Helpers.environment_variable import get_homedir
+from common.environment_variable import get_homedir
 
-import carlhauser_client.EvaluationTools.ClassificationQuality.cluster_matcher as cluster_matcher
+import carlhauser_client.EvaluationTools.Internal_clustering_Quality_Evaluator.cluster_matcher as cluster_matcher
 from common.Graph.cluster import Cluster
 
 

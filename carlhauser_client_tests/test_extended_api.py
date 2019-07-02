@@ -6,7 +6,7 @@ import unittest
 from pprint import pformat
 
 from carlhauser_client.API.extended_api import Extended_API, update_values_dict
-from carlhauser_server.Helpers.environment_variable import get_homedir
+from common.environment_variable import get_homedir
 
 
 class TestClusterMatcher(unittest.TestCase):
