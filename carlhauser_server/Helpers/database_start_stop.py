@@ -15,6 +15,7 @@ import carlhauser_server.Configuration.database_conf as database_conf
 
 sys.path.append(os.path.abspath(os.path.pardir))
 
+
 # ==================== ------ PATHS ------- ====================
 
 class Database_StartStop(object, metaclass=Singleton):
@@ -43,7 +44,7 @@ class Database_StartStop(object, metaclass=Singleton):
         # We are in a test mode, so we want the test database to be handled too.
         if self.handle_test_db:
             self.socket_test = socket.Socket(get_homedir() / self.db_conf.DB_SOCKETS_PATH_TEST,
-                                         get_homedir() / self.db_conf.DB_SCRIPTS_PATH_TEST)
+                                             get_homedir() / self.db_conf.DB_SCRIPTS_PATH_TEST)
             self.mapping['test'] = self.socket_test.socket_path
 
     def get_socket_path(self, name: str) -> str:
@@ -103,7 +104,6 @@ class Database_StartStop(object, metaclass=Singleton):
             return False
 
         return True
-
 
     def request_workers_shutdown(self):
         # Post a HALT key in all redis instance. Worker should react "quickly" and stop themselves

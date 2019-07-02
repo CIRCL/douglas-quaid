@@ -2,13 +2,9 @@
 # -*- coding: utf-8 -*-
 
 import argparse
+import json
 import pathlib
 import pprint
-import hashlib
-import shutil
-from typing import Set
-import json
-
 
 
 def save_json(obj, file_path: pathlib.Path):
@@ -20,7 +16,6 @@ def save_json(obj, file_path: pathlib.Path):
 
     with file_path.open("w", encoding="utf-8") as f:
         json.dump(obj, f, indent=4)
-
 
 
 def load_json(file_path: pathlib.Path):
@@ -37,7 +32,7 @@ def load_json(file_path: pathlib.Path):
     return data
 
 
-class Dataturksparser():
+class Dataturksparser:
 
     def __init__(self):
         self.to_export = None
@@ -67,10 +62,10 @@ class Dataturksparser():
 
         for picture in tmp_json:
             tmp_final_object = {}
-            tmp_final_object["picture"] = picture.get("content") # 'fat-noxious-doubtful-walk.png'
+            tmp_final_object["picture"] = picture.get("content")  # 'fat-noxious-doubtful-walk.png'
             tmp_annotation = picture.get("annotation")
-            if tmp_annotation is not None :
-                tmp_final_object["labels"] = tmp_annotation.get('labels') # ['Steam']
+            if tmp_annotation is not None:
+                tmp_final_object["labels"] = tmp_annotation.get('labels')  # ['Steam']
 
                 if "to_delete" in tmp_final_object["labels"]:
                     # mark to be deleted
@@ -82,26 +77,24 @@ class Dataturksparser():
                     self.to_export.append(tmp_final_object)
                     # print(f"{tmp_final_object} mark to be exported.")
 
-            else :
+            else:
                 print(f"Annotation void for picture : {tmp_final_object['picture']}")
-
-
 
     def delete_marked_files(self, folder_path: pathlib.Path):
 
-        if len(self.file_names_to_delete) !=0 :
+        if len(self.file_names_to_delete) != 0:
             p = folder_path.resolve().glob('**/*')
             files = [x for x in p if x.is_file()]
 
             # For each file found, if present in to_delete list, delete it
             for file in files:
-                if file.name in self.file_names_to_delete :
+                if file.name in self.file_names_to_delete:
                     file.unlink()
                     print(f"File {file.name} deleted.")
 
     def export_file(self, outputfile_path: pathlib.Path):
 
-        if self.to_export is not None :
+        if self.to_export is not None:
             save_json(self.to_export, outputfile_path)
             print(f"File exported to : {outputfile_path} with {len(self.to_export)} entries.")
 
@@ -113,7 +106,7 @@ def main():
     parser.add_argument('-p', '--path', dest='path', action='store', type=lambda p: pathlib.Path(p).absolute(), help='input json path (to file)')
     parser.add_argument('-f', '--filespath', dest='filespath', action='store', type=lambda p: pathlib.Path(p).absolute(), help='files path (to folder)')
     parser.add_argument('-o', '--outpath', dest='outpath', action='store', type=lambda p: pathlib.Path(p).absolute(), help='output json path (to folder)')
-    parser.add_argument('--version', action='version', version='humanizer %s' % ("1.0.0"))
+    parser.add_argument('--version', action='version', version='humanizer %s' % "1.0.0")
 
     args = parser.parse_args()
     parser = Dataturksparser()
@@ -122,6 +115,6 @@ def main():
     parser.delete_marked_files(args.filespath)
     parser.export_file(args.outpath)
 
+
 if __name__ == "__main__":
     main()
-

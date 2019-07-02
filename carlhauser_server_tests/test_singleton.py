@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
 
+import logging
 import unittest
 
 import carlhauser_server.Helpers.template_singleton as template_singleton
-import logging
 
-from carlhauser_server.Helpers.environment_variable import get_homedir
 
 class testSingleton(unittest.TestCase):
     """Basic test cases."""

@@ -27,14 +27,14 @@ logconfig_path = (get_homedir() / pathlib.Path("carlhauser_client", "logging.ini
 logging.config.fileConfig(str(logconfig_path))
 
 
-class Perf():
+class Perf:
     def __init__(self, score: scores.Stats_datastruct, threshold: float):
         self.score = score
         self.threshold = threshold
 
 
 # ==================== ------ LAUNCHER ------- ====================
-class ParameterExplorer():
+class ParameterExplorer:
     def __init__(self):
         self.logger = logging.getLogger(__name__)
 

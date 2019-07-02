@@ -20,7 +20,7 @@ from common.Graph.node import Node
 sys.path.append(os.path.abspath(os.path.pardir))
 
 
-class DBUtilities():
+class DBUtilities:
     def __init__(self, db_access_decode: redis.client.Redis, db_access_no_decode: redis.client.Redis):
         self.logger = logging.getLogger(__name__)
         self.db_access_decode = db_access_decode

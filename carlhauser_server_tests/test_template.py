@@ -1,12 +1,10 @@
 # -*- coding: utf-8 -*-
-from carlhauser_server_tests.context import *
-
-import unittest
 
 import logging
 import pathlib
+import unittest
 
-from carlhauser_server.Helpers.environment_variable import get_homedir
+
 class testTemplate(unittest.TestCase):
     """Basic test cases."""
 

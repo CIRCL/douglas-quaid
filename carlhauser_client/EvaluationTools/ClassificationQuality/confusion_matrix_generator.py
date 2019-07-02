@@ -25,7 +25,7 @@ logconfig_path = (get_homedir() / pathlib.Path("carlhauser_client", "logging.ini
 logging.config.fileConfig(str(logconfig_path))
 
 
-class ConfusionMatrixGenerator():
+class ConfusionMatrixGenerator:
     def __init__(self):
         self.logger = logging.getLogger(__name__)
 
@@ -49,10 +49,10 @@ class ConfusionMatrixGenerator():
 
         # Create label printed on each axis
         for gt_cluster in original:
-            ordo.append(''.join([str(gt_cluster.label), " (#", str((len(gt_cluster.members))), ")",]))
+            ordo.append(''.join([str(gt_cluster.label), " (#", str((len(gt_cluster.members))), ")", ]))
 
         for cand in candidate:
-            absi.append(''.join([str(cand.label), " (#", str((len(cand.members))), ")",]))
+            absi.append(''.join([str(cand.label), " (#", str((len(cand.members))), ")", ]))
 
         # Generate values
         for row, gt_cluster in enumerate(original):
@@ -85,7 +85,6 @@ class ConfusionMatrixGenerator():
 
         fig.tight_layout()
         plt.savefig(str(output_file))
-
 
     # ============================== --------------------------------  ==============================
     #                                   Graphical operation
@@ -127,7 +126,7 @@ class ConfusionMatrixGenerator():
         # data = data.div(data.max(axis=1), axis=0)
 
         # Plot the heatmap
-        im = ax.imshow(normalized_data,  **kwargs)
+        im = ax.imshow(normalized_data, **kwargs)
 
         # Create colorbar
         cbar = ax.figure.colorbar(im, ax=ax, **cbar_kw)

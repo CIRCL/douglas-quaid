@@ -1,18 +1,12 @@
 # -*- coding: utf-8 -*-
-import subprocess
-import time
+import logging
 import unittest
 
 import redis
-import logging
 
-from carlhauser_server.Helpers.environment_variable import get_homedir
-import carlhauser_server.Configuration.database_conf as database_conf
 import carlhauser_server.DatabaseAccessor.database_worker as database_worker
-import carlhauser_server.Helpers.database_start_stop as database_start_stop
-from carlhauser_server_tests.context import *
-
 import common.TestDBHandler.test_instance_launcher as test_database_handler
+
 
 class testCarlHauserServer(unittest.TestCase):
     """Basic test cases."""

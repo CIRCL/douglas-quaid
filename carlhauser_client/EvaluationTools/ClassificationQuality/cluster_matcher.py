@@ -24,7 +24,7 @@ logging.config.fileConfig(str(logconfig_path))
 
 # ==================== ------ LAUNCHER ------- ====================
 
-class Cluster_matcher():
+class Cluster_matcher:
     def __init__(self):
         self.logger = logging.getLogger(__name__)
 

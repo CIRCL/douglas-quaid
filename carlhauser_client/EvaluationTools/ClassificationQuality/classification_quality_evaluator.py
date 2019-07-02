@@ -9,7 +9,6 @@ import sys
 import time
 
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
-sys.path.append(os.path.abspath(os.path.pardir))
 from carlhauser_client.Helpers.environment_variable import get_homedir
 from carlhauser_client.API.extended_api import Extended_API
 from carlhauser_client.EvaluationTools.ClassificationQuality.cluster_matcher import Cluster_matcher
@@ -18,6 +17,8 @@ from carlhauser_client.EvaluationTools.ClassificationQuality.confusion_matrix_ge
 import carlhauser_server.Helpers.json_import_export as json_import_export
 
 from common.Graph.graph_datastructure import GraphDataStruct, merge_graphs
+
+sys.path.append(os.path.abspath(os.path.pardir))
 
 # from . import helpers
 
@@ -28,7 +29,7 @@ logging.config.fileConfig(str(logconfig_path))
 
 
 # ==================== ------ LAUNCHER ------- ====================
-class ClassificationQualityEvaluator():
+class ClassificationQualityEvaluator:
     def __init__(self):
         self.logger = logging.getLogger(__name__)
         self.API = Extended_API.get_api()

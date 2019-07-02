@@ -7,17 +7,14 @@ import os
 import pathlib
 import sys
 import time
-import pprint
 
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
 sys.path.append(os.path.abspath(os.path.pardir))
 from carlhauser_client.Helpers.environment_variable import get_homedir
 from carlhauser_client.API.extended_api import Extended_API
-from carlhauser_client.EvaluationTools.ClassificationQuality.cluster_matcher import Cluster_matcher
-from carlhauser_client.EvaluationTools.ClassificationQuality.confusion_matrix_generator import ConfusionMatrixGenerator
 import carlhauser_server.Helpers.json_import_export as json_import_export
 
-from common.Graph.graph_datastructure import GraphDataStruct, merge_graphs
+from common.Graph.graph_datastructure import GraphDataStruct
 from common.Graph.metadata import Metadata, Source
 from common.Graph.edge import Edge
 from common.Graph.node import Node
@@ -31,7 +28,7 @@ logging.config.fileConfig(str(logconfig_path))
 
 
 # ==================== ------ LAUNCHER ------- ====================
-class GraphExtractor():
+class GraphExtractor:
     def __init__(self):
         self.logger = logging.getLogger(__name__)
         self.ext_api = Extended_API.get_api()

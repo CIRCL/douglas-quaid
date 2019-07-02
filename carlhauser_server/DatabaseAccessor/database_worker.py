@@ -14,6 +14,7 @@ import traceback
 import objsize
 import redis
 import pprint
+
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
 sys.path.append(os.path.abspath(os.path.pardir))
 
@@ -26,7 +27,7 @@ import carlhauser_server.Configuration.database_conf as database_conf
 from carlhauser_server.Helpers.json_import_export import Custom_JSON_Encoder
 
 
-class Database_Worker():
+class Database_Worker:
 
     def __init__(self, db_conf: database_conf):
         # STD attributes
@@ -57,9 +58,8 @@ class Database_Worker():
         # Pickler with patches
         self.pickler = pickle_import_export.Pickler()
 
-
     def add_to_queue(self, storage: redis.Redis, queue_name: str, id: str, dict_to_store: dict, pickle=False):
-        '''
+        """
         Push data to a specified queue, with a specific id. Wrapper to handle queuing of id(s) and separated storage of data linked to this id(s).
         Transparent way to push data to a queue
         :param storage: Redis storage to use
@@ -68,7 +68,7 @@ class Database_Worker():
         :param dict_to_store: dictionary to store in the queue
         :param pickle: Do pickle the pushed data. Turn to 'False' if the data has bytes_array, even nested.
         :return: (void)
-        '''
+        """
         # Do stuff
         self.logger.debug(f"Worker trying to add stuff to queue={queue_name}")
         # self.logger.debug(f"Added dict: {dict_to_store}")
@@ -92,14 +92,14 @@ class Database_Worker():
             raise Exception(f"Unable to add dict and hash to {queue_name} queue : {e}")
 
     def get_from_queue(self, storage: redis.Redis, queue_name: str, pickle=False):
-        '''
+        """
         Fetch data from a specified queue. Wrapper to handle queuing of id(s) and separated storage of data linked to this id(s).
         Transparent way to pull data from a queue
         :param storage: Redis storage to use
         :param queue_name: Source queue name
         :param pickle: Do unpickle the fetched data. Turn to 'False' if the data has bytes_array, even nested.
         :return: The dict fetched from queue
-        '''
+        """
         # self.logger.debug(f"Worker trying to remove stuff from queue={queue_name}")
 
         try:
@@ -215,7 +215,7 @@ class Database_Worker():
             else:  # The key has been set to something, "Now","Yes", ...
                 self.logger.info("HALT key detected. Worker received stop signal ... ")
                 return True
-        except Exception as e :
+        except Exception as e:
             self.logger.error(f"Impossible to know if the worker has to halt. Please review 'halt' key : {e}")
             return False
 

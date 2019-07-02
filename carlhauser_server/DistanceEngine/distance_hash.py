@@ -132,7 +132,8 @@ class Distance_Hash:
 
     # ==================== ------ DECISIONS ------- ====================
 
-    def compute_decision_from_distance(self, algo_conf: feature_extractor_conf.Algo_conf, dist: float) -> sd.DecisionTypes:
+    @staticmethod
+    def compute_decision_from_distance(algo_conf: feature_extractor_conf.Algo_conf, dist: float) -> sd.DecisionTypes:
         # From a distance between hashes, gives a decision : is it a match or not ? Or maybe ?
 
         if dist <= algo_conf.get('threshold_maybe'):

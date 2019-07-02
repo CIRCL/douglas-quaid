@@ -1,26 +1,22 @@
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import subprocess
-import time
-import unittest
-import cv2
-import pathlib
 
-import redis
 import logging
+import pathlib
+import unittest
 
-from carlhauser_server.Helpers.environment_variable import get_homedir
-import carlhauser_server.Configuration.database_conf as database_conf
+import cv2
+import redis
+
 import carlhauser_server.Configuration.distance_engine_conf as distance_engine_conf
 import carlhauser_server.Configuration.feature_extractor_conf as feature_extractor_conf
-import carlhauser_server.DistanceEngine.distance_engine as distance_engine
-import carlhauser_server.Helpers.database_start_stop as database_start_stop
 import carlhauser_server.DatabaseAccessor.database_adder as database_adder
-import os
-
+import carlhauser_server.DistanceEngine.distance_engine as distance_engine
 import carlhauser_server.FeatureExtractor.picture_hasher as picture_hasher
 import carlhauser_server.FeatureExtractor.picture_orber as picture_orber
 import common.TestDBHandler.test_instance_launcher as test_database_handler
+from carlhauser_server.Helpers.environment_variable import get_homedir
 
 
 class testDBAdder(unittest.TestCase):
@@ -76,7 +72,6 @@ class testDBAdder(unittest.TestCase):
         # Launch shutdown AND FLUSH script
         print("[TESTS] STOPPING DATABASE AS TEST : NOTHING WILL BE REMOVED ON STORAGE OR CACHE DATABASES [TESTS]")
         self.test_db_handler.tearDown()
-
 
     # ==================== ------ CLUSTER LIST ------- ====================
 

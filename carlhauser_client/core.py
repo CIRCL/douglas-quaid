@@ -6,7 +6,6 @@ import logging.config
 import os
 import pathlib
 import sys
-import time
 
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
 sys.path.append(os.path.abspath(os.path.pardir))
@@ -23,7 +22,7 @@ logging.config.fileConfig(str(logconfig_path))
 
 
 # ==================== ------ LAUNCHER ------- ====================
-class launcher_handler():
+class launcher_handler:
     def __init__(self):
         self.logger = logging.getLogger(__name__)
         self.API = Extended_API.get_api()

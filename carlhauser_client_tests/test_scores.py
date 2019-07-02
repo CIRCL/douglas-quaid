@@ -25,9 +25,9 @@ class TestClusterMatcher(unittest.TestCase):
         s1 = scores.Stats_datastruct()
         s2 = scores.Stats_datastruct()
 
-        truth_set = set({2,3,4})
-        candidate_set_1 = set({1,2,3})
-        candidate_set_2 = set({2,3,4,5,6})
+        truth_set = {2, 3, 4}
+        candidate_set_1 = {1, 2, 3}
+        candidate_set_2 = {2, 3, 4, 5, 6}
         s1.compute_all(truth_set, candidate_set_1, 6)
         s2.compute_all(truth_set, candidate_set_2, 6)
 

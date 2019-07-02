@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-# ==================== ------ STD LIBRARIES ------- ====================
-from typing import List
-from enum import Enum, auto
 import logging
-import sys, os
+import os
+import sys
+# ==================== ------ STD LIBRARIES ------- ====================
+from enum import Enum, auto
 
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
 

@@ -26,7 +26,7 @@ TESTS
 '''
 
 
-class Humanizer():
+class Humanizer:
 
     def __init__(self):
         self.already_generated = set({})
@@ -71,7 +71,8 @@ class Humanizer():
 
         self.sanity_check(output_path, tmp_leng)
 
-    def sanity_check(self, output_path:pathlib.Path, previous_files_length: int):
+    @staticmethod
+    def sanity_check(output_path:pathlib.Path, previous_files_length: int):
         print(f"Sanity check ... .")
         p_sanity = output_path.resolve().glob('**/*')
         files_sanity = [x for x in p_sanity if x.is_file()]
@@ -135,7 +136,7 @@ def main():
     parser = argparse.ArgumentParser(description='Rename all files in the given directory and subdirectory')
     parser.add_argument('-p', '--path', dest='path', action='store', type=lambda p: pathlib.Path(p).absolute(), help='input path')
     parser.add_argument('-o', '--outpath', dest='outpath', action='store', type=lambda p: pathlib.Path(p).absolute(), help='output path')
-    parser.add_argument('--version', action='version', version='humanizer %s' % ("1.0.0"))
+    parser.add_argument('--version', action='version', version='humanizer %s' % "1.0.0")
 
     args = parser.parse_args()
     humanizer = Humanizer()

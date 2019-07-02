@@ -32,9 +32,9 @@ class TestInstance_database_conf(database_conf.Default_database_conf):
         self.DB_SOCKETS_PATH_TEST = pathlib.Path('carlhauser_server', 'Data', 'database_sockets', 'test.sock')
 
 
-class TestInstanceLauncher():
-    ''' Create a running instance of douglas-quaid, all linked on a unique test database
-        Modify the behavior of the core launcher handler, to use only one database. '''
+class TestInstanceLauncher:
+    """ Create a running instance of douglas-quaid, all linked on a unique test database
+        Modify the behavior of the core launcher handler, to use only one database. """
 
     def __init__(self):
         self.logger = logging.getLogger()
@@ -98,7 +98,7 @@ class TestInstanceLauncher():
         self.logger.debug(f"Configuration ws_conf : \n{pprint.pformat(json_encoder.encode(self.ws_conf))}")
 
     def create_modified_db_handler(self) -> database_start_stop.Database_StartStop:
-        ''' Create a database handler (start/stop), modify its configuration and launch the DB '''
+        """ Create a database handler (start/stop), modify its configuration and launch the DB """
 
         # Create database handler from configuration file
         self.db_handler = database_start_stop.Database_StartStop(db_conf=self.db_conf, handle_test_db=True)
@@ -120,7 +120,8 @@ class TestInstanceLauncher():
 
         return self.db_handler
 
-    def overwrite_socket_and_script_db_handler(self, db_handler: database_start_stop.Database_StartStop, db_conf: database_conf.Default_database_conf):
+    @staticmethod
+    def overwrite_socket_and_script_db_handler(db_handler: database_start_stop.Database_StartStop, db_conf: database_conf.Default_database_conf):
         # Replace all attributes of db_handler by test database values
 
         # Specific attributes
@@ -145,7 +146,7 @@ class TestInstanceLauncher():
         return db_handler
 
     def create_core_launcher(self):
-        ''' Create a core launcher and overwrite its configuraiton '''
+        """ Create a core launcher and overwrite its configuraiton """
 
         # Create launcher handler to perform other launching operation
         self.core_launcher = core.launcher_handler()
@@ -160,7 +161,7 @@ class TestInstanceLauncher():
         return self.core_launcher
 
     def launcher_core_launcher(self):
-        ''' Launch the whole "ecosystem" of workers around the database. Handled by the core '''
+        """ Launch the whole "ecosystem" of workers around the database. Handled by the core """
 
         self.core_launcher.start_adder_workers()
         self.core_launcher.start_requester_workers()

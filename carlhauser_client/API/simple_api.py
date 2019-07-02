@@ -15,7 +15,7 @@ from carlhauser_client.Helpers.environment_variable import get_homedir
 
 
 # ==================== ------ SERVER Flask API CALLER ------- ====================
-class Simple_API():
+class Simple_API:
     # Provides "Low-level" API calls
 
     def __init__(self, url, certificate_path):

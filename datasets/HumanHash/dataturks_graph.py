@@ -2,15 +2,12 @@
 # -*- coding: utf-8 -*-
 
 import argparse
+import json
 import pathlib
 import pprint
-import hashlib
-import shutil
-from typing import Set
-import json
+
 import matplotlib.pyplot as plt
 import numpy as np
-import collections
 
 
 def load_json(file_path: pathlib.Path):
@@ -27,7 +24,7 @@ def load_json(file_path: pathlib.Path):
     return data
 
 
-class DataturksGraph():
+class DataturksGraph:
 
     def __init__(self):
         self.to_export = None
@@ -75,7 +72,8 @@ class DataturksGraph():
 
         self.draw_plot(list_key, list_val, outputfile_path / "fig.pdf")
 
-    def draw_plot(self, labels, value, save_path: pathlib.Path):
+    @staticmethod
+    def draw_plot(labels, value, save_path: pathlib.Path):
         # Fixing random state for reproducibility
         np.random.seed(19680801)
 
@@ -106,7 +104,7 @@ def main():
     parser.add_argument('-p', '--path', dest='path', action='store', type=lambda p: pathlib.Path(p).absolute(), help='input json path (to file)')
     parser.add_argument('-f', '--filespath', dest='filespath', action='store', type=lambda p: pathlib.Path(p).absolute(), help='files path (to folder)')
     parser.add_argument('-o', '--outpath', dest='outpath', action='store', type=lambda p: pathlib.Path(p).absolute(), help='output json path (to folder)')
-    parser.add_argument('--version', action='version', version='humanizer %s' % ("1.0.0"))
+    parser.add_argument('--version', action='version', version='humanizer %s' % "1.0.0")
 
     args = parser.parse_args()
     parser = DataturksGraph()

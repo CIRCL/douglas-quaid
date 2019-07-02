@@ -1,18 +1,12 @@
 # -*- coding: utf-8 -*-
 
-import unittest
 import logging
 import pathlib
+import unittest
 from pprint import pformat
 
-from carlhauser_server.Helpers.environment_variable import get_homedir
-
 from carlhauser_client.API.extended_api import Extended_API, update_values_dict
-from common.Graph.graph_datastructure import GraphDataStruct
-from common.Graph.cluster import Cluster
-from common.Graph.edge import Edge
-from common.Graph.node import Node
-from common.Graph.metadata import Metadata, Source
+from carlhauser_server.Helpers.environment_variable import get_homedir
 
 
 class TestClusterMatcher(unittest.TestCase):

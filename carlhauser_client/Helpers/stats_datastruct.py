@@ -22,7 +22,7 @@ logging.config.fileConfig(str(logconfig_path))
 
 
 # ==================== ------ LAUNCHER ------- ====================
-class Stats_datastruct():
+class Stats_datastruct:
 
     def __init__(self):
         # Lost ? Go there : https://en.wikipedia.org/wiki/Sensitivity_and_specificity
@@ -147,10 +147,10 @@ class Stats_datastruct():
     # Operator overwrite
     # TODO : Review ">" operator
     def __gt__(self, other):
-        if (self.ACC is None or self.F1 is None or other.F1 is None or other.ACC is None):
+        if self.ACC is None or self.F1 is None or other.F1 is None or other.ACC is None:
             # Null scores can be "greater"
             return True
-        elif (self.ACC > other.ACC and self.F1 > other.F1):
+        elif self.ACC > other.ACC and self.F1 > other.F1:
             return True
         else:
             return False

@@ -17,7 +17,7 @@ import carlhauser_server.Configuration.feature_extractor_conf as feature_extract
 sys.path.append(os.path.abspath(os.path.pardir))
 
 
-class Picture_Hasher():
+class Picture_Hasher:
     def __init__(self, fe_conf: feature_extractor_conf):
         # STD attributes
         self.fe_conf = fe_conf

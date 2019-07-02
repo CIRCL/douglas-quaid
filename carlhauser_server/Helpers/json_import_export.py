@@ -13,9 +13,9 @@ import carlhauser_server.Configuration.template_conf as template_conf
 sys.path.append(os.path.abspath(os.path.pardir))
 
 class Custom_JSON_Encoder(json.JSONEncoder):
-    '''
+    """
     Custom JSON Encoder to store Enum and custom configuration objects (for example) of the framework
-    '''
+    """
 
     def default(self, o):
         if isinstance(o, pathlib.Path):

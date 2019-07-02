@@ -1,19 +1,11 @@
 # -*- coding: utf-8 -*-
 
-import subprocess
-import time
+import logging
 import unittest
 
-import redis
-import logging
-
-from carlhauser_server.Helpers.environment_variable import get_homedir
 import carlhauser_server.Configuration.database_conf as database_conf
 import carlhauser_server.Configuration.distance_engine_conf as distance_engine_conf
 import carlhauser_server.Configuration.feature_extractor_conf as feature_extractor_conf
-import carlhauser_server.DistanceEngine.distance_engine as distance_engine
-import carlhauser_server.Helpers.database_start_stop as database_start_stop
-import carlhauser_server.DatabaseAccessor.database_adder as database_adder
 
 
 class testDistanceEngine(unittest.TestCase):

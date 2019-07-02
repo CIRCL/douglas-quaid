@@ -2,13 +2,9 @@
 # -*- coding: utf-8 -*-
 
 import argparse
+import json
 import pathlib
 import pprint
-import hashlib
-import shutil
-from typing import Set
-import json
-
 
 
 def save_json(obj, file_path: pathlib.Path):
@@ -37,7 +33,7 @@ def load_json(file_path: pathlib.Path):
     return data
 
 
-class VisJSsparser():
+class VisJSsparser:
 
     def __init__(self):
         self.to_export = None
@@ -104,7 +100,7 @@ def main():
     parser = argparse.ArgumentParser(description='Parse visjs json, extract list of picture to delete, delete them, and save a "clean version" of the json.')
     parser.add_argument('-p', '--path', dest='path', action='store', type=lambda p: pathlib.Path(p).absolute(), help='input json path (to file)')
     parser.add_argument('-o', '--outpath', dest='outpath', action='store', type=lambda p: pathlib.Path(p).absolute(), help='output json path (to folder)')
-    parser.add_argument('--version', action='version', version='humanizer %s' % ("1.0.0"))
+    parser.add_argument('--version', action='version', version='humanizer %s' % "1.0.0")
 
     args = parser.parse_args()
     parser = VisJSsparser()

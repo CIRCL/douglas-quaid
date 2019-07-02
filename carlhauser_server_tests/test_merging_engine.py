@@ -1,19 +1,12 @@
 # -*- coding: utf-8 -*-
 
-import subprocess
-import time
+import logging
 import unittest
 
-import redis
-import logging
-
-from carlhauser_server.Helpers.environment_variable import get_homedir
-import carlhauser_server.Configuration.database_conf as database_conf
 import carlhauser_server.Configuration.distance_engine_conf as distance_engine_conf
 import carlhauser_server.Configuration.feature_extractor_conf as feature_extractor_conf
-import carlhauser_server.DistanceEngine.distance_engine as distance_engine
-import carlhauser_server.Helpers.database_start_stop as database_start_stop
 import carlhauser_server.DatabaseAccessor.database_adder as database_adder
+import carlhauser_server.DistanceEngine.distance_engine as distance_engine
 import carlhauser_server.DistanceEngine.merging_engine as merging_engine
 import carlhauser_server.DistanceEngine.scoring_datastrutures as sd
 import common.TestDBHandler.test_instance_launcher as test_database_handler
@@ -40,7 +33,7 @@ class testDistanceEngine(unittest.TestCase):
         print("\nPassing\n")
 
     def test_get_pareto_decision(self):
-        '''
+        """
         self.A_HASH = Algo_conf("A_HASH", False, 0.2, 0.6, distance_weight=1)
         self.P_HASH = Algo_conf("P_HASH", True, 0.2, 0.6, distance_weight=1)
         self.P_HASH_SIMPLE = Algo_conf("P_HASH_SIMPLE", False, 0.2, 0.6, distance_weight=1)
@@ -51,7 +44,7 @@ class testDistanceEngine(unittest.TestCase):
 
         # Visual Descriptors parameters
         self.ORB = Algo_conf("ORB", True, 0.2, 0.6, distance_weight=5)
-        '''
+        """
         self.merging_engine.fe_conf.A_HASH.decision_weight = 1
         self.merging_engine.fe_conf.P_HASH.decision_weight = 1
         self.merging_engine.fe_conf.D_HASH.decision_weight = 1
@@ -85,7 +78,7 @@ class testDistanceEngine(unittest.TestCase):
         self.assertEqual(answer, sd.DecisionTypes.MAYBE)
 
     def test_get_majority_decision(self):
-        '''
+        """
         self.A_HASH = Algo_conf("A_HASH", False, 0.2, 0.6, distance_weight=1)
         self.P_HASH = Algo_conf("P_HASH", True, 0.2, 0.6, distance_weight=1)
         self.P_HASH_SIMPLE = Algo_conf("P_HASH_SIMPLE", False, 0.2, 0.6, distance_weight=1)
@@ -96,7 +89,7 @@ class testDistanceEngine(unittest.TestCase):
 
         # Visual Descriptors parameters
         self.ORB = Algo_conf("ORB", True, 0.2, 0.6, distance_weight=5)
-        '''
+        """
         self.merging_engine.fe_conf.A_HASH.decision_weight = 1
         self.merging_engine.fe_conf.P_HASH.decision_weight = 1
         self.merging_engine.fe_conf.D_HASH.decision_weight = 1
@@ -158,7 +151,7 @@ class testDistanceEngine(unittest.TestCase):
         self.assertEqual(answer, sd.DecisionTypes.YES)
 
     def test_get_weighted_majority_decision(self):
-        '''
+        """
         self.A_HASH = Algo_conf("A_HASH", False, 0.2, 0.6, distance_weight=1)
         self.P_HASH = Algo_conf("P_HASH", True, 0.2, 0.6, distance_weight=1)
         self.P_HASH_SIMPLE = Algo_conf("P_HASH_SIMPLE", False, 0.2, 0.6, distance_weight=1)
@@ -169,7 +162,7 @@ class testDistanceEngine(unittest.TestCase):
 
         # Visual Descriptors parameters
         self.ORB = Algo_conf("ORB", True, 0.2, 0.6, distance_weight=5)
-        '''
+        """
 
         self.merging_engine.fe_conf.A_HASH.decision_weight = 1
         self.merging_engine.fe_conf.P_HASH.decision_weight = 1
@@ -243,7 +236,7 @@ class testDistanceEngine(unittest.TestCase):
         self.assertEqual(answer, sd.DecisionTypes.NO)
 
     def test_get_pyramid_decision(self):
-        '''
+        """
         self.A_HASH = Algo_conf("A_HASH", False, 0.2, 0.6, distance_weight=1)
         self.P_HASH = Algo_conf("P_HASH", True, 0.2, 0.6, distance_weight=1)
         self.P_HASH_SIMPLE = Algo_conf("P_HASH_SIMPLE", False, 0.2, 0.6, distance_weight=1)
@@ -254,7 +247,7 @@ class testDistanceEngine(unittest.TestCase):
 
         # Visual Descriptors parameters
         self.ORB = Algo_conf("ORB", True, 0.2, 0.6, distance_weight=5)
-        '''
+        """
 
         self.merging_engine.fe_conf.A_HASH.decision_weight = 1
         self.merging_engine.fe_conf.P_HASH.decision_weight = 1

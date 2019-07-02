@@ -23,7 +23,8 @@ import carlhauser_server.Helpers.json_import_export as json_import_export
 logconfig_path = (get_homedir() / pathlib.Path("carlhauser_client", "logging.ini")).resolve()
 logging.config.fileConfig(str(logconfig_path))
 
-class ClusterMatchingQualityEvaluator():
+
+class ClusterMatchingQualityEvaluator:
     def __init__(self):
         self.logger = logging.getLogger(__name__)
 
@@ -39,7 +40,6 @@ class ClusterMatchingQualityEvaluator():
         self.flush_memory()
 
         for pair in clusters_pairs:
-
             s = scores.Stats_datastruct()
 
             # Get members of both clusters
@@ -56,10 +56,10 @@ class ClusterMatchingQualityEvaluator():
 
         return clusters_pairs
 
-    def save_perf_results(self, save_path_perf : pathlib.Path):
+    def save_perf_results(self, save_path_perf: pathlib.Path):
         # Save performances results in a file as json (return the same structure)
 
-        perfs = {"scores":[ [str(e[0]), str(e[1]), str(e[2]) ] for e in self.clusters_with_perfs]}
+        perfs = {"scores": [[str(e[0]), str(e[1]), str(e[2])] for e in self.clusters_with_perfs]}
 
         # Compute mean score (from the list of scores)
         total = scores.merge_scores([s[2] for s in self.clusters_with_perfs])
@@ -70,4 +70,3 @@ class ClusterMatchingQualityEvaluator():
         self.logger.debug(f"Json saved in : {save_path_perf}")
 
         return total
-

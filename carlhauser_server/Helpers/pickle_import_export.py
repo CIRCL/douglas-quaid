@@ -19,7 +19,8 @@ class Pickler(metaclass=template_singleton.Singleton):
     def __init__(self):
         self.patch_Keypoint_pickiling()
 
-    def patch_Keypoint_pickiling(self):
+    @staticmethod
+    def patch_Keypoint_pickiling():
         # Create the bundling between class and arguements to save for Keypoint class
         # See : https://stackoverflow.com/questions/50337569/pickle-exception-for-cv2-boost-when-using-multiprocessing/50394788#50394788
         def _pickle_keypoint(keypoint): #  : cv2.KeyPoint
@@ -39,7 +40,8 @@ class Pickler(metaclass=template_singleton.Singleton):
         copyreg.pickle(cv2.KeyPoint().__class__, _pickle_keypoint)
 
     # non static, to be sure we patched it before use, only once
-    def get_object_from_pickle(self, pickle_obj):
+    @staticmethod
+    def get_object_from_pickle(pickle_obj):
         # Return an object from the pickle version of it
 
         # The protocol version used is detected automatically, so we do not
@@ -47,7 +49,8 @@ class Pickler(metaclass=template_singleton.Singleton):
         return cPickle.loads(pickle_obj)
 
     # non static, to be sure we patched it before use, only once
-    def get_pickle_from_object(self, obj):
+    @staticmethod
+    def get_pickle_from_object(obj):
         # Return a pickle version of an object
 
         # Pickle the 'data' dictionary using the highest protocol available = the faster (>json since v3)

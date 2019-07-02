@@ -1,6 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-
 ## #!flask/bin/python
 
 # Inspired from : https://github.com/D4-project/IPASN-History/blob/master/website/web/__init__.py
@@ -57,15 +54,16 @@ class EndpointAction(object):
 
 
 class FlaskAppWrapper(object):
-    def __init__(self, name, conf: webservice_conf, db_conf: database_conf):
+    def __init__(self, name, ws_conf: webservice_conf, db_conf: database_conf):
         # STD attributes
-        self.conf = conf
+        self.conf = ws_conf
         self.logger = logging.getLogger(__name__)
 
         # Specific attributes
         self.app = flask.Flask(name)
         # An accessor to push stuff in queues, mainly
         self.database_worker = database_worker.Database_Worker(db_conf=db_conf)
+        self.db_utils = None
 
     def run(self):
         # Handle SLL Certificate, if they are provided = use them, else = self sign a certificate on the fly
@@ -269,7 +267,8 @@ class FlaskAppWrapper(object):
         return result_json
         # Test it with curl 127.0.0.1:5000
 
-    def add_std_info(self, result_json):
+    @staticmethod
+    def add_std_info(result_json):
         result_json["Call_method"] = flask.request.method  # 'GET' or 'POST' ...
         result_json["Call_time"] = time.ctime()  # 'GET' or 'POST' ...
 
@@ -289,7 +288,7 @@ if __name__ == '__main__':
 
     # Create the Flask API and run it
     # Create Flask endpoint from configuration files
-    api = FlaskAppWrapper('api', conf=ws_conf, db_conf=db_conf)
+    api = FlaskAppWrapper('api', ws_conf=ws_conf, db_conf=db_conf)
     api.add_all_endpoints()
 
     # Run Flask API endpoint

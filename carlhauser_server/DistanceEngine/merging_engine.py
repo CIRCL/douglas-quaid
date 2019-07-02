@@ -89,7 +89,6 @@ class Merging_Engine:
         else:
             self.logger.error(f"A Cluster is empty but exists. Structural behavior error detected.")
             raise Exception("Empty cluster, but exists.")
-            return None
 
     def merge_pictures_decisions(self, decision_list: List[sd.DecisionTypes]) -> sd.DecisionTypes:
         # TODO : Complete merging / Improve
@@ -105,7 +104,6 @@ class Merging_Engine:
         else:
             self.logger.error(f"A Cluster is empty but exists. Structural behavior error detected.")
             raise Exception("Empty cluster, but exists.")
-            return None
 
     # ==================== ------ CLUSTER-CLUSTER DISTANCE ------- ====================
 
@@ -145,7 +143,8 @@ class Merging_Engine:
             raise Exception("Impossible to compute a weighted mean during algorithms outputs merging : \n"
                             "Did you put a not-null weight for activated algorithm ? Did you activated at least one algorithm ?")
 
-    def get_harmonic_mean_dict(self, matches_package: Dict[str, sd.AlgoMatch]) -> float:
+    @staticmethod
+    def get_harmonic_mean_dict(matches_package: Dict[str, sd.AlgoMatch]) -> float:
         # TODO !
         return 0
 
@@ -175,7 +174,8 @@ class Merging_Engine:
         # return sd.DecisionTypes[max(tmp_decisions, key=lambda key: tmp_decisions[key])]
         return self.get_prevalent_decision(tmp_decisions)
 
-    def get_prevalent_decision(self, decision_counter: Dict[sd.DecisionTypes, int]) -> sd.DecisionTypes:
+    @staticmethod
+    def get_prevalent_decision(decision_counter: Dict[sd.DecisionTypes, int]) -> sd.DecisionTypes:
         return sd.DecisionTypes[max(decision_counter, key=lambda key: decision_counter[key])]
 
     def get_pyramid_decision(self, matches_package: Dict[str, sd.AlgoMatch]) -> sd.DecisionTypes:

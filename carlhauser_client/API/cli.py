@@ -24,7 +24,7 @@ logging.config.fileConfig(str(logconfig_path))
 
 # ==================== ------ LAUNCHER ------- ====================
 
-class CLI():
+class CLI:
     # Command line interface for client side
 
     def __init__(self):
@@ -106,17 +106,17 @@ def main():
     parser_dump.add_argument('-c', dest='copyids', action='store_true', help='Copy ids in "image" field. Useful if mapping is used and ids are filenames.')
     parser_dump.set_defaults(func=cli.dump)
 
-    parser.add_argument('--version', action='version', version='douglas-quaid client cli %s' % ("1.0.0"))
+    parser.add_argument('--version', action='version', version='douglas-quaid client cli %s' % "1.0.0")
 
     # Parse argument, fetch the reference to the function to call, and call it
     args = parser.parse_args()
 
     try:
         func = args.func
+        func(args)
     except AttributeError:
         parser.error("too few arguments")
 
-    func(args)
 
 
 if __name__ == "__main__":
