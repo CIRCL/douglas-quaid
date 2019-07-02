@@ -7,7 +7,7 @@ import carlhauser_server.Configuration.database_conf as database_conf
 import carlhauser_server.Configuration.distance_engine_conf as distance_engine_conf
 import carlhauser_server.Configuration.feature_extractor_conf as feature_extractor_conf
 import carlhauser_server.Configuration.webservice_conf as webservice_conf
-import carlhauser_server.Helpers.database_start_stop as database_start_stop
+import carlhauser_server.Singletons.database_start_stop as database_start_stop
 import carlhauser_server.core as core
 from common.environment_variable import get_homedir
 from common.ImportExport.json_import_export import Custom_JSON_Encoder

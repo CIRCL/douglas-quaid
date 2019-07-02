@@ -35,12 +35,12 @@ class test_tests_database_launcher(unittest.TestCase):
         print("\n\nRUNNNING HERE\n\n")
 
     def test_correct_test_db_launch(self):
-        time.sleep(6)
+        time.sleep(1)
         print("\n\nRUNNNING HERE\n\n")
         self.assertTrue((get_homedir() / "carlhauser_server" / "Data" / "database_sockets" / "test.sock").exists())
         self.assertTrue(not (get_homedir() / "carlhauser_server" / "Data" / "database_sockets" / "cache.sock").exists())
         self.assertTrue(not (get_homedir() / "carlhauser_server" / "Data" / "database_sockets" / "storage.sock").exists())
-        time.sleep(6)
+        time.sleep(1)
 
 if __name__ == '__main__':
     unittest.main()

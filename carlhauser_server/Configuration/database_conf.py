@@ -44,6 +44,9 @@ class Default_database_conf(JSON_parsable_Dict):
         self.REQUESTER_WORKER_NB = 2
         self.REQUESTER_WAIT_SEC = 1
 
+        # ============================== TEST and EVALUATION PURPOSES ==============================
+        # self.
+
 
 def parse_from_dict(conf):
     return namedtuple("Default_database_conf", conf.keys())(*conf.values())

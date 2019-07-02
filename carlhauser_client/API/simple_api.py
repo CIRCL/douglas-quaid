@@ -11,7 +11,7 @@ import requests
 
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
 sys.path.append(os.path.abspath(os.path.pardir))
-from carlhauser_client.Helpers.environment_variable import get_homedir
+from common.environment_variable import get_homedir
 
 
 # ==================== ------ SERVER Flask API CALLER ------- ====================
