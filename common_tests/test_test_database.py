@@ -22,26 +22,13 @@ class test_tests_database_launcher(unittest.TestCase):
         # self.conf = configuration.Default_configuration()
         self.test_file_path = pathlib.Path.cwd() / pathlib.Path("tests/test_files")
 
-        self.test_db_handler = test_database_handler.TestInstanceLauncher()
-        db_test_conf = test_database_only_conf.TestInstance_database_conf()
-        print("\n[TESTS] LAUNCHING DATABASE AS TEST : NOTHING WILL BE WRITEN ON STORAGE OR CACHE DATABASES [TESTS]\n")
-        self.test_db_handler.create_full_instance(db_conf=db_test_conf)
-
-    def tearDown(self):
-        print("\n[TESTS] STOPPING DATABASE AS TEST : NOTHING WILL BE REMOVED ON STORAGE OR CACHE DATABASES [TESTS]\n")
-        self.test_db_handler.tearDown()
 
     def test_absolute_truth_and_meaning(self):
         self.assertTrue(True)
         print("\n\nRUNNNING HERE\n\n")
 
-    def test_correct_test_db_launch(self):
-        time.sleep(1)
-        print("\n\nRUNNNING HERE\n\n")
-        self.assertTrue((get_homedir() / "carlhauser_server" / "Data" / "database_sockets" / "test.sock").exists())
-        self.assertTrue(not (get_homedir() / "carlhauser_server" / "Data" / "database_sockets" / "cache.sock").exists())
-        self.assertTrue(not (get_homedir() / "carlhauser_server" / "Data" / "database_sockets" / "storage.sock").exists())
-        time.sleep(1)
+    def test_compute_score_for_one_threshold(self):
+        pass
 
 if __name__ == '__main__':
     unittest.main()

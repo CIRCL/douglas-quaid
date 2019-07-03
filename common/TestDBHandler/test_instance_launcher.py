@@ -2,7 +2,7 @@
 import logging
 import pathlib
 import pprint
-
+import time
 import carlhauser_server.Configuration.database_conf as database_conf
 import carlhauser_server.Configuration.distance_engine_conf as distance_engine_conf
 import carlhauser_server.Configuration.feature_extractor_conf as feature_extractor_conf
@@ -41,6 +41,7 @@ class TestInstanceLauncher:
         self.create_modified_db_handler()
         self.create_core_launcher()
         self.launcher_core_launcher()
+        # TODO: Flush database ? To be sure not to have artifacts ?
 
     def create_database_only_instance(self, db_conf: database_conf.Default_database_conf = None,
                                       dist_conf: distance_engine_conf.Default_distance_engine_conf = None,
@@ -72,10 +73,10 @@ class TestInstanceLauncher:
         # Log config files
         json_encoder = Custom_JSON_Encoder()
         self.logger.debug(f"Registered configuration files are ... ")
-        self.logger.debug(f"Configuration db_conf : \n{pprint.pformat(json_encoder.encode(self.db_conf))}")
-        self.logger.debug(f"Configuration dist_conf : \n{pprint.pformat(json_encoder.encode(self.dist_conf))}")
-        self.logger.debug(f"Configuration fe_conf : \n{pprint.pformat(json_encoder.encode(self.fe_conf))}")
-        self.logger.debug(f"Configuration ws_conf : \n{pprint.pformat(json_encoder.encode(self.ws_conf))}")
+        self.logger.debug(f"Configuration db_conf : \n{pprint.pformat(json_encoder.encode(self.db_conf), indent=2)}")
+        self.logger.debug(f"Configuration dist_conf : \n{pprint.pformat(json_encoder.encode(self.dist_conf), indent=2)}")
+        self.logger.debug(f"Configuration fe_conf : \n{pprint.pformat(json_encoder.encode(self.fe_conf), indent=2)}")
+        self.logger.debug(f"Configuration ws_conf : \n{pprint.pformat(json_encoder.encode(self.ws_conf), indent=2)}")
 
     def create_modified_db_handler(self) -> database_start_stop.Database_StartStop:
         """ Create a database handler (start/stop), modify its configuration and launch the DB """
@@ -149,5 +150,7 @@ class TestInstanceLauncher:
         self.core_launcher.start_requester_workers()
         self.core_launcher.start_feature_workers()
         self.core_launcher.start_webservice()
+
         self.core_launcher.check_worker()
+
 

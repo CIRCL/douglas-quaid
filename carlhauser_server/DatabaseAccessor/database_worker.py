@@ -216,7 +216,7 @@ class Database_Worker:
                 self.logger.info("HALT key detected. Worker received stop signal ... ")
                 return True
         except Exception as e:
-            self.logger.error(f"Impossible to know if the worker has to halt. Please review 'halt' key : {e}")
+            self.logger.error(f"Impossible to know if the worker has to halt : {e}")
             return False
 
     def run(self, sleep_in_sec: int):

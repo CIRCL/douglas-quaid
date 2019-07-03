@@ -6,6 +6,7 @@ import redis
 
 import carlhauser_server.DatabaseAccessor.database_worker as database_worker
 import common.TestDBHandler.test_instance_launcher as test_database_handler
+import common.TestDBHandler.test_database_only_conf as test_database_only_conf
 
 
 class testCarlHauserServer(unittest.TestCase):
@@ -15,7 +16,7 @@ class testCarlHauserServer(unittest.TestCase):
         self.logger = logging.getLogger()
 
         # Create configurations
-        self.test_db_conf = test_database_handler.TestInstance_database_conf()
+        self.test_db_conf = test_database_only_conf.TestInstance_database_conf()
 
         self.test_db_handler = test_database_handler.TestInstanceLauncher()
         self.test_db_handler.create_full_instance(db_conf=self.test_db_conf)

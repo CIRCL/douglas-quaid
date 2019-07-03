@@ -54,6 +54,16 @@ class Stats_datastruct:
         self.BM = None  # Informedness or Bookmaker Informedness (BM)
         self.MK = None  # Markedness (MK)
 
+
+    def reset_basics_values(self):
+        # Reset score
+        self.P = 0
+        self.N = 0
+        self.TP = 0
+        self.TN = 0
+        self.FP = 0
+        self.FN = 0
+
     def compute_TPR(self):
         self.TPR = self.TP / self.P
 

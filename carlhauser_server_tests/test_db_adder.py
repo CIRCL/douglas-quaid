@@ -17,6 +17,8 @@ import carlhauser_server.FeatureExtractor.picture_hasher as picture_hasher
 import carlhauser_server.FeatureExtractor.picture_orber as picture_orber
 import common.TestDBHandler.test_instance_launcher as test_database_handler
 from common.environment_variable import get_homedir
+import common.TestDBHandler.test_database_only_conf as test_database_only_conf
+from carlhauser_server.Configuration.algo_conf import Algo_conf
 
 
 class testDBAdder(unittest.TestCase):
@@ -28,18 +30,18 @@ class testDBAdder(unittest.TestCase):
         self.test_file_path = get_homedir() / pathlib.Path("carlhauser_server_tests/test_DistanceEngine/")
 
         # Create configurations
-        self.test_db_conf = test_database_handler.TestInstance_database_conf()
+        self.test_db_conf = test_database_only_conf.TestInstance_database_conf()
         self.dist_conf = distance_engine_conf.Default_distance_engine_conf()
         self.fe_conf = feature_extractor_conf.Default_feature_extractor_conf()
 
-        self.fe_conf.A_HASH = feature_extractor_conf.Algo_conf("A_HASH", False, 0.2, 0.6, distance_weight=1)
-        self.fe_conf.P_HASH = feature_extractor_conf.Algo_conf("P_HASH", True, 0.2, 0.6, distance_weight=1)
-        self.fe_conf.P_HASH_SIMPLE = feature_extractor_conf.Algo_conf("P_HASH_SIMPLE", False, 0.2, 0.6, distance_weight=1)
-        self.fe_conf.D_HASH = feature_extractor_conf.Algo_conf("D_HASH", True, 0.2, 0.6, distance_weight=1)
-        self.fe_conf.D_HASH_VERTICAL = feature_extractor_conf.Algo_conf("D_HASH_VERTICAL", False, 0.2, 0.6, distance_weight=1)
-        self.fe_conf.W_HASH = feature_extractor_conf.Algo_conf("W_HASH", False, 0.2, 0.6, distance_weight=1)
-        self.fe_conf.TLSH = feature_extractor_conf.Algo_conf("TLSH", True, 0.2, 0.6, distance_weight=1)
-        self.fe_conf.ORB = feature_extractor_conf.Algo_conf("ORB", True, 0.2, 0.6, distance_weight=1)
+        self.fe_conf.A_HASH = Algo_conf("A_HASH", False, 0.2, 0.6, distance_weight=1)
+        self.fe_conf.P_HASH = Algo_conf("P_HASH", True, 0.2, 0.6, distance_weight=1)
+        self.fe_conf.P_HASH_SIMPLE = Algo_conf("P_HASH_SIMPLE", False, 0.2, 0.6, distance_weight=1)
+        self.fe_conf.D_HASH = Algo_conf("D_HASH", True, 0.2, 0.6, distance_weight=1)
+        self.fe_conf.D_HASH_VERTICAL = Algo_conf("D_HASH_VERTICAL", False, 0.2, 0.6, distance_weight=1)
+        self.fe_conf.W_HASH = Algo_conf("W_HASH", False, 0.2, 0.6, distance_weight=1)
+        self.fe_conf.TLSH = Algo_conf("TLSH", True, 0.2, 0.6, distance_weight=1)
+        self.fe_conf.ORB = Algo_conf("ORB", True, 0.2, 0.6, distance_weight=1)
         self.fe_conf.list_algos = [self.fe_conf.A_HASH, self.fe_conf.P_HASH, self.fe_conf.P_HASH_SIMPLE,
                                    self.fe_conf.D_HASH, self.fe_conf.D_HASH_VERTICAL, self.fe_conf.W_HASH,
                                    self.fe_conf.TLSH,

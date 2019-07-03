@@ -7,6 +7,7 @@ import os
 import pathlib
 import sys
 from typing import List
+import time
 
 import carlhauser_server.Configuration.database_conf as database_conf
 import carlhauser_server.Configuration.distance_engine_conf as distance_engine_conf
@@ -110,6 +111,13 @@ class Worker_StartStop(object, metaclass=Singleton):
         self.mapping.get(worker_type).kill_all_processus()
 
     # ==================== ------ UTLITIES ON WORKERS ------- ====================
+    def wait_for_worker_startup(self, max_wait=60):
+
+        # TODO !
+        time.sleep(1)
+
+        return True
+
     def wait_for_worker_shutdown(self, max_wait=60):
         # Send signal to all processes to stop (via redis database). Wait while processes are still running,
         # in the limit of a maximal amount of time. Send back a boolean to notify if all workers had been stopped, or not.

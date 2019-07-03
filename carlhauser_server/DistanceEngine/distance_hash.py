@@ -16,6 +16,7 @@ import carlhauser_server.Configuration.feature_extractor_conf as feature_extract
 import carlhauser_server.DistanceEngine.scoring_datastrutures as sd
 
 sys.path.append(os.path.abspath(os.path.pardir))
+from carlhauser_server.Configuration.algo_conf import Algo_conf
 
 
 class Distance_Hash:
@@ -99,7 +100,7 @@ class Distance_Hash:
 
         return answer
 
-    def add_results(self, algo_conf: feature_extractor_conf.Algo_conf, pic_package_from, pic_package_to, answer: Dict) -> Dict:
+    def add_results(self, algo_conf: Algo_conf, pic_package_from, pic_package_to, answer: Dict) -> Dict:
         # Add results to answer dict, depending on the algorithm name we want to compute
         # Ex : Input {} -> Output {"P-HASH":{"name":"P-HASH", "distance":0.3,"decision":YES}}
         algo_name = algo_conf.get('algo_name')
@@ -133,7 +134,7 @@ class Distance_Hash:
     # ==================== ------ DECISIONS ------- ====================
 
     @staticmethod
-    def compute_decision_from_distance(algo_conf: feature_extractor_conf.Algo_conf, dist: float) -> sd.DecisionTypes:
+    def compute_decision_from_distance(algo_conf: Algo_conf, dist: float) -> sd.DecisionTypes:
         # From a distance between hashes, gives a decision : is it a match or not ? Or maybe ?
 
         if dist <= algo_conf.get('threshold_maybe'):

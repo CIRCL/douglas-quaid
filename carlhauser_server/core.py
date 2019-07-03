@@ -44,8 +44,8 @@ class launcher_handler(metaclass=template_singleton.Singleton):
         self.di_conf = distance_engine_conf.Default_distance_engine_conf()
 
         # Handlers
-        self.db_handler = None
-        self.worker_handler = None
+        self.db_handler : database_start_stop.Database_StartStop = None
+        self.worker_handler : worker_start_stop.Worker_StartStop = None
 
     def launch(self):
         # Launch elements
@@ -57,6 +57,7 @@ class launcher_handler(metaclass=template_singleton.Singleton):
         self.start_feature_workers()
         self.start_webservice()
 
+        self.worker_handler.wait_for_worker_startup()
         self.check_worker()
 
         # TODO : # If the webservice is down, then we want to shutdown everything

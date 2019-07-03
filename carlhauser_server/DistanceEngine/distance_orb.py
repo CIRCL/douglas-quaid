@@ -18,6 +18,7 @@ import carlhauser_server.Configuration.feature_extractor_conf as feature_extract
 import carlhauser_server.DistanceEngine.scoring_datastrutures as sd
 
 sys.path.append(os.path.abspath(os.path.pardir))
+from carlhauser_server.Configuration.algo_conf import Algo_conf
 
 
 class Distance_ORB:
@@ -40,7 +41,7 @@ class Distance_ORB:
         # Sanity check :
         if pic_package_from["ORB_DESCRIPTORS"] is None or pic_package_to["ORB_DESCRIPTORS"] is None:
             self.logger.debug("One the ORB descriptors list is None in orb distance.")
-            # raise Exception("None ORB descriptors in orb distance.")
+            raise Exception("None ORB descriptors in orb distance.")
 
         try:
             # Note : @image must be a PIL instance.
@@ -60,7 +61,7 @@ class Distance_ORB:
 
         return answer
 
-    def add_results(self, algo_conf: feature_extractor_conf.Algo_conf, pic_package_from: Dict, pic_package_to: Dict, answer: Dict) -> Dict:
+    def add_results(self, algo_conf: Algo_conf, pic_package_from: Dict, pic_package_to: Dict, answer: Dict) -> Dict:
         # Add results to answer dict, depending on the algorithm name we want to compute
         # Ex : Input {} -> Output {"ORB":{"name":"ORB", "distance":0.3,"decision":YES}}
         algo_name = algo_conf.get('algo_name')
@@ -114,7 +115,7 @@ class Distance_ORB:
     # ==================== ------ DECISIONS ------- ====================
 
     @staticmethod
-    def compute_decision_from_distance(algo_conf: feature_extractor_conf.Algo_conf, dist: float) -> sd.DecisionTypes:
+    def compute_decision_from_distance(algo_conf: Algo_conf, dist: float) -> sd.DecisionTypes:
         # From a distance between orb distance, gives a decision : is it a match or not ? Or maybe ?
 
         if dist <= algo_conf.get('threshold_maybe'):
