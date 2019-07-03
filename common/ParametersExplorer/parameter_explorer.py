@@ -12,7 +12,7 @@ import traceback
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
 sys.path.append(os.path.abspath(os.path.pardir))
 from common.environment_variable import get_homedir
-import carlhauser_server.core as core
+import carlhauser_server.instance_handler as core
 
 import carlhauser_client.EvaluationTools.Internal_clustering_Quality_Evaluator.internal_clustering_quality_evaluator as evaluator
 import common.PerformanceDatastructs.stats_datastruct as scores
@@ -65,7 +65,7 @@ class ParameterExplorer:
             # Put configuration in place
             if self.server_launcher is not None:
                 del self.server_launcher
-            self.server_launcher = core.launcher_handler()
+            self.server_launcher = core.Instance_Handler()
             self.server_launcher.di_conf.MAX_DIST_FOR_NEW_CLUSTER = curr_threshold
 
             ''' 

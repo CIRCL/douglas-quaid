@@ -149,17 +149,14 @@ class GraphExtractor:
         # Compute a complete run of the library on a folder, to extract the graph of proximity from/for each picture
         # Not as efficient as it could be, as it is not the normal way of work of the library
 
-        # ========= MANUAL EVALUATION =========
-        visjs = self.load_visjs_to_graphe(visjs_json_path)
-
-        # ========= AUTO EVALUATION =========
+        # ========= Get raw distance measures from DB =========
         requests_result = self.send_pictures_and_dump(image_folder)
 
         # Save to file
         self.save_result_to_file(requests_result, output_path / "requests_result.json")
         self.logger.debug(f"Results raw json saved.")
 
-        # ========= GRAPH BUILDING =========
+        # ========= GRAPH BUILDING from RAW DISTANCE MEASURES =========
         tmp_graph = self.construct_graph_from_results(requests_result)
 
         # Save to file
@@ -168,13 +165,16 @@ class GraphExtractor:
 
         # ========= GRAPH QUALITY EVALUATION =========
         if visjs_json_path is not None:
+            visjs = self.load_visjs_to_graphe(visjs_json_path)
             perf_eval = graph_quality_evaluator.GraphQualityEvaluator()
-            perfs = perf_eval.evaluate_performance(tmp_graph, visjs)  # graph ==> Quality score for each
+            perfs_list = perf_eval.evaluate_performance(tmp_graph, visjs)  # graph ==> Quality score for each
 
             # Save to file
-            self.save_result_to_file(perfs, output_path / "graph_perfs.json")
+            self.save_result_to_file(perfs_list, output_path / "graph_perfs.json")
             self.logger.debug(f"Graph performances json saved.")
-            return perfs
+            return perfs_list
+        else :
+            self.logger.error("No VISJS graph path provided (ground truth file) in graph_extractor. Quality evaluation of the graph had been skip.")
 
 
 def test():

@@ -5,8 +5,8 @@ import unittest
 import redis
 
 import carlhauser_server.DatabaseAccessor.database_worker as database_worker
-import common.TestDBHandler.test_instance_launcher as test_database_handler
-import common.TestDBHandler.test_database_only_conf as test_database_only_conf
+import common.TestInstanceLauncher.test_instance_launcher as test_database_handler
+import common.TestInstanceLauncher.test_database_conf as test_database_only_conf
 
 
 class testCarlHauserServer(unittest.TestCase):

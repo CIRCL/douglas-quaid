@@ -8,7 +8,7 @@ import carlhauser_server.Configuration.distance_engine_conf as distance_engine_c
 import carlhauser_server.Configuration.feature_extractor_conf as feature_extractor_conf
 import carlhauser_server.Configuration.webservice_conf as webservice_conf
 import carlhauser_server.Singletons.database_start_stop as database_start_stop
-import carlhauser_server.core as core
+import carlhauser_server.instance_handler as core
 from common.environment_variable import get_homedir
 from common.ImportExport.json_import_export import Custom_JSON_Encoder
 
@@ -29,7 +29,7 @@ class TestInstanceLauncher:
         self.fe_conf : feature_extractor_conf.Default_feature_extractor_conf = None
         self.ws_conf : webservice_conf.Default_webservice_conf = None
 
-        self.core_launcher : core.launcher_handler = None
+        self.core_launcher : core.Instance_Handler = None
 
     # ============================== LAUNCHER ACTIONS ==============================
     def create_full_instance(self, db_conf: database_conf.Default_database_conf = None,
@@ -130,7 +130,7 @@ class TestInstanceLauncher:
         """ Create a core launcher and overwrite its configuraiton """
 
         # Create launcher handler to perform other launching operation
-        self.core_launcher = core.launcher_handler()
+        self.core_launcher = core.Instance_Handler()
 
         # Overwrite configuration
         self.core_launcher.db_conf = self.db_conf

@@ -12,6 +12,7 @@ from typing import List, Set
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
 sys.path.append(os.path.abspath(os.path.pardir))
 from common.environment_variable import get_homedir
+from carlhauser_server.Configuration.template_conf import JSON_parsable_Dict
 
 # from . import helpers
 
@@ -22,7 +23,7 @@ logging.config.fileConfig(str(logconfig_path))
 
 
 # ==================== ------ LAUNCHER ------- ====================
-class Stats_datastruct:
+class Stats_datastruct(JSON_parsable_Dict):
 
     def __init__(self):
         # Lost ? Go there : https://en.wikipedia.org/wiki/Sensitivity_and_specificity

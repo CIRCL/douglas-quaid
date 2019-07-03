@@ -15,9 +15,9 @@ import carlhauser_server.DatabaseAccessor.database_adder as database_adder
 import carlhauser_server.DistanceEngine.distance_engine as distance_engine
 import carlhauser_server.FeatureExtractor.picture_hasher as picture_hasher
 import carlhauser_server.FeatureExtractor.picture_orber as picture_orber
-import common.TestDBHandler.test_instance_launcher as test_database_handler
+import common.TestInstanceLauncher.test_instance_launcher as test_database_handler
 from common.environment_variable import get_homedir
-import common.TestDBHandler.test_database_only_conf as test_database_only_conf
+import common.TestInstanceLauncher.test_database_conf as test_database_only_conf
 from carlhauser_server.Configuration.algo_conf import Algo_conf
 
 

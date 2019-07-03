@@ -11,14 +11,14 @@ import carlhauser_server.Configuration.database_conf as database_conf
 import carlhauser_server.Configuration.distance_engine_conf as distance_engine_conf
 import carlhauser_server.Configuration.webservice_conf as webservice_conf
 import carlhauser_server.Singletons.database_start_stop as database_start_stop
-import carlhauser_server.core as core
+import carlhauser_server.instance_handler as core
 import common.Graph.graph_datastructure as graph_datastructure
 import common.ImportExport.json_import_export as json_import_export
-import common.TestDBHandler.test_instance_launcher as test_database_handler
+import common.TestInstanceLauncher.test_instance_launcher as test_database_handler
 from carlhauser_server.Configuration import feature_extractor_conf as feature_extractor_conf
 from common.ImportExport.json_import_export import Custom_JSON_Encoder
 from common.environment_variable import get_homedir
-import common.TestDBHandler.test_database_only_conf as test_database_only_conf
+import common.TestInstanceLauncher.test_database_conf as test_database_only_conf
 from carlhauser_server.Configuration.algo_conf import Algo_conf
 from carlhauser_client.EvaluationTools.GraphExtraction.graph_extractor import GraphExtractor
 
@@ -140,7 +140,7 @@ class Calibrator:
         # Launch an evaluator client to extract the graphe
         # TODO : Create client : myclient = AlgoEvaluatorClient
         graph_extractor = GraphExtractor()
-        graph_extractor.launch(image_folder=folder_of_pictures,
+        perfs_list = graph_extractor.launch(image_folder=folder_of_pictures,
                                visjs_json_path=ground_truth_file,
                                output_path=output_folder)
 
@@ -148,10 +148,12 @@ class Calibrator:
         self.test_db_handler.tearDown()
 
         # Evaluate the graphe to find thresholds
+        # TODO : work with perfs_list
 
         # Construct result algo_conf depending on thresholds
+        # TODO : work with perfs_list
 
-        return None
+        return perfs_list
 
     def generate_feature_conf(self, to_calibrate_algo: Algo_conf) -> feature_extractor_conf.Default_feature_extractor_conf:
         fe_conf = feature_extractor_conf.Default_feature_extractor_conf()

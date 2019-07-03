@@ -9,8 +9,8 @@ import carlhauser_server.DatabaseAccessor.database_adder as database_adder
 import carlhauser_server.DistanceEngine.distance_engine as distance_engine
 import carlhauser_server.DistanceEngine.merging_engine as merging_engine
 import carlhauser_server.DistanceEngine.scoring_datastrutures as sd
-import common.TestDBHandler.test_instance_launcher as test_database_handler
-import common.TestDBHandler.test_database_only_conf as test_database_only_conf
+import common.TestInstanceLauncher.test_instance_launcher as test_database_handler
+import common.TestInstanceLauncher.test_database_conf as test_database_only_conf
 
 
 class testDistanceEngine(unittest.TestCase):

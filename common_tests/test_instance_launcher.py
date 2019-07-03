@@ -5,8 +5,8 @@ import os
 import sys
 
 sys.path.append(os.path.abspath(os.path.pardir))
-import common.TestDBHandler.test_instance_launcher as test_database_handler
-import common.TestDBHandler.test_database_only_conf as test_database_only_conf
+import common.TestInstanceLauncher.test_instance_launcher as test_database_handler
+import common.TestInstanceLauncher.test_database_conf as test_database_only_conf
 from common.environment_variable import get_homedir
 
 import pathlib

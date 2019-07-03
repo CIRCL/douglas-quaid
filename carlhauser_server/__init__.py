@@ -1,1 +1,1 @@
-from .core import launcher_handler
+from .instance_handler import Instance_Handler

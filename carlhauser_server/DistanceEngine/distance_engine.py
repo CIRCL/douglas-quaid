@@ -18,6 +18,8 @@ import carlhauser_server.DistanceEngine.distance_orb as distance_orb
 import carlhauser_server.DistanceEngine.merging_engine as merging_engine
 import carlhauser_server.DistanceEngine.scoring_datastrutures as scoring_datastrutures
 
+from common.CustomException import AlgoFeatureNotPresentError
+
 sys.path.append(os.path.abspath(os.path.pardir))
 
 
@@ -44,16 +46,29 @@ class Distance_Engine:
     def get_dist_and_decision_algos_to_algos(self, pic_package_from, pic_package_to) -> Dict[str, scoring_datastrutures.AlgoMatch]:
         # Compute a list of distance from two image representation
 
+        merged_dict = {}
         # Get hash distances
-        hash_dict = self.distance_hash.hash_distance(pic_package_from, pic_package_to)
-        self.logger.debug(f"Computed hashes distance : {hash_dict}")
+        try :
+            hash_dict = self.distance_hash.hash_distance(pic_package_from, pic_package_to)
+            merged_dict.update(hash_dict)
+            self.logger.debug(f"Computed hashes distance : {hash_dict}")
+        except AlgoFeatureNotPresentError as e :
+            self.logger.warning(f"No feature present for hashing algorithms : {e}")
+        # except Exception as e :
+        #     self.logger.debug(f"Other error : {e}")
 
         # Get ORB distances
-        orb_dict = self.distance_orb.orb_distance(pic_package_from, pic_package_to)
-        self.logger.debug(f"Computed orb distance : {orb_dict}")
+        try :
+            orb_dict = self.distance_orb.orb_distance(pic_package_from, pic_package_to)
+            merged_dict.update(orb_dict)
+            self.logger.debug(f"Computed orb distance : {orb_dict}")
+        except AlgoFeatureNotPresentError as e :
+            self.logger.warning(f"No feature present for orbing algorithms : {e}")
+        # except Exception as e :
+        #     self.logger.debug(f"Other error : {e}")
 
         # Merge distances dictionaries
-        merged_dict = {**hash_dict, **orb_dict}
+        # merged_dict = {**hash_dict, **orb_dict} # Old version not usable with try/catch
         self.logger.debug(f"Distance dict : {merged_dict}")
 
         return merged_dict

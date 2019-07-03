@@ -100,8 +100,8 @@ class GraphQualityEvaluator:
 
         self.logger.debug(cand_graph)
         self.logger.debug(gt_graph)
-        save_json(cand_graph, pathlib.Path("./cand_graph"))
-        save_json(gt_graph, pathlib.Path("./gt_graph"))
+        save_json(cand_graph.export_as_dict(), pathlib.Path("./cand_graph.json"))
+        save_json(gt_graph.export_as_dict(), pathlib.Path("./gt_graph.json"))
 
 
 

@@ -33,7 +33,7 @@ logging.config.fileConfig(str(logconfig_path))
 
 
 # ==================== ------ LAUNCHER ------- ====================
-class launcher_handler(metaclass=template_singleton.Singleton):
+class Instance_Handler(metaclass=template_singleton.Singleton):
     def __init__(self):
         self.logger = logging.getLogger(__name__)
 
@@ -196,7 +196,7 @@ def exit_gracefully(signum, frame):
     # signal.signal(signal.SIGINT, original_sigint) # TODO : To put back ?
 
     try:
-        stopper = launcher_handler()
+        stopper = Instance_Handler()
         print("Wait for the extinction ... ")
         stopper.stop()
         sys.exit(1)
@@ -210,7 +210,7 @@ def exit_gracefully(signum, frame):
 
 
 if __name__ == '__main__':
-    launcher = launcher_handler()
+    launcher = Instance_Handler()
 
     try:
         # Setting SIGINT handler
