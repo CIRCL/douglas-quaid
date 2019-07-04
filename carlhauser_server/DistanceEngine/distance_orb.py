@@ -41,7 +41,7 @@ class Distance_ORB:
 
         # Sanity check :
         if pic_package_from.get("ORB_DESCRIPTORS",None) is None or pic_package_to.get("ORB_DESCRIPTORS",None) is None:
-            self.logger.debug("One the ORB descriptors list is None in orb distance.")
+            self.logger.warning(f"ORB descriptors are NOT presents in the results.")
             raise AlgoFeatureNotPresentError("None ORB descriptors in orb distance.")
 
         try:
