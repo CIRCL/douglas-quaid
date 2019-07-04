@@ -42,6 +42,9 @@ class GraphDataStruct:
         self.edges.append(edge)
         if edge._from in self.clusters.keys():
             self.clusters[edge._from].add_member_id(edge._to)
+        if edge._to in self.clusters.keys():
+            self.clusters[edge._to].add_member_id(edge._from)
+        # TODO ? Other way too ?
 
     '''
     def rem_edge(self, edge:edge.Edge):
@@ -59,6 +62,18 @@ class GraphDataStruct:
         for n in nodes:
             self.nodes[n.id] = n
             self.edges.append(edge.Edge(cluster.id, n.id, color))
+
+    # ==================== Request ====================
+
+    def are_in_same_cluster(self, id_1, id_2):
+        # Return True if both nodes id are in this cluster
+
+        are_in_same = False
+        for c in self.clusters.values() :
+            if c.are_in_same_cluster(id_1, id_2) :
+                return True
+        # TODO : make test !
+        return are_in_same
 
     # ==================== Conversion ====================
 

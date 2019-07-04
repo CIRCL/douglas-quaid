@@ -37,13 +37,14 @@ class Calibrator:
         self.ground_truth_file = None
         self.output_folder = None
         '''
-        self.db_conf : test_database_only_conf.TestInstance_database_conf = None
-        self.fe_conf : feature_extractor_conf.Default_feature_extractor_conf = None
-        self.test_db_handler : test_database_handler.TestInstanceLauncher = None
+        self.db_conf: test_database_only_conf.TestInstance_database_conf = None
+        self.fe_conf: feature_extractor_conf.Default_feature_extractor_conf = None
+        self.test_db_handler: test_database_handler.TestInstanceLauncher = None
 
     def calibrate_douglas_quaid(self, folder_of_pictures: pathlib.Path,
                                 ground_truth_file: pathlib.Path,
                                 output_folder: pathlib.Path = None) -> List[Algo_conf]:
+        # Outputs a configuration file optimized for the provided dataset and ground truth file
 
         # Check inputs
         if not folder_of_pictures.exists():
@@ -61,15 +62,15 @@ class Calibrator:
         self.logger.debug("Paths provided checked and corrects.")
 
         # Load ground truth file / Verify ground truth file
-        visjs = json_import_export.load_json(ground_truth_file)
-        graph = graph_datastructure.GraphDataStruct.load_from_dict(visjs)
-        self.logger.debug("Ground truth file loaded as graph.")
+        # visjs = json_import_export.load_json(ground_truth_file)
+        # graph = graph_datastructure.GraphDataStruct.load_from_dict(visjs)
+        # self.logger.debug("Ground truth file loaded as graph.")
 
         # Load pictures / verify pictures
-        p = folder_of_pictures.resolve().glob('**/*')
-        files = [x for x in p if x.is_file()]
-        files.sort()
-        self.logger.debug(f"{len(files)} files readable in {folder_of_pictures} and below")
+        # p = folder_of_pictures.resolve().glob('**/*')
+        # files = [x for x in p if x.is_file()]
+        # files.sort()
+        # self.logger.debug(f"{len(files)} files readable in {folder_of_pictures} and below")
 
         # Call each algorithm evaluator
         calibrated_algos = self.algorithms_evaluator(folder_of_pictures, ground_truth_file, output_folder)
@@ -82,16 +83,21 @@ class Calibrator:
     def algorithms_evaluator(self, folder_of_pictures: pathlib.Path,
                              ground_truth_file: pathlib.Path,
                              output_folder: pathlib.Path) -> List[Algo_conf]:
-        # Evaluate one algorithm
+        # Evaluate all algorithms on the specific dataset, returns the "best" configuration file
         # Uses ground truth files and provided pictures list
 
         default_feature_conf = feature_extractor_conf.Default_feature_extractor_conf()
         list_calibrated_algos = []
 
+        # For each possible algorithm, evaluate the algorithms
+        # TODO : Restrict the algorithms list
         for algo in default_feature_conf.list_algos:
+            # Create the output folder for this algo
             tmp_output_folder_algo = (output_folder / algo.algo_name)
             tmp_output_folder_algo.mkdir(exist_ok=True)
+            # Evaluation of this algorithm
             calibrated_algo = self.algorithm_evaluator(folder_of_pictures, ground_truth_file, algo, tmp_output_folder_algo)
+            # Keeping the best configuration for this algorithm
             list_calibrated_algos.append(calibrated_algo)
 
         return list_calibrated_algos
@@ -119,30 +125,21 @@ class Calibrator:
         # Uses the ground truth files and provided pictures list
 
         # Configurations files
-        self.db_conf = test_database_only_conf.TestInstance_database_conf()
-        self.fe_conf = self.generate_feature_conf(to_calibrate_algo)
-
-
-        '''
-        self.dist_conf = None
-        self.fe_conf = # TODO : Construct feature extractor configuration
-        self.ws_conf = None
-        self.core_launcher = None
-        '''
-
-        # TODO : Choose threshold for server == Modify db conf/feature conf / ...
+        self.db_conf = test_database_only_conf.TestInstance_database_conf()  # For test sockets only
+        self.fe_conf = self.generate_feature_conf(to_calibrate_algo)  # For 1 algo only
+        self.de_conf = self.generate_distance_conf()  # For internal inter distance cluster that allow to test all pictures
 
         # Launch a modified server
         self.test_db_handler = test_database_handler.TestInstanceLauncher()
         self.test_db_handler.create_full_instance(db_conf=self.db_conf, fe_conf=self.fe_conf)
 
-        time.sleep(5)
+        time.sleep(5) # Necessary for the instance to be ready.
+
         # Launch an evaluator client to extract the graphe
-        # TODO : Create client : myclient = AlgoEvaluatorClient
         graph_extractor = GraphExtractor()
-        perfs_list = graph_extractor.launch(image_folder=folder_of_pictures,
-                               visjs_json_path=ground_truth_file,
-                               output_path=output_folder)
+        perfs_list = graph_extractor.get_best_algorithm_threshold(image_folder=folder_of_pictures,
+                                                                visjs_json_path=ground_truth_file,
+                                                                output_path=output_folder)
 
         # Kill server instance
         self.test_db_handler.tearDown()
@@ -156,6 +153,8 @@ class Calibrator:
         return perfs_list
 
     def generate_feature_conf(self, to_calibrate_algo: Algo_conf) -> feature_extractor_conf.Default_feature_extractor_conf:
+        # Generate a feature configuration object with only one algorithm activated
+
         fe_conf = feature_extractor_conf.Default_feature_extractor_conf()
 
         DEFAULT_LOW = 0
@@ -204,3 +203,11 @@ class Calibrator:
         fe_conf.DECISION_MERGING_METHOD = feature_extractor_conf.Decision_MergingMethod.MAJORITY.name
 
         return fe_conf
+
+    def generate_distance_conf(self) -> distance_engine_conf.Default_distance_engine_conf:
+        # Generate a distance configuration object which is less performant but with maximal score in quality
+
+        de_conf = distance_engine_conf.Default_distance_engine_conf()
+        de_conf.MAX_DIST_FOR_NEW_CLUSTER = 1  # Only one big cluter with a lot of pictures. Will check all pictures.
+
+        return de_conf

@@ -15,7 +15,7 @@ FORMATTER = logging.Formatter('%(asctime)s - + %(relativeCreated)d - %(name)s - 
 class Edge:
     # Handle an edge of the graph
 
-    def __init__(self, _from, _to, color="gray", label=None, value=None):
+    def __init__(self, _from, _to, color="gray", label : str =None, value=None):
         self._from = _from
         self._to = _to
 

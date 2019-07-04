@@ -55,7 +55,6 @@ class Stats_datastruct(JSON_parsable_Dict):
         self.BM = None  # Informedness or Bookmaker Informedness (BM)
         self.MK = None  # Markedness (MK)
 
-
     def reset_basics_values(self):
         # Reset score
         self.P = 0
@@ -64,36 +63,58 @@ class Stats_datastruct(JSON_parsable_Dict):
         self.TN = 0
         self.FP = 0
         self.FN = 0
+        self.total_nb_elements = 0
 
     def compute_TPR(self):
-        self.TPR = self.TP / self.P
+        self.TPR = self.TP / self.P if self.P != 0 else 0
 
     def compute_TNR(self):
-        self.TNR = self.TN / self.N
+        self.TNR = self.TN / self.N if self.N != 0 else 0
 
     def compute_PPV(self):
-        self.PPV = self.TP / (self.TP + self.FP)
+        self.PPV = self.TP / (self.TP + self.FP) if (self.TP + self.FP) != 0 else 0
 
     def compute_NPV(self):
-        self.NPV = self.TN / (self.TN + self.FN)
+        self.NPV = self.TN / (self.TN + self.FN) if (self.TN + self.FN) != 0 else 0
 
     def compute_FNR(self):
-        self.FNR = self.FN / self.P
+        self.FNR = self.FN / self.P if self.P != 0 else 0
 
     def compute_FPR(self):
-        self.FPR = self.FP / self.N
+        self.FPR = self.FP / self.N if self.N != 0 else 0
 
     def compute_FDR(self):
-        self.FDR = self.FP / (self.FP + self.TP)
+        self.FDR = self.FP / (self.FP + self.TP) if (self.TP + self.FP) != 0 else 0
 
     def compute_FOR(self):
-        self.FOR = self.FN / (self.FN + self.TN)
+        self.FOR = self.FN / (self.FN + self.TN) if (self.TN + self.FN) != 0 else 0
 
     def compute_ACC(self):
-        self.ACC = (self.TP + self.TN) / (self.P + self.N)
+        self.ACC = (self.TP + self.TN) / (self.P + self.N) if (self.P + self.N) != 0 else 0
 
     def compute_F1(self):
-        self.F1 = (2 * self.TP) / (2 * self.TP + self.FP + self.FN)
+        self.F1 = (2 * self.TP) / (2 * self.TP + self.FP + self.FN) if (self.TP + self.FP + self.FN) != 0 else 0
+
+    def compute_in_good_order(self):
+        # Diverse other metrics
+        self.compute_TPR()
+        self.compute_PPV()
+        self.compute_FDR()
+
+        if self.total_nb_elements is None:
+            raise Exception("Can't compute True Negative rate : we don't know number of all elements in the system.")
+        else:
+            # Diverse other metrics
+            self.compute_TNR()
+            self.compute_NPV()
+
+            self.compute_FNR()
+            self.compute_FPR()
+
+            self.compute_FOR()
+
+            self.compute_ACC()
+            self.compute_F1()
 
     def compute_all(self, truth_set: Set, candidate_set: Set, total_nb_elements):
         # Compute all possible metrics, given information provided
