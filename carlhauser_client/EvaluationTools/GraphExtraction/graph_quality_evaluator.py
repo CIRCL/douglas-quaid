@@ -20,6 +20,7 @@ from common.Graph.node import Node
 
 import common.PerformanceDatastructs.perf_datastruct as perf_datastruct
 import common.PerformanceDatastructs.stats_datastruct as stats_datastruct
+import common.ImportExport.json_import_export as json_import_export
 
 # ==================== ------ PREPARATION ------- ====================
 # load the logging configuration
@@ -37,105 +38,98 @@ class GraphQualityEvaluator:
         self.min_threshold = 0
         self.max_threshold = 1
 
-    def evaluate_performance(self, cand_graph: GraphDataStruct, gt_graph: GraphDataStruct) -> List[perf_datastruct.Perf]:
-        self.logger.debug("Received candidate graph :")
-        self.logger.debug(cand_graph.export_as_dict())
+        self.NB_TO_CHECK = 3 # Number of first match to check to get the scores and overview
+        self.TOLERANCE : float = 0.1 # [0-1] acceptable drop of True Positive and increase of False Negative
+
+    # =================== Optimizer for one value ===================
+    def get_max_TP(self, perfs_list: List[perf_datastruct.Perf]):
+        pass
+
+    def get_min_TN(self, perfs_list: List[perf_datastruct.Perf]):
+        pass
+
+    def get_mean(self, perfs_list: List[perf_datastruct.Perf]):
+        pass
+
+    # =================== Optimizer for one value ===================
+    def get_perf_list(self, requests_result: List, gt_graph: GraphDataStruct) -> List[perf_datastruct.Perf]:
+        # DEBUG #
+        self.logger.debug("Received requests results :")
+        self.logger.debug(requests_result)
+        json_import_export.save_json(requests_result, get_homedir() / "requests_result.json")
         self.logger.debug("Received ground truth graph :")
         self.logger.debug(gt_graph.export_as_dict())
+        json_import_export.save_json(gt_graph.export_as_dict(), get_homedir() / "gt_graph.json")
 
-        scores_perfs  : List[perf_datastruct.Perf] = []
+        # Create void perfs list
+        perfs_list: List[perf_datastruct.Perf] = []
         for i in range(self.pts_nb):
-
             # Computing the new threshold
             curr_threshold = i * ((self.max_threshold - self.min_threshold) / self.pts_nb)
             self.logger.info(f"Current threshold computation : {curr_threshold}")
 
-            tmp_score = self.compute_score_for_one_threshold(cand_graph, gt_graph, curr_threshold)
+            tmp_score = self.compute_score_for_one_threshold(requests_result, gt_graph, curr_threshold)
             tmp_perf = perf_datastruct.Perf(tmp_score, curr_threshold)
 
             # Add to performance list
-            scores_perfs.append(tmp_perf)
+            perfs_list.append(tmp_perf)
 
-            '''
-            # Choose a configuration
-            # Put configuration in place
-            if self.server_launcher is not None:
-                del self.server_launcher
-            self.server_launcher = core.launcher_handler()
-            self.server_launcher.di_conf.MAX_DIST_FOR_NEW_CLUSTER = curr_threshold
-            '''
+        return perfs_list
 
-            ''' 
-            # TODO : Go in the "right" direction. 
-            # while the score is changing
-            while(curr_round_score > last_round_score and i < iterations_limit):
-
-                # Good direction, continue
-                if curr_round_score > last_round_score :
-
-
-                    continue
-                # Bad direction, go "back"
-                else :
-                    continue
-
-                i+=1
-            '''
-
-            '''
-            # Create output folder for this configuration
-            tmp_output = output_folder / ''.join([str(curr_threshold), "_threshold"])
-            tmp_output.mkdir(parents=True, exist_ok=True)
-            '''
-
-        return scores_perfs
-
-
-    def compute_score_for_one_threshold(self, cand_graph: GraphDataStruct, gt_graph: GraphDataStruct, dist_threshold : float)-> stats_datastruct.Stats_datastruct:
-        # Create ready to go (with 0 values) score object
+    def compute_score_for_one_threshold(self, requests_result: List, gt_graph: GraphDataStruct, dist_threshold: float) -> stats_datastruct.Stats_datastruct:
+        # Create ready to go (with 0 valued) score object
         tmp_score = stats_datastruct.Stats_datastruct()
         tmp_score.reset_basics_values()
 
         # For each node and its neighbours (by distance)
-
-        self.logger.debug(cand_graph)
-        self.logger.debug(gt_graph)
-        save_json(cand_graph.export_as_dict(), pathlib.Path("./cand_graph.json"))
-        save_json(gt_graph.export_as_dict(), pathlib.Path("./gt_graph.json"))
-
-
-
         # TODO : Construct good datastructure to perform the matching
         # Sort cand_graph to mapping [node.id] -> [node.id sorted by distance increasing]
 
+        for curr_node in requests_result:
 
-        '''
-        
+            if curr_node.get("request_id", None) is None:
+                raise Exception("Request id not set in requests result. Please review data set ?")
+            elif curr_node.get("list_pictures", None) is None:
+                raise Exception("No matched list of picture in requests result.")
+                # TODO : No pictures matched : check if alone in gt in his cluster, if so, good. Does not participate to score ?
+            elif len(curr_node.get("list_pictures")) == 0:
+                raise Exception("No matched for current picture in requests result.")
+                # TODO : Same as upper case
+            else:
+                # Everything's fine, normal case
 
-        # For each first link = first match, find the
-        for node in cand_graph.nodes :
-            if node.id in gt_graph.clusters.get(cand_gr) :
+                # Remove its own occurence from the list if presents.
+                matches_list = [m for m in curr_node.get("list_pictures") if m.get("image_id") != curr_node.get("request_id")]
 
+                # For all N first matches of the current picture (or below if less matches)
+                nb_matches_to_process = min(self.NB_TO_CHECK, len(matches_list))
 
+                for i in range(0, nb_matches_to_process):
+                    curr_matched_node = matches_list[i]
 
-            # For each pair : node and best match
+                    # Please note : If the two nodes are in the same cluster in gt, then it should be a positive value.
+                    # Then this link is counted as a positive value in the entire dataset.
+                    # The distance and threshold DOES NOT IMPACT the Positive/Negative counts !
+                    if curr_matched_node.get("distance") < dist_threshold:
 
-            if curr_dist < dist_threshold :
-                tmp_score.P += 1
+                        if gt_graph.are_in_same_cluster(curr_node.get("request_id"), curr_matched_node.get("image_id")):
+                            tmp_score.TP += 1
+                            tmp_score.P += 1
 
-                if curr_candidate_node.is_in_same_cluster_as(curr_candidate_node.best_match) :
-                    tmp_score.TP += 1
-                else :
-                    tmp_score.FP += 1
+                        else:
+                            tmp_score.FP += 1
+                            tmp_score.N += 1
 
-            if curr_dist > dist_threshold :
-                tmp_score.N += 1
+                    if curr_matched_node.get("distance") > dist_threshold:
 
-                if curr_candidate_node.is_in_same_cluster_as(curr_candidate_node.best_match) :
-                    tmp_score.FN += 1
-                else:
-                    tmp_score.TN += 1
+                        if gt_graph.are_in_same_cluster(curr_node.get("request_id"), curr_matched_node.get("image_id")):
+                            tmp_score.FN += 1
+                            tmp_score.P += 1
 
-        '''
+                        else:
+                            tmp_score.TN += 1
+                            tmp_score.N += 1
 
+            tmp_score.total_nb_elements = tmp_score.P + tmp_score.N
+            tmp_score.compute_in_good_order()
         return tmp_score

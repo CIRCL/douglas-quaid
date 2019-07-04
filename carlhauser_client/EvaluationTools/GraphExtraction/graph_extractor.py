@@ -21,7 +21,7 @@ from common.Graph.metadata import Metadata, Source
 from common.Graph.edge import Edge
 from common.Graph.node import Node
 import common.PerformanceDatastructs.perf_datastruct as perf_datastruct
-
+from common.ChartMaker.two_dimensions_plot import TwoDimensionsPlot
 # from . import helpers
 
 # ==================== ------ PREPARATION ------- ====================
@@ -117,7 +117,18 @@ class GraphExtractor:
 
             return visjs
 
-    def send_pictures_and_dump(self, image_folder: pathlib.Path):
+    # ======================== GET RESULTS FROM FOLDER OF PICTURES ========================
+
+    def send_pictures_and_dump_and_save(self, image_folder: pathlib.Path, output_path: pathlib.Path) -> List:
+        requests_result = self.send_pictures_and_dump(image_folder)
+
+        # Save to file
+        json_import_export.save_json(requests_result, output_path / "requests_result.json")
+        self.logger.debug(f"Results raw json saved.")
+        return requests_result
+
+    def send_pictures_and_dump(self, image_folder: pathlib.Path) -> List:
+        # Send pictures of a folder to DB and request all pictures one by one, to construct a list of results
 
         # Send pictures to DB and get id mapping
         mapping_old_filename_to_new_id, nb_pictures = self.ext_api.add_pictures_to_db(image_folder)
@@ -132,10 +143,13 @@ class GraphExtractor:
 
         return requests_result
 
-    def save_result_to_file(self, requests_result, output_file_path: pathlib.Path):
-        # pprint.pprint(requests_result)
-        json_import_export.save_json(requests_result, output_file_path)
-        self.logger.debug(f"Json saved in : {output_file_path}")
+    # ======================== GRAPH FROM RESULTS ========================
+    def construct_graph_from_results_and_save(self, requests_result, output_path: pathlib.Path) -> GraphDataStruct:
+        tmp_graph = self.construct_graph_from_results(requests_result)
+        # Save to file
+        json_import_export.save_json(tmp_graph.export_as_dict(), output_path / "distance_graph.json")
+        self.logger.debug(f"Distance graph json saved.")
+        return tmp_graph
 
     def construct_graph_from_results(self, requests_result) -> GraphDataStruct:
         tmp_graph = GraphDataStruct(meta=Metadata(source=Source.DBDUMP))
@@ -143,38 +157,46 @@ class GraphExtractor:
         # pprint.pprint(tmp_graph.export_as_dict())
         return tmp_graph
 
-    def launch(self, image_folder: pathlib.Path,
-               output_path: pathlib.Path,
-               visjs_json_path: pathlib.Path = None) -> List[perf_datastruct.Perf]:
-        # Compute a complete run of the library on a folder, to extract the graph of proximity from/for each picture
-        # Not as efficient as it could be, as it is not the normal way of work of the library
+    # ======================== High-Level functions : Extract data/graph from DB ========================
 
-        # ========= Get raw distance measures from DB =========
-        requests_result = self.send_pictures_and_dump(image_folder)
+    def get_distance_graph_from_db(self, image_folder: pathlib.Path, output_path: pathlib.Path) -> GraphDataStruct:
+        # Extract a distance graph from a folder of pictures, sent to DB and requested one by one.
+
+        # Get distance results for each picture
+        requests_result = self.send_pictures_and_dump_and_save(image_folder, output_path)
+
+        # Construct graph for the list of distance results
+        tmp_graph = self.construct_graph_from_results_and_save(requests_result, output_path)
+
+        return tmp_graph
+
+    def get_best_algorithm_threshold(self, image_folder: pathlib.Path,
+                                     output_path: pathlib.Path,
+                                     visjs_json_path: pathlib.Path) -> List[perf_datastruct.Perf]:
+        # Compute the best threshold to apply to distance, from the current state of the library
+
+        # Get results from DB and ground truth graph from visjs file
+        requests_result = self.send_pictures_and_dump_and_save(image_folder, output_path)
+        gt_graph = self.load_visjs_to_graphe(visjs_json_path)
+        perf_eval = graph_quality_evaluator.GraphQualityEvaluator()
+
+        # Call the graph evaluator on this pair result_list + gt_graph
+        perfs_list = perf_eval.get_perf_list(requests_result, gt_graph)  # ==> List of scores
 
         # Save to file
-        self.save_result_to_file(requests_result, output_path / "requests_result.json")
-        self.logger.debug(f"Results raw json saved.")
+        json_import_export.save_json(perfs_list, output_path / "graph_perfs.json")
+        self.logger.debug(f"Graph performances json saved.")
 
-        # ========= GRAPH BUILDING from RAW DISTANCE MEASURES =========
-        tmp_graph = self.construct_graph_from_results(requests_result)
+        # Save to graph
+        twoDplot = TwoDimensionsPlot()
+        twoDplot.print_graph(perfs_list, output_path)
 
-        # Save to file
-        self.save_result_to_file(tmp_graph.export_as_dict(), output_path / "distance_graph.json")
-        self.logger.debug(f"Distance graph json saved.")
+        # Call the graph evaluator on this pair result_list + gt_graph
+        mTP = perf_eval.get_max_TP(perfs_list)  # ==> List of scores
+        mTN = perf_eval.get_min_TN(perfs_list)  # ==> List of scores
+        mM = perf_eval.get_mean(perfs_list)  # ==> List of scores
 
-        # ========= GRAPH QUALITY EVALUATION =========
-        if visjs_json_path is not None:
-            visjs = self.load_visjs_to_graphe(visjs_json_path)
-            perf_eval = graph_quality_evaluator.GraphQualityEvaluator()
-            perfs_list = perf_eval.evaluate_performance(tmp_graph, visjs)  # graph ==> Quality score for each
-
-            # Save to file
-            self.save_result_to_file(perfs_list, output_path / "graph_perfs.json")
-            self.logger.debug(f"Graph performances json saved.")
-            return perfs_list
-        else :
-            self.logger.error("No VISJS graph path provided (ground truth file) in graph_extractor. Quality evaluation of the graph had been skip.")
+        return perfs_list
 
 
 def test():
@@ -182,7 +204,7 @@ def test():
     image_folder = get_homedir() / "datasets" / "MINI_DATASET"
     # image_folder = get_homedir() / "datasets" / "raw_phishing_full"
     output_path = get_homedir() / "carlhauser_client"
-    evaluator.launch(image_folder, output_path)
+    evaluator.get_distance_graph_from_db(image_folder, output_path)
 
 
 if __name__ == "__main__":
