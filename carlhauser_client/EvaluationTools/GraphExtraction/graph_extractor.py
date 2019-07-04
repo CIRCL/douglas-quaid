@@ -21,8 +21,9 @@ from common.Graph.metadata import Metadata, Source
 from common.Graph.edge import Edge
 from common.Graph.node import Node
 import common.PerformanceDatastructs.perf_datastruct as perf_datastruct
+import common.PerformanceDatastructs.thresholds_datastruct as thresholds_datastruct
 from common.ChartMaker.two_dimensions_plot import TwoDimensionsPlot
-# from . import helpers
+
 
 # ==================== ------ PREPARATION ------- ====================
 # load the logging configuration
@@ -105,10 +106,10 @@ class GraphExtractor:
     def load_visjs_to_graphe(self, visjs_json_path: pathlib.Path = None) -> GraphDataStruct:
 
         if visjs_json_path is None:
-            self.logger.warning(f"VisJS ground truth path not set. Impossible to evaluate.")
-            return None
+            self.logger.warning("VisJS ground truth path not set. Impossible to evaluate.")
+            raise Exception("VisJS ground truth path not set. Impossible to evaluate.")
         else:
-            self.logger.info(f"VisJS ground truth path set. Graph will be evaluated.")
+            self.logger.info("VisJS ground truth path set. Graph will be evaluated.")
             # 1. Load pictures to visjs = node server.js -i ./../douglas-quaid/datasets/MINI_DATASET/ -t ./TMP -o ./TMP
             # 2. Cluster manually pictures in visjs = < Do manual stuff>
             # 3. Load json graphe
@@ -172,8 +173,9 @@ class GraphExtractor:
 
     def get_best_algorithm_threshold(self, image_folder: pathlib.Path,
                                      output_path: pathlib.Path,
-                                     visjs_json_path: pathlib.Path) -> List[perf_datastruct.Perf]:
+                                     visjs_json_path: pathlib.Path) -> (List[perf_datastruct.Perf], thresholds_datastruct.Thresholds):
         # Compute the best threshold to apply to distance, from the current state of the library
+        self.logger.debug(f"Finding best thresholds ... ")
 
         # Get results from DB and ground truth graph from visjs file
         requests_result = self.send_pictures_and_dump_and_save(image_folder, output_path)
@@ -193,10 +195,16 @@ class GraphExtractor:
 
         # Call the graph evaluator on this pair result_list + gt_graph
         mTP = perf_eval.get_max_TP(perfs_list)  # ==> List of scores
-        mTN = perf_eval.get_min_TN(perfs_list)  # ==> List of scores
+        mTN = perf_eval.get_min_FP(perfs_list)  # ==> List of scores
         mM = perf_eval.get_mean(perfs_list)  # ==> List of scores
 
-        return perfs_list
+        thresholds_holder = thresholds_datastruct.Thresholds(max_TPR=mTP, max_FPR=mTN, mean=mM)
+        self.logger.debug(f"Computed thresholds {thresholds_holder} ")
+
+        # Save to graph
+        twoDplot.print_graph_with_thresholds(perfs_list, thresholds_holder, output_path)
+
+        return perfs_list, thresholds_holder
 
 
 def test():

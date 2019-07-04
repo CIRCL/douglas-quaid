@@ -12,11 +12,7 @@ from typing import List
 sys.path.append(os.path.abspath(os.path.pardir))
 from common.environment_variable import get_homedir
 from carlhauser_client.API.extended_api import Extended_API
-from common.ImportExport.json_import_export import save_json
 from common.Graph.graph_datastructure import GraphDataStruct
-from common.Graph.metadata import Metadata, Source
-from common.Graph.edge import Edge
-from common.Graph.node import Node
 
 import common.PerformanceDatastructs.perf_datastruct as perf_datastruct
 import common.PerformanceDatastructs.stats_datastruct as stats_datastruct
@@ -34,22 +30,82 @@ class GraphQualityEvaluator:
         self.logger = logging.getLogger(__name__)
         self.ext_api = Extended_API.get_api()
 
-        self.pts_nb = 50
-        self.min_threshold = 0
-        self.max_threshold = 1
+        self.pts_nb: int = 50
+        self.min_threshold: float = 0
+        self.max_threshold: float = 1
 
-        self.NB_TO_CHECK = 3 # Number of first match to check to get the scores and overview
-        self.TOLERANCE : float = 0.1 # [0-1] acceptable drop of True Positive and increase of False Negative
+        self.NB_TO_CHECK: int = 3  # Number of first match to check to get the scores and overview
+        self.TOLERANCE: float = 0.1  # [0-1] acceptable drop of True Positive and increase of False Negative
 
     # =================== Optimizer for one value ===================
     def get_max_TP(self, perfs_list: List[perf_datastruct.Perf]):
-        pass
 
-    def get_min_TN(self, perfs_list: List[perf_datastruct.Perf]):
-        pass
+        if len(perfs_list) == 0:
+            raise Exception("Performance list void ! Impossible to get max True Positive threshold")
+
+        # We could have assumed the performance list is sorted
+        perfs_list.sort(key=lambda k: k.threshold)
+        self.logger.debug(f"Threshold list : {[p.threshold for p in perfs_list]}")
+        self.logger.debug(f"TPR list : {[p.score.TPR for p in perfs_list]}")
+        self.logger.debug(f"Minimum TPR allowed : {1 - self.TOLERANCE}")
+
+        max_TPR = perfs_list[0].score.TPR
+        threshold_max_for_max_TPR = perfs_list[0].threshold
+
+        for curr_perf in perfs_list:
+            self.logger.debug(f"Current best threshold : {threshold_max_for_max_TPR}")
+            self.logger.debug(f"Current best performance : {max_TPR}")
+            self.logger.debug(f"Current threshold compared : {curr_perf.threshold}")
+            self.logger.debug(f"Current performance compared : {curr_perf.score.TPR}")
+
+            # While the TPR is not lowered AND the TPR is upper than the limit ...
+            if curr_perf.score.TPR >= max_TPR or curr_perf.score.TPR >= (1 - self.TOLERANCE):
+                # We found a new higher threshold where the TPR is still as high as before OR
+                # Which is still high enough in the tolerance interval
+                threshold_max_for_max_TPR = curr_perf.threshold
+                max_TPR = curr_perf.score.TPR
+            else:
+                # We have "gone to down in the graph" and should stop here
+                break
+
+        return threshold_max_for_max_TPR
+
+    def get_min_FP(self, perfs_list: List[perf_datastruct.Perf]):
+
+        if len(perfs_list) == 0:
+            raise Exception("Performance list void ! Impossible to get min FalseNegative threshold")
+
+        # We could have assumed the performance list is sorted
+        perfs_list.sort(key=lambda k: k.threshold, reverse=True)
+
+        threshold_max_for_max_FPR = perfs_list[0].score.TPR
+
+        for curr_perf in perfs_list:
+            if curr_perf.score.FPR >= threshold_max_for_max_FPR or curr_perf.score.FPR > (1 - self.TOLERANCE):
+                # We found a new higher threshold where the TPR is still as high as before OR
+                # Which is still high enough in the tolerance interval
+                threshold_max_for_max_FPR = curr_perf.score.FPR
+            else:
+                # We have "gone to down in the graph" and should stop here
+                break
+
+        return threshold_max_for_max_FPR
 
     def get_mean(self, perfs_list: List[perf_datastruct.Perf]):
-        pass
+        return 0
+
+    '''
+        if len(perfs_list) == 0 :
+            raise Exception("Performance list void ! Impossible to get mean threshold for TruePositive and FalseNegative equilibrium")
+
+        threshold_mean_for_equilibrium_TP_TN = perfs_list[0].score.TP
+
+        for curr_perf in perfs_list :
+            if curr_perf.score.TP >=
+            threshold_max_for_max_TP =
+
+        return threshold_mean_for_equilibrium_TP_TN
+    '''
 
     # =================== Optimizer for one value ===================
     def get_perf_list(self, requests_result: List, gt_graph: GraphDataStruct) -> List[perf_datastruct.Perf]:

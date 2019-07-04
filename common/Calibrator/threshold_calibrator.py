@@ -45,6 +45,7 @@ class Calibrator:
                                 ground_truth_file: pathlib.Path,
                                 output_folder: pathlib.Path = None) -> List[Algo_conf]:
         # Outputs a configuration file optimized for the provided dataset and ground truth file
+        self.logger.debug("Launching calibration of douglas quaid configuration ... ")
 
         # Check inputs
         if not folder_of_pictures.exists():
@@ -86,12 +87,16 @@ class Calibrator:
         # Evaluate all algorithms on the specific dataset, returns the "best" configuration file
         # Uses ground truth files and provided pictures list
 
+        self.logger.debug("Iterate over all algorithms ... ")
+
         default_feature_conf = feature_extractor_conf.Default_feature_extractor_conf()
         list_calibrated_algos = []
 
         # For each possible algorithm, evaluate the algorithms
         # TODO : Restrict the algorithms list
         for algo in default_feature_conf.list_algos:
+            self.logger.debug(f"Current algorithm calibration {algo.algo_name} ... ")
+
             # Create the output folder for this algo
             tmp_output_folder_algo = (output_folder / algo.algo_name)
             tmp_output_folder_algo.mkdir(exist_ok=True)
@@ -123,6 +128,7 @@ class Calibrator:
                             output_folder: pathlib.Path = None) -> Algo_conf:
         # Take an algorithm to calibrate and return a calibrated version of this algo (of its threshold, exactly)
         # Uses the ground truth files and provided pictures list
+        self.logger.debug(f"Evaluate {to_calibrate_algo.algo_name} ... ")
 
         # Configurations files
         self.db_conf = test_database_only_conf.TestInstance_database_conf()  # For test sockets only
@@ -137,7 +143,7 @@ class Calibrator:
 
         # Launch an evaluator client to extract the graphe
         graph_extractor = GraphExtractor()
-        perfs_list = graph_extractor.get_best_algorithm_threshold(image_folder=folder_of_pictures,
+        perfs_list, thresholds = graph_extractor.get_best_algorithm_threshold(image_folder=folder_of_pictures,
                                                                 visjs_json_path=ground_truth_file,
                                                                 output_path=output_folder)
 
