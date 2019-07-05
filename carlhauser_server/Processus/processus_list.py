@@ -46,7 +46,6 @@ class ProcessusList:
             finally:
                 try:
                     proc.process.wait(timeout=grace_time)
-                    self.logger.info(f"Processus exited with {proc.process.returncode}")
                 except subprocess.TimeoutExpired:
                     self.logger.info(f"Processus {proc.process} did not terminate in time. Trying to kill it.")
                 finally:

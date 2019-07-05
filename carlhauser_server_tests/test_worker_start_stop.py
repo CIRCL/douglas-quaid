@@ -8,8 +8,9 @@ import carlhauser_server.Configuration.distance_engine_conf as distance_engine_c
 import carlhauser_server.Configuration.feature_extractor_conf as feature_extractor_conf
 import carlhauser_server.DatabaseAccessor.database_adder as database_adder
 import carlhauser_server.DistanceEngine.distance_engine as distance_engine
-import common.TestDBHandler.test_instance_launcher as test_database_handler
+import common.TestInstanceLauncher.test_instance_launcher as test_database_handler
 from common.environment_variable import get_homedir
+import common.TestInstanceLauncher.test_database_conf as test_database_only_conf
 
 
 class testDistanceEngine(unittest.TestCase):
@@ -23,7 +24,7 @@ class testDistanceEngine(unittest.TestCase):
         # Create configurations
         self.dist_conf = distance_engine_conf.Default_distance_engine_conf()
         self.fe_conf = feature_extractor_conf.Default_feature_extractor_conf()
-        self.test_db_conf = test_database_handler.TestInstance_database_conf()
+        self.test_db_conf = test_database_only_conf.TestInstance_database_conf()
 
         print("[TESTS] LAUNCHING DATABASE AS TEST : NOTHING WILL BE WRITEN ON STORAGE OR CACHE DATABASES [TESTS]")
         # self.test_db_handler = test_database_handler.TestDatabaseHandler()

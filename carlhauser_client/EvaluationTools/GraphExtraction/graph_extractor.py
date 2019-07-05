@@ -7,19 +7,22 @@ import os
 import pathlib
 import sys
 import time
+from typing import List
 
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
 sys.path.append(os.path.abspath(os.path.pardir))
 from common.environment_variable import get_homedir
 from carlhauser_client.API.extended_api import Extended_API
+import carlhauser_client.EvaluationTools.GraphExtraction.graph_quality_evaluator as graph_quality_evaluator
 import common.ImportExport.json_import_export as json_import_export
 
 from common.Graph.graph_datastructure import GraphDataStruct
 from common.Graph.metadata import Metadata, Source
 from common.Graph.edge import Edge
 from common.Graph.node import Node
-
-# from . import helpers
+import common.PerformanceDatastructs.perf_datastruct as perf_datastruct
+import common.PerformanceDatastructs.thresholds_datastruct as thresholds_datastruct
+from common.ChartMaker.two_dimensions_plot import TwoDimensionsPlot
 
 # ==================== ------ PREPARATION ------- ====================
 # load the logging configuration
@@ -42,22 +45,7 @@ class GraphExtractor:
                     'distance': 0.23035714285714284}],
       'list_pictures': [{'cluster_id': 'cluster|d15fb88e-b6ad-4f74-b3f4-d631ea2c5a87',
                          'distance': 0.0,
-                         'image_id': 'advanzia3.png'},
-                        {'cluster_id': 'cluster|d15fb88e-b6ad-4f74-b3f4-d631ea2c5a87',
-                         'distance': 0.12109375,
-                         'image_id': '90777ed4bdbd365059d9a2d86b01447be75c2103'},
-                        {'cluster_id': 'cluster|d15fb88e-b6ad-4f74-b3f4-d631ea2c5a87',
-                         'distance': 0.16428571428571428,
-                         'image_id': 'advanzia1.png'},
-                        {'cluster_id': 'cluster|d15fb88e-b6ad-4f74-b3f4-d631ea2c5a87',
-                         'distance': 0.16607142857142856,
-                         'image_id': 'advanzia2.png'},
-                        {'cluster_id': 'cluster|d15fb88e-b6ad-4f74-b3f4-d631ea2c5a87',
-                         'distance': 0.17232142857142857,
-                         'image_id': 'a33756e54cfb61e93069c571bc7b09e44e556ee4'},
-                        {'cluster_id': 'cluster|143feb18-d930-4660-99c2-1da476c19a13',
-                         'distance': 0.19285714285714287,
-                         'image_id': '824cacd1195fa5fa3f2555520dee23bfae3ee1f5'},
+                         'image_id': 'advanzia3.png'}, (...)
                         {'cluster_id': 'cluster|dc68c31f-6f9c-484e-a32b-8476a70a66fd',
                          'distance': 0.23035714285714284,
                          'image_id': '17cb810ceff1ead1f7ebaf348f61e7c2db84a676'}],
@@ -114,24 +102,34 @@ class GraphExtractor:
 
         return graph
 
-    def launch(self, image_folder: pathlib.Path, output_path: pathlib.Path, visjs_json_path: pathlib.Path = None):
-        # Compute a complete run of the library on a folder, to extract the graph of proximity from/for each picture
-        # Not as efficient as it could be, as it is not the normal way of work of the library
-
-        # ========= MANUAL EVALUATION =========
+    def load_visjs_to_graphe(self, visjs_json_path: pathlib.Path = None) -> GraphDataStruct:
 
         if visjs_json_path is None:
-            self.logger.warning(f"VisJS ground truth path not set. Impossible to evaluate.")
+            self.logger.warning("VisJS ground truth path not set. Impossible to evaluate.")
+            raise Exception("VisJS ground truth path not set. Impossible to evaluate.")
         else:
-            self.logger.info(f"VisJS ground truth path set. Graph will be evaluated.")
+            self.logger.info("VisJS ground truth path set. Graph will be evaluated.")
             # 1. Load pictures to visjs = node server.js -i ./../douglas-quaid/datasets/MINI_DATASET/ -t ./TMP -o ./TMP
             # 2. Cluster manually pictures in visjs = < Do manual stuff>
             # 3. Load json graphe
             visjs = json_import_export.load_json(visjs_json_path)
             visjs = GraphDataStruct.load_from_dict(visjs)
 
+            return visjs
 
-        # ========= AUTO EVALUATION =========
+    # ======================== GET RESULTS FROM FOLDER OF PICTURES ========================
+
+    def send_pictures_and_dump_and_save(self, image_folder: pathlib.Path, output_path: pathlib.Path) -> List:
+        requests_result = self.send_pictures_and_dump(image_folder)
+
+        # Save to file
+        json_import_export.save_json(requests_result, output_path / "requests_result.json")
+        self.logger.debug(f"Results raw json saved.")
+        return requests_result
+
+    def send_pictures_and_dump(self, image_folder: pathlib.Path) -> List:
+        # Send pictures of a folder to DB and request all pictures one by one, to construct a list of results
+
         # Send pictures to DB and get id mapping
         mapping_old_filename_to_new_id, nb_pictures = self.ext_api.add_pictures_to_db(image_folder)
         time.sleep(10)  # Let time to add pictures to db
@@ -143,87 +141,76 @@ class GraphExtractor:
         # graphe_struct.replace_id_from_mapping(mapping) #TODO : do it with graphes ?
         requests_result = self.ext_api.apply_revert_mapping(requests_result, revert_mapping)
 
-        # pprint.pprint(requests_result)
-        save_path_json = output_path / "requests_result.json"
-        json_import_export.save_json(requests_result, save_path_json)
-        self.logger.debug(f"Request results json saved in : {save_path_json}")
+        return requests_result
 
-        # ========= Graph building =========
+    # ======================== GRAPH FROM RESULTS ========================
+    def construct_graph_from_results_and_save(self, requests_result, output_path: pathlib.Path) -> GraphDataStruct:
+        tmp_graph = self.construct_graph_from_results(requests_result)
+        # Save to file
+        json_import_export.save_json(tmp_graph.export_as_dict(), output_path / "distance_graph.json")
+        self.logger.debug(f"Distance graph json saved.")
+        return tmp_graph
 
+    def construct_graph_from_results(self, requests_result) -> GraphDataStruct:
         tmp_graph = GraphDataStruct(meta=Metadata(source=Source.DBDUMP))
         tmp_graph = self.construct_graph_from_results_list(requests_result, tmp_graph, nb_match=2)
         # pprint.pprint(tmp_graph.export_as_dict())
+        return tmp_graph
 
-        save_path_json = output_path / "distance_graph.json"
-        json_import_export.save_json(tmp_graph.export_as_dict(), save_path_json)
-        self.logger.debug(f"Distance graph json saved in : {save_path_json}")
+    # ======================== High-Level functions : Extract data/graph from DB ========================
 
-        if visjs_json_path is not None:
-            # ========= Graph evaluation =========
-            '''
-            perf_eval = GraphQualityEvaluator()
-            perfs = perf_eval.evaluate_performance(tmp_graph, visjs)  # graph ==> Quality score for each
+    def get_distance_graph_from_db(self, image_folder: pathlib.Path, output_path: pathlib.Path) -> GraphDataStruct:
+        # Extract a distance graph from a folder of pictures, sent to DB and requested one by one.
 
-            save_path_json = output_path / "graph_perfs.json"
-            json_import_export.save_json(perfs, save_path_json)
-            self.logger.debug(fGraph performances json saved in : {save_path_json}")
-            
-            '''
+        # Get distance results for each picture
+        requests_result = self.send_pictures_and_dump_and_save(image_folder, output_path)
 
-        '''
-        # ========= CONSTRUCT GRAPHE =========
-        # Apply name mapping to dict (find back original names)
-        visjs.replace_id_from_mapping(mapping_old_filename_to_new_id)
+        # Construct graph for the list of distance results
+        tmp_graph = self.construct_graph_from_results_and_save(requests_result, output_path)
 
-        # Get only list of clusters
-        candidate = db_dump.get_clusters()
-        original = visjs.get_clusters()
+        return tmp_graph
 
-        # Match clusters
-        # 1. Manually ? (Go back to visjs + rename)
-        # 2. Automatically ? (Number of common elements ~)
-        matcher = Cluster_matcher()
-        matching = matcher.match_clusters(original, candidate)  # Matching original + Candidate ==> Group them per pair
+    def get_best_algorithm_threshold(self, image_folder: pathlib.Path,
+                                     output_path: pathlib.Path,
+                                     visjs_json_path: pathlib.Path) -> (List[perf_datastruct.Perf], thresholds_datastruct.Thresholds):
+        # Compute the best threshold to apply to distance, from the current state of the library
+        self.logger.debug(f"Finding best thresholds ... ")
 
-        # Compute performance regarding input graphe
-        perf_eval = ClusterMatchingQualityEvaluator()
-        matching_with_perf = perf_eval.evaluate_performance(matching, nb_pictures)  # pair of clusters ==> Quality score for each
+        # Get results from DB and ground truth graph from visjs file
+        requests_result = self.send_pictures_and_dump_and_save(image_folder, output_path)
+        gt_graph = self.load_visjs_to_graphe(visjs_json_path)
+        perf_eval = graph_quality_evaluator.GraphQualityEvaluator()
 
-        # Store performance in a file
-        save_path_perf = output_path / "perf.json"
-        perf_overview = perf_eval.save_perf_results(save_path_perf)
+        # Call the graph evaluator on this pair result_list + gt_graph
+        perfs_list = perf_eval.get_perf_list(requests_result, gt_graph)  # ==> List of scores
 
-        # ========= RESULT VISUALIZATON =========
+        # Save to file
+        json_import_export.save_json(perfs_list, output_path / "graph_perfs.json")
+        self.logger.debug(f"Graph performances json saved.")
 
-        # Convert matching with performance to confusion matrix
-        matrix_creator = ConfusionMatrixGenerator()
-        matrix_creator.create_and_export_confusion_matrix(original, candidate, matching, output_path / "matrix.pdf")  # Matching original + Candidate ==> Group them per pair
+        # Save to graph
+        twoDplot = TwoDimensionsPlot()
+        twoDplot.print_graph(perfs_list, output_path)
 
-        # Convert dumped graph to visjs graphe
-        # ==> red if linked made by algo, but non existant + Gray, true link that should have been created (
-        # ==> Green if linked made by algo and existant
-        save_path_json = output_path / "merged_graph.json"
-        output_graph = merge_graphs(visjs, db_dump, matching)
-        json_import_export.save_json(output_graph, save_path_json)
-        self.logger.debug(f"DB Dump json saved in : {save_path_json}")
+        # Call the graph evaluator on this pair result_list + gt_graph
+        percent = 0.1
+        thre_max_TPR, val_TPR = perf_eval.get_threshold_where_upper_are_more_than_xpercent_TP(perfs_list=perfs_list, percent=percent)
+        thre_max_FNR, val_FNR = perf_eval.get_threshold_where_upper_are_less_than_xpercent_FN(perfs_list=perfs_list, percent=percent)
+        thre_max_TNR, val_TNR = perf_eval.get_threshold_where_below_are_more_than_xpercent_TN(perfs_list=perfs_list, percent=percent)
+        thre_max_FPR, val_FPR = perf_eval.get_threshold_where_below_are_less_than_xpercent_FP(perfs_list=perfs_list, percent=percent)
+        thre_max_F1, val_F1 = perf_eval.get_max_threshold_for_max_F1(perfs_list=perfs_list)
 
-        # ==============================
+        thresholds_holder = thresholds_datastruct.Thresholds(max_TPR=thre_max_TPR,
+                                                             max_FNR=thre_max_FNR,
+                                                             max_FPR=thre_max_FPR,
+                                                             max_TNR=thre_max_TNR,
+                                                             mean=thre_max_F1)
+        self.logger.debug(f"Computed thresholds {thresholds_holder} ")
 
-        return perf_overview
-        '''
+        # Save to graph
+        twoDplot.print_graph_with_thresholds(perfs_list, thresholds_holder, output_path)
 
-
-'''
-def main():
-    parser = argparse.ArgumentParser(description='Perform an evaluation on a dataset : Send all pictures, ')
-    parser.add_argument('-p', '--path', dest='path', action='store', type=lambda p: pathlib.Path(p).absolute(), default=1, help='all path')
-    parser.add_argument('--version', action='version', version='humanizer %s' % ("1.0.0"))
-
-    args = parser.parse_args()
-    humanizer = Humanizer()
-    humanizer.rename_all_files(args.path)
-
-'''
+        return perfs_list, thresholds_holder
 
 
 def test():
@@ -231,7 +218,7 @@ def test():
     image_folder = get_homedir() / "datasets" / "MINI_DATASET"
     # image_folder = get_homedir() / "datasets" / "raw_phishing_full"
     output_path = get_homedir() / "carlhauser_client"
-    evaluator.launch(image_folder, output_path)
+    evaluator.get_distance_graph_from_db(image_folder, output_path)
 
 
 if __name__ == "__main__":

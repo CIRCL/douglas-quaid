@@ -36,6 +36,13 @@ class Cluster(node.Node):
             self.members.remove(old_id)
             self.members.add(new_id)
 
+    # ==================== Request ====================
+
+    def are_in_same_cluster(self, id_1, id_2):
+        # Return True if both nodes id are in this cluster
+        # TODO : make test !
+        return {id_1, id_2}.issubset(self.members)
+
     # ==================== Export / Import ====================
 
     def export_as_dict(self):

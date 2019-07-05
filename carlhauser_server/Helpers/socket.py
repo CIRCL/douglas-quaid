@@ -93,6 +93,14 @@ class Socket:
 
         return True
 
+    def prevent_workers_stop(self):
+        # Put "Halt" key in database
+        redis_access = self.get_access()
+        try :
+            redis_access.delete("halt")
+        except Exception as e :
+            self.logger.error(f"Can't remove stop signal to worker via {self.socket_path.name}, as database is not accessible : {e}")
+
     def stop_workers(self):
         # Put "Halt" key in database
         redis_access = self.get_access()

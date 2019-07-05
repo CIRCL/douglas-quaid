@@ -12,16 +12,16 @@ from carlhauser_server.Configuration.template_conf import JSON_parsable_Dict
 class Default_distance_engine_conf(JSON_parsable_Dict):
     def __init__(self):
         # Inputs
-        self.TOP_N_CLUSTERS = 3  # Nb of "best clusters" to be matched on picture representative
-        self.TOP_N_PICTURES = 10  # Nb of "best pictures" to be returned, from TOP_N_CLUSTERS best clusters (total, not per cluster)
-        self.PICT_TO_TEST_PER_CLUSTER = 1  # Nb of "central picture" to test per cluster
+        self.TOP_N_CLUSTERS : int= 3  # Nb of "best clusters" to be matched on picture representative
+        self.TOP_N_PICTURES : int= 10  # Nb of "best pictures" to be returned, from TOP_N_CLUSTERS best clusters (total, not per cluster)
+        self.PICT_TO_TEST_PER_CLUSTER : int = 1  # Nb of "central picture" to test per cluster
 
-        self.MAX_DIST_FOR_NEW_CLUSTER = 0.2  # Distance threshold to create a new cluster. Lesser the more cluster.
+        self.MAX_DIST_FOR_NEW_CLUSTER : float = 0.2  # Distance threshold to create a new cluster. Lesser the more cluster.
 
         # HASH PARAMETERS
 
         # ORB PARAMETERS
-        self.CROSSCHECK = True
+        self.CROSSCHECK : bool = True
 
 
 def parse_from_dict(conf):

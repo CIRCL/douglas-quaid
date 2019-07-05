@@ -33,7 +33,7 @@ logging.config.fileConfig(str(logconfig_path))
 
 
 # ==================== ------ LAUNCHER ------- ====================
-class launcher_handler(metaclass=template_singleton.Singleton):
+class Instance_Handler(metaclass=template_singleton.Singleton):
     def __init__(self):
         self.logger = logging.getLogger(__name__)
 
@@ -44,18 +44,20 @@ class launcher_handler(metaclass=template_singleton.Singleton):
         self.di_conf = distance_engine_conf.Default_distance_engine_conf()
 
         # Handlers
-        self.db_handler = None
-        self.worker_handler = None
+        self.db_handler : database_start_stop.Database_StartStop = None
+        self.worker_handler : worker_start_stop.Worker_StartStop = None
 
     def launch(self):
         # Launch elements
         self.start_database(wait=True)  # Wait for launch
+        self.prevent_workers_shutdown()
 
         self.start_adder_workers()
         self.start_requester_workers()
         self.start_feature_workers()
         self.start_webservice()
 
+        self.worker_handler.wait_for_worker_startup()
         self.check_worker()
 
         # TODO : # If the webservice is down, then we want to shutdown everything
@@ -75,6 +77,7 @@ class launcher_handler(metaclass=template_singleton.Singleton):
 
         # Shutdown database
         self.stop_database(wait=True)  # Wait for stop
+        self.flush_workers()
 
     # ==================== ------ DB ------- ====================
     def check_db_handler(self):
@@ -176,6 +179,11 @@ class launcher_handler(metaclass=template_singleton.Singleton):
         self.db_handler.request_workers_shutdown()
         return self.worker_handler.wait_for_worker_shutdown()
 
+    def prevent_workers_shutdown(self):
+        self.logger.info(f"Remove halt order to prevent workers to stop on launch...")
+        self.db_handler.prevent_workers_shutdown()
+        return
+
     def flush_workers(self):
         self.check_worker_handler()
         self.logger.info(f"Requesting workers to stop ...")
@@ -188,7 +196,7 @@ def exit_gracefully(signum, frame):
     # signal.signal(signal.SIGINT, original_sigint) # TODO : To put back ?
 
     try:
-        stopper = launcher_handler()
+        stopper = Instance_Handler()
         print("Wait for the extinction ... ")
         stopper.stop()
         sys.exit(1)
@@ -202,7 +210,7 @@ def exit_gracefully(signum, frame):
 
 
 if __name__ == '__main__':
-    launcher = launcher_handler()
+    launcher = Instance_Handler()
 
     try:
         # Setting SIGINT handler

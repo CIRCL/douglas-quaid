@@ -16,8 +16,10 @@ import carlhauser_server.Configuration.database_conf as database_conf
 import carlhauser_server.Configuration.distance_engine_conf as distance_engine_conf
 import carlhauser_server.Configuration.feature_extractor_conf as feature_extractor_conf
 import carlhauser_server.DistanceEngine.scoring_datastrutures as sd
-
+from carlhauser_server.Configuration.algo_conf import Algo_conf
+from common.CustomException import AlgoFeatureNotPresentError
 sys.path.append(os.path.abspath(os.path.pardir))
+
 
 
 class Distance_ORB:
@@ -38,9 +40,9 @@ class Distance_ORB:
         self.logger.info("Orb distance computation ... ")
 
         # Sanity check :
-        if pic_package_from["ORB_DESCRIPTORS"] is None or pic_package_to["ORB_DESCRIPTORS"] is None:
-            self.logger.debug("One the ORB descriptors list is None in orb distance.")
-            # raise Exception("None ORB descriptors in orb distance.")
+        if pic_package_from.get("ORB_DESCRIPTORS",None) is None or pic_package_to.get("ORB_DESCRIPTORS",None) is None:
+            self.logger.warning(f"ORB descriptors are NOT presents in the results.")
+            raise AlgoFeatureNotPresentError("None ORB descriptors in orb distance.")
 
         try:
             # Note : @image must be a PIL instance.
@@ -60,7 +62,7 @@ class Distance_ORB:
 
         return answer
 
-    def add_results(self, algo_conf: feature_extractor_conf.Algo_conf, pic_package_from: Dict, pic_package_to: Dict, answer: Dict) -> Dict:
+    def add_results(self, algo_conf: Algo_conf, pic_package_from: Dict, pic_package_to: Dict, answer: Dict) -> Dict:
         # Add results to answer dict, depending on the algorithm name we want to compute
         # Ex : Input {} -> Output {"ORB":{"name":"ORB", "distance":0.3,"decision":YES}}
         algo_name = algo_conf.get('algo_name')
@@ -114,7 +116,7 @@ class Distance_ORB:
     # ==================== ------ DECISIONS ------- ====================
 
     @staticmethod
-    def compute_decision_from_distance(algo_conf: feature_extractor_conf.Algo_conf, dist: float) -> sd.DecisionTypes:
+    def compute_decision_from_distance(algo_conf: Algo_conf, dist: float) -> sd.DecisionTypes:
         # From a distance between orb distance, gives a decision : is it a match or not ? Or maybe ?
 
         if dist <= algo_conf.get('threshold_maybe'):

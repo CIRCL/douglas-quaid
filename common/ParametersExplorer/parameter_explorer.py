@@ -12,11 +12,12 @@ import traceback
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
 sys.path.append(os.path.abspath(os.path.pardir))
 from common.environment_variable import get_homedir
-import carlhauser_server.core as core
+import carlhauser_server.instance_handler as core
 
 import carlhauser_client.EvaluationTools.Internal_clustering_Quality_Evaluator.internal_clustering_quality_evaluator as evaluator
 import common.PerformanceDatastructs.stats_datastruct as scores
-
+import common.PerformanceDatastructs.perf_datastruct as perf_datastruct
+import common.ChartMaker.two_dimensions_plot as two_dimensions_plot
 # from . import helpers
 
 # ==================== ------ PREPARATION ------- ====================
@@ -64,7 +65,7 @@ class ParameterExplorer:
             # Put configuration in place
             if self.server_launcher is not None:
                 del self.server_launcher
-            self.server_launcher = core.launcher_handler()
+            self.server_launcher = core.Instance_Handler()
             self.server_launcher.di_conf.MAX_DIST_FOR_NEW_CLUSTER = curr_threshold
 
             ''' 
@@ -99,7 +100,7 @@ class ParameterExplorer:
             perf_overview = self.client_launcher.launch(image_folder, gt, tmp_output)
             self.logger.warning(f"Perf overview added : {perf_overview}")
 
-            perfs.append(Perf(perf_overview, curr_threshold))
+            perfs.append(perf_datastruct.Perf(perf_overview, curr_threshold))
 
             # Wait for client end
 
@@ -113,16 +114,16 @@ class ParameterExplorer:
 
             # Wait for shutdown (wait for workers to shutdown, usually longer than db)
             while not self.server_launcher.check_worker():
-                time.sleep(1)  # Enough ?
+                time.sleep(1) # Enough ?
                 self.logger.warning("Waiting for workers to stop .. ")
 
             # Remove all workers
             self.server_launcher.flush_workers()
             time.sleep(2)
-
-        self.print_graph(perfs, output_folder)
-
-
+        
+        # Print plot
+        TwoD_plot = two_dimensions_plot.TwoDimensionsPlot()
+        TwoD_plot.print_graph(perfs, output_folder)
 
 if __name__ == '__main__':
     param_explorer = ParameterExplorer()

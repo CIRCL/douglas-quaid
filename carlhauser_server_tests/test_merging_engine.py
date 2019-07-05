@@ -9,7 +9,8 @@ import carlhauser_server.DatabaseAccessor.database_adder as database_adder
 import carlhauser_server.DistanceEngine.distance_engine as distance_engine
 import carlhauser_server.DistanceEngine.merging_engine as merging_engine
 import carlhauser_server.DistanceEngine.scoring_datastrutures as sd
-import common.TestDBHandler.test_instance_launcher as test_database_handler
+import common.TestInstanceLauncher.test_instance_launcher as test_database_handler
+import common.TestInstanceLauncher.test_database_conf as test_database_only_conf
 
 
 class testDistanceEngine(unittest.TestCase):
@@ -19,7 +20,7 @@ class testDistanceEngine(unittest.TestCase):
         self.logger = logging.getLogger()
 
         # Create configurations
-        self.test_db_conf = test_database_handler.TestInstance_database_conf()
+        self.test_db_conf = test_database_only_conf.TestInstance_database_conf()
         self.dist_conf = distance_engine_conf.Default_distance_engine_conf()
         self.fe_conf = feature_extractor_conf.Default_feature_extractor_conf()
 
