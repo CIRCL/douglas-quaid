@@ -38,6 +38,7 @@ class PicturesExporter:
         self.load_pictures_to_not_copy()
 
         self.iterate_over_dataturks_json()
+        self.export_dict()
 
     # ===================== UTILITIES =====================
 
