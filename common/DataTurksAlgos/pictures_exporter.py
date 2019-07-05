@@ -80,6 +80,7 @@ class PicturesExporter:
         not_found = 0
         entry_number = 0
         no_label = 0
+        copied = 0
         basename = "folder_"
 
         for element in self.dataturks_json:
@@ -123,6 +124,7 @@ class PicturesExporter:
                 dst = str(curr_saving_path / tmp_path.name)
                 self.logger.info(f"Picture {src} copied to {dst}")
                 copyfile(src, dst)
+                copied += 1
             else :
                 not_found += 1
                 self.logger.critical(f"Picture not found as file on the disk ! {tmp_path.name}")
@@ -131,6 +133,7 @@ class PicturesExporter:
         self.logger.info(f"Pictures not found = {not_found}")
         self.logger.info(f"Pictures in total in original file = {entry_number}")
         self.logger.info(f"Pictures without label = {no_label}")
+        self.logger.info(f"Pictures copied = {copied}")
 
     def export_dict(self):
         json_io.save_json(self.dict_to_export, self.dst_folder / "labels.json")
