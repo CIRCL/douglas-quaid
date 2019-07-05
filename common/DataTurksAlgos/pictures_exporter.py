@@ -76,6 +76,8 @@ class PicturesExporter:
     def iterate_over_dataturks_json(self):
 
         nb_of_element = 0
+        deleted = 0
+        not_found = 0
         basename = "folder_"
 
         for element in self.dataturks_json:
@@ -90,6 +92,7 @@ class PicturesExporter:
                 continue
 
             if "to_delete" in labels:
+                deleted += 1
                 self.logger.error(f"To Delete picture detected {pformat(element)} not copied !")
                 continue
 
@@ -117,7 +120,11 @@ class PicturesExporter:
                 self.logger.info(f"Picture {src} copied to {dst}")
                 copyfile(src, dst)
             else :
+                not_found += 1
                 self.logger.critical(f"Picture not found as file on the disk ! {tmp_path.name}")
+
+        self.logger.info(f"Pictures deleted = {deleted}")
+        self.logger.info(f"Pictures not found = {not_found}")
 
     def export_dict(self):
         json_io.save_json(self.dict_to_export, self.dst_folder / "labels.json")
