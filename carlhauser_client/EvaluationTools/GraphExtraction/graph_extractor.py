@@ -24,7 +24,6 @@ import common.PerformanceDatastructs.perf_datastruct as perf_datastruct
 import common.PerformanceDatastructs.thresholds_datastruct as thresholds_datastruct
 from common.ChartMaker.two_dimensions_plot import TwoDimensionsPlot
 
-
 # ==================== ------ PREPARATION ------- ====================
 # load the logging configuration
 logconfig_path = (get_homedir() / pathlib.Path("carlhauser_client", "logging.ini")).resolve()
@@ -194,11 +193,18 @@ class GraphExtractor:
         twoDplot.print_graph(perfs_list, output_path)
 
         # Call the graph evaluator on this pair result_list + gt_graph
-        mTP = perf_eval.get_max_TP(perfs_list)  # ==> List of scores
-        mTN = perf_eval.get_min_FP(perfs_list)  # ==> List of scores
-        mM = perf_eval.get_mean(perfs_list)  # ==> List of scores
+        percent = 0.1
+        thre_max_TPR, val_TPR = perf_eval.get_threshold_where_upper_are_more_than_xpercent_TP(perfs_list=perfs_list, percent=percent)
+        thre_max_FNR, val_FNR = perf_eval.get_threshold_where_upper_are_less_than_xpercent_FN(perfs_list=perfs_list, percent=percent)
+        thre_max_TNR, val_TNR = perf_eval.get_threshold_where_below_are_more_than_xpercent_TN(perfs_list=perfs_list, percent=percent)
+        thre_max_FPR, val_FPR = perf_eval.get_threshold_where_below_are_less_than_xpercent_FP(perfs_list=perfs_list, percent=percent)
+        thre_max_F1, val_F1 = perf_eval.get_max_threshold_for_max_F1(perfs_list=perfs_list)
 
-        thresholds_holder = thresholds_datastruct.Thresholds(max_TPR=mTP, max_FPR=mTN, mean=mM)
+        thresholds_holder = thresholds_datastruct.Thresholds(max_TPR=thre_max_TPR,
+                                                             max_FNR=thre_max_FNR,
+                                                             max_FPR=thre_max_FPR,
+                                                             max_TNR=thre_max_TNR,
+                                                             mean=thre_max_F1)
         self.logger.debug(f"Computed thresholds {thresholds_holder} ")
 
         # Save to graph

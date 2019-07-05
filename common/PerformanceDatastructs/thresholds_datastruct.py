@@ -24,11 +24,16 @@ logging.config.fileConfig(str(logconfig_path))
 
 
 class Thresholds(JSON_parsable_Dict):
-    def __init__(self, max_TPR: float, max_FPR: float, mean: float):
-        self.max_TPR = max_TPR
-        self.max_FPR = max_FPR
+    def __init__(self, max_TPR: float = -0.001, max_FPR: float = -0.001,
+                 max_FNR: float = -0.001, max_TNR: float = -0.001,
+                 mean: float = -0.001):
+        self.thre_upper_at_least_xpercent_TPR = max_TPR
+        self.thre_upper_at_most_xpercent_FNR = max_FNR
+        self.thre_below_at_least_xpercent_TNR = max_TNR
+        self.thre_below_at_most_xpercent_FPR = max_FPR
         self.mean = mean
 
+        self.percent: float = None
 
     # ==================== To string ====================
 
@@ -40,5 +45,8 @@ class Thresholds(JSON_parsable_Dict):
         return self.get_str()
 
     def get_str(self):
-        return ''.join(map(str, [' max_TPR=', self.max_TPR, ' max_FPR=', self.max_FPR, ' mean=', self.mean]))
-
+        return ''.join(map(str, [' thre_upper_at_least_xpercent_TPR=', self.thre_upper_at_least_xpercent_TPR,
+                                 ' thre_upper_at_most_xpercent_FNR=', self.thre_upper_at_most_xpercent_FNR,
+                                 ' mean=', self.mean,
+                                 ' thre_below_at_least_xpercent_TNR=', self.thre_below_at_least_xpercent_TNR,
+                                 ' thre_below_at_most_xpercent_FPR=', self.thre_below_at_most_xpercent_FPR]))

@@ -139,13 +139,13 @@ class Calibrator:
         self.test_db_handler = test_database_handler.TestInstanceLauncher()
         self.test_db_handler.create_full_instance(db_conf=self.db_conf, fe_conf=self.fe_conf)
 
-        time.sleep(5) # Necessary for the instance to be ready.
+        time.sleep(5)  # Necessary for the instance to be ready.
 
         # Launch an evaluator client to extract the graphe
         graph_extractor = GraphExtractor()
         perfs_list, thresholds = graph_extractor.get_best_algorithm_threshold(image_folder=folder_of_pictures,
-                                                                visjs_json_path=ground_truth_file,
-                                                                output_path=output_folder)
+                                                                              visjs_json_path=ground_truth_file,
+                                                                              output_path=output_folder)
 
         # Kill server instance
         self.test_db_handler.tearDown()

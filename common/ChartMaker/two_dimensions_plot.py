@@ -30,10 +30,10 @@ class TwoDimensionsPlot:
 
     # ========================= EXTERNAL USAGE =========================
 
-    def print_graph(self, perf_list: List[Perf], output_path: pathlib.Path):
+    def print_graph(self, perf_list: List[Perf], output_path: pathlib.Path, file_name : str = "overview.png"):
         # Print a graph with the TPR,TNR,FPR,FNR ... on one unique chart
 
-        output_file = output_path / "overview.png"
+        output_file = output_path / file_name
         self.logger.debug(f"Computing and saving graph with threshold at {output_file}")
 
         plt.clf()
@@ -41,10 +41,10 @@ class TwoDimensionsPlot:
         self.add_meta(legend)
         self.save_fig(output_path=output_file)
 
-    def print_graph_with_thresholds(self, perf_list: List[Perf], thresholds_handler: Thresholds, output_path: pathlib.Path):
+    def print_graph_with_thresholds(self, perf_list: List[Perf], thresholds_handler: Thresholds, output_path: pathlib.Path, file_name : str = "overview_with_thresholds.png"):
         # Print a graph with the TPR,TNR,FPR,FNR ... with thresholds provided on one unique chart
 
-        output_file = output_path / "overview_with_thresholds.png"
+        output_file = output_path / file_name
         self.logger.debug(f"Computing and saving graph with threshold at {output_file}")
 
         plt.clf()
@@ -92,13 +92,17 @@ class TwoDimensionsPlot:
         self.logger.info(thresholds_handler)
 
         # x coordinates for the lines
-        xcoords = [thresholds_handler.max_TPR, thresholds_handler.mean, thresholds_handler.max_FPR]
+        xcoords = [thresholds_handler.thre_upper_at_least_xpercent_TPR,
+                   thresholds_handler.thre_upper_at_most_xpercent_FNR,
+                   thresholds_handler.mean,
+                   thresholds_handler.thre_below_at_least_xpercent_TNR,
+                   thresholds_handler.thre_below_at_most_xpercent_FPR]
         # colors for the lines
-        colors = ['b', 'y', 'r']
-        labels = ['TruePositiveRate threshold - Yes to Maybe', ' Mean threshold if full auto', 'TruePositiveRate threshold - Maybe to No']
+        colors = ['b', 'g', 'y','r','m']
+        labels = ['TPR/Maybe to No', 'FNR/Maybe to No', 'F1', 'TNR/Maybe to No', 'FPR/Maybe to No']
 
         for xc, l, c in zip(xcoords, labels, colors):
-            plt.axvline(x=xc, label=l + 'x = {}'.format(xc), c=c)
+            plt.axvline(x=xc, label=(l + 'x = {}').format(xc),linestyle='dashed', c=c)
 
         legend = tuple(labels)
         return legend

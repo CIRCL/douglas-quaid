@@ -5,7 +5,7 @@ import logging
 import os
 import sys
 # ==================== ------ STD LIBRARIES ------- ====================
-from typing import List, Dict
+from typing import List, Dict, Set
 
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
 
@@ -23,9 +23,9 @@ class GraphDataStruct:
 
         self.meta = meta
 
-        self.clusters = {}
-        self.edges = []
-        self.nodes = {}
+        self.clusters : Dict[str,cluster.Cluster] = {}
+        self.edges : List[edge.Edge] = []
+        self.nodes : Dict[str,node.Node]= {}
 
     # ==================== Adding elements to the graph ====================
 
@@ -65,8 +65,8 @@ class GraphDataStruct:
 
     # ==================== Request ====================
 
-    def are_in_same_cluster(self, id_1, id_2):
-        # Return True if both nodes id are in this cluster
+    def are_ids_in_same_cluster(self, id_1, id_2):
+        # Return True if both nodes id are in this cluster (by ids)
 
         are_in_same = False
         for c in self.clusters.values() :
@@ -74,6 +74,32 @@ class GraphDataStruct:
                 return True
         # TODO : make test !
         return are_in_same
+
+    def are_names_in_same_cluster(self, name_1, name_2):
+        # Return True if both nodes id are in this cluster (by name)
+
+        one_found = False
+        id_1 = None
+        id_2 = None
+        for n in self.nodes.values():
+            if n.image == name_1 :
+                id_1 = n.id
+                if not one_found :
+                    one_found = True
+                elif one_found :
+                    break # Second found !
+            if n.image == name_2 :
+                id_2 = n.id
+                if not one_found :
+                    one_found = True
+                elif one_found :
+                    break # Second found !
+
+        if id_1 is None or id_2 is None :
+            raise Exception("Image Name not found in graph structure ! ")
+
+        # TODO : make test !
+        return self.are_ids_in_same_cluster(id_1,id_2)
 
     # ==================== Conversion ====================
 
