@@ -78,9 +78,12 @@ class PicturesExporter:
         nb_of_element = 0
         deleted = 0
         not_found = 0
+        entry_number = 0
+        no_label = 0
         basename = "folder_"
 
         for element in self.dataturks_json:
+            entry_number += 1
             # self.logger.debug(f"Current element : \n{pformat(element)}")
 
             # Do delete = we jump
@@ -89,6 +92,7 @@ class PicturesExporter:
                 labels = annotations["labels"]
             except Exception as e :
                 self.logger.error(f"Error when labels fetching from {pformat(element)} : {e}")
+                no_label+=1
                 continue
 
             if "to_delete" in labels:
@@ -125,6 +129,8 @@ class PicturesExporter:
 
         self.logger.info(f"Pictures deleted = {deleted}")
         self.logger.info(f"Pictures not found = {not_found}")
+        self.logger.info(f"Pictures in total in original file = {entry_number}")
+        self.logger.info(f"Pictures without label = {no_label}")
 
     def export_dict(self):
         json_io.save_json(self.dict_to_export, self.dst_folder / "labels.json")
