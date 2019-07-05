@@ -99,7 +99,7 @@ class TwoDimensionsPlot:
                    thresholds_handler.thre_below_at_most_xpercent_FPR]
         # colors for the lines
         colors = ['b', 'g', 'y','r','m']
-        labels = ['TPR/Maybe to No', 'FNR/Maybe to No', 'F1', 'TNR/Maybe to No', 'FPR/Maybe to No']
+        labels = ['TPR/Maybe to No', 'FNR/Maybe to No', 'F1', 'TNR/Yes to Maybe', 'FPR/Yes to Maybe']
 
         for xc, l, c in zip(xcoords, labels, colors):
             plt.axvline(x=xc, label=(l + 'x = {}').format(xc),linestyle='dashed', c=c)

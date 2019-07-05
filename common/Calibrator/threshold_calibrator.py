@@ -3,24 +3,17 @@
 
 import logging
 import pathlib
-import pprint
-from typing import List
 import time
+from typing import List
+import argparse
 
-import carlhauser_server.Configuration.database_conf as database_conf
 import carlhauser_server.Configuration.distance_engine_conf as distance_engine_conf
-import carlhauser_server.Configuration.webservice_conf as webservice_conf
-import carlhauser_server.Singletons.database_start_stop as database_start_stop
-import carlhauser_server.instance_handler as core
-import common.Graph.graph_datastructure as graph_datastructure
 import common.ImportExport.json_import_export as json_import_export
-import common.TestInstanceLauncher.test_instance_launcher as test_database_handler
-from carlhauser_server.Configuration import feature_extractor_conf as feature_extractor_conf
-from common.ImportExport.json_import_export import Custom_JSON_Encoder
-from common.environment_variable import get_homedir
 import common.TestInstanceLauncher.test_database_conf as test_database_only_conf
-from carlhauser_server.Configuration.algo_conf import Algo_conf
+import common.TestInstanceLauncher.test_instance_launcher as test_database_handler
 from carlhauser_client.EvaluationTools.GraphExtraction.graph_extractor import GraphExtractor
+from carlhauser_server.Configuration import feature_extractor_conf as feature_extractor_conf
+from carlhauser_server.Configuration.algo_conf import Algo_conf
 
 
 class Calibrator:
@@ -217,3 +210,30 @@ class Calibrator:
         de_conf.MAX_DIST_FOR_NEW_CLUSTER = 1  # Only one big cluter with a lot of pictures. Will check all pictures.
 
         return de_conf
+
+
+
+def dir_path(path):
+    if pathlib.Path(path).exists():
+        return path
+    else:
+        raise argparse.ArgumentTypeError(f"readable_dir:{path} is not a valid path")
+
+# Launcher for this worker. Launch this file to launch a worker
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Launch Flask API on server side')
+    parser.add_argument("-dbc", '--database_configuration_file', dest="db_conf", type=dir_path, help='DB_configuration_file stored as json. Path')
+    parser.add_argument("-wsc", '--webservice_configuration_file', dest="ws_conf", type=dir_path, help='WebService_configuration_file stored as json. Path')
+    args = parser.parse_args()
+
+    # Load the provided configuration file and create back the Configuration Object
+    db_conf = database_conf.parse_from_dict(json_import_export.load_json(pathlib.Path(args.db_conf)))
+    ws_conf = webservice_conf.parse_from_dict(json_import_export.load_json(pathlib.Path(args.ws_conf)))
+
+    # Create the Flask API and run it
+    # Create Flask endpoint from configuration files
+    api = FlaskAppWrapper('api', ws_conf=ws_conf, db_conf=db_conf)
+    api.add_all_endpoints()
+
+    # Run Flask API endpoint
+    api.run()  # debug=True
