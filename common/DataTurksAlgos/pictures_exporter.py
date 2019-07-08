@@ -30,7 +30,7 @@ class PicturesExporter:
         # Internal
         self.pic_to_path: Dict = {}
         self.pic_already_to_path: Dict = {}
-        self.dict_to_export: Dict = {}
+        self.dict_to_export: List[Dict] = [{}]
 
     def launch_copy(self):
         self.load_dataturks_json()
@@ -38,7 +38,7 @@ class PicturesExporter:
         self.load_pictures_to_not_copy()
 
         self.iterate_over_dataturks_json()
-        self.export_dict()
+        self.export_dicts()
 
     # ===================== UTILITIES =====================
 
@@ -108,12 +108,17 @@ class PicturesExporter:
                 continue
 
             # File seems good.
+            pack_id = nb_of_element // self.packet_size
 
             # Save labels in a corner for later export
-            self.dict_to_export[tmp_path.name] = labels
+            if pack_id + 1 != len(self.dict_to_export) :
+                # We don't have enough dictionnary, we add one
+                self.dict_to_export.append({})
+
+            self.dict_to_export[pack_id][tmp_path.name] = labels
 
             # Generate new path where to be saved
-            curr_folder_name = basename + str(nb_of_element // self.packet_size)
+            curr_folder_name = basename + str(pack_id)
             nb_of_element += 1
             curr_saving_path = self.dst_folder / curr_folder_name
             curr_saving_path.mkdir(exist_ok=True)
@@ -135,8 +140,10 @@ class PicturesExporter:
         self.logger.info(f"Pictures without label = {no_label}")
         self.logger.info(f"Pictures copied = {copied}")
 
-    def export_dict(self):
-        json_io.save_json(self.dict_to_export, self.dst_folder / "labels.json")
+    def export_dicts(self):
+        #TODO : Make a list per file list
+        for i, curr_dict in enumerate(self.dict_to_export) :
+            json_io.save_json(curr_dict, self.dst_folder / ("labels_"+str(i)+".json"))
 
 '''
   {
@@ -203,3 +210,7 @@ if __name__ == '__main__':
     dt_exporter.packet_size = args.packet
 
     dt_exporter.launch_copy()
+
+# export PYTHONPATH="${PYTHONPATH}:/home/vincent/douglas-quaid/"
+# export CARLHAUSER_HOME="/home/vincent/douglas-quaid"
+# python3 ./pictures_exporter.py -s ./../../../AIL_dataset_checked/ -d ./../../../PACKS/ -i ./../../../AIL4000.json -p 4000
