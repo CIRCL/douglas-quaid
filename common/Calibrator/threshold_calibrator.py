@@ -221,11 +221,14 @@ def dir_path(path):
 
 # Launcher for this worker. Launch this file to launch a worker
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Launch Flask API on server side')
-    parser.add_argument("-dbc", '--database_configuration_file', dest="db_conf", type=dir_path, help='DB_configuration_file stored as json. Path')
-    parser.add_argument("-wsc", '--webservice_configuration_file', dest="ws_conf", type=dir_path, help='WebService_configuration_file stored as json. Path')
+    parser = argparse.ArgumentParser(description='Launch DouglasQuaid Calibrator on your own dataset to get custom configuration files')
+    parser.add_argument("-s", '--source_path', dest="src", type=dir_path, help='Source path of folder of pictures to evaluate. Should be a subset of your production data.')
+    parser.add_argument("-gt", '--ground_truth', dest="gt", type=dir_path, help='Ground truth file path which has clustered version of the provided data. Very important as it is on what the optimization will based its calculations !')
+    parser.add_argument("-d", '--dest_path', dest="dest", type=dir_path, help='Destination path to store results of the evaluation (configuration files generated, etc.)')
     args = parser.parse_args()
 
+
+'''
     # Load the provided configuration file and create back the Configuration Object
     db_conf = database_conf.parse_from_dict(json_import_export.load_json(pathlib.Path(args.db_conf)))
     ws_conf = webservice_conf.parse_from_dict(json_import_export.load_json(pathlib.Path(args.ws_conf)))
@@ -237,3 +240,4 @@ if __name__ == '__main__':
 
     # Run Flask API endpoint
     api.run()  # debug=True
+'''
