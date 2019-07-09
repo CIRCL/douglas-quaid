@@ -302,3 +302,6 @@ More details are given in [Documentation PDF version](./SOTA/Core_doc.pdf)
 ## Contributing
 PR are welcomed.
 New issues are welcomed if you have ideas or usecase that could improve the project.
+
+## We talk about it
+https://passthesalt.ubicast.tv/permalink/v125d03cfc29028tnzsg/

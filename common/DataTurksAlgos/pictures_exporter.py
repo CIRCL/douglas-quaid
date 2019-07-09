@@ -141,7 +141,6 @@ class PicturesExporter:
         self.logger.info(f"Pictures copied = {copied}")
 
     def export_dicts(self):
-        #TODO : Make a list per file list
         for i, curr_dict in enumerate(self.dict_to_export) :
             json_io.save_json(curr_dict, self.dst_folder / ("labels_"+str(i)+".json"))
 
