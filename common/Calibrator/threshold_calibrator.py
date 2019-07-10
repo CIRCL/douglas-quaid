@@ -1,18 +1,19 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import argparse
 import logging
 import pathlib
 import time
 from typing import List
-import argparse
 
 import carlhauser_server.Configuration.distance_engine_conf as distance_engine_conf
+import common.Calibrator.calibrator_conf as calibrator_conf
 import common.ImportExport.json_import_export as json_import_export
 import common.TestInstanceLauncher.test_database_conf as test_database_only_conf
 import common.TestInstanceLauncher.test_instance_launcher as test_database_handler
 from carlhauser_client.EvaluationTools.GraphExtraction.graph_extractor import GraphExtractor
-from carlhauser_server.Configuration import feature_extractor_conf as feature_extractor_conf
+from carlhauser_server.Configuration import feature_extractor_conf
 from carlhauser_server.Configuration.algo_conf import Algo_conf
 
 
@@ -33,6 +34,13 @@ class Calibrator:
         self.db_conf: test_database_only_conf.TestInstance_database_conf = None
         self.fe_conf: feature_extractor_conf.Default_feature_extractor_conf = None
         self.test_db_handler: test_database_handler.TestInstanceLauncher = None
+        self.calibrator_conf: calibrator_conf.Default_calibrator_conf = None
+
+    def set_calibrator_conf(self, calibrator_conf: calibrator_conf.Default_calibrator_conf):
+        self.logger.debug("Setting configuration")
+        self.calibrator_conf = calibrator_conf
+        self.logger.debug("Validation of the configuration ... ")
+        calibrator_conf.validate()
 
     def calibrate_douglas_quaid(self, folder_of_pictures: pathlib.Path,
                                 ground_truth_file: pathlib.Path,
@@ -45,7 +53,6 @@ class Calibrator:
             raise Exception(f"Folder of picture {folder_of_pictures} does not exist ! Please check path. ")
         if not ground_truth_file.exists():
             raise Exception(f"Ground truth file {ground_truth_file} does not exist ! Please check path. ")
-
         # Verify output folder
         if not output_folder.exists():
             try:
@@ -54,17 +61,6 @@ class Calibrator:
                 raise Exception(f"Output folder does not exist and impossible to create it. Aborting. Please check permissions (most likely)")
 
         self.logger.debug("Paths provided checked and corrects.")
-
-        # Load ground truth file / Verify ground truth file
-        # visjs = json_import_export.load_json(ground_truth_file)
-        # graph = graph_datastructure.GraphDataStruct.load_from_dict(visjs)
-        # self.logger.debug("Ground truth file loaded as graph.")
-
-        # Load pictures / verify pictures
-        # p = folder_of_pictures.resolve().glob('**/*')
-        # files = [x for x in p if x.is_file()]
-        # files.sort()
-        # self.logger.debug(f"{len(files)} files readable in {folder_of_pictures} and below")
 
         # Call each algorithm evaluator
         calibrated_algos = self.algorithms_evaluator(folder_of_pictures, ground_truth_file, output_folder)
@@ -136,20 +132,22 @@ class Calibrator:
 
         # Launch an evaluator client to extract the graphe
         graph_extractor = GraphExtractor()
-        perfs_list, thresholds = graph_extractor.get_best_algorithm_threshold(image_folder=folder_of_pictures,
+        perfs_list, tmp_calibrator_conf = graph_extractor.get_best_algorithm_threshold(image_folder=folder_of_pictures,
                                                                               visjs_json_path=ground_truth_file,
-                                                                              output_path=output_folder)
+                                                                              output_path=output_folder,
+                                                                              calibrator_conf= self.calibrator_conf)
 
         # Kill server instance
         self.test_db_handler.tearDown()
 
         # Evaluate the graphe to find thresholds
-        # TODO : work with perfs_list
+        # = Already done in thresholds object = thresholds
 
         # Construct result algo_conf depending on thresholds
-        # TODO : work with perfs_list
+        # TOOD : Extract only setted values
+        updated_algo_conf = tmp_calibrator_conf.export_to_Algo(to_calibrate_algo)
 
-        return perfs_list
+        return updated_algo_conf  # perfs_list,
 
     def generate_feature_conf(self, to_calibrate_algo: Algo_conf) -> feature_extractor_conf.Default_feature_extractor_conf:
         # Generate a feature configuration object with only one algorithm activated
@@ -212,32 +210,80 @@ class Calibrator:
         return de_conf
 
 
-
 def dir_path(path):
     if pathlib.Path(path).exists():
         return path
     else:
         raise argparse.ArgumentTypeError(f"readable_dir:{path} is not a valid path")
 
+
+def default_conf(args):
+    cal_conf = calibrator_conf.Default_calibrator_conf.get_default_instance()
+    return cal_conf
+
+def load_from_file(args):
+    cal_conf = calibrator_conf.Default_calibrator_conf()
+    #TODO : Load from file !
+    return cal_conf
+
+
+def load_from_args(args):
+    # Create a calibrator configuration from args
+
+    cal_conf = calibrator_conf.Default_calibrator_conf()
+    cal_conf.Acceptable_false_positive_rate = args.AFPR
+    cal_conf.Acceptable_false_negative_rate = args.AFNR
+    cal_conf.Minimum_true_positive_rate = args.MTPR
+    cal_conf.Minimum_true_negative_rate = args.MTNR
+
+    # validate the values
+    cal_conf.validate()
+
+    return cal_conf
+
+
 # Launcher for this worker. Launch this file to launch a worker
 if __name__ == '__main__':
+    # Launch command examples :
+    # python3 ./threshold_calibrator.py -s -gt -d from_conf_file
+    # python3 ./threshold_calibrator.py -s ./../../datasets/MINI_DATASET -gt ./../../datasets/MINI_DATASET_VISJS.json -d ./TEST/ from_cmd_args -AFPR 0.1 -MTPR 0.9
     parser = argparse.ArgumentParser(description='Launch DouglasQuaid Calibrator on your own dataset to get custom configuration files')
-    parser.add_argument("-s", '--source_path', dest="src", type=dir_path, help='Source path of folder of pictures to evaluate. Should be a subset of your production data.')
-    parser.add_argument("-gt", '--ground_truth', dest="gt", type=dir_path, help='Ground truth file path which has clustered version of the provided data. Very important as it is on what the optimization will based its calculations !')
-    parser.add_argument("-d", '--dest_path', dest="dest", type=dir_path, help='Destination path to store results of the evaluation (configuration files generated, etc.)')
+    parser.add_argument("-s", '--source_path', dest="src", required=True, type=dir_path, action='store',
+                        help='Source path of folder of pictures to evaluate. Should be a subset of your production data.')
+    parser.add_argument("-gt", '--ground_truth', dest="gt", required=True, type=dir_path, action='store',
+                        help='Ground truth file path which has clustered version of the provided data. Very important as it is on what the optimization will based its calculations !')
+    parser.add_argument("-d", '--dest_path', dest="dest", required=True, type=dir_path, action='store',
+                        help='Destination path to store results of the evaluation (configuration files generated, etc.)')
+
+    subparsers = parser.add_subparsers(help='Handle a configuration file')
+
+    # create the parser for the "command_0" command
+    parser_a = subparsers.add_parser('from_default', help='Set-up expected values/thresholds from default configuration')
+    parser_a.set_defaults(func=default_conf)
+
+    # create the parser for the "command_1" command
+    parser_a = subparsers.add_parser('from_conf_file', help='Set-up expected values/thresholds from configuration file')
+    parser_a.add_argument("-c", '--conf', dest="conf", type=dir_path, action='store', help='Configuration file (Calibrator_conf) file path.')
+    parser_a.set_defaults(func=load_from_file)
+
+    # create the parser for the "command_2" command
+    parser_b = subparsers.add_parser('from_cmd_args', help='Set-up expected values/thresholds from command line [(TNR or FPR) AND (TPR or FNR)]')
+    parser_b.add_argument('-AFPR', dest="AFPR", type=float, action='store', help='Acceptable False Positive Rate (target)')
+    parser_b.add_argument('-AFNR', dest="AFNR", type=float, action='store', help='Acceptable False Positive Rate (target)')
+    parser_b.add_argument('-MTPR', dest="MTPR", type=float, action='store', help='Minimum True Positive Rate (target)')
+    parser_b.add_argument('-MTNR', dest="MTNR", type=float, action='store', help='Minimum True Negative Rate (target)')
+    parser_b.set_defaults(func=load_from_args)
+
     args = parser.parse_args()
 
+    try:
+        func = args.func
+        calibrator_conf = func(args)
+        calibrator = Calibrator()
+        calibrator.set_calibrator_conf(calibrator_conf)
+        calibrator.calibrate_douglas_quaid(folder_of_pictures=pathlib.Path(args.src),
+                                           ground_truth_file=pathlib.Path(args.gt),
+                                           output_folder=pathlib.Path(args.dest))
 
-'''
-    # Load the provided configuration file and create back the Configuration Object
-    db_conf = database_conf.parse_from_dict(json_import_export.load_json(pathlib.Path(args.db_conf)))
-    ws_conf = webservice_conf.parse_from_dict(json_import_export.load_json(pathlib.Path(args.ws_conf)))
-
-    # Create the Flask API and run it
-    # Create Flask endpoint from configuration files
-    api = FlaskAppWrapper('api', ws_conf=ws_conf, db_conf=db_conf)
-    api.add_all_endpoints()
-
-    # Run Flask API endpoint
-    api.run()  # debug=True
-'''
+    except AttributeError as e:
+        parser.error(f"Too few arguments : {e}")

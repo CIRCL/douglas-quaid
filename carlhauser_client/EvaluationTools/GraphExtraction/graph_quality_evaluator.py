@@ -37,7 +37,8 @@ class GraphQualityEvaluator:
         self.NB_TO_CHECK: int = 3  # Number of first match to check to get the scores and overview
         self.TOLERANCE: float = 0.1  # [0-1] acceptable drop of True Positive and increase of False Negative
 
-    def get_optimal_for_optimized_attribute(self, perfs_list: List[perf_datastruct.Perf], attribute: str, maximize_threshold: bool = True, maximize_attribute=False, is_increasing: bool = True, tolerance: float = 0.1):
+    def get_optimal_for_optimized_attribute(self, perfs_list: List[perf_datastruct.Perf], attribute: str, maximize_threshold: bool = True, maximize_attribute=False, is_increasing: bool = True,
+                                            tolerance: float = 0.1):
         # Extract the threshold for a specific kind of value
         # Max threshold, Max attribute = Get the rightmost higher value of the attribute
         # Max threshold, Min attribute = Get the rightmost lower value of the attribute, with attribute > Tolerance of the graph_evaluator
@@ -50,7 +51,7 @@ class GraphQualityEvaluator:
 
         # We could have assumed the performance list is sorted
         perfs_list.sort(key=lambda k: k.threshold, reverse=is_increasing)
-        if not is_increasing :
+        if not is_increasing:
             maximize_threshold = not maximize_threshold
             maximize_attribute = not maximize_attribute
         # We want a decreasing graph, always.
@@ -66,12 +67,13 @@ class GraphQualityEvaluator:
             return self.get_max_threshold_for_max_attr(perfs_list, attribute)
 
         elif maximize_threshold is False and maximize_attribute:
-            self.logger.debug(f"Minimum {attribute} allowed : {1 - self.TOLERANCE}")
-            return self.get_min_threshold_for_max_attr_with_tolerance(perfs_list, attribute, 1 - self.TOLERANCE)
+
+            self.logger.debug(f"Minimum {attribute} allowed : {1 - tolerance}")
+            return self.get_min_threshold_for_max_attr_with_tolerance(perfs_list, attribute, 1 - tolerance)
 
         elif maximize_threshold and maximize_attribute is False:
-            self.logger.debug(f"Minimum {attribute} allowed : {self.TOLERANCE}")
-            return self.get_min_threshold_for_max_attr_with_tolerance(perfs_list, attribute, self.TOLERANCE)
+            self.logger.debug(f"Minimum {attribute} allowed : {tolerance}")
+            return self.get_min_threshold_for_max_attr_with_tolerance(perfs_list, attribute, tolerance)
 
         elif maximize_threshold is False and maximize_attribute is False:
             return self.get_min_threshold_for_min_attr(perfs_list, attribute)
@@ -118,19 +120,18 @@ class GraphQualityEvaluator:
         return threshold, max_value
 
     # =================== Optimizer for one value ===================
-
     # get_x_percent_FN_min_threshold
-    def get_threshold_where_upper_are_less_than_xpercent_FN(self, perfs_list: List[perf_datastruct.Perf], percent : float):
+    def get_threshold_where_upper_are_less_than_xpercent_FN(self, perfs_list: List[perf_datastruct.Perf], percent: float):
         # upper to this threshold, there is less than X percent of false negative
         return self.get_optimal_for_optimized_attribute(perfs_list=perfs_list,
                                                         attribute="FNR",
                                                         maximize_attribute=True,
                                                         maximize_threshold=False,
                                                         is_increasing=False,
-                                                        tolerance = percent)
+                                                        tolerance=percent)
 
     # get_x_percent_TP_min_threshold
-    def get_threshold_where_upper_are_more_than_xpercent_TP(self, perfs_list: List[perf_datastruct.Perf], percent : float):
+    def get_threshold_where_upper_are_more_than_xpercent_TP(self, perfs_list: List[perf_datastruct.Perf], percent: float):
         # upper to this threshold, there is more than X percent of true positive
 
         return self.get_optimal_for_optimized_attribute(perfs_list=perfs_list,
@@ -138,9 +139,10 @@ class GraphQualityEvaluator:
                                                         maximize_attribute=True,
                                                         maximize_threshold=False,
                                                         is_increasing=True,
-                                                        tolerance = percent)
+                                                        tolerance=percent)
+
     # get_x_percent_TN_max_threshold
-    def get_threshold_where_below_are_more_than_xpercent_TN(self, perfs_list: List[perf_datastruct.Perf], percent : float):
+    def get_threshold_where_below_are_more_than_xpercent_TN(self, perfs_list: List[perf_datastruct.Perf], percent: float):
         # below to this threshold, there is more than X percent of true negative
 
         return self.get_optimal_for_optimized_attribute(perfs_list=perfs_list,
@@ -148,9 +150,10 @@ class GraphQualityEvaluator:
                                                         maximize_attribute=False,
                                                         maximize_threshold=True,
                                                         is_increasing=False,
-                                                        tolerance = percent)
+                                                        tolerance=1 - percent)
+
     # get_x_percent_FP_max_threshold
-    def get_threshold_where_below_are_less_than_xpercent_FP(self, perfs_list: List[perf_datastruct.Perf], percent : float):
+    def get_threshold_where_below_are_less_than_xpercent_FP(self, perfs_list: List[perf_datastruct.Perf], percent: float):
         # below to this threshold, there is less than X percent of false positive
 
         return self.get_optimal_for_optimized_attribute(perfs_list=perfs_list,
@@ -158,23 +161,7 @@ class GraphQualityEvaluator:
                                                         maximize_attribute=False,
                                                         maximize_threshold=True,
                                                         is_increasing=True,
-                                                        tolerance = percent)
-
-    '''
-    def get_min_threshold_for_max_TPR(self, perfs_list: List[perf_datastruct.Perf]):
-        return self.get_optimal_for_optimized_attribute(perfs_list=perfs_list,
-                                                        attribute="TPR",
-                                                        maximize_attribute=True,
-                                                        maximize_threshold=False,
-                                                        is_increasing=True)
-
-    def get_max_threshold_for_min_TNR(self, perfs_list: List[perf_datastruct.Perf]):
-        return self.get_optimal_for_optimized_attribute(perfs_list=perfs_list,
-                                                        attribute="TNR",
-                                                        maximize_attribute=False,
-                                                        maximize_threshold=True,
-                                                        is_increasing=False)
-    '''
+                                                        tolerance=1 - percent)
 
     def get_max_threshold_for_max_F1(self, perfs_list: List[perf_datastruct.Perf]):
         return self.get_optimal_for_optimized_attribute(perfs_list=perfs_list,
@@ -182,9 +169,6 @@ class GraphQualityEvaluator:
                                                         maximize_attribute=True,
                                                         maximize_threshold=True,
                                                         is_increasing=True)
-
-    def get_mean(self, perfs_list: List[perf_datastruct.Perf]):
-        return 0
 
     # =================== Optimizer for one value ===================
     def get_perf_list(self, requests_result: List, gt_graph: GraphDataStruct) -> List[perf_datastruct.Perf]:

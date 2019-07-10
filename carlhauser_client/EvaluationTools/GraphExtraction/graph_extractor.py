@@ -24,6 +24,8 @@ import common.PerformanceDatastructs.perf_datastruct as perf_datastruct
 import common.PerformanceDatastructs.thresholds_datastruct as thresholds_datastruct
 from common.ChartMaker.two_dimensions_plot import TwoDimensionsPlot
 
+import common.Calibrator.calibrator_conf as calibrator_conf
+
 # ==================== ------ PREPARATION ------- ====================
 # load the logging configuration
 logconfig_path = (get_homedir() / pathlib.Path("carlhauser_client", "logging.ini")).resolve()
@@ -172,7 +174,8 @@ class GraphExtractor:
 
     def get_best_algorithm_threshold(self, image_folder: pathlib.Path,
                                      output_path: pathlib.Path,
-                                     visjs_json_path: pathlib.Path) -> (List[perf_datastruct.Perf], thresholds_datastruct.Thresholds):
+                                     visjs_json_path: pathlib.Path,
+                                     calibrator_conf: calibrator_conf.Default_calibrator_conf) -> (List[perf_datastruct.Perf], calibrator_conf.Default_calibrator_conf):
         # Compute the best threshold to apply to distance, from the current state of the library
         self.logger.debug(f"Finding best thresholds ... ")
 
@@ -193,24 +196,34 @@ class GraphExtractor:
         twoDplot.print_graph(perfs_list, output_path)
 
         # Call the graph evaluator on this pair result_list + gt_graph
-        percent = 0.1
-        thre_max_TPR, val_TPR = perf_eval.get_threshold_where_upper_are_more_than_xpercent_TP(perfs_list=perfs_list, percent=percent)
-        thre_max_FNR, val_FNR = perf_eval.get_threshold_where_upper_are_less_than_xpercent_FN(perfs_list=perfs_list, percent=percent)
-        thre_max_TNR, val_TNR = perf_eval.get_threshold_where_below_are_more_than_xpercent_TN(perfs_list=perfs_list, percent=percent)
-        thre_max_FPR, val_FPR = perf_eval.get_threshold_where_below_are_less_than_xpercent_FP(perfs_list=perfs_list, percent=percent)
-        thre_max_F1, val_F1 = perf_eval.get_max_threshold_for_max_F1(perfs_list=perfs_list)
+        if calibrator_conf.Minimum_true_positive_rate is not None:
+            thre_max_TPR, val_TPR = perf_eval.get_threshold_where_upper_are_more_than_xpercent_TP(perfs_list=perfs_list,
+                                                                                                  percent=calibrator_conf.Minimum_true_positive_rate)
+            calibrator_conf.thre_upper_at_least_xpercent_TPR = thre_max_TPR
 
-        thresholds_holder = thresholds_datastruct.Thresholds(max_TPR=thre_max_TPR,
-                                                             max_FNR=thre_max_FNR,
-                                                             max_FPR=thre_max_FPR,
-                                                             max_TNR=thre_max_TNR,
-                                                             mean=thre_max_F1)
-        self.logger.debug(f"Computed thresholds {thresholds_holder} ")
+        if calibrator_conf.Acceptable_false_negative_rate is not None:
+            thre_max_FNR, val_FNR = perf_eval.get_threshold_where_upper_are_less_than_xpercent_FN(perfs_list=perfs_list,
+                                                                                                  percent=calibrator_conf.Acceptable_false_negative_rate)
+            calibrator_conf.thre_upper_at_most_xpercent_FNR = thre_max_FNR
+
+        if calibrator_conf.Minimum_true_negative_rate is not None:
+            thre_max_TNR, val_TNR = perf_eval.get_threshold_where_below_are_more_than_xpercent_TN(perfs_list=perfs_list,
+                                                                                                  percent=calibrator_conf.Minimum_true_negative_rate)
+            calibrator_conf.thre_below_at_least_xpercent_TNR = thre_max_TNR
+
+        if calibrator_conf.Acceptable_false_positive_rate is not None:
+            thre_max_FPR, val_FPR = perf_eval.get_threshold_where_below_are_less_than_xpercent_FP(perfs_list=perfs_list,
+                                                                                                  percent=calibrator_conf.Acceptable_false_positive_rate)
+            calibrator_conf.thre_below_at_most_xpercent_FPR = thre_max_FPR
+
+        thre_max_F1, val_F1 = perf_eval.get_max_threshold_for_max_F1(perfs_list=perfs_list)
+        calibrator_conf.maximum_F1 = thre_max_F1
+        self.logger.debug(f"Computed thresholds {calibrator_conf} ")
 
         # Save to graph
-        twoDplot.print_graph_with_thresholds(perfs_list, thresholds_holder, output_path)
+        twoDplot.print_graph_with_thresholds(perfs_list, calibrator_conf, output_path)
 
-        return perfs_list, thresholds_holder
+        return perfs_list, calibrator_conf
 
 
 def test():
