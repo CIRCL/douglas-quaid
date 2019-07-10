@@ -58,6 +58,10 @@ class Database_Worker:
         # Pickler with patches
         self.pickler = pickle_import_export.Pickler()
 
+        # Imposible to connect => Shutdown
+        self.failure_nb = 0
+        self.FAILURE_THRESHOLD = 10
+
     def add_to_queue(self, storage: redis.Redis, queue_name: str, id: str, dict_to_store: dict, pickle=False):
         """
         Push data to a specified queue, with a specific id. Wrapper to handle queuing of id(s) and separated storage of data linked to this id(s).
@@ -211,12 +215,18 @@ class Database_Worker:
             # DEBUG # self.logger.debug(f"HALT key : {value} ")
 
             if not value or value == "":
+                self.echec_nb = 0
                 return False
             else:  # The key has been set to something, "Now","Yes", ...
                 self.logger.info("HALT key detected. Worker received stop signal ... ")
                 return True
         except Exception as e:
             self.logger.error(f"Impossible to know if the worker has to halt : {e}")
+            self.failure_nb += 1
+            if self.failure_nb > self.FAILURE_THRESHOLD :
+                # There was to many failure, we stop the worker as we can't connect to DB
+                self.logger.critical(f"Too many failures to connect to the DB. Stopping worker")
+                return True
             return False
 
     def run(self, sleep_in_sec: int):
