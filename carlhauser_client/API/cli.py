@@ -1,48 +1,70 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+# ==================== ------ STD LIBRARIES ------- ====================
 import argparse
 import logging.config
-# ==================== ------ STD LIBRARIES ------- ====================
 import os
 import pathlib
 import sys
+import logging
+from typing import Dict
 
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
-sys.path.append(os.path.abspath(os.path.pardir))
-from carlhauser_client.Helpers.environment_variable import get_homedir
+from common.environment_variable import get_homedir
 from carlhauser_client.API.extended_api import Extended_API
 from common.ImportExport.json_import_export import save_json, load_json
-
-# from . import helpers
+sys.path.append(os.path.abspath(os.path.pardir))
 
 # ==================== ------ PREPARATION ------- ====================
 # load the logging configuration
 logconfig_path = (get_homedir() / pathlib.Path("carlhauser_client", "logging.ini")).resolve()
 logging.config.fileConfig(str(logconfig_path))
 
-
 # ==================== ------ LAUNCHER ------- ====================
 
 class CLI:
-    # Command line interface for client side
+    '''
+    Command line interface for client side
+    '''
 
     def __init__(self):
         self.ext_api = Extended_API.get_api()
 
-    def ping(self, args):
-        self.ext_api.ping_server()
+    def ping(self, args)-> bool:
+        '''
+        Ping the server to check if he is alive.
+        :param args: Not needed
+        :return: True if the server is alive, False if the server is not
+        '''
+        return self.ext_api.ping_server()
 
-    def upload(self, args):
+    def upload(self, args) -> Dict[str,str]:
+        '''
+        Perform the upload of all picture in the provided folder (args.path)
+        and save the mapping (original_file_name)->(id_given_by_server)
+        in provided file (args.mapfile)
+        :param args: arguments as described
+        :return: Mapping filename to id
+        '''
         print(f"Uploading pictures from {args.path}")
         mapping, nb = self.ext_api.add_pictures_to_db(args.path)
         print(f"{nb} pictures uploaded.")
         save_json(mapping, args.mapfile)
         print(f"Mapping file_name / Server ID saved to {args.mapfile}.")
+        return mapping
 
-    def request(self, args):
+    def request(self, args) -> Dict:
+        '''
+        Request the similar pictures of the provided picture (args.path)
+        if we get an answer before timeout (args.waittime). Translate back the provided ids
+        of the server with the filenames to id mapping saved previously (args.mapfile)
+        :param args: arguments as described
+        :return: A dict of results # TODO : Add an example of dict of results
+        '''
         results = self.ext_api.request_similar_and_wait(args.path, args.waittime)
 
+        # If mapfile is provided, reverse the id. Otherwise, do nothing
         if args.mapfile:
             print(f"Mapping file detected. Reversing the ids ... ")
             mapping = load_json(args.mapfile)
@@ -50,23 +72,38 @@ class CLI:
             results = self.ext_api.apply_revert_mapping(results, revert_mapping)
 
         save_json(results, args.resultfile)
+        return results
 
     def dump(self, args):
+        '''
+        Dump the database and transmit it to the client, and save it in a file(args.dbfile)
+        Translate back the provided ids of the server with the filenames to id mapping
+        saved previously (args.mapfile). Can duplicate id of picture to their "image" and "shape" attributes. Allows to visualize the database with visjs-classificator (args.copyids)
+        :param args: arguments as described
+        :return: The database as a Dict of a graphe (visjs-classificator style)
+        '''
         print(f"Requesting server to dump its database")
         graphe_struct = self.ext_api.get_db_dump_as_graph()
         db = graphe_struct.export_as_dict()
-        # TODO : Handle it properly with graphe structure ? For now, only operation on dict
+
+        # TODO : Handle it properly with graphe structure calls ? For now, only operation on dict
+        # If mapfile is provided, reverse the id. Otherwise, do nothing
         if args.mapfile:
             print(f"Mapping file detected. Reversing the ids ... ")
             mapping = load_json(args.mapfile)
             revert_mapping = self.ext_api.revert_mapping(mapping)
-            # graphe_struct.replace_id_from_mapping(mapping)
+            # TODO : graphe_struct.replace_id_from_mapping(mapping) # Cleaner
             db = self.ext_api.apply_revert_mapping(db, revert_mapping)
+
+        # If Copy_ids is true, we copy the value of the picture's ids
+        # to their image and shape attributes
         if args.copyids:
             print(f"ID to image copy option detected. Copying ... ")
             db = self.ext_api.copy_id_to_image(db)
-            # graphe_struct.copy_ids_to_image()
+            # TODO : graphe_struct.copy_ids_to_image() # Cleaner
+
         save_json(db, args.dbfile)
+        return db
 
 
 def main():
@@ -116,7 +153,6 @@ def main():
         func(args)
     except AttributeError:
         parser.error("too few arguments")
-
 
 
 if __name__ == "__main__":
