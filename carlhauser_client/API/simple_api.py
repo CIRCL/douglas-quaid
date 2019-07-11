@@ -104,7 +104,7 @@ class Simple_API:
 
     # ================= ADD PICTURES =================
 
-    def add_picture_server(self, file_path: pathlib.Path) -> (bool, str):
+    def add_one_picture(self, file_path: pathlib.Path) -> (bool, str):
         '''
         Add one picture to the server
         :param file_path: the path of the picture to add
@@ -134,6 +134,53 @@ class Simple_API:
                 return data["Status"] == "Success", data["img_id"]
 
     # ================= ADD PICTURES - WAITING =================
+
+    def poll_until_adding_done(self, max_time: int = -1) -> bool:
+        '''
+        Regularly ask the server if the adding of a picture had been performed
+        Returns when ready or when timeout
+        :param max_time: maximum allowed time to wait before timing out. By default -1 = No time out
+        :return: boolean, True if adding done, False if not
+        '''
+
+        # Starting count-down
+        start_time = time.time()
+        self.logger.info(f"Checking if adding had been performed. Start polling ...")
+
+        # While the answer is not ready or we haven't timed-out
+        time_out = False
+        while not self.is_adding_done()[1] and not time_out:
+            # Not ready yet, wait a bit
+            self.logger.info(f"Adding not performed yet, waiting ...")
+            time.sleep(2)
+
+            # Compute if we are already in time out
+            time_out = (abs(time.time() - start_time) > max_time and max_time != -1)
+
+            if time_out:
+                self.logger.info(f"Adding has still not been performed. Time out ! ...")
+                return False
+
+        # Ready !
+        self.logger.info(f"Adding had been performed.")
+        return True
+
+    def is_adding_done(self) -> (bool, bool):
+        '''
+        Ask the server if the adding had been performed
+        :return: 2 booleans. First : True if the server answered, False otherwise. Second : True if the request is ready, False otherwise
+        '''
+        # Set the endpoint
+        target_url = self.server_url + EndPoints.WAIT_FOR_ADD
+
+        with requests.Session() as s:
+            r = s.get(url=target_url, verify=self.cert)
+            self.logger.info(f"GET request is_ready => {r.status_code} {r.reason} {r.text}")
+
+            # Check the JSON Response Content documentation below
+            data = self.utility_extract_and_log_response(r)
+
+            return data["Status"] == "Success", data["is_ready"]
 
     # ================= REQUEST PICTURES =================
 

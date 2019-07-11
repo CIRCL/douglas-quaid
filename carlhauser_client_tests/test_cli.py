@@ -7,7 +7,7 @@ from pprint import pformat
 
 from common.environment_variable import get_homedir
 
-import carlhauser_client.EvaluationTools.Internal_clustering_Quality_Evaluator.cluster_matcher as cluster_matcher
+import carlhauser_client.EvaluationTools.StorageGraphExtractor.cluster_matcher as cluster_matcher
 from common.Graph.cluster import Cluster
 
 

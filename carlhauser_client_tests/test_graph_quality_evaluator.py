@@ -6,7 +6,7 @@ import unittest
 
 import common.PerformanceDatastructs.perf_datastruct as perf_datastruct
 import common.PerformanceDatastructs.stats_datastruct as stats_datastruct
-from carlhauser_client.EvaluationTools.GraphExtraction.graph_quality_evaluator import GraphQualityEvaluator
+from carlhauser_client.EvaluationTools.SimilarityGraphExtractor.similarity_graph_quality_evaluator import GraphQualityEvaluator
 from common.ChartMaker.two_dimensions_plot import TwoDimensionsPlot
 from common.Graph.cluster import Cluster
 from common.Graph.edge import Edge

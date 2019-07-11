@@ -10,9 +10,10 @@ import sys
 from typing import Dict
 
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
+from common.environment_variable import get_homedir
 from carlhauser_client.API.extended_api import Extended_API
 from common.ImportExport.json_import_export import save_json, load_json
-from common.environment_variable import get_homedir
+from carlhauser_client.Helpers.dict_utilities import apply_revert_mapping
 
 sys.path.append(os.path.abspath(os.path.pardir))
 
@@ -48,7 +49,7 @@ class CLI:
         :return: Mapping filename to id
         '''
         print(f"Uploading pictures from {args.path}")
-        mapping, nb = self.ext_api.add_pictures_to_db(args.path)
+        mapping, nb = self.ext_api.add_many_pictures_no_wait(args.path)
         print(f"{nb} pictures uploaded.")
         save_json(mapping, args.mapfile)
         print(f"Mapping file_name / Server ID saved to {args.mapfile}.")
@@ -62,14 +63,13 @@ class CLI:
         :param args: arguments as described
         :return: A dict of results # TODO : Add an example of dict of results
         '''
-        results = self.ext_api.request_similar_and_wait(args.path, args.waittime)
+        results = self.ext_api.request_one_picture_and_wait(args.path, args.waittime)
 
         # If mapfile is provided, reverse the id. Otherwise, do nothing
         if args.mapfile:
             print(f"Mapping file detected. Reversing the ids ... ")
             mapping = load_json(args.mapfile)
-            revert_mapping = self.ext_api.revert_mapping(mapping)
-            results = self.ext_api.apply_revert_mapping(results, revert_mapping)
+            db = apply_revert_mapping(db, mapping)
 
         save_json(results, args.resultfile)
         return results
@@ -91,9 +91,8 @@ class CLI:
         if args.mapfile:
             print(f"Mapping file detected. Reversing the ids ... ")
             mapping = load_json(args.mapfile)
-            revert_mapping = self.ext_api.revert_mapping(mapping)
+            db = apply_revert_mapping(db, mapping)
             # TODO : graphe_struct.replace_id_from_mapping(mapping) # Cleaner
-            db = self.ext_api.apply_revert_mapping(db, revert_mapping)
 
         # If Copy_ids is true, we copy the value of the picture's ids
         # to their image and shape attributes

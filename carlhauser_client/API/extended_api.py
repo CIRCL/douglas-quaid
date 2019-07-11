@@ -6,11 +6,12 @@ import os
 import pathlib
 import sys
 import time
-from typing import Dict
+from typing import Dict, List
 
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
 from carlhauser_client.API.simple_api import Simple_API
 from common.Graph.graph_datastructure import GraphDataStruct
+import carlhauser_client.Helpers.dict_utilities as dict_utilities
 
 sys.path.append(os.path.abspath(os.path.pardir))
 
@@ -36,13 +37,62 @@ class Extended_API(Simple_API):
 
     # ================= ADD PICTURES =================
 
-    def add_pictures_to_db(self, image_folder: pathlib.Path) -> (Dict[str, str], int):
+    def add_one_picture_and_wait(self, image_path: pathlib.Path, max_time: int = 60) -> Dict:
+        '''
+        Add a picture to the server, wait for the adding to be performed.
+        :param image_path: the path of the picture to add
+        :param max_time: maximum allowed time to wait before timing out. By default -1 = No time out
+        :return: boolean : True if the picture had successfuly been added, False otherwise , and the server_id of the sent picture
+        '''
+
+        # Starting count-down
+        start = time.time()
+
+        # Requesting the result
+        self.logger.debug(f"Adding picture {image_path}")
+        is_success, img_id = self.add_one_picture(image_path)
+
+        # Managing the answer
+        if is_success:
+            self.logger.debug(f"Adding successful. Waiting for adding to complete.")
+            is_success = self.poll_until_adding_done(max_time=max_time)
+
+            if is_success:
+                self.logger.info(f"Adding executed in : {time.time() - start}s")
+                return img_id
+            else:
+                self.logger.error(f"Error on adding status polling.")
+                raise Exception("Error on adding status polling.")
+        else:
+            self.logger.error(f"Error on adding sending.")
+            raise Exception("Error on adding sending.")
+
+    def add_many_pictures_no_wait(self, image_folder: pathlib.Path) -> (Dict[str, str], int):
         '''
         Add all the pictures of the provided folder to the server (direct children, not recursive)
         :param image_folder: path to the folder of pictures
         :return: Mapping (filename-> ID provided by server) and the number of pictures successfuly uploaded
         '''
 
+        return self._add_many_pictures_with(image_folder, self.add_one_picture)
+
+    def add_many_pictures_and_wait(self, image_folder: pathlib.Path) -> (Dict[str, str], int):
+        '''
+        Add all the pictures of the provided folder to the server (direct children, not recursive)
+        wait for each of them to be added (one after the other)
+        :param image_folder: path to the folder of pictures
+        :return: Mapping (filename-> ID provided by server) and the number of pictures successfuly uploaded
+        '''
+
+        return self._add_many_pictures_with(image_folder, self.add_one_picture_and_wait)
+
+    def _add_many_pictures_with(self, image_folder: pathlib.Path, function) -> (Dict[str, str], int):
+        '''
+        Generic function to send pictures calling the "function". Internal use for factorization
+        :param image_folder: path to the folder of pictures
+        :param function: Mapping (filename-> ID provided by server) and the number of pictures successfuly uploaded
+        :return:
+        '''
         self.logger.debug(f"Sending pictures of {image_folder} in the DB.")
         mapping_filename_to_id = {}
         nb_pics_sent = 0
@@ -53,7 +103,7 @@ class Extended_API(Simple_API):
                 self.logger.debug(f"Found picture to be send : {image_path}.")
 
                 # Upload the image to db
-                res = self.add_picture_server(image_path)
+                res = function(image_path)
 
                 if res[0]:
                     # The upload had been successful
@@ -67,7 +117,7 @@ class Extended_API(Simple_API):
 
     # ================= REQUEST PICTURES AND WAITING =================
 
-    def request_similar_and_wait(self, image_path: pathlib.Path, max_time: int = 60) -> Dict:
+    def request_one_picture_and_wait(self, image_path: pathlib.Path, max_time: int = 60) -> Dict:
         '''
         Request similar picture of one picture to the server, wait for an answer.
         :param image_path: the path of the picture to request
@@ -93,7 +143,7 @@ class Extended_API(Simple_API):
 
                 if is_success:
                     results["request_time"] = time.time() - start
-                    self.logger.info(f"Request answered in : {results['request_time']}")
+                    self.logger.info(f"Request answered in : {results['request_time']}s")
                     return results
 
                 else:
@@ -107,7 +157,7 @@ class Extended_API(Simple_API):
             self.logger.error(f"Error on request sending.")
             raise Exception("Error on request sending.")
 
-    def request_pictures(self, image_folder: pathlib.Path) -> (dict, int):
+    def request_many_pictures(self, image_folder: pathlib.Path) -> (dict, int):
         '''
         Request similar picture of all pictures of the provided folder to the server (direct children, not recursive)
         wait for each of them (one after the other) and store all the result in one unique list
@@ -126,7 +176,7 @@ class Extended_API(Simple_API):
 
                 try:
                     self.logger.debug(f"Working on picture #{nb_pics_requested}.")
-                    results = self.request_similar_and_wait(image_path)
+                    results = self.request_one_picture_and_wait(image_path)
 
                     self.logger.debug(f"Successfully requested {image_path.name}.")
                     list_answers.append(results)
@@ -155,3 +205,23 @@ class Extended_API(Simple_API):
             return graphe_struct
         else:
             raise Exception(f"Error during db dump of {db}")
+
+    # ================= ALL =================
+
+    def add_request_dump_pictures(self, image_folder: pathlib.Path) -> List:
+        '''
+        Send pictures of a folder, request all pictures one by one, construct a list of results, revert the mapping to get back pictures names
+        :param image_folder: The folder of images to send
+        :param output_path: The output path where the graph and other data will be stored
+        :return: The list of results
+        '''
+
+        # 1-  Send pictures to DB and get id mapping
+        mapping_old_filename_to_new_id, nb_pictures = self.add_many_pictures_and_wait(image_folder)
+
+        # 2 - Get a DB dump
+        list_results, nb_pictures = self.request_many_pictures(image_folder)
+        list_results = dict_utilities.apply_revert_mapping(list_results, mapping_old_filename_to_new_id)
+        # TODO : do it with graphes ? graphe_struct.replace_id_from_mapping(mapping)
+
+        return list_results
