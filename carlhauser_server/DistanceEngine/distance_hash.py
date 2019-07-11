@@ -35,6 +35,7 @@ class Distance_Hash:
     def hash_distance(self, pic_package_from, pic_package_to) -> Dict[str, sd.AlgoMatch]:
         answer = {}
         self.logger.info("Hash distance computation ... ")
+        self.logger.debug("Hash distance computation ... ")
 
         try:
             if self.fe_conf.A_HASH.get("is_enabled", False):

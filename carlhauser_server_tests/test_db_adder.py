@@ -19,6 +19,8 @@ import common.TestInstanceLauncher.test_instance_launcher as test_database_handl
 from common.environment_variable import get_homedir
 import common.TestInstanceLauncher.test_database_conf as test_database_only_conf
 from carlhauser_server.Configuration.algo_conf import Algo_conf
+import time
+from carlhauser_server.Configuration.static_values import QueueNames
 
 
 class testDBAdder(unittest.TestCase):
@@ -245,6 +247,90 @@ class testDBAdder(unittest.TestCase):
     def test_get_setname_of_cluster(self):
         val = self.db_adder.db_utils.get_setname_of_cluster("test")
         self.assertEqual(val, "test|pics")
+
+    def test_is_feature_adding_list_empty(self):
+        self.logger.debug("CHECKING EMPTY LIST")
+        val = self.db_adder.is_feature_adding_list_empty(self.db_adder.storage_db_no_decode)
+        self.assertTrue(val)
+
+        self.logger.debug("ADDING STUFF")
+        self.db_adder.add_to_queue(self.db_adder.cache_db_decode, queue_name=QueueNames.FEATURE_TO_ADD, id="myid", dict_to_store={"img": "XXXX"})
+        self.db_adder.add_to_queue(self.db_adder.cache_db_decode, queue_name=QueueNames.FEATURE_TO_ADD, id="myid", dict_to_store={"img": "XXXX"})
+        self.db_adder.add_to_queue(self.db_adder.cache_db_decode, queue_name=QueueNames.FEATURE_TO_ADD, id="myid", dict_to_store={"img": "XXXX"})
+
+        self.logger.debug("CHECKING EMPTY LIST")
+        val = self.db_adder.is_feature_adding_list_empty(self.db_adder.storage_db_no_decode)
+        self.assertFalse(val)
+
+        self.logger.debug("WAITING")
+        time.sleep(5)
+
+        self.logger.debug("CHECKING EMPTY LIST")
+        val = self.db_adder.is_feature_adding_list_empty(self.db_adder.storage_db_no_decode)
+        self.assertFalse(val)
+
+    def test_is_feature_request_list_empty(self):
+        self.logger.debug("CHECKING EMPTY LIST")
+        val = self.db_adder.is_feature_request_list_empty(self.db_adder.storage_db_no_decode)
+        self.assertTrue(val)
+
+        self.logger.debug("ADDING STUFF")
+        self.db_adder.add_to_queue(self.db_adder.cache_db_decode, queue_name=QueueNames.FEATURE_TO_REQUEST, id="myid", dict_to_store={"img": "XXXX"})
+        self.db_adder.add_to_queue(self.db_adder.cache_db_decode, queue_name=QueueNames.FEATURE_TO_REQUEST, id="myid", dict_to_store={"img": "XXXX"})
+        self.db_adder.add_to_queue(self.db_adder.cache_db_decode, queue_name=QueueNames.FEATURE_TO_REQUEST, id="myid", dict_to_store={"img": "XXXX"})
+
+        self.logger.debug("CHECKING EMPTY LIST")
+        val = self.db_adder.is_feature_request_list_empty(self.db_adder.storage_db_no_decode)
+        self.assertFalse(val)
+
+        self.logger.debug("WAITING")
+        time.sleep(5)
+
+        self.logger.debug("CHECKING EMPTY LIST")
+        val = self.db_adder.is_feature_request_list_empty(self.db_adder.storage_db_no_decode)
+        self.assertFalse(val)
+
+    def test_is_request_list_empty(self):
+        self.logger.debug("CHECKING EMPTY LIST")
+        val = self.db_adder.is_request_list_empty(self.db_adder.storage_db_no_decode)
+        self.assertTrue(val)
+
+        self.logger.debug("ADDING STUFF")
+        self.db_adder.add_to_queue(self.db_adder.cache_db_decode, queue_name=QueueNames.DB_TO_REQUEST, id="myid", dict_to_store={"img": "XXXX"})
+        self.db_adder.add_to_queue(self.db_adder.cache_db_decode, queue_name=QueueNames.DB_TO_REQUEST, id="myid", dict_to_store={"img": "XXXX"})
+        self.db_adder.add_to_queue(self.db_adder.cache_db_decode, queue_name=QueueNames.DB_TO_REQUEST, id="myid", dict_to_store={"img": "XXXX"})
+
+        self.logger.debug("CHECKING EMPTY LIST")
+        val = self.db_adder.is_request_list_empty(self.db_adder.storage_db_no_decode)
+        self.assertFalse(val)
+
+        self.logger.debug("WAITING")
+        time.sleep(5)
+
+        self.logger.debug("CHECKING EMPTY LIST")
+        val = self.db_adder.is_request_list_empty(self.db_adder.storage_db_no_decode)
+        self.assertFalse(val)
+
+    def test_is_adding_list_empty(self):
+        self.logger.debug("CHECKING EMPTY LIST")
+        val = self.db_adder.is_adding_list_empty(self.db_adder.storage_db_no_decode)
+        self.assertTrue(val)
+
+        self.logger.debug("ADDING STUFF")
+        self.db_adder.add_to_queue(self.db_adder.cache_db_decode, queue_name=QueueNames.DB_TO_ADD, id="myid", dict_to_store={"img": "XXXX"})
+        self.db_adder.add_to_queue(self.db_adder.cache_db_decode, queue_name=QueueNames.DB_TO_ADD, id="myid", dict_to_store={"img": "XXXX"})
+        self.db_adder.add_to_queue(self.db_adder.cache_db_decode, queue_name=QueueNames.DB_TO_ADD, id="myid", dict_to_store={"img": "XXXX"})
+
+        self.logger.debug("CHECKING EMPTY LIST")
+        val = self.db_adder.is_adding_list_empty(self.db_adder.storage_db_no_decode)
+        self.assertFalse(val)
+
+        self.logger.debug("WAITING")
+        time.sleep(5)
+
+        self.logger.debug("CHECKING EMPTY LIST")
+        val = self.db_adder.is_adding_list_empty(self.db_adder.storage_db_no_decode)
+        self.assertTrue(val)
 
     def test_change_picture_score(self):
         image_id_1 = "myimageid_1"

@@ -21,6 +21,7 @@ import carlhauser_server.FeatureExtractor.picture_hasher as picture_hasher
 import carlhauser_server.FeatureExtractor.picture_orber as picture_orber
 sys.path.append(os.path.abspath(os.path.pardir))
 
+from carlhauser_server.Configuration.static_values import QueueNames
 
 class Feature_Worker(database_accessor.Database_Worker):
     # Heritate from the database accessor, and so has already built in access to cache, storage ..
@@ -95,12 +96,12 @@ if __name__ == '__main__':
     # Create the Feature Worker and run it
     feature_worker = Feature_Worker(db_conf=db_conf, fe_conf=fe_conf)
     if args.mode == "ADD":
-        feature_worker.input_queue = "feature_to_add"
-        feature_worker.ouput_queue = "db_to_add"
+        feature_worker.input_queue = QueueNames.FEATURE_TO_ADD
+        feature_worker.ouput_queue = QueueNames.DB_TO_ADD
         feature_worker.run(sleep_in_sec=fe_conf.FEATURE_ADDER_WAIT_SEC)
     elif args.mode == "REQUEST":
-        feature_worker.input_queue = "feature_to_request"
-        feature_worker.ouput_queue = "db_to_request"
+        feature_worker.input_queue = QueueNames.FEATURE_TO_REQUEST
+        feature_worker.ouput_queue = QueueNames.DB_TO_REQUEST
         feature_worker.run(sleep_in_sec=fe_conf.FEATURE_REQUEST_WAIT_SEC)
     else:
         print("ARG_PARSER didn't do his job : you should provide a mode for the worker, to know what to do : from where to get pictures to hash, and here to where to put the result back")

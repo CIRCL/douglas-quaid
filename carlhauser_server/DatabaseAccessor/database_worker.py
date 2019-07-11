@@ -25,6 +25,7 @@ import carlhauser_server.Helpers.pickle_import_export as pickle_import_export
 
 import carlhauser_server.Configuration.database_conf as database_conf
 from common.ImportExport.json_import_export import Custom_JSON_Encoder
+from carlhauser_server.Configuration.static_values import QueueNames
 
 
 class Database_Worker:
@@ -196,6 +197,23 @@ class Database_Worker:
         tmp_id = '|'.join([id, "result"])
         return self.get_dict_from_key(storage, tmp_id, pickle=True)
 
+    def is_adding_list_empty(self, storage: redis.Redis):
+        return self.is_list_empty(storage, QueueNames.DB_TO_ADD)
+
+    def is_request_list_empty(self, storage: redis.Redis):
+        return self.is_list_empty(storage, QueueNames.DB_TO_REQUEST)
+
+    def is_feature_adding_list_empty(self, storage: redis.Redis):
+        return self.is_list_empty(storage, QueueNames.FEATURE_TO_ADD)
+
+    def is_feature_request_list_empty(self, storage: redis.Redis):
+        return self.is_list_empty(storage, QueueNames.FEATURE_TO_REQUEST)
+
+    def is_list_empty(self, storage: redis.Redis, list_name : str):
+        val = storage.llen("db_to_add")
+        self.logger.debug(f"Length of {list_name} queue : {val}")
+        return val == 0
+
     def print_storage_view(self):
         self.logger.info("Printing REDIS Storage view")
         self.logger.info(self.storage_db_decode.keys())
@@ -223,7 +241,7 @@ class Database_Worker:
         except Exception as e:
             self.logger.error(f"Impossible to know if the worker has to halt : {e}")
             self.failure_nb += 1
-            if self.failure_nb > self.FAILURE_THRESHOLD :
+            if self.failure_nb > self.FAILURE_THRESHOLD:
                 # There was to many failure, we stop the worker as we can't connect to DB
                 self.logger.critical(f"Too many failures to connect to the DB. Stopping worker")
                 return True
