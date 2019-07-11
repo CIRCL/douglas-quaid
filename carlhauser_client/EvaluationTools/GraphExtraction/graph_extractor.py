@@ -175,17 +175,21 @@ class GraphExtractor:
     def get_best_algorithm_threshold(self, image_folder: pathlib.Path,
                                      output_path: pathlib.Path,
                                      visjs_json_path: pathlib.Path,
-                                     calibrator_conf: calibrator_conf.Default_calibrator_conf) -> (List[perf_datastruct.Perf], calibrator_conf.Default_calibrator_conf):
+                                     cal_conf: calibrator_conf.Default_calibrator_conf) -> (List[perf_datastruct.Perf],
+                                                                                            calibrator_conf.Default_calibrator_conf):
         # Compute the best threshold to apply to distance, from the current state of the library
-        self.logger.debug(f"Finding best thresholds ... ")
+        self.logger.debug(f"Finding best thresholds for current algorithm ... ")
 
         # Get results from DB and ground truth graph from visjs file
+        self.logger.debug(f"Sending pictures ... ")
         requests_result = self.send_pictures_and_dump_and_save(image_folder, output_path)
         gt_graph = self.load_visjs_to_graphe(visjs_json_path)
         perf_eval = graph_quality_evaluator.GraphQualityEvaluator()
 
         # Call the graph evaluator on this pair result_list + gt_graph
+        self.logger.debug(f"Extracting performance list ")
         perfs_list = perf_eval.get_perf_list(requests_result, gt_graph)  # ==> List of scores
+        self.logger.debug(f"Fetch performance list : {perfs_list} ")
 
         # Save to file
         json_import_export.save_json(perfs_list, output_path / "graph_perfs.json")
@@ -195,35 +199,40 @@ class GraphExtractor:
         twoDplot = TwoDimensionsPlot()
         twoDplot.print_graph(perfs_list, output_path)
 
+        # TODO : copy_cal_conf = cal_conf.deepcopy()
+        copy_cal_conf = cal_conf
+
+        self.logger.debug(f"Current configuraiton : {copy_cal_conf} ")
+
         # Call the graph evaluator on this pair result_list + gt_graph
-        if calibrator_conf.Minimum_true_positive_rate is not None:
+        if copy_cal_conf.Minimum_true_positive_rate is not None:
             thre_max_TPR, val_TPR = perf_eval.get_threshold_where_upper_are_more_than_xpercent_TP(perfs_list=perfs_list,
-                                                                                                  percent=calibrator_conf.Minimum_true_positive_rate)
-            calibrator_conf.thre_upper_at_least_xpercent_TPR = thre_max_TPR
+                                                                                                  percent=copy_cal_conf.Minimum_true_positive_rate)
+            copy_cal_conf.thre_upper_at_least_xpercent_TPR = thre_max_TPR
 
-        if calibrator_conf.Acceptable_false_negative_rate is not None:
+        if copy_cal_conf.Acceptable_false_negative_rate is not None:
             thre_max_FNR, val_FNR = perf_eval.get_threshold_where_upper_are_less_than_xpercent_FN(perfs_list=perfs_list,
-                                                                                                  percent=calibrator_conf.Acceptable_false_negative_rate)
-            calibrator_conf.thre_upper_at_most_xpercent_FNR = thre_max_FNR
+                                                                                                  percent=copy_cal_conf.Acceptable_false_negative_rate)
+            copy_cal_conf.thre_upper_at_most_xpercent_FNR = thre_max_FNR
 
-        if calibrator_conf.Minimum_true_negative_rate is not None:
+        if copy_cal_conf.Minimum_true_negative_rate is not None:
             thre_max_TNR, val_TNR = perf_eval.get_threshold_where_below_are_more_than_xpercent_TN(perfs_list=perfs_list,
-                                                                                                  percent=calibrator_conf.Minimum_true_negative_rate)
-            calibrator_conf.thre_below_at_least_xpercent_TNR = thre_max_TNR
+                                                                                                  percent=copy_cal_conf.Minimum_true_negative_rate)
+            copy_cal_conf.thre_below_at_least_xpercent_TNR = thre_max_TNR
 
-        if calibrator_conf.Acceptable_false_positive_rate is not None:
+        if copy_cal_conf.Acceptable_false_positive_rate is not None:
             thre_max_FPR, val_FPR = perf_eval.get_threshold_where_below_are_less_than_xpercent_FP(perfs_list=perfs_list,
-                                                                                                  percent=calibrator_conf.Acceptable_false_positive_rate)
-            calibrator_conf.thre_below_at_most_xpercent_FPR = thre_max_FPR
+                                                                                                  percent=copy_cal_conf.Acceptable_false_positive_rate)
+            copy_cal_conf.thre_below_at_most_xpercent_FPR = thre_max_FPR
 
         thre_max_F1, val_F1 = perf_eval.get_max_threshold_for_max_F1(perfs_list=perfs_list)
-        calibrator_conf.maximum_F1 = thre_max_F1
-        self.logger.debug(f"Computed thresholds {calibrator_conf} ")
+        copy_cal_conf.maximum_F1 = thre_max_F1
+        self.logger.debug(f"Computed thresholds {copy_cal_conf} ")
 
         # Save to graph
-        twoDplot.print_graph_with_thresholds(perfs_list, calibrator_conf, output_path)
+        twoDplot.print_graph_with_thresholds(perfs_list, copy_cal_conf, output_path)
 
-        return perfs_list, calibrator_conf
+        return perfs_list, copy_cal_conf
 
 
 def test():

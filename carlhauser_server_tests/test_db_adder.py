@@ -252,11 +252,15 @@ class testDBAdder(unittest.TestCase):
         self.logger.debug("CHECKING EMPTY LIST")
         val = self.db_adder.is_feature_adding_list_empty(self.db_adder.storage_db_no_decode)
         self.assertTrue(val)
+        binary_file = open(str(self.test_file_path / "original.bmp"), "rb")
+        image = binary_file.read()
 
         self.logger.debug("ADDING STUFF")
-        self.db_adder.add_to_queue(self.db_adder.cache_db_decode, queue_name=QueueNames.FEATURE_TO_ADD, id="myid", dict_to_store={"img": "XXXX"})
-        self.db_adder.add_to_queue(self.db_adder.cache_db_decode, queue_name=QueueNames.FEATURE_TO_ADD, id="myid", dict_to_store={"img": "XXXX"})
-        self.db_adder.add_to_queue(self.db_adder.cache_db_decode, queue_name=QueueNames.FEATURE_TO_ADD, id="myid", dict_to_store={"img": "XXXX"})
+        self.db_adder.add_to_queue(self.db_adder.cache_db_decode, queue_name=QueueNames.FEATURE_TO_ADD, id="my1", dict_to_store={"img": image})
+        self.db_adder.add_to_queue(self.db_adder.cache_db_decode, queue_name=QueueNames.FEATURE_TO_ADD, id="my2", dict_to_store={"img": image})
+        self.db_adder.add_to_queue(self.db_adder.cache_db_decode, queue_name=QueueNames.FEATURE_TO_ADD, id="my3", dict_to_store={"img": image})
+        self.db_adder.add_to_queue(self.db_adder.cache_db_decode, queue_name=QueueNames.FEATURE_TO_ADD, id="my4", dict_to_store={"img": image})
+        self.db_adder.add_to_queue(self.db_adder.cache_db_decode, queue_name=QueueNames.FEATURE_TO_ADD, id="my5", dict_to_store={"img": image})
 
         self.logger.debug("CHECKING EMPTY LIST")
         val = self.db_adder.is_feature_adding_list_empty(self.db_adder.storage_db_no_decode)
@@ -273,11 +277,15 @@ class testDBAdder(unittest.TestCase):
         self.logger.debug("CHECKING EMPTY LIST")
         val = self.db_adder.is_feature_request_list_empty(self.db_adder.storage_db_no_decode)
         self.assertTrue(val)
+        binary_file = open(str(self.test_file_path / "original.bmp"), "rb")
+        image = binary_file.read()
 
         self.logger.debug("ADDING STUFF")
-        self.db_adder.add_to_queue(self.db_adder.cache_db_decode, queue_name=QueueNames.FEATURE_TO_REQUEST, id="myid", dict_to_store={"img": "XXXX"})
-        self.db_adder.add_to_queue(self.db_adder.cache_db_decode, queue_name=QueueNames.FEATURE_TO_REQUEST, id="myid", dict_to_store={"img": "XXXX"})
-        self.db_adder.add_to_queue(self.db_adder.cache_db_decode, queue_name=QueueNames.FEATURE_TO_REQUEST, id="myid", dict_to_store={"img": "XXXX"})
+        self.db_adder.add_to_queue(self.db_adder.cache_db_decode, queue_name=QueueNames.FEATURE_TO_REQUEST, id="my1", dict_to_store={"img": image})
+        self.db_adder.add_to_queue(self.db_adder.cache_db_decode, queue_name=QueueNames.FEATURE_TO_REQUEST, id="my2", dict_to_store={"img": image})
+        self.db_adder.add_to_queue(self.db_adder.cache_db_decode, queue_name=QueueNames.FEATURE_TO_REQUEST, id="my3", dict_to_store={"img": image})
+        self.db_adder.add_to_queue(self.db_adder.cache_db_decode, queue_name=QueueNames.FEATURE_TO_REQUEST, id="my4", dict_to_store={"img": image})
+        self.db_adder.add_to_queue(self.db_adder.cache_db_decode, queue_name=QueueNames.FEATURE_TO_REQUEST, id="my5", dict_to_store={"img": image})
 
         self.logger.debug("CHECKING EMPTY LIST")
         val = self.db_adder.is_feature_request_list_empty(self.db_adder.storage_db_no_decode)
@@ -295,10 +303,15 @@ class testDBAdder(unittest.TestCase):
         val = self.db_adder.is_request_list_empty(self.db_adder.storage_db_no_decode)
         self.assertTrue(val)
 
+        binary_file = open(str(self.test_file_path / "original.bmp"), "rb")
+        image = binary_file.read()
+
         self.logger.debug("ADDING STUFF")
-        self.db_adder.add_to_queue(self.db_adder.cache_db_decode, queue_name=QueueNames.DB_TO_REQUEST, id="myid", dict_to_store={"img": "XXXX"})
-        self.db_adder.add_to_queue(self.db_adder.cache_db_decode, queue_name=QueueNames.DB_TO_REQUEST, id="myid", dict_to_store={"img": "XXXX"})
-        self.db_adder.add_to_queue(self.db_adder.cache_db_decode, queue_name=QueueNames.DB_TO_REQUEST, id="myid", dict_to_store={"img": "XXXX"})
+        self.db_adder.add_to_queue(self.db_adder.cache_db_no_decode, queue_name=QueueNames.DB_TO_REQUEST, id="my1", dict_to_store={"A-HASH": "XXXX"}, pickle=True)
+        self.db_adder.add_to_queue(self.db_adder.cache_db_no_decode, queue_name=QueueNames.DB_TO_REQUEST, id="my2", dict_to_store={"A-HASH": "XXXX"}, pickle=True)
+        self.db_adder.add_to_queue(self.db_adder.cache_db_no_decode, queue_name=QueueNames.DB_TO_REQUEST, id="my3", dict_to_store={"A-HASH": "XXXX"}, pickle=True)
+        self.db_adder.add_to_queue(self.db_adder.cache_db_no_decode, queue_name=QueueNames.DB_TO_REQUEST, id="my4", dict_to_store={"A-HASH": "XXXX"}, pickle=True)
+        self.db_adder.add_to_queue(self.db_adder.cache_db_no_decode, queue_name=QueueNames.DB_TO_REQUEST, id="my5", dict_to_store={"A-HASH": "XXXX"}, pickle=True)
 
         self.logger.debug("CHECKING EMPTY LIST")
         val = self.db_adder.is_request_list_empty(self.db_adder.storage_db_no_decode)
@@ -309,17 +322,22 @@ class testDBAdder(unittest.TestCase):
 
         self.logger.debug("CHECKING EMPTY LIST")
         val = self.db_adder.is_request_list_empty(self.db_adder.storage_db_no_decode)
-        self.assertFalse(val)
+        self.assertTrue(val)
 
     def test_is_adding_list_empty(self):
         self.logger.debug("CHECKING EMPTY LIST")
         val = self.db_adder.is_adding_list_empty(self.db_adder.storage_db_no_decode)
         self.assertTrue(val)
 
+        binary_file = open(str(self.test_file_path / "original.bmp"), "rb")
+        image = binary_file.read()
+
         self.logger.debug("ADDING STUFF")
-        self.db_adder.add_to_queue(self.db_adder.cache_db_decode, queue_name=QueueNames.DB_TO_ADD, id="myid", dict_to_store={"img": "XXXX"})
-        self.db_adder.add_to_queue(self.db_adder.cache_db_decode, queue_name=QueueNames.DB_TO_ADD, id="myid", dict_to_store={"img": "XXXX"})
-        self.db_adder.add_to_queue(self.db_adder.cache_db_decode, queue_name=QueueNames.DB_TO_ADD, id="myid", dict_to_store={"img": "XXXX"})
+        self.db_adder.add_to_queue(self.db_adder.cache_db_no_decode, queue_name=QueueNames.DB_TO_ADD, id="my1", dict_to_store={"A-HASH": "XXXX"}, pickle=True)
+        self.db_adder.add_to_queue(self.db_adder.cache_db_no_decode, queue_name=QueueNames.DB_TO_ADD, id="my2", dict_to_store={"A-HASH": "XXXX"}, pickle=True)
+        self.db_adder.add_to_queue(self.db_adder.cache_db_no_decode, queue_name=QueueNames.DB_TO_ADD, id="my3", dict_to_store={"A-HASH": "XXXX"}, pickle=True)
+        self.db_adder.add_to_queue(self.db_adder.cache_db_no_decode, queue_name=QueueNames.DB_TO_ADD, id="my4", dict_to_store={"A-HASH": "XXXX"}, pickle=True)
+        self.db_adder.add_to_queue(self.db_adder.cache_db_no_decode, queue_name=QueueNames.DB_TO_ADD, id="my4", dict_to_store={"A-HASH": "XXXX"}, pickle=True)
 
         self.logger.debug("CHECKING EMPTY LIST")
         val = self.db_adder.is_adding_list_empty(self.db_adder.storage_db_no_decode)

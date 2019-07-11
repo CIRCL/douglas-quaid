@@ -106,10 +106,10 @@ class Default_calibrator_conf(JSON_parsable_Dict):
         pair_1, pair_2 = self.return_good_pair()
 
         if pair_1.threshold > pair_2.threshold :
-            self.logger.error("Maybe_to_no threshold is upper than Yes_to_Maybe threshold : No MAYBE area !")
+            self.logger.critical("Yes_to_Maybe threshold is upper than Maybe_to_no threshold : No MAYBE area !")
 
-        input_Algo_Conf.threshold_no = pair_1.threshold
-        input_Algo_Conf.threshold_maybe = pair_2.threshold
+        input_Algo_Conf.threshold_yes_to_maybe = pair_1.threshold
+        input_Algo_Conf.threshold_maybe_to_no = pair_2.threshold
 
         return input_Algo_Conf
 

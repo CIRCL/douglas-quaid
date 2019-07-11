@@ -54,6 +54,7 @@ class GraphQualityEvaluator:
         if not is_increasing:
             maximize_threshold = not maximize_threshold
             maximize_attribute = not maximize_attribute
+
         # We want a decreasing graph, always.
         '''
         l = [1,2,5,3,7]
@@ -189,6 +190,8 @@ class GraphQualityEvaluator:
 
             tmp_score = self.compute_score_for_one_threshold(requests_result, gt_graph, curr_threshold)
             tmp_perf = perf_datastruct.Perf(tmp_score, curr_threshold)
+            self.logger.info(f"Current score for this threshold : {tmp_score}")
+
 
             # Add to performance list
             perfs_list.append(tmp_perf)

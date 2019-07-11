@@ -10,6 +10,7 @@ from common.environment_variable import get_homedir
 from common.Calibrator.threshold_calibrator import Calibrator
 from carlhauser_server.Configuration.algo_conf import Algo_conf
 from common.ImportExport.json_import_export import Custom_JSON_Encoder
+import common.Calibrator.calibrator_conf as calibrator_conf
 
 import unittest
 
@@ -35,9 +36,18 @@ class test_calibrator(unittest.TestCase):
 
     def test_calibrator_launch(self):
         self.logger.debug("Launching calibration... (tests)")
-        self.calibrator_instance.calibrate_douglas_quaid(folder_of_pictures=self.micro_dataset_input_path,
+        new_calibrator_conf = calibrator_conf.Default_calibrator_conf()
+
+        new_calibrator_conf.Minimum_true_negative_rate = 0.1
+        new_calibrator_conf.Minimum_true_positive_rate = 0.9
+
+        self.calibrator_instance.set_calibrator_conf(calibrator_conf=new_calibrator_conf)
+        list_algos = self.calibrator_instance.calibrate_douglas_quaid(folder_of_pictures=self.micro_dataset_input_path,
                                                          ground_truth_file=self.micro_dataset_gt_path,
-                                                         output_folder=self.micro_dataset_output_path)
+                                                         output_folder=self.micro_dataset_output_path
+                                                         )
+        for algo in list_algos :
+            self.assertGreater(algo.threshold_yes_to_maybe, algo.threshold_maybe_to_no)
 
     def test_feature_conf_generator(self):
         self.logger.debug("Launching calibration... (tests)")

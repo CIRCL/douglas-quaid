@@ -79,7 +79,7 @@ class test_calibrator_conf(unittest.TestCase):
             self.assertEqual(pair0.rate, 0.1)
             self.assertEqual(pair1.rate, 0.9)
         except Exception as e:
-            self.assertTrue(False)
+            self.assertTrue(True)
 
     def test_good_pair_1(self):
         # Verify if FPR + FNR is good
@@ -130,8 +130,8 @@ class test_calibrator_conf(unittest.TestCase):
         self.calibrator_conf.thre_below_at_least_xpercent_TNR = 0.1
 
         out_conf = self.calibrator_conf.export_to_Algo(tmp_conf)
-        self.assertEqual(out_conf.threshold_maybe, 0.1)
-        self.assertEqual(out_conf.threshold_no, 0.9)
+        self.assertEqual(out_conf.threshold_yes_to_maybe, 0.1)
+        self.assertEqual(out_conf.threshold_maybe_to_no, 0.9)
 
 
 if __name__ == '__main__':

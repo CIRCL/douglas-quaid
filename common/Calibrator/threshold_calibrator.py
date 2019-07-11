@@ -91,6 +91,8 @@ class Calibrator:
             tmp_output_folder_algo.mkdir(exist_ok=True)
             # Evaluation of this algorithm
             calibrated_algo = self.algorithm_evaluator(folder_of_pictures, ground_truth_file, algo, tmp_output_folder_algo)
+            self.logger.debug(f"Calibrated algorithm {algo.algo_name} with : {calibrated_algo} ")
+
             # Keeping the best configuration for this algorithm
             list_calibrated_algos.append(calibrated_algo)
 
@@ -125,19 +127,23 @@ class Calibrator:
         self.de_conf = self.generate_distance_conf()  # For internal inter distance cluster that allow to test all pictures
 
         # Launch a modified server
+        self.logger.debug(f"Creation of a full instance of redis (Test only) ... ")
         self.test_db_handler = test_database_handler.TestInstanceLauncher()
         self.test_db_handler.create_full_instance(db_conf=self.db_conf, fe_conf=self.fe_conf)
 
         time.sleep(5)  # Necessary for the instance to be ready.
 
         # Launch an evaluator client to extract the graphe
+        self.logger.debug(f"Launching Algorithm evaluation ... ")
         graph_extractor = GraphExtractor()
         perfs_list, tmp_calibrator_conf = graph_extractor.get_best_algorithm_threshold(image_folder=folder_of_pictures,
-                                                                              visjs_json_path=ground_truth_file,
-                                                                              output_path=output_folder,
-                                                                              calibrator_conf= self.calibrator_conf)
+                                                                                       visjs_json_path=ground_truth_file,
+                                                                                       output_path=output_folder,
+                                                                                       cal_conf=self.calibrator_conf)
+        self.logger.debug(f"Algorithm evaluation results : perflist = {perfs_list} ")
 
         # Kill server instance
+        self.logger.debug(f"Shutting down Redis test instance")
         self.test_db_handler.tearDown()
 
         # Evaluate the graphe to find thresholds
@@ -145,6 +151,7 @@ class Calibrator:
 
         # Construct result algo_conf depending on thresholds
         # TOOD : Extract only setted values
+        self.logger.debug(f"Export to algorithm configuration")
         updated_algo_conf = tmp_calibrator_conf.export_to_Algo(to_calibrate_algo)
 
         return updated_algo_conf  # perfs_list,
@@ -221,9 +228,10 @@ def default_conf(args):
     cal_conf = calibrator_conf.Default_calibrator_conf.get_default_instance()
     return cal_conf
 
+
 def load_from_file(args):
     cal_conf = calibrator_conf.Default_calibrator_conf()
-    #TODO : Load from file !
+    # TODO : Load from file !
     return cal_conf
 
 

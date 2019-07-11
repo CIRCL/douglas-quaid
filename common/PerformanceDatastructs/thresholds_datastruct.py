@@ -36,8 +36,8 @@ class OLD_Thresholds(JSON_parsable_Dict):
         # to apply the thresholds it contains to this algorithm configuration
         # AGGRESSIVE = Work on negative rate
 
-        input_Algo_Conf.threshold_no = self.thre_upper_at_most_xpercent_FNR
-        input_Algo_Conf.threshold_maybe = self.thre_below_at_least_xpercent_TNR
+        input_Algo_Conf.threshold_maybe_to_no = self.thre_upper_at_most_xpercent_FNR
+        input_Algo_Conf.threshold_yes_to_maybe = self.thre_below_at_least_xpercent_TNR
 
         return input_Algo_Conf
 
