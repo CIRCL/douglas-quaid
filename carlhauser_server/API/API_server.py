@@ -29,6 +29,7 @@ import carlhauser_server.DatabaseAccessor.database_worker as database_worker
 
 import common.ImportExport.json_import_export as json_import_export
 import carlhauser_server.DatabaseAccessor.database_utilities as db_utils
+from carlhauser_server.Configuration.static_values import QueueNames
 
 
 # ==================== ------ SERVER Flask API definition ------- ====================
@@ -126,7 +127,7 @@ class FlaskAppWrapper(object):
 
                 # Enqueue picture to processing
                 self.logger.debug(f"Adding to feature queue : {f_hash} ")  # {f_bmp}
-                self.database_worker.add_to_queue(self.database_worker.cache_db_decode, queue_name="feature_to_add", id=f_hash, dict_to_store={"img": f_bmp})
+                self.database_worker.add_to_queue(self.database_worker.cache_db_decode, queue_name=QueueNames.FEATURE_TO_ADD, id=f_hash, dict_to_store={"img": f_bmp})
 
                 result_json["Status"] = "Success"
                 result_json["img_id"] = f_hash
@@ -140,6 +141,30 @@ class FlaskAppWrapper(object):
 
         return result_json
         # Test it with curl 127.0.0.1:5000/add_pict
+
+    def are_pipelines_empty(self):
+        result_json = {}
+        result_json["Called_function"] = "are_pipelines_empty"
+        result_json = self.add_std_info(result_json)
+
+        # Answer to PUT HTTP request
+        if flask.request.method == 'GET':
+            try:
+                # Fetch results
+                # TODO : Special function for "cleaner/more performant" check ?
+                result_json["are_empty"] = self.database_worker.are_all_queues_empty()
+                result_json["Status"] = "Success"
+
+            except Exception as e:
+                self.logger.error(f"Normal error during GET handling ('are_pipelines_empty' request) {e}")
+                result_json["Status"] = "Failure"
+                result_json["Error"] = "Error during database request"
+        else:
+            result_json["Status"] = "Failure"
+            result_json["Error"] = "BAD METHOD : use GET instead of POST, PUT, ..."
+
+        return result_json
+        # Test it with curl 127.0.0.1:5000/are_pipelines_empty
 
     def request_similar_picture(self):
         result_json = {}
@@ -166,7 +191,7 @@ class FlaskAppWrapper(object):
 
                 # Enqueue picture to processing
                 self.logger.debug(f"Adding to feature queue : {f_hash} ")  # {f_bmp}
-                self.database_worker.add_to_queue(self.database_worker.cache_db_decode, queue_name="feature_to_request", id=f_hash, dict_to_store={"img": f_bmp})
+                self.database_worker.add_to_queue(self.database_worker.cache_db_decode, queue_name=QueueNames.FEATURE_TO_REQUEST, id=f_hash, dict_to_store={"img": f_bmp})
 
                 result_json["Status"] = "Success"
                 result_json["request_id"] = f_hash

@@ -16,6 +16,7 @@ import carlhauser_server.Configuration.feature_extractor_conf as feature_extract
 import carlhauser_server.Configuration.distance_engine_conf as distance_engine_conf
 import carlhauser_server.DatabaseAccessor.database_common as database_common
 sys.path.append(os.path.abspath(os.path.pardir))
+from carlhauser_server.Configuration.static_values import QueueNames
 
 class Database_Adder(database_common.Database_Common):
     # Heritate from the database accessor, and so has already built in access to cache, storage ..
@@ -133,5 +134,5 @@ if __name__ == '__main__':
 
     # Create the Database Accessor and run it
     db_accessor = Database_Adder(db_conf, dist_conf, fe_conf)
-    db_accessor.input_queue = "db_to_add"
+    db_accessor.input_queue = QueueNames.DB_TO_ADD
     db_accessor.run(sleep_in_sec=db_conf.ADDER_WAIT_SEC)

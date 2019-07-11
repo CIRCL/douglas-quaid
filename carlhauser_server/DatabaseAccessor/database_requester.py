@@ -13,6 +13,9 @@ import carlhauser_server.Configuration.feature_extractor_conf as feature_extract
 import carlhauser_server.DatabaseAccessor.database_common as database_common
 import carlhauser_server.DistanceEngine.scoring_datastrutures as score_datastruct
 import common.ImportExport.json_import_export as json_import_export
+from carlhauser_server.Configuration.static_values import QueueNames
+
+
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
 from common.environment_variable import dir_path
 
@@ -68,5 +71,5 @@ if __name__ == '__main__':
 
     # Create the Database Accessor and run it
     db_accessor = Database_Requester(db_conf, dist_conf, fe_conf)
-    db_accessor.input_queue = "db_to_request"
+    db_accessor.input_queue = QueueNames.DB_TO_REQUEST
     db_accessor.run(sleep_in_sec=db_conf.REQUESTER_WAIT_SEC)

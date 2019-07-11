@@ -197,6 +197,15 @@ class Database_Worker:
         tmp_id = '|'.join([id, "result"])
         return self.get_dict_from_key(storage, tmp_id, pickle=True)
 
+    def are_all_queues_empty(self):
+        if self.is_adding_list_empty(self.cache_db_no_decode) and \
+                self.is_request_list_empty(self.cache_db_no_decode) and \
+                self.is_feature_request_list_empty(self.cache_db_no_decode) and \
+                self.is_feature_adding_list_empty(self.cache_db_no_decode):
+            return True
+
+        return False
+
     def is_adding_list_empty(self, storage: redis.Redis):
         return self.is_list_empty(storage, QueueNames.DB_TO_ADD)
 
@@ -209,7 +218,7 @@ class Database_Worker:
     def is_feature_request_list_empty(self, storage: redis.Redis):
         return self.is_list_empty(storage, QueueNames.FEATURE_TO_REQUEST)
 
-    def is_list_empty(self, storage: redis.Redis, list_name : str):
+    def is_list_empty(self, storage: redis.Redis, list_name: str):
         val = storage.llen("db_to_add")
         self.logger.debug(f"Length of {list_name} queue : {val}")
         return val == 0
