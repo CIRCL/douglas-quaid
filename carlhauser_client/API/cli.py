@@ -7,13 +7,13 @@ import logging.config
 import os
 import pathlib
 import sys
-import logging
 from typing import Dict
 
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
-from common.environment_variable import get_homedir
 from carlhauser_client.API.extended_api import Extended_API
 from common.ImportExport.json_import_export import save_json, load_json
+from common.environment_variable import get_homedir
+
 sys.path.append(os.path.abspath(os.path.pardir))
 
 # ==================== ------ PREPARATION ------- ====================
@@ -31,7 +31,7 @@ class CLI:
     def __init__(self):
         self.ext_api = Extended_API.get_api()
 
-    def ping(self, args)-> bool:
+    def ping(self, args) -> bool:
         '''
         Ping the server to check if he is alive.
         :param args: Not needed
@@ -39,7 +39,7 @@ class CLI:
         '''
         return self.ext_api.ping_server()
 
-    def upload(self, args) -> Dict[str,str]:
+    def upload(self, args) -> Dict[str, str]:
         '''
         Perform the upload of all picture in the provided folder (args.path)
         and save the mapping (original_file_name)->(id_given_by_server)

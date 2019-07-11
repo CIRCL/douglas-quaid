@@ -1,0 +1,79 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+# ==================== ------ STD LIBRARIES ------- ====================
+import os
+import pathlib
+import sys
+import time
+from typing import Dict, List
+
+# ==================== ------ PERSONAL LIBRARIES ------- ====================
+from carlhauser_client.API.simple_api import Simple_API
+from common.Graph.graph_datastructure import GraphDataStruct
+
+sys.path.append(os.path.abspath(os.path.pardir))
+
+
+def copy_id_to_image(dict_to_modify: Dict) -> Dict:
+    '''
+    From a dict of pictures/graphe json,
+    copy ids of cluster and pictures to their 'picture' attribute
+    Useful to have a visjs-classificator readable graph
+    :param dict_to_modify: original dictionnary of pictures/clusters/edges ..
+    :return: modified and readable by visjs-classificator graph
+    '''
+    for i in dict_to_modify['clusters']:
+        i["image"] = "anchor.png"
+        i["shape"] = "icon"
+    for i in dict_to_modify['nodes']:
+        i["image"] = i["id"]
+
+    return dict_to_modify
+
+def revert_mapping(mapping: Dict) -> Dict:
+    '''
+    Revert the value/keys of a dictionnary.
+    Ex : transform X->Y to Y->X for all values of a dict
+    :param mapping: X -> Y dict
+    :return: The reversed dict
+    '''
+    return {v: k for k, v in mapping.items()}
+
+def apply_revert_mapping(dict_to_modify: Dict, mapping: Dict) -> Dict:
+    '''
+    Modify all occurences in dict_to_modify of keys-values in mapping, by their value
+    Ex : {"toto":"tata"}, {"tata":"new"} ==> {"toto":"new"}
+    :param dict_to_modify: The original dict
+    :param mapping: dict of (values to be replaces) -> (new values)
+    :return: the modified dict
+    '''
+    return update_values_dict(dict_to_modify, {}, mapping)
+
+
+def update_values_dict(original_dict: Dict, future_dict: Dict, new_mapping: Dict) -> Dict:
+    '''
+    Recursively updates values of a nested dict by performing recursive calls
+    Replace in <original_dict> all keys elements present in <new_mapping> by their value in <new_mapping>
+    Ex : {"toto":"tata"}, {"tata":"new"} ==> {"toto":"new"}
+    :param original_dict: The original dict
+    :param future_dict: The dict were the result will be stored (needed, because recursive calls)
+    :param new_mapping: dict of (values to be replaces) -> (new values)
+    :return: the modified dict
+    '''
+
+    if isinstance(original_dict, Dict):
+        # It's a dict
+        tmp_dict = {}
+        for key, value in original_dict.items():
+            tmp_dict[key] = update_values_dict(value, future_dict, new_mapping)
+        return tmp_dict
+    elif isinstance(original_dict, List):
+        # It's a List
+        tmp_list = []
+        for i in original_dict:
+            tmp_list.append(update_values_dict(i, future_dict, new_mapping))
+        return tmp_list
+    else:
+        # It's not a dict, maybe a int, a string, etc. so we replace it with what is needed
+        return original_dict if original_dict not in new_mapping else new_mapping[original_dict]

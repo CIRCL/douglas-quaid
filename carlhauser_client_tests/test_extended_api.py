@@ -21,91 +21,24 @@ class TestClusterMatcher(unittest.TestCase):
     def test_absolute_truth_and_meaning(self):
         self.assertTrue(True)
 
-    def test_dict_update(self):
-        ori_dict = {"test": "toto"}
+    ''' 
+    # TODO !
+    def test_get_api(self):
+        pass
 
-        self.logger.info(f"Original dict : {pformat(ori_dict)}")
-        res = self.extended_api.revert_mapping(ori_dict)
-        self.logger.info(f"Reverted dict : {pformat(res)}")
+    def test_add_pictures_to_db(self):
+        pass
 
-        self.assertDictEqual(res, {'toto': 'test'})
+    def test_request_similar_and_wait(self):
+        pass
 
-    def test_dict_reverse(self):
-        ori_dict = {"test": "toto", "aaa": "ddddd", "bbbb": "old"}
-        futu_dict = {}
-        old_value = "old"
-        new_value = "new"
+    def test_request_pictures(self):
+        pass
+        
+    def test_get_db_dump_as_graph(self):
+        pass
 
-        self.logger.info(f"Original dict : \n{pformat(ori_dict)}")
-        res = update_values_dict(ori_dict, futu_dict, {old_value: new_value})
-        self.logger.info(f"Replaced dict : \n{pformat(res)}")
-
-        self.assertDictEqual(res, {'test': 'toto', 'aaa': 'ddddd', 'bbbb': 'new'})
-
-    def test_dict_reverse_hard(self):
-        ori_dict = {"test": "toto",
-                    "aaa": "ddddd",
-                    "bbbb": "old",
-                    "mylist": [
-                        "test", "toto", "value", "old", "notold"
-                    ],
-                    "mysecondlist":
-                        [
-                            "minidict1"]
-                    }
-        futu_dict = {}
-        old_value = "old"
-        new_value = "new"
-
-        self.logger.info(f"Original dict : \n{pformat(ori_dict)}")
-        res = update_values_dict(ori_dict, futu_dict, {old_value: new_value})
-        self.logger.info(f"Replaced dict : \n{pformat(res)}")
-        self.assertDictEqual(res, {'aaa': 'ddddd',
-                                   'bbbb': 'new',
-                                   'mylist': ['test', 'toto', 'value', 'new', 'notold'],
-                                   'mysecondlist': ['minidict1'],
-                                   'test': 'toto'})
-
-    def test_dict_reverse_realist(self):
-        ori_dict = {
-            "list_cluster": [
-                {
-                    "cluster_id": "cluster|fa7c7ff4-e831-4acd-8b39-f48ad9ff6aeb",
-                    "distance": 0.17232142857142857
-                },
-                {
-                    "cluster_id": "cluster|1627daed-2c7a-4965-a706-75e480b91842",
-                    "distance": 0.2330357142857143
-                },
-                {
-                    "cluster_id": "cluster|old",
-                    "distance": 0.2580357142857143
-                }
-            ],
-            "list_pictures": [
-                {
-                    "cluster_id": "cluster|fa7c7ff4-e831-4acd-8b39-f48ad9ff6aeb",
-                    "distance": 0.0,
-                    "image_id": "old"
-                },
-            ]}
-        futu_dict = {}
-        old_value = "old"
-        new_value = "new"
-
-        self.logger.info(f"Original dict : \n{pformat(ori_dict)}")
-        res = update_values_dict(ori_dict, futu_dict, {old_value: new_value})
-        self.logger.info(f"Replaced dict : \n{pformat(res)}")
-
-        self.assertDictEqual(res, {'list_cluster': [{'cluster_id': 'cluster|fa7c7ff4-e831-4acd-8b39-f48ad9ff6aeb',
-                                                     'distance': 0.17232142857142857},
-                                                    {'cluster_id': 'cluster|1627daed-2c7a-4965-a706-75e480b91842',
-                                                     'distance': 0.2330357142857143},
-                                                    {'cluster_id': 'cluster|old',
-                                                     'distance': 0.2580357142857143}],
-                                   'list_pictures': [{'cluster_id': 'cluster|fa7c7ff4-e831-4acd-8b39-f48ad9ff6aeb',
-                                                      'distance': 0.0,
-                                                      'image_id': 'new'}]})
+    '''
 
 if __name__ == '__main__':
     unittest.main()
