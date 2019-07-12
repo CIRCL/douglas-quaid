@@ -13,7 +13,6 @@ from common.Graph.edge import Edge
 from common.Graph.graph_datastructure import GraphDataStruct
 from common.Graph.metadata import Metadata, Source
 from common.Graph.node import Node
-from common.PerformanceDatastructs.thresholds_datastruct import Thresholds
 from common.environment_variable import get_homedir
 
 
