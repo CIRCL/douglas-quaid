@@ -1,23 +1,22 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import logging.config
 # ==================== ------ STD LIBRARIES ------- ====================
 import os
 import pathlib
 import sys
-import time
-import logging.config
-from typing import List,Dict
 from pprint import pformat
+from typing import List, Dict
 
-import common.ImportExport.json_import_export as json_import_export
 import common.Graph.graph_datastructure as graph_datastructure
+import common.ImportExport.json_import_export as json_import_export
 from carlhauser_client.API.extended_api import Extended_API
 from carlhauser_client.EvaluationTools.StorageGraphExtractor.cluster_matching_quality_evaluator import ClusterMatchingQualityEvaluator
 from common.ChartMaker.confusion_matrix_generator import ConfusionMatrixGenerator
 from common.Graph.cluster import Cluster
-from common.environment_variable import get_homedir
 from common.PerformanceDatastructs.clustermatch_datastruct import ClusterMatch
+from common.environment_variable import get_homedir
 
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
 
@@ -35,7 +34,7 @@ class InternalClusteringQualityEvaluator:
         self.logger = logging.getLogger(__name__)
         self.API: Extended_API = Extended_API.get_api()
 
-    def get_storage_graph(self, image_folder: pathlib.Path, visjs_json_path: pathlib.Path, output_path: pathlib.Path)-> Dict:
+    def get_storage_graph(self, image_folder: pathlib.Path, visjs_json_path: pathlib.Path, output_path: pathlib.Path) -> Dict:
         '''
         Extract a storage graph from a folder of pictures, sent to DB and a dump request to the DB.
         Store all pictures in the server and dump the database as is.
@@ -160,6 +159,7 @@ class InternalClusteringQualityEvaluator:
         # TODO : Problem with clusters that are not matched.
         # What to do with them ? Let them ? Match them by force ? ...
         return matching
+
 
 '''
 def main():

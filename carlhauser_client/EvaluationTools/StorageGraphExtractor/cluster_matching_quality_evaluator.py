@@ -6,16 +6,13 @@ import logging.config
 import os
 import pathlib
 import sys
-
-from typing import List
 from typing import Dict
+from typing import List
 
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
 sys.path.append(os.path.abspath(os.path.pardir))
 from common.environment_variable import get_homedir
-from common.Graph.cluster import Cluster
 import common.PerformanceDatastructs.stats_datastruct as scores
-import common.ImportExport.json_import_export as json_import_export
 from common.PerformanceDatastructs.clustermatch_datastruct import ClusterMatch
 
 # ==================== ------ PREPARATION ------- ====================
@@ -55,7 +52,7 @@ class ClusterMatchingQualityEvaluator:
         return clusters_pairs
 
     @staticmethod
-    def export_as_json(clusters_with_perfs : List[ClusterMatch]) -> Dict:
+    def export_as_json(clusters_with_perfs: List[ClusterMatch]) -> Dict:
         # Save performances results in a file as json (return the same structure)
 
         perfs = {"scores": [[str(e.cluster_1), str(e.cluster_2), str(e.score)] for e in clusters_with_perfs]}
