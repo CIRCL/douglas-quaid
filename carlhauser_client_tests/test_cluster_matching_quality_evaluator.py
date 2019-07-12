@@ -1,17 +1,17 @@
 # -*- coding: utf-8 -*-
 
-import unittest
 import logging
 import pathlib
+import unittest
 from pprint import pformat
-
-from common.environment_variable import get_homedir
 
 import carlhauser_client.EvaluationTools.StorageGraphExtractor.cluster_matching_quality_evaluator as performance_evaluation
 from common.Graph.cluster import Cluster
+from common.PerformanceDatastructs.clustermatch_datastruct import ClusterMatch
+from common.environment_variable import get_homedir
 
 
-class TestPerformanceEvaluator(unittest.TestCase):
+class TestClusterMatchingQualityEvaluator(unittest.TestCase):
     """Basic test cases."""
 
     def setUp(self):
@@ -40,14 +40,14 @@ class TestPerformanceEvaluator(unittest.TestCase):
         cB.add_member_id(10)
 
         c1 = Cluster("1", '1', "")
-        for i in {0, 2} :
+        for i in {0, 2}:
             c1.add_member_id(i)
 
         c2 = Cluster("2", "2", "")
-        for i in {4,5,8,9} :
+        for i in {4, 5, 8, 9}:
             c2.add_member_id(i)
 
-        pair_list = [[cA, c1], [cB, c2]]
+        pair_list = [ClusterMatch(cA, c1), ClusterMatch(cB, c2)]
 
         self.logger.info(pformat(pair_list) + "\n")
 

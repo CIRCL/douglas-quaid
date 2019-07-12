@@ -1,14 +1,11 @@
 # -*- coding: utf-8 -*-
 
-import unittest
 import logging
 import pathlib
-from pprint import pformat
+import unittest
 
+from carlhauser_client.API.extended_api import Extended_API
 from common.environment_variable import get_homedir
-
-import carlhauser_client.EvaluationTools.StorageGraphExtractor.cluster_matcher as cluster_matcher
-from common.Graph.cluster import Cluster
 
 
 class TestClusterMatcher(unittest.TestCase):
@@ -17,23 +14,29 @@ class TestClusterMatcher(unittest.TestCase):
     def setUp(self):
         self.logger = logging.getLogger()
         # self.conf = .Default_configuration()
+        self.test_file_path = get_homedir() / pathlib.Path("carlhauser_client_tests/test_Helpers/id_generator")
+        self.extended_api = Extended_API.get_api()
 
     def test_absolute_truth_and_meaning(self):
         self.assertTrue(True)
 
     ''' 
     # TODO !
-    def test_ping(self):
+    def test_get_api(self):
         pass
 
-    def test_upload(self):
+    def test_add_pictures_to_db(self):
         pass
 
-    def test_request(self):
+    def test_request_similar_and_wait(self):
         pass
 
-    def test_dump(self):
+    def test_request_pictures(self):
         pass
+        
+    def test_get_db_dump_as_graph(self):
+        pass
+
     '''
 
 if __name__ == '__main__':

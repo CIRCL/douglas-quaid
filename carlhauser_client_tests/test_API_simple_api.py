@@ -1,14 +1,7 @@
 # -*- coding: utf-8 -*-
 
-import unittest
 import logging
-import pathlib
-from pprint import pformat
-
-from common.environment_variable import get_homedir
-
-import carlhauser_client.EvaluationTools.StorageGraphExtractor.cluster_matcher as cluster_matcher
-from common.Graph.cluster import Cluster
+import unittest
 
 
 class TestClusterMatcher(unittest.TestCase):

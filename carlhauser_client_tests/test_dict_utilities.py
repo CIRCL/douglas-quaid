@@ -2,13 +2,8 @@
 
 import unittest
 import logging
-import pathlib
 from pprint import pformat
-
-from common.environment_variable import get_homedir
-
-import carlhauser_client.EvaluationTools.StorageGraphExtractor.cluster_matcher as cluster_matcher
-from common.Graph.cluster import Cluster
+import carlhauser_client.Helpers.dict_utilities as  dict_utilities
 
 
 class TestClusterMatcher(unittest.TestCase):
@@ -21,12 +16,11 @@ class TestClusterMatcher(unittest.TestCase):
     def test_absolute_truth_and_meaning(self):
         self.assertTrue(True)
 
-
     def test_dict_update(self):
         ori_dict = {"test": "toto"}
 
         self.logger.info(f"Original dict : {pformat(ori_dict)}")
-        res = self.extended_api.revert_mapping(ori_dict)
+        res = dict_utilities.revert_mapping(ori_dict)
         self.logger.info(f"Reverted dict : {pformat(res)}")
 
         self.assertDictEqual(res, {'toto': 'test'})
@@ -38,7 +32,7 @@ class TestClusterMatcher(unittest.TestCase):
         new_value = "new"
 
         self.logger.info(f"Original dict : \n{pformat(ori_dict)}")
-        res = update_values_dict(ori_dict, futu_dict, {old_value: new_value})
+        res = dict_utilities.update_values_dict(ori_dict, futu_dict, {old_value: new_value})
         self.logger.info(f"Replaced dict : \n{pformat(res)}")
 
         self.assertDictEqual(res, {'test': 'toto', 'aaa': 'ddddd', 'bbbb': 'new'})
@@ -59,7 +53,7 @@ class TestClusterMatcher(unittest.TestCase):
         new_value = "new"
 
         self.logger.info(f"Original dict : \n{pformat(ori_dict)}")
-        res = update_values_dict(ori_dict, futu_dict, {old_value: new_value})
+        res = dict_utilities.update_values_dict(ori_dict, futu_dict, {old_value: new_value})
         self.logger.info(f"Replaced dict : \n{pformat(res)}")
         self.assertDictEqual(res, {'aaa': 'ddddd',
                                    'bbbb': 'new',
@@ -95,7 +89,7 @@ class TestClusterMatcher(unittest.TestCase):
         new_value = "new"
 
         self.logger.info(f"Original dict : \n{pformat(ori_dict)}")
-        res = update_values_dict(ori_dict, futu_dict, {old_value: new_value})
+        res = dict_utilities.update_values_dict(ori_dict, futu_dict, {old_value: new_value})
         self.logger.info(f"Replaced dict : \n{pformat(res)}")
 
         self.assertDictEqual(res, {'list_cluster': [{'cluster_id': 'cluster|fa7c7ff4-e831-4acd-8b39-f48ad9ff6aeb',
@@ -107,7 +101,6 @@ class TestClusterMatcher(unittest.TestCase):
                                    'list_pictures': [{'cluster_id': 'cluster|fa7c7ff4-e831-4acd-8b39-f48ad9ff6aeb',
                                                       'distance': 0.0,
                                                       'image_id': 'new'}]})
-
 
     ''' 
     # TODO !
@@ -124,6 +117,7 @@ class TestClusterMatcher(unittest.TestCase):
         pass
         
     '''
+
 
 if __name__ == '__main__':
     unittest.main()

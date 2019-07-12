@@ -1,14 +1,13 @@
 # -*- coding: utf-8 -*-
 
-import unittest
 import logging
 import pathlib
+import unittest
 from pprint import pformat
 
-from common.environment_variable import get_homedir
-
-import carlhauser_client.EvaluationTools.StorageGraphExtractor.cluster_matcher as cluster_matcher
+import carlhauser_client.EvaluationTools.StorageGraphExtractor.storage_quality_evaluator as storage_quality_evaluator
 from common.Graph.cluster import Cluster
+from common.environment_variable import get_homedir
 
 
 class TestClusterMatcher(unittest.TestCase):
@@ -18,7 +17,7 @@ class TestClusterMatcher(unittest.TestCase):
         self.logger = logging.getLogger()
         # self.conf = .Default_configuration()
         self.test_file_path = get_homedir() / pathlib.Path("carlhauser_client_tests/test_Helpers/id_generator")
-        self.cluster_matcher = cluster_matcher.Cluster_matcher()
+        self.cluster_matcher = storage_quality_evaluator.InternalClusteringQualityEvaluator()
 
     def test_absolute_truth_and_meaning(self):
         self.assertTrue(True)
@@ -51,10 +50,10 @@ class TestClusterMatcher(unittest.TestCase):
         set2.add_member_id('vava')
 
         matching = self.cluster_matcher.match_clusters([setA, setB], [set1, set2])
-        self.assertEqual(0, matching[0][0].id)
-        self.assertEqual(2, matching[0][1].id)
-        self.assertEqual(1, matching[1][0].id)
-        self.assertEqual(3, matching[1][1].id)
+        self.assertEqual(0, matching[0].cluster_1.id)
+        self.assertEqual(2, matching[0].cluster_2.id)
+        self.assertEqual(1, matching[1].cluster_1.id)
+        self.assertEqual(3, matching[1].cluster_2.id)
         self.logger.info(pformat(matching))
 
     def test_match_clusters_median(self):
@@ -82,7 +81,6 @@ class TestClusterMatcher(unittest.TestCase):
         setD.add_member_id('cc')
         setD.add_member_id('aa')
 
-
         set1 = Cluster("big", 4, "")
         set1.add_member_id('Python')
         set1.add_member_id('R')
@@ -99,16 +97,15 @@ class TestClusterMatcher(unittest.TestCase):
         set4 = Cluster("let", 7, "")
         set4.add_member_id('bb')
 
-
         matching = self.cluster_matcher.match_clusters([setA, setB, setC, setD], [set1, set2, set3, set4])
-        self.assertEqual(0, matching[0][0].id)
-        self.assertEqual(4, matching[0][1].id)
-        self.assertEqual(1, matching[1][0].id)
-        self.assertEqual(5, matching[1][1].id)
-        self.assertEqual(2, matching[2][0].id)
-        self.assertEqual(6, matching[2][1].id)
-        self.assertEqual(3, matching[3][0].id)
-        self.assertEqual(7, matching[3][1].id)
+        self.assertEqual(0, matching[0].cluster_1.id)
+        self.assertEqual(4, matching[0].cluster_2.id)
+        self.assertEqual(1, matching[1].cluster_1.id)
+        self.assertEqual(5, matching[1].cluster_2.id)
+        self.assertEqual(2, matching[2].cluster_1.id)
+        self.assertEqual(6, matching[2].cluster_2.id)
+        self.assertEqual(3, matching[3].cluster_1.id)
+        self.assertEqual(7, matching[3].cluster_2.id)
 
         self.logger.info(pformat(matching))
 
@@ -126,10 +123,10 @@ class TestClusterMatcher(unittest.TestCase):
 
         matching = self.cluster_matcher.match_clusters([setA, setB], [set1, set2])
 
-        self.assertEqual(0, matching[0][0].id)
-        self.assertEqual(2, matching[0][1].id)
-        self.assertEqual(1, matching[1][0].id)
-        self.assertEqual(3, matching[1][1].id)
+        self.assertEqual(0, matching[0].cluster_1.id)
+        self.assertEqual(2, matching[0].cluster_2.id)
+        self.assertEqual(1, matching[1].cluster_1.id)
+        self.assertEqual(3, matching[1].cluster_2.id)
 
         self.logger.info(pformat(matching))
 
