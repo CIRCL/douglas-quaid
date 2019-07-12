@@ -4,7 +4,7 @@ import logging
 import unittest
 
 
-class TestClusterMatcher(unittest.TestCase):
+class TestAPISimpleAPI(unittest.TestCase):
     """Basic test cases."""
 
     def setUp(self):

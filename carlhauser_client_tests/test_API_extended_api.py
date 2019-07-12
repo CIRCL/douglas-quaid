@@ -1,21 +1,15 @@
 # -*- coding: utf-8 -*-
 
 import logging
-import pathlib
 import unittest
 
-from carlhauser_client.API.extended_api import Extended_API
-from common.environment_variable import get_homedir
 
-
-class TestClusterMatcher(unittest.TestCase):
+class TestAPIExtendedAPI(unittest.TestCase):
     """Basic test cases."""
 
     def setUp(self):
         self.logger = logging.getLogger()
         # self.conf = .Default_configuration()
-        self.test_file_path = get_homedir() / pathlib.Path("carlhauser_client_tests/test_Helpers/id_generator")
-        self.extended_api = Extended_API.get_api()
 
     def test_absolute_truth_and_meaning(self):
         self.assertTrue(True)

@@ -9,6 +9,7 @@ import logging.config
 
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
 sys.path.append(os.path.abspath(os.path.pardir))
+
 from common.environment_variable import get_homedir
 from carlhauser_client.API.simple_api import Simple_API
 from carlhauser_client.API.extended_api import Extended_API
