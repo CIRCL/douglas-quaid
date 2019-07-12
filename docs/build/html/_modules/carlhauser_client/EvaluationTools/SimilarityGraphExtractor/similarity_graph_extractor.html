@@ -1,0 +1,213 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>carlhauser_client.EvaluationTools.SimilarityGraphExtractor.similarity_graph_extractor &#8212; Douglas-Quaid 0.0.4 documentation</title>
+    <link rel="stylesheet" href="../../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for carlhauser_client.EvaluationTools.SimilarityGraphExtractor.similarity_graph_extractor</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">import</span> <span class="nn">logging.config</span>
+<span class="c1"># ==================== ------ STD LIBRARIES ------- ====================</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">pathlib</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="c1"># ==================== ------ PERSONAL LIBRARIES ------- ====================</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">pardir</span><span class="p">))</span>
+
+<span class="kn">import</span> <span class="nn">common.ImportExport.json_import_export</span> <span class="k">as</span> <span class="nn">json_import_export</span>
+<span class="kn">from</span> <span class="nn">common.environment_variable</span> <span class="k">import</span> <span class="n">get_homedir</span>
+<span class="kn">from</span> <span class="nn">carlhauser_client.API.extended_api</span> <span class="k">import</span> <span class="n">Extended_API</span>
+<span class="kn">from</span> <span class="nn">common.Graph.graph_datastructure</span> <span class="k">import</span> <span class="n">GraphDataStruct</span>
+<span class="kn">from</span> <span class="nn">common.Graph.metadata</span> <span class="k">import</span> <span class="n">Metadata</span><span class="p">,</span> <span class="n">Source</span>
+<span class="kn">from</span> <span class="nn">common.Graph.edge</span> <span class="k">import</span> <span class="n">Edge</span>
+<span class="kn">from</span> <span class="nn">common.Graph.node</span> <span class="k">import</span> <span class="n">Node</span>
+<span class="kn">from</span> <span class="nn">carlhauser_client.Helpers.dict_utilities</span> <span class="k">import</span> <span class="n">get_clear_matches</span>
+
+<span class="c1"># ==================== ------ PREPARATION ------- ====================</span>
+<span class="c1"># load the logging configuration</span>
+<span class="n">logconfig_path</span> <span class="o">=</span> <span class="p">(</span><span class="n">get_homedir</span><span class="p">()</span> <span class="o">/</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;carlhauser_client&quot;</span><span class="p">,</span> <span class="s2">&quot;logging.ini&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+<span class="n">logging</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">fileConfig</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">logconfig_path</span><span class="p">))</span>
+
+
+<span class="c1"># ==================== ------ LAUNCHER ------- ====================</span>
+<div class="viewcode-block" id="GraphExtractor"><a class="viewcode-back" href="../../../../carlhauser_client.EvaluationTools.SimilarityGraphExtractor.html#carlhauser_client.EvaluationTools.SimilarityGraphExtractor.similarity_graph_extractor.GraphExtractor">[docs]</a><span class="k">class</span> <span class="nc">GraphExtractor</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ext_api</span><span class="p">:</span> <span class="n">Extended_API</span> <span class="o">=</span> <span class="n">Extended_API</span><span class="o">.</span><span class="n">get_api</span><span class="p">()</span>
+
+    <span class="c1"># ======================== EXTRACT GRAPH FROM DB  ========================</span>
+
+<div class="viewcode-block" id="GraphExtractor.get_proximity_graph"><a class="viewcode-back" href="../../../../carlhauser_client.EvaluationTools.SimilarityGraphExtractor.html#carlhauser_client.EvaluationTools.SimilarityGraphExtractor.similarity_graph_extractor.GraphExtractor.get_proximity_graph">[docs]</a>    <span class="k">def</span> <span class="nf">get_proximity_graph</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">image_folder</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">,</span> <span class="n">output_path</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GraphDataStruct</span><span class="p">:</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Extract a proximity graph from a folder of pictures, sent to DB and requested one by one.</span>
+<span class="sd">        :param image_folder: The folder of picture to send and request, to build the similarity graph from</span>
+<span class="sd">        :param output_path: The output path where the graph and other data will be stored</span>
+<span class="sd">        :return: the proximity graph</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="c1"># Get distance results for each picture</span>
+        <span class="n">list_results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ext_api</span><span class="o">.</span><span class="n">add_request_dump_pictures</span><span class="p">(</span><span class="n">image_folder</span><span class="p">)</span>
+
+        <span class="c1"># Save to file</span>
+        <span class="n">json_import_export</span><span class="o">.</span><span class="n">save_json</span><span class="p">(</span><span class="n">list_results</span><span class="p">,</span> <span class="n">output_path</span> <span class="o">/</span> <span class="s2">&quot;requests_result.json&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Results raw json saved.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Construct graph from the list of distance results</span>
+        <span class="n">tmp_graph</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">results_list_to_graph</span><span class="p">(</span><span class="n">list_results</span><span class="p">,</span> <span class="n">nb_match</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+        <span class="c1"># Save to file</span>
+        <span class="n">json_import_export</span><span class="o">.</span><span class="n">save_json</span><span class="p">(</span><span class="n">tmp_graph</span><span class="o">.</span><span class="n">export_as_dict</span><span class="p">(),</span> <span class="n">output_path</span> <span class="o">/</span> <span class="s2">&quot;distance_graph.json&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Distance graph json saved.&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">tmp_graph</span></div>
+
+<div class="viewcode-block" id="GraphExtractor.results_list_to_graph"><a class="viewcode-back" href="../../../../carlhauser_client.EvaluationTools.SimilarityGraphExtractor.html#carlhauser_client.EvaluationTools.SimilarityGraphExtractor.similarity_graph_extractor.GraphExtractor.results_list_to_graph">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">results_list_to_graph</span><span class="p">(</span><span class="n">requests_list</span><span class="p">,</span> <span class="n">nb_match</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GraphDataStruct</span><span class="p">:</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Construct a graph from results list of requests on the database</span>
+<span class="sd">        Hypothesis : All database pictures are requested pictures</span>
+<span class="sd">        Edges are colored : from green to red depending on the match index (Best is green)</span>
+<span class="sd">        :param requests_list: a List of results extracted from server</span>
+<span class="sd">        :param nb_match: Number of matches per pictures to add to the graph (1=first level match/best match, 2 = 2 best match per picture, etc.)</span>
+<span class="sd">        :return: A graph datastructure</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="n">graph</span> <span class="o">=</span> <span class="n">GraphDataStruct</span><span class="p">(</span><span class="n">meta</span><span class="o">=</span><span class="n">Metadata</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="n">Source</span><span class="o">.</span><span class="n">DBDUMP</span><span class="p">))</span>
+
+        <span class="c1"># Color Managemement</span>
+        <span class="c1"># FF0000 = red</span>
+        <span class="c1"># 00FF00 = green</span>
+        <span class="n">short_color_list</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;#00FF00&quot;</span><span class="p">,</span> <span class="s2">&quot;#887700&quot;</span><span class="p">,</span> <span class="s2">&quot;#CC3300&quot;</span><span class="p">,</span> <span class="s2">&quot;#FF0000&quot;</span><span class="p">]</span>
+        <span class="n">color_list</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;#00FF00&quot;</span><span class="p">,</span> <span class="s2">&quot;#11EE00&quot;</span><span class="p">,</span> <span class="s2">&quot;#22DD00&quot;</span><span class="p">,</span> <span class="s2">&quot;#33CC00&quot;</span><span class="p">,</span> <span class="s2">&quot;#44BB00&quot;</span><span class="p">,</span> <span class="s2">&quot;#55AA00&quot;</span><span class="p">,</span>
+                      <span class="s2">&quot;#669900&quot;</span><span class="p">,</span> <span class="s2">&quot;#778800&quot;</span><span class="p">,</span> <span class="s2">&quot;#887700&quot;</span><span class="p">,</span> <span class="s2">&quot;#996600&quot;</span><span class="p">,</span> <span class="s2">&quot;#AA5500&quot;</span><span class="p">,</span> <span class="s2">&quot;#BB4400&quot;</span><span class="p">,</span>
+                      <span class="s2">&quot;#CC3300&quot;</span><span class="p">,</span> <span class="s2">&quot;#DD2200&quot;</span><span class="p">,</span> <span class="s2">&quot;#EE1100&quot;</span><span class="p">,</span> <span class="s2">&quot;#FF0000&quot;</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">nb_match</span> <span class="o">&lt;</span> <span class="mi">4</span><span class="p">:</span>
+            <span class="c1"># We only have 4 colors if we don&#39;t want that much matches.</span>
+            <span class="c1"># This way, first match is green, second orange, third red, etc.</span>
+            <span class="n">color_list</span> <span class="o">=</span> <span class="n">short_color_list</span>
+
+        <span class="c1"># For each request</span>
+        <span class="k">for</span> <span class="n">curr_request</span> <span class="ow">in</span> <span class="n">requests_list</span><span class="p">:</span>
+            <span class="c1"># Requested picture =&gt; add a node</span>
+            <span class="n">graph</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="n">Node</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="n">curr_request</span><span class="p">[</span><span class="s2">&quot;request_id&quot;</span><span class="p">],</span> <span class="nb">id</span><span class="o">=</span><span class="n">curr_request</span><span class="p">[</span><span class="s2">&quot;request_id&quot;</span><span class="p">],</span> <span class="n">image</span><span class="o">=</span><span class="n">curr_request</span><span class="p">[</span><span class="s2">&quot;request_id&quot;</span><span class="p">]))</span>
+
+        <span class="c1"># For each request</span>
+        <span class="k">for</span> <span class="n">curr_request</span> <span class="ow">in</span> <span class="n">requests_list</span><span class="p">:</span>
+
+            <span class="c1"># We remove the picture &quot;itself&quot; from the matches</span>
+            <span class="n">tmp_clean_matches</span> <span class="o">=</span> <span class="n">get_clear_matches</span><span class="p">(</span><span class="n">curr_request</span><span class="p">)</span>
+
+            <span class="c1"># Add edge for each best pictures</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">nb_match</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">tmp_clean_matches</span><span class="p">))):</span>
+                <span class="n">graph</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">Edge</span><span class="p">(</span><span class="n">_from</span><span class="o">=</span><span class="n">curr_request</span><span class="p">[</span><span class="s2">&quot;request_id&quot;</span><span class="p">],</span>
+                                    <span class="n">_to</span><span class="o">=</span><span class="n">tmp_clean_matches</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s2">&quot;image_id&quot;</span><span class="p">],</span>
+                                    <span class="n">color</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="n">color_list</span><span class="p">[</span><span class="n">i</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">color_list</span><span class="p">)]},</span>
+                                    <span class="n">label</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">tmp_clean_matches</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s2">&quot;distance&quot;</span><span class="p">]),</span>
+                                    <span class="n">value</span><span class="o">=</span><span class="n">tmp_clean_matches</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s2">&quot;distance&quot;</span><span class="p">]))</span>
+
+        <span class="k">return</span> <span class="n">graph</span></div></div>
+
+
+<span class="sd">&#39;&#39;&#39; Example of result</span>
+<span class="sd">    [ {&#39;list_cluster&#39;: [{&#39;cluster_id&#39;: &#39;cluster|d15fb88e-b6ad-4f74-b3f4-d631ea2c5a87&#39;,</span>
+<span class="sd">                    &#39;distance&#39;: 0.0},</span>
+<span class="sd">                   {&#39;cluster_id&#39;: &#39;cluster|143feb18-d930-4660-99c2-1da476c19a13&#39;,</span>
+<span class="sd">                    &#39;distance&#39;: 0.19285714285714287},</span>
+<span class="sd">                   {&#39;cluster_id&#39;: &#39;cluster|dc68c31f-6f9c-484e-a32b-8476a70a66fd&#39;,</span>
+<span class="sd">                    &#39;distance&#39;: 0.23035714285714284}],</span>
+<span class="sd">      &#39;list_pictures&#39;: [{&#39;cluster_id&#39;: &#39;cluster|d15fb88e-b6ad-4f74-b3f4-d631ea2c5a87&#39;,</span>
+<span class="sd">                         &#39;distance&#39;: 0.0,</span>
+<span class="sd">                         &#39;image_id&#39;: &#39;advanzia3.png&#39;}, (...)</span>
+<span class="sd">                        {&#39;cluster_id&#39;: &#39;cluster|dc68c31f-6f9c-484e-a32b-8476a70a66fd&#39;,</span>
+<span class="sd">                         &#39;distance&#39;: 0.23035714285714284,</span>
+<span class="sd">                         &#39;image_id&#39;: &#39;17cb810ceff1ead1f7ebaf348f61e7c2db84a676&#39;}],</span>
+<span class="sd">      &#39;request_id&#39;: &#39;advanzia3.png&#39;,</span>
+<span class="sd">      &#39;request_time&#39;: 0.14145183563232422,</span>
+<span class="sd">      &#39;status&#39;: &#39;matches_found&#39;},</span>
+<span class="sd">&#39;&#39;&#39;</span>
+
+
+<div class="viewcode-block" id="test"><a class="viewcode-back" href="../../../../carlhauser_client.EvaluationTools.SimilarityGraphExtractor.html#carlhauser_client.EvaluationTools.SimilarityGraphExtractor.similarity_graph_extractor.test">[docs]</a><span class="k">def</span> <span class="nf">test</span><span class="p">():</span>
+    <span class="n">evaluator</span> <span class="o">=</span> <span class="n">GraphExtractor</span><span class="p">()</span>
+    <span class="n">image_folder</span> <span class="o">=</span> <span class="n">get_homedir</span><span class="p">()</span> <span class="o">/</span> <span class="s2">&quot;datasets&quot;</span> <span class="o">/</span> <span class="s2">&quot;MINI_DATASET&quot;</span>
+    <span class="c1"># image_folder = get_homedir() / &quot;datasets&quot; / &quot;raw_phishing_full&quot;</span>
+    <span class="n">output_path</span> <span class="o">=</span> <span class="n">get_homedir</span><span class="p">()</span> <span class="o">/</span> <span class="s2">&quot;carlhauser_client&quot;</span>
+    <span class="n">evaluator</span><span class="o">.</span><span class="n">get_proximity_graph</span><span class="p">(</span><span class="n">image_folder</span><span class="p">,</span> <span class="n">output_path</span><span class="p">)</span></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">test</span><span class="p">()</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, Vincent FALCONIERI.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.2.
+    </div>
+  </body>
+</html>

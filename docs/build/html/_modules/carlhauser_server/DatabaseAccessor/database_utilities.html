@@ -1,0 +1,225 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>carlhauser_server.DatabaseAccessor.database_utilities &#8212; Douglas-Quaid 0.0.4 documentation</title>
+    <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for carlhauser_server.DatabaseAccessor.database_utilities</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="c1"># ==================== ------ STD LIBRARIES ------- ====================</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">pathlib</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">uuid</span>
+
+<span class="kn">import</span> <span class="nn">redis</span>
+
+<span class="c1"># ==================== ------ PERSONAL LIBRARIES ------- ====================</span>
+<span class="kn">from</span> <span class="nn">common.Graph.cluster</span> <span class="k">import</span> <span class="n">Cluster</span>
+<span class="kn">from</span> <span class="nn">common.Graph.edge</span> <span class="k">import</span> <span class="n">Edge</span>
+<span class="kn">from</span> <span class="nn">common.Graph.graph_datastructure</span> <span class="k">import</span> <span class="n">GraphDataStruct</span>
+<span class="kn">from</span> <span class="nn">common.Graph.metadata</span> <span class="k">import</span> <span class="n">Metadata</span><span class="p">,</span> <span class="n">Source</span>
+<span class="kn">from</span> <span class="nn">common.Graph.node</span> <span class="k">import</span> <span class="n">Node</span>
+
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">pardir</span><span class="p">))</span>
+
+
+<div class="viewcode-block" id="DBUtilities"><a class="viewcode-back" href="../../../carlhauser_server.DatabaseAccessor.html#carlhauser_server.DatabaseAccessor.database_utilities.DBUtilities">[docs]</a><span class="k">class</span> <span class="nc">DBUtilities</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">db_access_decode</span><span class="p">:</span> <span class="n">redis</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">Redis</span><span class="p">,</span> <span class="n">db_access_no_decode</span><span class="p">:</span> <span class="n">redis</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">Redis</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db_access_decode</span> <span class="o">=</span> <span class="n">db_access_decode</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db_access_no_decode</span> <span class="o">=</span> <span class="n">db_access_no_decode</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">CLUSTER_LIST</span> <span class="o">=</span> <span class="s2">&quot;cluster_list&quot;</span>
+
+    <span class="c1"># ==================== ------ CLUSTER LIST ------- ====================</span>
+<div class="viewcode-block" id="DBUtilities.get_cluster_list"><a class="viewcode-back" href="../../../carlhauser_server.DatabaseAccessor.html#carlhauser_server.DatabaseAccessor.database_utilities.DBUtilities.get_cluster_list">[docs]</a>    <span class="k">def</span> <span class="nf">get_cluster_list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Get the list of pictures associated of the given cluster</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_access_decode</span><span class="o">.</span><span class="n">smembers</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">CLUSTER_LIST</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DBUtilities.add_cluster"><a class="viewcode-back" href="../../../carlhauser_server.DatabaseAccessor.html#carlhauser_server.DatabaseAccessor.database_utilities.DBUtilities.add_cluster">[docs]</a>    <span class="k">def</span> <span class="nf">add_cluster</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cluster_name</span><span class="p">):</span>
+        <span class="c1"># Store a cluster&#39;s name in the list of cluster&#39;s names</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_access_decode</span><span class="o">.</span><span class="n">sismember</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">CLUSTER_LIST</span><span class="p">,</span> <span class="n">cluster_name</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="c1"># The set does contains the cluster we want to add</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;A cluster is added to cluster list, but is already present. Collision in uuid or structural problem detected.&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_access_decode</span><span class="o">.</span><span class="n">sadd</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">CLUSTER_LIST</span><span class="p">,</span> <span class="n">cluster_name</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DBUtilities.rem_cluster"><a class="viewcode-back" href="../../../carlhauser_server.DatabaseAccessor.html#carlhauser_server.DatabaseAccessor.database_utilities.DBUtilities.rem_cluster">[docs]</a>    <span class="k">def</span> <span class="nf">rem_cluster</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cluster_name</span><span class="p">):</span>
+        <span class="c1"># Remove a cluster&#39;s name of the list of cluster&#39;s names</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_access_decode</span><span class="o">.</span><span class="n">sismember</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">CLUSTER_LIST</span><span class="p">,</span> <span class="n">cluster_name</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="c1"># The set does contains the cluster we want to add</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;A cluster is added to cluster list, but is already present. Structural problem detected.&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_access_decode</span><span class="o">.</span><span class="n">srem</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">CLUSTER_LIST</span><span class="p">,</span> <span class="n">cluster_name</span><span class="p">)</span></div>
+
+    <span class="c1"># ==================== ------ ADDERS ------- ====================</span>
+
+<div class="viewcode-block" id="DBUtilities.add_picture_to_cluster"><a class="viewcode-back" href="../../../carlhauser_server.DatabaseAccessor.html#carlhauser_server.DatabaseAccessor.database_utilities.DBUtilities.add_picture_to_cluster">[docs]</a>    <span class="k">def</span> <span class="nf">add_picture_to_cluster</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">image_id</span><span class="p">,</span> <span class="n">cluster_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">score</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
+        <span class="c1"># Add a picture to a cluster</span>
+
+        <span class="n">set_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_setname_of_cluster</span><span class="p">(</span><span class="n">cluster_id</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_access_decode</span><span class="o">.</span><span class="n">zcard</span><span class="p">(</span><span class="n">set_name</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="c1"># The set does not exist, and so the cluster</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;A picture is added to a cluster that does not exists. Please review structural behavior.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Add the picture to the set</span>
+        <span class="c1"># success = self.db_access_decode.sadd(set_name, image_id) # SET</span>
+        <span class="n">success</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_access_decode</span><span class="o">.</span><span class="n">zadd</span><span class="p">(</span><span class="n">set_name</span><span class="p">,</span> <span class="p">{</span><span class="n">image_id</span><span class="p">:</span> <span class="n">score</span><span class="p">})</span>  <span class="c1"># SORTED SET</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Added picture </span><span class="si">{image_id}</span><span class="s2"> to </span><span class="si">{cluster_id}</span><span class="s2"> cluster under set name </span><span class="si">{set_name}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">success</span></div>
+
+<div class="viewcode-block" id="DBUtilities.add_picture_to_new_cluster"><a class="viewcode-back" href="../../../carlhauser_server.DatabaseAccessor.html#carlhauser_server.DatabaseAccessor.database_utilities.DBUtilities.add_picture_to_new_cluster">[docs]</a>    <span class="k">def</span> <span class="nf">add_picture_to_new_cluster</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">image_id</span><span class="p">,</span> <span class="n">score</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
+        <span class="c1"># Add picture to a freshly created cluster</span>
+
+        <span class="c1"># Generate random id</span>
+        <span class="n">cluster_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_new_cluster_id</span><span class="p">()</span>
+        <span class="n">set_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_setname_of_cluster</span><span class="p">(</span><span class="n">cluster_id</span><span class="p">)</span>
+
+        <span class="c1"># Add cluster to cluster list</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_cluster</span><span class="p">(</span><span class="n">cluster_id</span><span class="p">)</span>
+
+        <span class="c1"># Add the picture to the set</span>
+        <span class="c1"># self.db_access_decode.sadd(set_name, image_id) # SET</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db_access_decode</span><span class="o">.</span><span class="n">zadd</span><span class="p">(</span><span class="n">set_name</span><span class="p">,</span> <span class="p">{</span><span class="n">image_id</span><span class="p">:</span> <span class="n">score</span><span class="p">})</span>  <span class="c1"># SORTED SET</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Added picture </span><span class="si">{image_id}</span><span class="s2"> to NEW </span><span class="si">{cluster_id}</span><span class="s2"> cluster under set name </span><span class="si">{set_name}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">cluster_id</span></div>
+
+<div class="viewcode-block" id="DBUtilities.update_picture_score_of_cluster"><a class="viewcode-back" href="../../../carlhauser_server.DatabaseAccessor.html#carlhauser_server.DatabaseAccessor.database_utilities.DBUtilities.update_picture_score_of_cluster">[docs]</a>    <span class="k">def</span> <span class="nf">update_picture_score_of_cluster</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cluster_id</span><span class="p">,</span> <span class="n">image_id</span><span class="p">,</span> <span class="n">new_score</span><span class="p">):</span>
+        <span class="c1"># Update the set &quot;ranking&quot; value of a picture into a cluster</span>
+
+        <span class="n">set_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_setname_of_cluster</span><span class="p">(</span><span class="n">cluster_id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db_access_decode</span><span class="o">.</span><span class="n">zadd</span><span class="p">(</span><span class="n">set_name</span><span class="p">,</span> <span class="p">{</span><span class="n">image_id</span><span class="p">:</span> <span class="n">new_score</span><span class="p">},</span> <span class="n">xx</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DBUtilities.get_new_cluster_id"><a class="viewcode-back" href="../../../carlhauser_server.DatabaseAccessor.html#carlhauser_server.DatabaseAccessor.database_utilities.DBUtilities.get_new_cluster_id">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_new_cluster_id</span><span class="p">():</span>
+        <span class="k">return</span> <span class="s1">&#39;|&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s2">&quot;cluster&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())])</span></div>
+
+    <span class="c1"># ==================== ------ PICTURES LIST PER CLUSTER ------- ====================</span>
+
+<div class="viewcode-block" id="DBUtilities.get_pictures_of_cluster"><a class="viewcode-back" href="../../../carlhauser_server.DatabaseAccessor.html#carlhauser_server.DatabaseAccessor.database_utilities.DBUtilities.get_pictures_of_cluster">[docs]</a>    <span class="k">def</span> <span class="nf">get_pictures_of_cluster</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cluster_name</span><span class="p">,</span> <span class="n">with_score</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">set</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Retrieving picture list of cluster </span><span class="si">{cluster_name}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">cluster_name</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="nb">str</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Invalid cluster name, not a string.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Get the list of pictures associated of the given cluster</span>
+        <span class="c1"># return self.db_access_decode.smembers(self.get_setname_of_cluster(cluster_name)) # SET</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_access_decode</span><span class="o">.</span><span class="n">zrange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_setname_of_cluster</span><span class="p">(</span><span class="n">cluster_name</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">withscores</span><span class="o">=</span><span class="n">with_score</span><span class="p">)</span>  <span class="c1"># SORTED SET</span></div>
+
+<div class="viewcode-block" id="DBUtilities.get_setname_of_cluster"><a class="viewcode-back" href="../../../carlhauser_server.DatabaseAccessor.html#carlhauser_server.DatabaseAccessor.database_utilities.DBUtilities.get_setname_of_cluster">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_setname_of_cluster</span><span class="p">(</span><span class="n">cluster_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">&#39;|&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">cluster_name</span><span class="p">,</span> <span class="s1">&#39;pics&#39;</span><span class="p">])</span></div>
+
+    <span class="c1"># ==================== ------ BACKGROUND COMPUTATION ------- ====================</span>
+
+<div class="viewcode-block" id="DBUtilities.add_to_review"><a class="viewcode-back" href="../../../carlhauser_server.DatabaseAccessor.html#carlhauser_server.DatabaseAccessor.database_utilities.DBUtilities.add_to_review">[docs]</a>    <span class="k">def</span> <span class="nf">add_to_review</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">image_id</span><span class="p">):</span>
+        <span class="c1"># Add the picture to be reviewed in few time (100_queue, 1000_queue, ...)</span>
+        <span class="c1"># TODO</span>
+        <span class="k">return</span></div>
+
+    <span class="c1"># ==================== ------ EXPORTATION ------- ====================</span>
+
+<div class="viewcode-block" id="DBUtilities.get_db_graphe"><a class="viewcode-back" href="../../../carlhauser_server.DatabaseAccessor.html#carlhauser_server.DatabaseAccessor.database_utilities.DBUtilities.get_db_graphe">[docs]</a>    <span class="k">def</span> <span class="nf">get_db_graphe</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="c1"># Create a graphe structure</span>
+        <span class="n">tmp_meta</span> <span class="o">=</span> <span class="n">Metadata</span><span class="p">(</span><span class="n">Source</span><span class="o">.</span><span class="n">DBDUMP</span><span class="p">)</span>
+        <span class="n">tmp_graph</span> <span class="o">=</span> <span class="n">GraphDataStruct</span><span class="p">(</span><span class="n">tmp_meta</span><span class="p">)</span>
+
+        <span class="c1"># Get all clusters</span>
+        <span class="n">cluster_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_cluster_list</span><span class="p">()</span>
+
+        <span class="c1"># For each cluster, fetch all pictures and store it</span>
+        <span class="k">for</span> <span class="n">cluster_id</span> <span class="ow">in</span> <span class="n">cluster_list</span><span class="p">:</span>
+            <span class="n">tmp_graph</span><span class="o">.</span><span class="n">add_cluster</span><span class="p">(</span><span class="n">Cluster</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="n">cluster_id</span><span class="p">,</span> <span class="n">image</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">))</span>
+
+            <span class="n">picture_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_pictures_of_cluster</span><span class="p">(</span><span class="n">cluster_id</span><span class="p">,</span> <span class="n">with_score</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Picture list : </span><span class="si">{picture_list}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">picture</span> <span class="ow">in</span> <span class="n">picture_list</span><span class="p">:</span>
+                <span class="c1"># Label = picture score, here</span>
+                <span class="n">tmp_graph</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="n">Node</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="n">picture</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="nb">id</span><span class="o">=</span><span class="n">picture</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">image</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">))</span>
+                <span class="n">tmp_graph</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">Edge</span><span class="p">(</span><span class="n">_from</span><span class="o">=</span><span class="n">cluster_id</span><span class="p">,</span> <span class="n">_to</span><span class="o">=</span><span class="n">picture</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+
+        <span class="k">return</span> <span class="n">tmp_graph</span><span class="o">.</span><span class="n">export_as_dict</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="DBUtilities.export_pictures_bmp"><a class="viewcode-back" href="../../../carlhauser_server.DatabaseAccessor.html#carlhauser_server.DatabaseAccessor.database_utilities.DBUtilities.export_pictures_bmp">[docs]</a>    <span class="k">def</span> <span class="nf">export_pictures_bmp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path_to_save</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">):</span>
+
+        <span class="c1"># TODO : To fill</span>
+
+        <span class="k">return</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, Vincent FALCONIERI.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.2.
+    </div>
+  </body>
+</html>

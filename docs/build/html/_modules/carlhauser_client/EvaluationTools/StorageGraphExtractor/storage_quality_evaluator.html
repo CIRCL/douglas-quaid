@@ -1,0 +1,263 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>carlhauser_client.EvaluationTools.StorageGraphExtractor.storage_quality_evaluator &#8212; Douglas-Quaid 0.0.4 documentation</title>
+    <link rel="stylesheet" href="../../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for carlhauser_client.EvaluationTools.StorageGraphExtractor.storage_quality_evaluator</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">import</span> <span class="nn">logging.config</span>
+<span class="c1"># ==================== ------ STD LIBRARIES ------- ====================</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">pathlib</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">from</span> <span class="nn">pprint</span> <span class="k">import</span> <span class="n">pformat</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span>
+
+<span class="kn">import</span> <span class="nn">common.Graph.graph_datastructure</span> <span class="k">as</span> <span class="nn">graph_datastructure</span>
+<span class="kn">import</span> <span class="nn">common.ImportExport.json_import_export</span> <span class="k">as</span> <span class="nn">json_import_export</span>
+<span class="kn">from</span> <span class="nn">carlhauser_client.API.extended_api</span> <span class="k">import</span> <span class="n">Extended_API</span>
+<span class="kn">from</span> <span class="nn">carlhauser_client.EvaluationTools.StorageGraphExtractor.cluster_matching_quality_evaluator</span> <span class="k">import</span> <span class="n">ClusterMatchingQualityEvaluator</span>
+<span class="kn">from</span> <span class="nn">common.ChartMaker.confusion_matrix_generator</span> <span class="k">import</span> <span class="n">ConfusionMatrixGenerator</span>
+<span class="kn">from</span> <span class="nn">common.Graph.cluster</span> <span class="k">import</span> <span class="n">Cluster</span>
+<span class="kn">from</span> <span class="nn">common.PerformanceDatastructs.clustermatch_datastruct</span> <span class="k">import</span> <span class="n">ClusterMatch</span>
+<span class="kn">from</span> <span class="nn">common.environment_variable</span> <span class="k">import</span> <span class="n">get_homedir</span>
+
+<span class="c1"># ==================== ------ PERSONAL LIBRARIES ------- ====================</span>
+
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">pardir</span><span class="p">))</span>
+
+<span class="c1"># ==================== ------ PREPARATION ------- ====================</span>
+<span class="c1"># load the logging configuration</span>
+<span class="n">logconfig_path</span> <span class="o">=</span> <span class="p">(</span><span class="n">get_homedir</span><span class="p">()</span> <span class="o">/</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;carlhauser_client&quot;</span><span class="p">,</span> <span class="s2">&quot;logging.ini&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+<span class="n">logging</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">fileConfig</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">logconfig_path</span><span class="p">))</span>
+
+
+<span class="c1"># ==================== ------ LAUNCHER ------- ====================</span>
+<div class="viewcode-block" id="InternalClusteringQualityEvaluator"><a class="viewcode-back" href="../../../../carlhauser_client.EvaluationTools.StorageGraphExtractor.html#carlhauser_client.EvaluationTools.StorageGraphExtractor.storage_quality_evaluator.InternalClusteringQualityEvaluator">[docs]</a><span class="k">class</span> <span class="nc">InternalClusteringQualityEvaluator</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">API</span><span class="p">:</span> <span class="n">Extended_API</span> <span class="o">=</span> <span class="n">Extended_API</span><span class="o">.</span><span class="n">get_api</span><span class="p">()</span>
+
+<div class="viewcode-block" id="InternalClusteringQualityEvaluator.get_storage_graph"><a class="viewcode-back" href="../../../../carlhauser_client.EvaluationTools.StorageGraphExtractor.html#carlhauser_client.EvaluationTools.StorageGraphExtractor.storage_quality_evaluator.InternalClusteringQualityEvaluator.get_storage_graph">[docs]</a>    <span class="k">def</span> <span class="nf">get_storage_graph</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">image_folder</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">,</span> <span class="n">visjs_json_path</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">,</span> <span class="n">output_path</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Extract a storage graph from a folder of pictures, sent to DB and a dump request to the DB.</span>
+<span class="sd">        Store all pictures in the server and dump the database as is.</span>
+<span class="sd">        :param image_folder: The folder of picture to send and request, to build the storage graph from</span>
+<span class="sd">        :param visjs_json_path:</span>
+<span class="sd">        :param output_path: The output path where the graph and other data will be stored</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="c1"># ========= MANUAL EVALUATION =========</span>
+
+        <span class="c1"># Load ground truth file</span>
+        <span class="n">gt_graph</span> <span class="o">=</span> <span class="n">graph_datastructure</span><span class="o">.</span><span class="n">load_visjs_to_graphe</span><span class="p">(</span><span class="n">visjs_json_path</span><span class="p">)</span>
+
+        <span class="c1"># ========= AUTO EVALUATION =========</span>
+        <span class="c1"># Send pictures to DB and get id mapping</span>
+        <span class="n">mapping_old_filename_to_new_id</span><span class="p">,</span> <span class="n">nb_pictures</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">API</span><span class="o">.</span><span class="n">add_many_pictures_and_wait</span><span class="p">(</span><span class="n">image_folder</span><span class="p">)</span>
+
+        <span class="c1"># Get a DB dump</span>
+        <span class="n">db_dump</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">API</span><span class="o">.</span><span class="n">get_db_dump_as_graph</span><span class="p">()</span>
+
+        <span class="c1"># ========= COMPARISON =========</span>
+        <span class="c1"># Apply name mapping to dict (find back original names)</span>
+        <span class="n">gt_graph</span><span class="o">.</span><span class="n">replace_id_from_mapping</span><span class="p">(</span><span class="n">mapping_old_filename_to_new_id</span><span class="p">)</span>
+
+        <span class="c1"># Extract the lists of clusters</span>
+        <span class="n">candidate</span> <span class="o">=</span> <span class="n">db_dump</span><span class="o">.</span><span class="n">get_clusters</span><span class="p">()</span>
+        <span class="n">original</span> <span class="o">=</span> <span class="n">gt_graph</span><span class="o">.</span><span class="n">get_clusters</span><span class="p">()</span>
+
+        <span class="c1"># Match clusters</span>
+        <span class="c1"># 1. Manually ? (Go back to visjs + rename manually to have the same matching names)</span>
+        <span class="c1"># 2. Automatically ? (Match on number of common elements ~, see function)</span>
+        <span class="c1"># 2 was chosen.</span>
+
+        <span class="c1"># Groups clusters per pair, by matching original clusters with Candidate clusters</span>
+        <span class="n">matching</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">match_clusters</span><span class="p">(</span><span class="n">original</span><span class="p">,</span> <span class="n">candidate</span><span class="p">)</span>
+
+        <span class="c1"># Compute from each pair of clusters their Quality score</span>
+        <span class="n">matching_with_perf</span> <span class="o">=</span> <span class="n">ClusterMatchingQualityEvaluator</span><span class="o">.</span><span class="n">evaluate_performance</span><span class="p">(</span><span class="n">matching</span><span class="p">,</span> <span class="n">nb_pictures</span><span class="p">)</span>
+
+        <span class="c1"># Store performance in a file</span>
+        <span class="n">perfs</span> <span class="o">=</span> <span class="n">ClusterMatchingQualityEvaluator</span><span class="o">.</span><span class="n">export_as_json</span><span class="p">(</span><span class="n">matching_with_perf</span><span class="p">)</span>
+
+        <span class="n">save_path_perf</span> <span class="o">=</span> <span class="n">output_path</span> <span class="o">/</span> <span class="s2">&quot;perf.json&quot;</span>
+        <span class="n">json_import_export</span><span class="o">.</span><span class="n">save_json</span><span class="p">(</span><span class="n">perfs</span><span class="p">,</span> <span class="n">save_path_perf</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Json saved in : </span><span class="si">{save_path_perf}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># ========= RESULT VISUALIZATON =========</span>
+
+        <span class="c1"># Convert matching with performance to confusion matrix</span>
+        <span class="n">matrix_creator</span> <span class="o">=</span> <span class="n">ConfusionMatrixGenerator</span><span class="p">()</span>
+        <span class="n">matrix_creator</span><span class="o">.</span><span class="n">create_and_export_confusion_matrix</span><span class="p">(</span><span class="n">original</span><span class="p">,</span> <span class="n">candidate</span><span class="p">,</span> <span class="n">output_path</span> <span class="o">/</span> <span class="s2">&quot;matrix.pdf&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Convert dumped graph to visjs graphe</span>
+        <span class="c1"># ==&gt; red if linked made by algo, but non existant + Gray, true link that should have been created (</span>
+        <span class="c1"># ==&gt; Green if linked made by algo and existant</span>
+        <span class="n">output_graph</span> <span class="o">=</span> <span class="n">graph_datastructure</span><span class="o">.</span><span class="n">merge_graphs</span><span class="p">(</span><span class="n">gt_graph</span><span class="p">,</span> <span class="n">db_dump</span><span class="p">,</span> <span class="n">matching</span><span class="p">)</span>
+
+        <span class="n">save_path_json</span> <span class="o">=</span> <span class="n">output_path</span> <span class="o">/</span> <span class="s2">&quot;merged_graph.json&quot;</span>
+        <span class="n">json_import_export</span><span class="o">.</span><span class="n">save_json</span><span class="p">(</span><span class="n">output_graph</span><span class="p">,</span> <span class="n">save_path_json</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;DB Dump json saved in : </span><span class="si">{save_path_json}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># ==============================</span>
+
+        <span class="k">return</span> <span class="n">perfs</span></div>
+
+<div class="viewcode-block" id="InternalClusteringQualityEvaluator.match_clusters"><a class="viewcode-back" href="../../../../carlhauser_client.EvaluationTools.StorageGraphExtractor.html#carlhauser_client.EvaluationTools.StorageGraphExtractor.storage_quality_evaluator.InternalClusteringQualityEvaluator.match_clusters">[docs]</a>    <span class="k">def</span> <span class="nf">match_clusters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">original</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Cluster</span><span class="p">],</span> <span class="n">candidate</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Cluster</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">ClusterMatch</span><span class="p">]:</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Automatically match clusters together. From two list of Clusters, provides a List of cluster matches (pair of clusters)</span>
+<span class="sd">        TODO : Handle a pairing with unicity of each cluster in the paired list. Here a cluster can be matched with one other that was already matched with another one.</span>
+<span class="sd">        :param original: List of clusters generated by the library/server/ ...</span>
+<span class="sd">        :param candidate: List of clusters extracted from ground truth</span>
+<span class="sd">        :return: List of pair of clusters, matched together</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Inputs : </span><span class="se">\n</span><span class="s2"> original = {pformat(original)} </span><span class="se">\n</span><span class="s2"> original = {pformat(candidate)}&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Sort arrays (bigger to smaller)</span>
+        <span class="n">original</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">members</span><span class="p">),</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">candidate</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">members</span><span class="p">),</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Sorted : </span><span class="se">\n</span><span class="s2"> original = {pformat(original)} </span><span class="se">\n</span><span class="s2"> original = {pformat(candidate)}&quot;</span><span class="p">)</span>
+
+        <span class="n">matching</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># For each ground truth cluster</span>
+        <span class="k">for</span> <span class="n">curr_original_cluster</span> <span class="ow">in</span> <span class="n">original</span><span class="p">:</span>
+            <span class="n">max_intersect</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">index_best_intersect</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+
+            <span class="c1"># For each server-extracted cluster</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">curr_candidat_cluster</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">candidate</span><span class="p">):</span>
+
+                <span class="c1"># If the size of the current cluster is below the best seen intersect =</span>
+                <span class="c1"># The current cluster and the next ones can&#39;t be better</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">curr_candidat_cluster</span><span class="o">.</span><span class="n">members</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">max_intersect</span><span class="p">:</span>
+
+                    <span class="c1"># Remove current cluster from matching</span>
+                    <span class="c1"># TODO : if index_best_intersect != -1 :</span>
+                    <span class="c1">#  candidate.remove(index_best_intersect)</span>
+                    <span class="c1"># else :</span>
+                    <span class="c1"># &quot;No candidate found for ... &quot;</span>
+
+                    <span class="c1"># As the cluster are sorted by size, if we haven&#39;t found any &quot;good&quot; cluster, we can just stop !</span>
+                    <span class="k">if</span> <span class="n">index_best_intersect</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;No candidate found to match cluster = </span><span class="si">{curr_original_cluster}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="k">break</span>  <span class="c1"># So we stop</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># Compute intersection</span>
+                    <span class="n">tmp</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">curr_original_cluster</span><span class="o">.</span><span class="n">members</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">curr_candidat_cluster</span><span class="o">.</span><span class="n">members</span><span class="p">))</span>
+
+                    <span class="c1"># Store if better =  If the current intersection of both clusters is greater than the one already seen</span>
+                    <span class="k">if</span> <span class="n">tmp</span> <span class="o">&gt;</span> <span class="n">max_intersect</span><span class="p">:</span>
+                        <span class="n">max_intersect</span> <span class="o">=</span> <span class="n">tmp</span>
+                        <span class="n">index_best_intersect</span> <span class="o">=</span> <span class="n">i</span>
+
+            <span class="c1"># Store best matching</span>
+            <span class="n">matching</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ClusterMatch</span><span class="p">(</span><span class="n">curr_original_cluster</span><span class="p">,</span> <span class="n">candidate</span><span class="p">[</span><span class="n">index_best_intersect</span><span class="p">]))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;matching : </span><span class="se">\n</span><span class="s2"> {pformat(matching)}&quot;</span><span class="p">)</span>
+
+        <span class="c1"># TODO : Problem with clusters that are not matched.</span>
+        <span class="c1"># What to do with them ? Let them ? Match them by force ? ...</span>
+        <span class="k">return</span> <span class="n">matching</span></div></div>
+
+
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">def main():</span>
+<span class="sd">    parser = argparse.ArgumentParser(description=&#39;Perform an evaluation on a dataset : Send all pictures, &#39;)</span>
+<span class="sd">    parser.add_argument(&#39;-p&#39;, &#39;--path&#39;, dest=&#39;path&#39;, action=&#39;store&#39;, type=lambda p: pathlib.Path(p).absolute(), default=1, help=&#39;all path&#39;)</span>
+<span class="sd">    parser.add_argument(&#39;--version&#39;, action=&#39;version&#39;, version=&#39;humanizer %s&#39; % (&quot;1.0.0&quot;))</span>
+
+<span class="sd">    args = parser.parse_args()</span>
+<span class="sd">    humanizer = Humanizer()</span>
+<span class="sd">    humanizer.rename_all_files(args.path)</span>
+
+<span class="sd">&#39;&#39;&#39;</span>
+
+
+<div class="viewcode-block" id="test"><a class="viewcode-back" href="../../../../carlhauser_client.EvaluationTools.StorageGraphExtractor.html#carlhauser_client.EvaluationTools.StorageGraphExtractor.storage_quality_evaluator.test">[docs]</a><span class="k">def</span> <span class="nf">test</span><span class="p">():</span>
+    <span class="n">evaluator</span> <span class="o">=</span> <span class="n">InternalClusteringQualityEvaluator</span><span class="p">()</span>
+    <span class="n">image_folder</span> <span class="o">=</span> <span class="n">get_homedir</span><span class="p">()</span> <span class="o">/</span> <span class="s2">&quot;datasets&quot;</span> <span class="o">/</span> <span class="s2">&quot;MINI_DATASET&quot;</span>
+    <span class="n">gt</span> <span class="o">=</span> <span class="n">get_homedir</span><span class="p">()</span> <span class="o">/</span> <span class="s2">&quot;datasets&quot;</span> <span class="o">/</span> <span class="s2">&quot;MINI_DATASET_VISJS.json&quot;</span>
+    <span class="n">output_path</span> <span class="o">=</span> <span class="n">get_homedir</span><span class="p">()</span> <span class="o">/</span> <span class="s2">&quot;carlhauser_client&quot;</span>
+    <span class="n">evaluator</span><span class="o">.</span><span class="n">get_storage_graph</span><span class="p">(</span><span class="n">image_folder</span><span class="p">,</span> <span class="n">gt</span><span class="p">,</span> <span class="n">output_path</span><span class="p">)</span></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">test</span><span class="p">()</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, Vincent FALCONIERI.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.2.
+    </div>
+  </body>
+</html>

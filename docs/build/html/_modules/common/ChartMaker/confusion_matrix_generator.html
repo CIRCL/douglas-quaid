@@ -1,0 +1,301 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>common.ChartMaker.confusion_matrix_generator &#8212; Douglas-Quaid 0.0.4 documentation</title>
+    <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for common.ChartMaker.confusion_matrix_generator</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="c1"># ==================== ------ STD LIBRARIES ------- ====================</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">pathlib</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">List</span>
+<span class="kn">import</span> <span class="nn">logging.config</span>
+<span class="kn">import</span> <span class="nn">matplotlib</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="c1"># ==================== ------ PERSONAL LIBRARIES ------- ====================</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">pardir</span><span class="p">))</span>
+<span class="kn">from</span> <span class="nn">common.environment_variable</span> <span class="k">import</span> <span class="n">get_homedir</span>
+<span class="kn">from</span> <span class="nn">common.Graph.cluster</span> <span class="k">import</span> <span class="n">Cluster</span>
+<span class="kn">from</span> <span class="nn">common.PerformanceDatastructs.clustermatch_datastruct</span> <span class="k">import</span> <span class="n">ClusterMatch</span>
+
+
+<span class="c1"># ==================== ------ PREPARATION ------- ====================</span>
+<span class="c1"># load the logging configuration</span>
+<span class="n">logconfig_path</span> <span class="o">=</span> <span class="p">(</span><span class="n">get_homedir</span><span class="p">()</span> <span class="o">/</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;carlhauser_client&quot;</span><span class="p">,</span> <span class="s2">&quot;logging.ini&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+<span class="n">logging</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">fileConfig</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">logconfig_path</span><span class="p">))</span>
+
+
+<div class="viewcode-block" id="ConfusionMatrixGenerator"><a class="viewcode-back" href="../../../common.ChartMaker.html#common.ChartMaker.confusion_matrix_generator.ConfusionMatrixGenerator">[docs]</a><span class="k">class</span> <span class="nc">ConfusionMatrixGenerator</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">ord</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">abs</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">values</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="c1"># ============================== ---- Creation of matrix ----  ==============================</span>
+
+<div class="viewcode-block" id="ConfusionMatrixGenerator.create_and_export_confusion_matrix"><a class="viewcode-back" href="../../../common.ChartMaker.html#common.ChartMaker.confusion_matrix_generator.ConfusionMatrixGenerator.create_and_export_confusion_matrix">[docs]</a>    <span class="k">def</span> <span class="nf">create_and_export_confusion_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">original</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Cluster</span><span class="p">],</span>
+                                           <span class="n">candidate</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Cluster</span><span class="p">],</span>
+                                           <span class="n">save_path</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Create and export a confusion matrix from two list of clusters. The confusion matrix display the number of pictures in common between any pair of two cluster, taken in both lists.</span>
+<span class="sd">        :param original: a List of cluster with their members</span>
+<span class="sd">        :param candidate: a List of cluster with their members</span>
+<span class="sd">        :param save_path: the path to which the matrix PDF) will be stored</span>
+<span class="sd">        :return: Nothing</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Create and export confusion matrix, inputs : original = </span><span class="si">{original}</span><span class="s2"> ; candidate = </span><span class="si">{candidate}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Sort arrays (bigger to smaller)</span>
+        <span class="n">original</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">members</span><span class="p">),</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">candidate</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">members</span><span class="p">),</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Sorted : </span><span class="si">{original}</span><span class="s2"> </span><span class="si">{candidate}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Creation of the axis values</span>
+        <span class="n">ordo</span><span class="p">,</span> <span class="n">absi</span><span class="p">,</span> <span class="n">values</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[]</span>
+
+        <span class="c1"># Create label printed on each axis</span>
+        <span class="k">for</span> <span class="n">gt_cluster</span> <span class="ow">in</span> <span class="n">original</span><span class="p">:</span>
+            <span class="n">ordo</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">gt_cluster</span><span class="o">.</span><span class="n">label</span><span class="p">),</span> <span class="s2">&quot; (#&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">gt_cluster</span><span class="o">.</span><span class="n">members</span><span class="p">))),</span> <span class="s2">&quot;)&quot;</span><span class="p">,</span> <span class="p">]))</span>
+
+        <span class="k">for</span> <span class="n">cand</span> <span class="ow">in</span> <span class="n">candidate</span><span class="p">:</span>
+            <span class="n">absi</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">cand</span><span class="o">.</span><span class="n">label</span><span class="p">),</span> <span class="s2">&quot; (#&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">cand</span><span class="o">.</span><span class="n">members</span><span class="p">))),</span> <span class="s2">&quot;)&quot;</span><span class="p">,</span> <span class="p">]))</span>
+
+        <span class="c1"># Generate values</span>
+        <span class="k">for</span> <span class="n">row</span><span class="p">,</span> <span class="n">gt_cluster</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">original</span><span class="p">):</span>
+            <span class="n">tmp_row_values</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">col</span><span class="p">,</span> <span class="n">cand</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">candidate</span><span class="p">):</span>
+                <span class="c1"># Compute intersection = True positive or False Positive (as we don&#39;t know if that&#39;s a &quot;good&quot; cluster)</span>
+                <span class="n">intersect</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">gt_cluster</span><span class="o">.</span><span class="n">members</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">cand</span><span class="o">.</span><span class="n">members</span><span class="p">))</span>
+                <span class="n">tmp_row_values</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">intersect</span><span class="p">)</span>
+            <span class="n">values</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tmp_row_values</span><span class="p">)</span>
+
+        <span class="c1"># TODO : Color if matched on this attribute ?</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_values</span><span class="p">(</span><span class="n">ordo</span><span class="p">,</span> <span class="n">absi</span><span class="p">,</span> <span class="n">values</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">save_matrix</span><span class="p">(</span><span class="n">save_path</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s2">&quot;.pdf&quot;</span><span class="p">))</span></div>
+
+    <span class="c1"># ============================== ---- Utility ----  ==============================</span>
+
+<div class="viewcode-block" id="ConfusionMatrixGenerator.set_values"><a class="viewcode-back" href="../../../common.ChartMaker.html#common.ChartMaker.confusion_matrix_generator.ConfusionMatrixGenerator.set_values">[docs]</a>    <span class="k">def</span> <span class="nf">set_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ordo</span><span class="p">,</span> <span class="n">absi</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ord</span> <span class="o">=</span> <span class="n">ordo</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">abs</span> <span class="o">=</span> <span class="n">absi</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">values</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ConfusionMatrixGenerator.save_matrix"><a class="viewcode-back" href="../../../common.ChartMaker.html#common.ChartMaker.confusion_matrix_generator.ConfusionMatrixGenerator.save_matrix">[docs]</a>    <span class="k">def</span> <span class="nf">save_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output_file</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Create a matrix (a picture/chart) with specific size, etc.</span>
+<span class="sd">        :param output_file: The path where to save the matrix picture.</span>
+<span class="sd">        :return: Nothing</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">14</span><span class="p">),</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+
+        <span class="n">im</span><span class="p">,</span> <span class="n">cbar</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">heatmap</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ord</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">abs</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span>
+                                <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;YlGn&quot;</span><span class="p">,</span> <span class="n">cbarlabel</span><span class="o">=</span><span class="s2">&quot;Nb of elements in these clusters&quot;</span><span class="p">)</span>
+        <span class="n">texts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">annotate_heatmap</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">valfmt</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">{x:.1f}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="n">fig</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">output_file</span><span class="p">))</span></div>
+
+    <span class="c1"># ============================== --------------------------------  ==============================</span>
+    <span class="c1">#                                   Graphical operation</span>
+
+<div class="viewcode-block" id="ConfusionMatrixGenerator.heatmap"><a class="viewcode-back" href="../../../common.ChartMaker.html#common.ChartMaker.confusion_matrix_generator.ConfusionMatrixGenerator.heatmap">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">heatmap</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">row_labels</span><span class="p">,</span> <span class="n">col_labels</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cbar_kw</span><span class="o">=</span><span class="p">{},</span> <span class="n">cbarlabel</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create a heatmap from a numpy array and two lists of labels.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            data       : A 2D numpy array of shape (N,M)</span>
+<span class="sd">            row_labels : A list or array of length N with the labels</span>
+<span class="sd">                         for the rows</span>
+<span class="sd">            col_labels : A list or array of length M with the labels</span>
+<span class="sd">                         for the columns</span>
+<span class="sd">        Optional arguments:</span>
+<span class="sd">            ax         : A matplotlib.axes.Axes instance to which the heatmap</span>
+<span class="sd">                         is plotted. If not provided, use current axes or</span>
+<span class="sd">                         create a new one.</span>
+<span class="sd">            cbar_kw    : A dictionary with arguments to</span>
+<span class="sd">                         :meth:`matplotlib.Figure.colorbar`.</span>
+<span class="sd">            cbarlabel  : The label for the colorbar</span>
+<span class="sd">        All other arguments are directly passed on to the imshow call.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">ax</span><span class="p">:</span>
+            <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
+
+        <span class="c1"># TRICK TO DO MAX PER ROW</span>
+        <span class="n">normalized_data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">row_sums</span> <span class="o">=</span> <span class="n">normalized_data</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        print(type(row_sums))</span>
+<span class="sd">        print(normalized_data)</span>
+<span class="sd">        print(row_sums)</span>
+<span class="sd">        print(row_sums[:, np.newaxis])</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">normalized_data</span> <span class="o">=</span> <span class="n">normalized_data</span> <span class="o">/</span> <span class="n">row_sums</span><span class="p">[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span>
+        <span class="c1"># data = data.div(data.max(axis=1), axis=0)</span>
+
+        <span class="c1"># Plot the heatmap</span>
+        <span class="n">im</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">normalized_data</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="c1"># Create colorbar</span>
+        <span class="n">cbar</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="o">**</span><span class="n">cbar_kw</span><span class="p">)</span>
+        <span class="n">cbar</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="n">cbarlabel</span><span class="p">,</span> <span class="n">rotation</span><span class="o">=-</span><span class="mi">90</span><span class="p">,</span> <span class="n">va</span><span class="o">=</span><span class="s2">&quot;bottom&quot;</span><span class="p">)</span>
+
+        <span class="c1"># We want to show all ticks...</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_yticks</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+        <span class="c1"># ... and label them with the respective list entries.</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xticklabels</span><span class="p">(</span><span class="n">col_labels</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_yticklabels</span><span class="p">(</span><span class="n">row_labels</span><span class="p">)</span>
+
+        <span class="c1"># Let the horizontal axes labeling appear on top.</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">top</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">bottom</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                       <span class="n">labeltop</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">labelbottom</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="c1"># Rotate the tick labels and set their alignment.</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">setp</span><span class="p">(</span><span class="n">ax</span><span class="o">.</span><span class="n">get_xticklabels</span><span class="p">(),</span> <span class="n">rotation</span><span class="o">=-</span><span class="mi">30</span><span class="p">,</span> <span class="n">ha</span><span class="o">=</span><span class="s2">&quot;right&quot;</span><span class="p">,</span>
+                 <span class="n">rotation_mode</span><span class="o">=</span><span class="s2">&quot;anchor&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Turn spines off and create white grid.</span>
+        <span class="k">for</span> <span class="n">edge</span><span class="p">,</span> <span class="n">spine</span> <span class="ow">in</span> <span class="n">ax</span><span class="o">.</span><span class="n">spines</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">spine</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="o">.</span><span class="mi">5</span><span class="p">,</span> <span class="n">minor</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_yticks</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="o">.</span><span class="mi">5</span><span class="p">,</span> <span class="n">minor</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="c1"># ax.grid(which=&quot;minor&quot;, color=&quot;w&quot;, linestyle=&#39;-&#39;, linewidth=3)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">which</span><span class="o">=</span><span class="s2">&quot;minor&quot;</span><span class="p">,</span> <span class="n">bottom</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">left</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">im</span><span class="p">,</span> <span class="n">cbar</span></div>
+
+<div class="viewcode-block" id="ConfusionMatrixGenerator.annotate_heatmap"><a class="viewcode-back" href="../../../common.ChartMaker.html#common.ChartMaker.confusion_matrix_generator.ConfusionMatrixGenerator.annotate_heatmap">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">annotate_heatmap</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">valfmt</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">{x:.2f}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">textcolors</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;black&quot;</span><span class="p">,</span> <span class="s2">&quot;white&quot;</span><span class="p">],</span> <span class="n">threshold</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">textkw</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        A function to annotate a heatmap.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            im         : The AxesImage to be labeled.</span>
+<span class="sd">        Optional arguments:</span>
+<span class="sd">            data       : Data used to annotate. If None, the image&#39;s data is used.</span>
+<span class="sd">            valfmt     : The format of the annotations inside the heatmap.</span>
+<span class="sd">                         This should either use the string format method, e.g.</span>
+<span class="sd">                         &quot;$ {x:.2f}&quot;, or be a :class:`matplotlib.ticker.Formatter`.</span>
+<span class="sd">            textcolors : A list or array of two color specifications. The first is</span>
+<span class="sd">                         used for values below a threshold, the second for those</span>
+<span class="sd">                         above.</span>
+<span class="sd">            threshold  : Value in data units according to which the colors from</span>
+<span class="sd">                         textcolors are applied. If None (the default) uses the</span>
+<span class="sd">                         middle of the colormap as separation.</span>
+
+<span class="sd">        Further arguments are passed on to the created text labels.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)):</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="n">get_array</span><span class="p">()</span>
+
+        <span class="c1"># Normalize the threshold to the images color range.</span>
+        <span class="k">if</span> <span class="n">threshold</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">threshold</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">threshold</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">threshold</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">max</span><span class="p">())</span> <span class="o">/</span> <span class="mf">2.</span>
+
+        <span class="c1"># Set default alignment to center, but allow it to be</span>
+        <span class="c1"># overwritten by textkw.</span>
+        <span class="n">kw</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">horizontalalignment</span><span class="o">=</span><span class="s2">&quot;center&quot;</span><span class="p">,</span>
+                  <span class="n">verticalalignment</span><span class="o">=</span><span class="s2">&quot;center&quot;</span><span class="p">)</span>
+        <span class="n">kw</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">textkw</span><span class="p">)</span>
+
+        <span class="c1"># Get the formatter in case a string is supplied</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">valfmt</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">valfmt</span> <span class="o">=</span> <span class="n">matplotlib</span><span class="o">.</span><span class="n">ticker</span><span class="o">.</span><span class="n">StrMethodFormatter</span><span class="p">(</span><span class="n">valfmt</span><span class="p">)</span>
+
+        <span class="c1"># Loop over the data and create a `Text` for each &quot;pixel&quot;.</span>
+        <span class="c1"># Change the text&#39;s color depending on the data.</span>
+        <span class="n">texts</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+                <span class="n">kw</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="n">textcolors</span><span class="p">[</span><span class="n">im</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">])</span> <span class="o">&gt;</span> <span class="n">threshold</span><span class="p">])</span>
+                <span class="n">text</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">valfmt</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">],</span> <span class="kc">None</span><span class="p">),</span> <span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+                <span class="n">texts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">texts</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, Vincent FALCONIERI.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.2.
+    </div>
+  </body>
+</html>

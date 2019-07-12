@@ -1,0 +1,139 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>carlhauser_server.Helpers.pickle_import_export &#8212; Douglas-Quaid 0.0.4 documentation</title>
+    <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for carlhauser_server.Helpers.pickle_import_export</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">import</span> <span class="nn">_pickle</span> <span class="k">as</span> <span class="nn">cPickle</span>
+<span class="kn">import</span> <span class="nn">copyreg</span>
+<span class="c1"># ==================== ------ STD LIBRARIES ------- ====================</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">pickle</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="kn">import</span> <span class="nn">cv2</span>
+
+<span class="c1"># ==================== ------ PERSONAL LIBRARIES ------- ====================</span>
+<span class="kn">import</span> <span class="nn">carlhauser_server.Singletons.template_singleton</span> <span class="k">as</span> <span class="nn">template_singleton</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">pardir</span><span class="p">))</span>
+
+<div class="viewcode-block" id="Pickler"><a class="viewcode-back" href="../../../carlhauser_server.Helpers.html#carlhauser_server.Helpers.pickle_import_export.Pickler">[docs]</a><span class="k">class</span> <span class="nc">Pickler</span><span class="p">(</span><span class="n">metaclass</span><span class="o">=</span><span class="n">template_singleton</span><span class="o">.</span><span class="n">Singleton</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">patch_Keypoint_pickiling</span><span class="p">()</span>
+
+<div class="viewcode-block" id="Pickler.patch_Keypoint_pickiling"><a class="viewcode-back" href="../../../carlhauser_server.Helpers.html#carlhauser_server.Helpers.pickle_import_export.Pickler.patch_Keypoint_pickiling">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">patch_Keypoint_pickiling</span><span class="p">():</span>
+        <span class="c1"># Create the bundling between class and arguements to save for Keypoint class</span>
+        <span class="c1"># See : https://stackoverflow.com/questions/50337569/pickle-exception-for-cv2-boost-when-using-multiprocessing/50394788#50394788</span>
+        <span class="k">def</span> <span class="nf">_pickle_keypoint</span><span class="p">(</span><span class="n">keypoint</span><span class="p">):</span> <span class="c1">#  : cv2.KeyPoint</span>
+            <span class="k">return</span> <span class="n">cv2</span><span class="o">.</span><span class="n">KeyPoint</span><span class="p">,</span> <span class="p">(</span>
+                <span class="n">keypoint</span><span class="o">.</span><span class="n">pt</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                <span class="n">keypoint</span><span class="o">.</span><span class="n">pt</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                <span class="n">keypoint</span><span class="o">.</span><span class="n">size</span><span class="p">,</span>
+                <span class="n">keypoint</span><span class="o">.</span><span class="n">angle</span><span class="p">,</span>
+                <span class="n">keypoint</span><span class="o">.</span><span class="n">response</span><span class="p">,</span>
+                <span class="n">keypoint</span><span class="o">.</span><span class="n">octave</span><span class="p">,</span>
+                <span class="n">keypoint</span><span class="o">.</span><span class="n">class_id</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="c1"># C++ : KeyPoint (float x, float y, float _size, float _angle=-1, float _response=0, int _octave=0, int _class_id=-1)</span>
+        <span class="c1"># Python: cv2.KeyPoint([x, y, _size[, _angle[, _response[, _octave[, _class_id]]]]]) → &lt;KeyPoint object&gt;</span>
+
+        <span class="c1"># Apply the bundling to pickle</span>
+        <span class="n">copyreg</span><span class="o">.</span><span class="n">pickle</span><span class="p">(</span><span class="n">cv2</span><span class="o">.</span><span class="n">KeyPoint</span><span class="p">()</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="n">_pickle_keypoint</span><span class="p">)</span></div>
+
+    <span class="c1"># non static, to be sure we patched it before use, only once</span>
+<div class="viewcode-block" id="Pickler.get_object_from_pickle"><a class="viewcode-back" href="../../../carlhauser_server.Helpers.html#carlhauser_server.Helpers.pickle_import_export.Pickler.get_object_from_pickle">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_object_from_pickle</span><span class="p">(</span><span class="n">pickle_obj</span><span class="p">):</span>
+        <span class="c1"># Return an object from the pickle version of it</span>
+
+        <span class="c1"># The protocol version used is detected automatically, so we do not</span>
+        <span class="c1"># have to specify it.</span>
+        <span class="k">return</span> <span class="n">cPickle</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">pickle_obj</span><span class="p">)</span></div>
+
+    <span class="c1"># non static, to be sure we patched it before use, only once</span>
+<div class="viewcode-block" id="Pickler.get_pickle_from_object"><a class="viewcode-back" href="../../../carlhauser_server.Helpers.html#carlhauser_server.Helpers.pickle_import_export.Pickler.get_pickle_from_object">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_pickle_from_object</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+        <span class="c1"># Return a pickle version of an object</span>
+
+        <span class="c1"># Pickle the &#39;data&#39; dictionary using the highest protocol available = the faster (&gt;json since v3)</span>
+        <span class="k">return</span> <span class="n">cPickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="n">pickle</span><span class="o">.</span><span class="n">HIGHEST_PROTOCOL</span><span class="p">)</span></div></div>
+
+
+
+
+
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, Vincent FALCONIERI.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.2.
+    </div>
+  </body>
+</html>

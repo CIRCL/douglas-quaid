@@ -1,0 +1,185 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>carlhauser_server.DatabaseAccessor package &#8212; Douglas-Quaid 0.0.4 documentation</title>
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="carlhauser-server-databaseaccessor-package">
+<h1>carlhauser_server.DatabaseAccessor package<a class="headerlink" href="#carlhauser-server-databaseaccessor-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="carlhauser-server-databaseaccessor-database-adder-module">
+<h2>carlhauser_server.DatabaseAccessor.database_adder module<a class="headerlink" href="#carlhauser-server-databaseaccessor-database-adder-module" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="carlhauser-server-databaseaccessor-database-common-module">
+<h2>carlhauser_server.DatabaseAccessor.database_common module<a class="headerlink" href="#carlhauser-server-databaseaccessor-database-common-module" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="carlhauser-server-databaseaccessor-database-requester-module">
+<h2>carlhauser_server.DatabaseAccessor.database_requester module<a class="headerlink" href="#carlhauser-server-databaseaccessor-database-requester-module" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-carlhauser_server.DatabaseAccessor.database_utilities">
+<span id="carlhauser-server-databaseaccessor-database-utilities-module"></span><h2>carlhauser_server.DatabaseAccessor.database_utilities module<a class="headerlink" href="#module-carlhauser_server.DatabaseAccessor.database_utilities" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="carlhauser_server.DatabaseAccessor.database_utilities.DBUtilities">
+<em class="property">class </em><code class="sig-prename descclassname">carlhauser_server.DatabaseAccessor.database_utilities.</code><code class="sig-name descname">DBUtilities</code><span class="sig-paren">(</span><em class="sig-param">db_access_decode: redis.client.Redis</em>, <em class="sig-param">db_access_no_decode: redis.client.Redis</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/DatabaseAccessor/database_utilities.html#DBUtilities"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.DatabaseAccessor.database_utilities.DBUtilities" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="carlhauser_server.DatabaseAccessor.database_utilities.DBUtilities.add_cluster">
+<code class="sig-name descname">add_cluster</code><span class="sig-paren">(</span><em class="sig-param">cluster_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/DatabaseAccessor/database_utilities.html#DBUtilities.add_cluster"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.DatabaseAccessor.database_utilities.DBUtilities.add_cluster" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="carlhauser_server.DatabaseAccessor.database_utilities.DBUtilities.add_picture_to_cluster">
+<code class="sig-name descname">add_picture_to_cluster</code><span class="sig-paren">(</span><em class="sig-param">image_id</em>, <em class="sig-param">cluster_id: str</em>, <em class="sig-param">score=100</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/DatabaseAccessor/database_utilities.html#DBUtilities.add_picture_to_cluster"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.DatabaseAccessor.database_utilities.DBUtilities.add_picture_to_cluster" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="carlhauser_server.DatabaseAccessor.database_utilities.DBUtilities.add_picture_to_new_cluster">
+<code class="sig-name descname">add_picture_to_new_cluster</code><span class="sig-paren">(</span><em class="sig-param">image_id</em>, <em class="sig-param">score=100</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/DatabaseAccessor/database_utilities.html#DBUtilities.add_picture_to_new_cluster"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.DatabaseAccessor.database_utilities.DBUtilities.add_picture_to_new_cluster" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="carlhauser_server.DatabaseAccessor.database_utilities.DBUtilities.add_to_review">
+<code class="sig-name descname">add_to_review</code><span class="sig-paren">(</span><em class="sig-param">image_id</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/DatabaseAccessor/database_utilities.html#DBUtilities.add_to_review"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.DatabaseAccessor.database_utilities.DBUtilities.add_to_review" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="carlhauser_server.DatabaseAccessor.database_utilities.DBUtilities.export_pictures_bmp">
+<code class="sig-name descname">export_pictures_bmp</code><span class="sig-paren">(</span><em class="sig-param">path_to_save: pathlib.Path</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/DatabaseAccessor/database_utilities.html#DBUtilities.export_pictures_bmp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.DatabaseAccessor.database_utilities.DBUtilities.export_pictures_bmp" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="carlhauser_server.DatabaseAccessor.database_utilities.DBUtilities.get_cluster_list">
+<code class="sig-name descname">get_cluster_list</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/DatabaseAccessor/database_utilities.html#DBUtilities.get_cluster_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.DatabaseAccessor.database_utilities.DBUtilities.get_cluster_list" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="carlhauser_server.DatabaseAccessor.database_utilities.DBUtilities.get_db_graphe">
+<code class="sig-name descname">get_db_graphe</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/DatabaseAccessor/database_utilities.html#DBUtilities.get_db_graphe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.DatabaseAccessor.database_utilities.DBUtilities.get_db_graphe" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="carlhauser_server.DatabaseAccessor.database_utilities.DBUtilities.get_new_cluster_id">
+<em class="property">static </em><code class="sig-name descname">get_new_cluster_id</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/DatabaseAccessor/database_utilities.html#DBUtilities.get_new_cluster_id"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.DatabaseAccessor.database_utilities.DBUtilities.get_new_cluster_id" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="carlhauser_server.DatabaseAccessor.database_utilities.DBUtilities.get_pictures_of_cluster">
+<code class="sig-name descname">get_pictures_of_cluster</code><span class="sig-paren">(</span><em class="sig-param">cluster_name</em>, <em class="sig-param">with_score=False</em><span class="sig-paren">)</span> &#x2192; set<a class="reference internal" href="_modules/carlhauser_server/DatabaseAccessor/database_utilities.html#DBUtilities.get_pictures_of_cluster"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.DatabaseAccessor.database_utilities.DBUtilities.get_pictures_of_cluster" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="carlhauser_server.DatabaseAccessor.database_utilities.DBUtilities.get_setname_of_cluster">
+<em class="property">static </em><code class="sig-name descname">get_setname_of_cluster</code><span class="sig-paren">(</span><em class="sig-param">cluster_name: str</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/DatabaseAccessor/database_utilities.html#DBUtilities.get_setname_of_cluster"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.DatabaseAccessor.database_utilities.DBUtilities.get_setname_of_cluster" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="carlhauser_server.DatabaseAccessor.database_utilities.DBUtilities.rem_cluster">
+<code class="sig-name descname">rem_cluster</code><span class="sig-paren">(</span><em class="sig-param">cluster_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/DatabaseAccessor/database_utilities.html#DBUtilities.rem_cluster"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.DatabaseAccessor.database_utilities.DBUtilities.rem_cluster" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="carlhauser_server.DatabaseAccessor.database_utilities.DBUtilities.update_picture_score_of_cluster">
+<code class="sig-name descname">update_picture_score_of_cluster</code><span class="sig-paren">(</span><em class="sig-param">cluster_id</em>, <em class="sig-param">image_id</em>, <em class="sig-param">new_score</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/DatabaseAccessor/database_utilities.html#DBUtilities.update_picture_score_of_cluster"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.DatabaseAccessor.database_utilities.DBUtilities.update_picture_score_of_cluster" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="carlhauser-server-databaseaccessor-database-worker-module">
+<h2>carlhauser_server.DatabaseAccessor.database_worker module<a class="headerlink" href="#carlhauser-server-databaseaccessor-database-worker-module" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-carlhauser_server.DatabaseAccessor">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-carlhauser_server.DatabaseAccessor" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">carlhauser_server.DatabaseAccessor package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#carlhauser-server-databaseaccessor-database-adder-module">carlhauser_server.DatabaseAccessor.database_adder module</a></li>
+<li><a class="reference internal" href="#carlhauser-server-databaseaccessor-database-common-module">carlhauser_server.DatabaseAccessor.database_common module</a></li>
+<li><a class="reference internal" href="#carlhauser-server-databaseaccessor-database-requester-module">carlhauser_server.DatabaseAccessor.database_requester module</a></li>
+<li><a class="reference internal" href="#module-carlhauser_server.DatabaseAccessor.database_utilities">carlhauser_server.DatabaseAccessor.database_utilities module</a></li>
+<li><a class="reference internal" href="#carlhauser-server-databaseaccessor-database-worker-module">carlhauser_server.DatabaseAccessor.database_worker module</a></li>
+<li><a class="reference internal" href="#module-carlhauser_server.DatabaseAccessor">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/carlhauser_server.DatabaseAccessor.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, Vincent FALCONIERI.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.2.
+    </div>
+  </body>
+</html>

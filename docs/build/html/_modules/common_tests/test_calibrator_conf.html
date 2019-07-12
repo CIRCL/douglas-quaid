@@ -1,0 +1,215 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>common_tests.test_calibrator_conf &#8212; Douglas-Quaid 0.0.4 documentation</title>
+    <link rel="stylesheet" href="../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for common_tests.test_calibrator_conf</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">pprint</span>
+
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">pardir</span><span class="p">))</span>
+<span class="kn">from</span> <span class="nn">common.environment_variable</span> <span class="k">import</span> <span class="n">get_homedir</span>
+<span class="kn">from</span> <span class="nn">common.Calibrator.calibrator_conf</span> <span class="k">import</span> <span class="n">Default_calibrator_conf</span>
+<span class="kn">from</span> <span class="nn">carlhauser_server.Configuration.algo_conf</span> <span class="k">import</span> <span class="n">Algo_conf</span>
+<span class="kn">from</span> <span class="nn">common.ImportExport.json_import_export</span> <span class="k">import</span> <span class="n">Custom_JSON_Encoder</span>
+
+<span class="kn">import</span> <span class="nn">unittest</span>
+
+
+<div class="viewcode-block" id="test_calibrator_conf"><a class="viewcode-back" href="../../common_tests.html#common_tests.test_calibrator_conf.test_calibrator_conf">[docs]</a><span class="k">class</span> <span class="nc">test_calibrator_conf</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Basic test cases.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="test_calibrator_conf.setUp"><a class="viewcode-back" href="../../common_tests.html#common_tests.test_calibrator_conf.test_calibrator_conf.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span>
+        <span class="c1"># self.conf = configuration.Default_configuration()</span>
+        <span class="c1"># self.test_file_path = pathlib.Path.cwd() / pathlib.Path(&quot;tests/test_files&quot;)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">calibrator_conf</span> <span class="o">=</span> <span class="n">Default_calibrator_conf</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="test_calibrator_conf.test_absolute_truth_and_meaning"><a class="viewcode-back" href="../../common_tests.html#common_tests.test_calibrator_conf.test_calibrator_conf.test_absolute_truth_and_meaning">[docs]</a>    <span class="k">def</span> <span class="nf">test_absolute_truth_and_meaning</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="test_calibrator_conf.test_validate_0"><a class="viewcode-back" href="../../common_tests.html#common_tests.test_calibrator_conf.test_calibrator_conf.test_validate_0">[docs]</a>    <span class="k">def</span> <span class="nf">test_validate_0</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Verify if FPR + TNR is bad</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">calibrator_conf</span><span class="o">.</span><span class="n">Acceptable_false_positive_rate</span> <span class="o">=</span> <span class="mf">0.5</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">calibrator_conf</span><span class="o">.</span><span class="n">Minimum_true_negative_rate</span> <span class="o">=</span> <span class="mf">0.5</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">calibrator_conf</span><span class="o">.</span><span class="n">validate</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="test_calibrator_conf.test_validate_1"><a class="viewcode-back" href="../../common_tests.html#common_tests.test_calibrator_conf.test_calibrator_conf.test_validate_1">[docs]</a>    <span class="k">def</span> <span class="nf">test_validate_1</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Verify if FPR + FNR is good</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">calibrator_conf</span><span class="o">.</span><span class="n">Acceptable_false_positive_rate</span> <span class="o">=</span> <span class="mf">0.5</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">calibrator_conf</span><span class="o">.</span><span class="n">Acceptable_false_negative_rate</span> <span class="o">=</span> <span class="mf">0.5</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">calibrator_conf</span><span class="o">.</span><span class="n">validate</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="test_calibrator_conf.test_validate_2"><a class="viewcode-back" href="../../common_tests.html#common_tests.test_calibrator_conf.test_calibrator_conf.test_validate_2">[docs]</a>    <span class="k">def</span> <span class="nf">test_validate_2</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Verify if TPR + TNR is good</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">calibrator_conf</span><span class="o">.</span><span class="n">Minimum_true_positive_rate</span> <span class="o">=</span> <span class="mf">0.5</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">calibrator_conf</span><span class="o">.</span><span class="n">Minimum_true_negative_rate</span> <span class="o">=</span> <span class="mf">0.5</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">calibrator_conf</span><span class="o">.</span><span class="n">validate</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="test_calibrator_conf.test_validate_3"><a class="viewcode-back" href="../../common_tests.html#common_tests.test_calibrator_conf.test_calibrator_conf.test_validate_3">[docs]</a>    <span class="k">def</span> <span class="nf">test_validate_3</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Verify if FNR + TPR is bad</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">calibrator_conf</span><span class="o">.</span><span class="n">Acceptable_false_negative_rate</span> <span class="o">=</span> <span class="mf">0.5</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">calibrator_conf</span><span class="o">.</span><span class="n">Minimum_true_positive_rate</span> <span class="o">=</span> <span class="mf">0.5</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">calibrator_conf</span><span class="o">.</span><span class="n">validate</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="test_calibrator_conf.test_good_pair_0"><a class="viewcode-back" href="../../common_tests.html#common_tests.test_calibrator_conf.test_calibrator_conf.test_good_pair_0">[docs]</a>    <span class="k">def</span> <span class="nf">test_good_pair_0</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Verify if FPR + TNR is bad</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">calibrator_conf</span><span class="o">.</span><span class="n">Acceptable_false_positive_rate</span> <span class="o">=</span> <span class="mf">0.1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">calibrator_conf</span><span class="o">.</span><span class="n">Minimum_true_negative_rate</span> <span class="o">=</span> <span class="mf">0.9</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">pair0</span><span class="p">,</span> <span class="n">pair1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calibrator_conf</span><span class="o">.</span><span class="n">return_good_pair</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">pair0</span><span class="o">.</span><span class="n">rate</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">pair1</span><span class="o">.</span><span class="n">rate</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="test_calibrator_conf.test_good_pair_1"><a class="viewcode-back" href="../../common_tests.html#common_tests.test_calibrator_conf.test_calibrator_conf.test_good_pair_1">[docs]</a>    <span class="k">def</span> <span class="nf">test_good_pair_1</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Verify if FPR + FNR is good</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">calibrator_conf</span><span class="o">.</span><span class="n">Acceptable_false_positive_rate</span> <span class="o">=</span> <span class="mf">0.1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">calibrator_conf</span><span class="o">.</span><span class="n">Acceptable_false_negative_rate</span> <span class="o">=</span> <span class="mf">0.9</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">pair0</span><span class="p">,</span> <span class="n">pair1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calibrator_conf</span><span class="o">.</span><span class="n">return_good_pair</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">pair0</span><span class="o">.</span><span class="n">rate</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">pair1</span><span class="o">.</span><span class="n">rate</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="test_calibrator_conf.test_good_pair_2"><a class="viewcode-back" href="../../common_tests.html#common_tests.test_calibrator_conf.test_calibrator_conf.test_good_pair_2">[docs]</a>    <span class="k">def</span> <span class="nf">test_good_pair_2</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Verify if TPR + TNR is good</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">calibrator_conf</span><span class="o">.</span><span class="n">Minimum_true_positive_rate</span> <span class="o">=</span> <span class="mf">0.1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">calibrator_conf</span><span class="o">.</span><span class="n">Minimum_true_negative_rate</span> <span class="o">=</span> <span class="mf">0.9</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">pair0</span><span class="p">,</span> <span class="n">pair1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calibrator_conf</span><span class="o">.</span><span class="n">return_good_pair</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">pair0</span><span class="o">.</span><span class="n">rate</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">pair1</span><span class="o">.</span><span class="n">rate</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="test_calibrator_conf.test_good_pair_3"><a class="viewcode-back" href="../../common_tests.html#common_tests.test_calibrator_conf.test_calibrator_conf.test_good_pair_3">[docs]</a>    <span class="k">def</span> <span class="nf">test_good_pair_3</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Verify if FNR + TPR is bad</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">calibrator_conf</span><span class="o">.</span><span class="n">Acceptable_false_negative_rate</span> <span class="o">=</span> <span class="mf">0.1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">calibrator_conf</span><span class="o">.</span><span class="n">Minimum_true_negative_rate</span> <span class="o">=</span> <span class="mf">0.9</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">pair0</span><span class="p">,</span> <span class="n">pair1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calibrator_conf</span><span class="o">.</span><span class="n">return_good_pair</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">pair0</span><span class="o">.</span><span class="n">rate</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">pair1</span><span class="o">.</span><span class="n">rate</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="test_calibrator_conf.test_export_to_algo"><a class="viewcode-back" href="../../common_tests.html#common_tests.test_calibrator_conf.test_calibrator_conf.test_export_to_algo">[docs]</a>    <span class="k">def</span> <span class="nf">test_export_to_algo</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">tmp_conf</span> <span class="o">=</span> <span class="n">Algo_conf</span><span class="p">(</span><span class="n">algo_name</span><span class="o">=</span><span class="s2">&quot;ORB&quot;</span><span class="p">,</span>
+                             <span class="n">is_enabled</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                             <span class="n">threshold_maybe</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                             <span class="n">threshold_no</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                             <span class="n">distance_weight</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                             <span class="n">decision_weight</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">calibrator_conf</span><span class="o">.</span><span class="n">Acceptable_false_negative_rate</span> <span class="o">=</span> <span class="mf">0.9</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">calibrator_conf</span><span class="o">.</span><span class="n">thre_upper_at_most_xpercent_FNR</span> <span class="o">=</span> <span class="mf">0.9</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">calibrator_conf</span><span class="o">.</span><span class="n">Minimum_true_negative_rate</span> <span class="o">=</span> <span class="mf">0.1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">calibrator_conf</span><span class="o">.</span><span class="n">thre_below_at_least_xpercent_TNR</span> <span class="o">=</span> <span class="mf">0.1</span>
+
+        <span class="n">out_conf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calibrator_conf</span><span class="o">.</span><span class="n">export_to_Algo</span><span class="p">(</span><span class="n">tmp_conf</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">out_conf</span><span class="o">.</span><span class="n">threshold_yes_to_maybe</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">out_conf</span><span class="o">.</span><span class="n">threshold_maybe_to_no</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">)</span></div></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">unittest</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, Vincent FALCONIERI.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.2.
+    </div>
+  </body>
+</html>

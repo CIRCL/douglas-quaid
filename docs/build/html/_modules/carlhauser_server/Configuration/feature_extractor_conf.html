@@ -1,0 +1,175 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>carlhauser_server.Configuration.feature_extractor_conf &#8212; Douglas-Quaid 0.0.4 documentation</title>
+    <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for carlhauser_server.Configuration.feature_extractor_conf</h1><div class="highlight"><pre>
+<span></span><span class="c1"># ==================== ------ STD LIBRARIES ------- ====================</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">namedtuple</span>
+<span class="kn">from</span> <span class="nn">enum</span> <span class="k">import</span> <span class="n">Enum</span><span class="p">,</span> <span class="n">auto</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">List</span>
+
+<span class="c1"># ==================== ------ PERSONAL LIBRARIES ------- ====================</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">pardir</span><span class="p">))</span>
+<span class="kn">from</span> <span class="nn">carlhauser_server.Configuration.template_conf</span> <span class="k">import</span> <span class="n">JSON_parsable_Enum</span><span class="p">,</span> <span class="n">JSON_parsable_Dict</span>
+<span class="kn">from</span> <span class="nn">carlhauser_server.Configuration.algo_conf</span> <span class="k">import</span> <span class="n">Algo_conf</span>
+
+
+<div class="viewcode-block" id="Distance_MergingMethod"><a class="viewcode-back" href="../../../carlhauser_server.Configuration.html#carlhauser_server.Configuration.feature_extractor_conf.Distance_MergingMethod">[docs]</a><span class="k">class</span> <span class="nc">Distance_MergingMethod</span><span class="p">(</span><span class="n">JSON_parsable_Enum</span><span class="p">,</span> <span class="n">Enum</span><span class="p">):</span>
+    <span class="n">MAX</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+    <span class="n">MEAN</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+    <span class="n">HARMONIC_MEAN</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+    <span class="n">MIN</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+    <span class="n">WEIGHTED_MEAN</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Decision_MergingMethod"><a class="viewcode-back" href="../../../carlhauser_server.Configuration.html#carlhauser_server.Configuration.feature_extractor_conf.Decision_MergingMethod">[docs]</a><span class="k">class</span> <span class="nc">Decision_MergingMethod</span><span class="p">(</span><span class="n">JSON_parsable_Enum</span><span class="p">,</span> <span class="n">Enum</span><span class="p">):</span>
+    <span class="n">PARETO</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>  <span class="c1"># 80% Algo are the same</span>
+    <span class="n">MAJORITY</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>  <span class="c1"># The most prevalent decision</span>
+    <span class="n">WEIGHTED_MAJORITY</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>  <span class="c1"># The most prevalent decision, with weights</span>
+    <span class="n">PYRAMID</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>  <span class="c1"># The most prevalent decision, if unsure, then look at lower ranked</span></div>
+
+
+
+<span class="c1"># Used to export easily configuration to files, for logging</span>
+<div class="viewcode-block" id="Default_feature_extractor_conf"><a class="viewcode-back" href="../../../carlhauser_server.Configuration.html#carlhauser_server.Configuration.feature_extractor_conf.Default_feature_extractor_conf">[docs]</a><span class="k">class</span> <span class="nc">Default_feature_extractor_conf</span><span class="p">(</span><span class="n">JSON_parsable_Dict</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># NB of worker on launch</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">FEATURE_ADDER_WORKER_NB</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">FEATURE_ADDER_WAIT_SEC</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span>
+
+        <span class="c1"># NB of worker on launch</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">FEATURE_REQUEST_WORKER_NB</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">FEATURE_REQUEST_WAIT_SEC</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span>
+
+        <span class="c1"># HASH parameters</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">A_HASH</span><span class="p">:</span> <span class="n">Algo_conf</span> <span class="o">=</span> <span class="n">Algo_conf</span><span class="p">(</span><span class="s2">&quot;A_HASH&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">,</span> <span class="n">distance_weight</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">P_HASH</span><span class="p">:</span> <span class="n">Algo_conf</span> <span class="o">=</span> <span class="n">Algo_conf</span><span class="p">(</span><span class="s2">&quot;P_HASH&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">,</span> <span class="n">distance_weight</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">P_HASH_SIMPLE</span><span class="p">:</span> <span class="n">Algo_conf</span> <span class="o">=</span> <span class="n">Algo_conf</span><span class="p">(</span><span class="s2">&quot;P_HASH_SIMPLE&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">,</span> <span class="n">distance_weight</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">D_HASH</span><span class="p">:</span> <span class="n">Algo_conf</span> <span class="o">=</span> <span class="n">Algo_conf</span><span class="p">(</span><span class="s2">&quot;D_HASH&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">,</span> <span class="n">distance_weight</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">D_HASH_VERTICAL</span><span class="p">:</span> <span class="n">Algo_conf</span> <span class="o">=</span> <span class="n">Algo_conf</span><span class="p">(</span><span class="s2">&quot;D_HASH_VERTICAL&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">,</span> <span class="n">distance_weight</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">W_HASH</span><span class="p">:</span> <span class="n">Algo_conf</span> <span class="o">=</span> <span class="n">Algo_conf</span><span class="p">(</span><span class="s2">&quot;W_HASH&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">,</span> <span class="n">distance_weight</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">TLSH</span><span class="p">:</span> <span class="n">Algo_conf</span> <span class="o">=</span> <span class="n">Algo_conf</span><span class="p">(</span><span class="s2">&quot;TLSH&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">,</span> <span class="n">distance_weight</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># Visual Descriptors parameters</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ORB</span><span class="p">:</span> <span class="n">Algo_conf</span> <span class="o">=</span> <span class="n">Algo_conf</span><span class="p">(</span><span class="s2">&quot;ORB&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">,</span> <span class="n">distance_weight</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ORB_KEYPOINTS_NB</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">500</span>
+
+        <span class="c1"># Algo list # BEAWARE THAT</span>
+        <span class="c1"># IF YOU MODIFY PROGRAMMATICALLY ONE ELEMENT LATER, YOU NEED TO CHANGE IT IN THIS LIST TOO !</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">list_algos</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Algo_conf</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">A_HASH</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">P_HASH</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">P_HASH_SIMPLE</span><span class="p">,</span>
+                                            <span class="bp">self</span><span class="o">.</span><span class="n">D_HASH</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">D_HASH_VERTICAL</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">W_HASH</span><span class="p">,</span>
+                                            <span class="bp">self</span><span class="o">.</span><span class="n">TLSH</span><span class="p">,</span>
+                                            <span class="bp">self</span><span class="o">.</span><span class="n">ORB</span><span class="p">]</span>
+
+        <span class="c1"># Merging method</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">DISTANCE_MERGING_METHOD</span><span class="p">:</span> <span class="n">Distance_MergingMethod</span> <span class="o">=</span> <span class="n">Distance_MergingMethod</span><span class="o">.</span><span class="n">WEIGHTED_MEAN</span><span class="o">.</span><span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">DECISION_MERGING_METHOD</span><span class="p">:</span> <span class="n">Decision_MergingMethod</span> <span class="o">=</span> <span class="n">Decision_MergingMethod</span><span class="o">.</span><span class="n">WEIGHTED_MAJORITY</span><span class="o">.</span><span class="n">name</span></div>
+
+
+<div class="viewcode-block" id="parse_from_dict"><a class="viewcode-back" href="../../../carlhauser_server.Configuration.html#carlhauser_server.Configuration.feature_extractor_conf.parse_from_dict">[docs]</a><span class="k">def</span> <span class="nf">parse_from_dict</span><span class="p">(</span><span class="n">conf</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s2">&quot;Default_feature_extractor_configuration&quot;</span><span class="p">,</span> <span class="n">conf</span><span class="o">.</span><span class="n">keys</span><span class="p">())(</span><span class="o">*</span><span class="n">conf</span><span class="o">.</span><span class="n">values</span><span class="p">())</span></div>
+
+
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    # ==================== To string ====================</span>
+
+<span class="sd">    # Overwrite to print the content of the cluster instead of the cluster memory address</span>
+<span class="sd">    def __repr__(self):</span>
+<span class="sd">        return self.get_str()</span>
+
+<span class="sd">    def __str__(self):</span>
+<span class="sd">        return self.get_str()</span>
+
+<span class="sd">    def get_str(self):</span>
+<span class="sd">        return &#39;&#39;.join(map(str, [&#39; \nFEATURE_ADDER_WORKER_NB=&#39;, self.FEATURE_ADDER_WORKER_NB,</span>
+<span class="sd">                                 &#39; \nFEATURE_ADDER_WAIT_SEC=&#39;, self.FEATURE_ADDER_WAIT_SEC,</span>
+<span class="sd">                                 &#39; \nFEATURE_REQUEST_WORKER_NB=&#39;, self.FEATURE_REQUEST_WORKER_NB,</span>
+<span class="sd">                                 &#39; \nFEATURE_REQUEST_WAIT_SEC=&#39;, self.FEATURE_REQUEST_WAIT_SEC,</span>
+<span class="sd">                                 &#39; \nA_HASH=&#39;, self.A_HASH,</span>
+<span class="sd">                                 &#39; \nP_HASH=&#39;, self.P_HASH,</span>
+<span class="sd">                                 &#39; \nP_HASH_SIMPLE=&#39;, self.P_HASH_SIMPLE,</span>
+<span class="sd">                                 &#39; \nD_HASH=&#39;, self.D_HASH,</span>
+<span class="sd">                                 &#39; \nD_HASH_VERTICAL=&#39;, self.D_HASH_VERTICAL,</span>
+<span class="sd">                                 &#39; \nW_HASH=&#39;, self.W_HASH,</span>
+<span class="sd">                                 &#39; \nTLSH=&#39;, self.TLSH,</span>
+<span class="sd">                                 &#39; \nORB=&#39;, self.ORB,</span>
+<span class="sd">                                 &#39; \nORB_KEYPOINTS_NB=&#39;, self.ORB_KEYPOINTS_NB,</span>
+<span class="sd">                                 &#39; \nTLSH=&#39;, self.TLSH,</span>
+<span class="sd">                                 &#39; \nDISTANCE_MERGING_METHOD=&#39;, self.DISTANCE_MERGING_METHOD,</span>
+<span class="sd">                                 &#39; \nDECISION_MERGING_METHOD=&#39;, self.DECISION_MERGING_METHOD]))</span>
+
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, Vincent FALCONIERI.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.2.
+    </div>
+  </body>
+</html>

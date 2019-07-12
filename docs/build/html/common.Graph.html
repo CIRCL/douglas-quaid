@@ -1,0 +1,357 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>common.Graph package &#8212; Douglas-Quaid 0.0.4 documentation</title>
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="common-graph-package">
+<h1>common.Graph package<a class="headerlink" href="#common-graph-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-common.Graph.cluster">
+<span id="common-graph-cluster-module"></span><h2>common.Graph.cluster module<a class="headerlink" href="#module-common.Graph.cluster" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="common.Graph.cluster.Cluster">
+<em class="property">class </em><code class="sig-prename descclassname">common.Graph.cluster.</code><code class="sig-name descname">Cluster</code><span class="sig-paren">(</span><em class="sig-param">label: str</em>, <em class="sig-param">id</em>, <em class="sig-param">image: str</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/common/Graph/cluster.html#Cluster"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#common.Graph.cluster.Cluster" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#common.Graph.node.Node" title="common.Graph.node.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">common.Graph.node.Node</span></code></a></p>
+<dl class="method">
+<dt id="common.Graph.cluster.Cluster.add_member_id">
+<code class="sig-name descname">add_member_id</code><span class="sig-paren">(</span><em class="sig-param">node_id</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/common/Graph/cluster.html#Cluster.add_member_id"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#common.Graph.cluster.Cluster.add_member_id" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="common.Graph.cluster.Cluster.are_in_same_cluster">
+<code class="sig-name descname">are_in_same_cluster</code><span class="sig-paren">(</span><em class="sig-param">id_1</em>, <em class="sig-param">id_2</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/common/Graph/cluster.html#Cluster.are_in_same_cluster"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#common.Graph.cluster.Cluster.are_in_same_cluster" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="common.Graph.cluster.Cluster.create_from_parent">
+<em class="property">static </em><code class="sig-name descname">create_from_parent</code><span class="sig-paren">(</span><em class="sig-param">parent: common.Graph.node.Node</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/common/Graph/cluster.html#Cluster.create_from_parent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#common.Graph.cluster.Cluster.create_from_parent" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="common.Graph.cluster.Cluster.export_as_dict">
+<code class="sig-name descname">export_as_dict</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/common/Graph/cluster.html#Cluster.export_as_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#common.Graph.cluster.Cluster.export_as_dict" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="common.Graph.cluster.Cluster.get_nb_members">
+<code class="sig-name descname">get_nb_members</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/common/Graph/cluster.html#Cluster.get_nb_members"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#common.Graph.cluster.Cluster.get_nb_members" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="common.Graph.cluster.Cluster.get_str">
+<code class="sig-name descname">get_str</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/common/Graph/cluster.html#Cluster.get_str"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#common.Graph.cluster.Cluster.get_str" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="common.Graph.cluster.Cluster.load_from_dict">
+<em class="property">static </em><code class="sig-name descname">load_from_dict</code><span class="sig-paren">(</span><em class="sig-param">input</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/common/Graph/cluster.html#Cluster.load_from_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#common.Graph.cluster.Cluster.load_from_dict" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="common.Graph.cluster.Cluster.update_member_id">
+<code class="sig-name descname">update_member_id</code><span class="sig-paren">(</span><em class="sig-param">old_id</em>, <em class="sig-param">new_id</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/common/Graph/cluster.html#Cluster.update_member_id"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#common.Graph.cluster.Cluster.update_member_id" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-common.Graph.edge">
+<span id="common-graph-edge-module"></span><h2>common.Graph.edge module<a class="headerlink" href="#module-common.Graph.edge" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="common.Graph.edge.Edge">
+<em class="property">class </em><code class="sig-prename descclassname">common.Graph.edge.</code><code class="sig-name descname">Edge</code><span class="sig-paren">(</span><em class="sig-param">_from</em>, <em class="sig-param">_to</em>, <em class="sig-param">color='gray'</em>, <em class="sig-param">label: str = None</em>, <em class="sig-param">value=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/common/Graph/edge.html#Edge"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#common.Graph.edge.Edge" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="common.Graph.edge.Edge.export_as_dict">
+<code class="sig-name descname">export_as_dict</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/common/Graph/edge.html#Edge.export_as_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#common.Graph.edge.Edge.export_as_dict" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="common.Graph.edge.Edge.get_str">
+<code class="sig-name descname">get_str</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/common/Graph/edge.html#Edge.get_str"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#common.Graph.edge.Edge.get_str" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="common.Graph.edge.Edge.load_from_dict">
+<em class="property">static </em><code class="sig-name descname">load_from_dict</code><span class="sig-paren">(</span><em class="sig-param">input</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/common/Graph/edge.html#Edge.load_from_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#common.Graph.edge.Edge.load_from_dict" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="common.Graph.edge.Edge.update_member_id">
+<code class="sig-name descname">update_member_id</code><span class="sig-paren">(</span><em class="sig-param">old_id</em>, <em class="sig-param">new_id</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/common/Graph/edge.html#Edge.update_member_id"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#common.Graph.edge.Edge.update_member_id" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-common.Graph.graph_datastructure">
+<span id="common-graph-graph-datastructure-module"></span><h2>common.Graph.graph_datastructure module<a class="headerlink" href="#module-common.Graph.graph_datastructure" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="common.Graph.graph_datastructure.GraphDataStruct">
+<em class="property">class </em><code class="sig-prename descclassname">common.Graph.graph_datastructure.</code><code class="sig-name descname">GraphDataStruct</code><span class="sig-paren">(</span><em class="sig-param">meta: common.Graph.metadata.Metadata</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/common/Graph/graph_datastructure.html#GraphDataStruct"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#common.Graph.graph_datastructure.GraphDataStruct" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="common.Graph.graph_datastructure.GraphDataStruct.add_cluster">
+<code class="sig-name descname">add_cluster</code><span class="sig-paren">(</span><em class="sig-param">cluster: common.Graph.cluster.Cluster</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/common/Graph/graph_datastructure.html#GraphDataStruct.add_cluster"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#common.Graph.graph_datastructure.GraphDataStruct.add_cluster" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="common.Graph.graph_datastructure.GraphDataStruct.add_cluster_of_nodes">
+<code class="sig-name descname">add_cluster_of_nodes</code><span class="sig-paren">(</span><em class="sig-param">cluster: common.Graph.cluster.Cluster, nodes: List[common.Graph.node.Node], color='gray'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/common/Graph/graph_datastructure.html#GraphDataStruct.add_cluster_of_nodes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#common.Graph.graph_datastructure.GraphDataStruct.add_cluster_of_nodes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="common.Graph.graph_datastructure.GraphDataStruct.add_edge">
+<code class="sig-name descname">add_edge</code><span class="sig-paren">(</span><em class="sig-param">edge: common.Graph.edge.Edge</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/common/Graph/graph_datastructure.html#GraphDataStruct.add_edge"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#common.Graph.graph_datastructure.GraphDataStruct.add_edge" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="common.Graph.graph_datastructure.GraphDataStruct.add_node">
+<code class="sig-name descname">add_node</code><span class="sig-paren">(</span><em class="sig-param">node: common.Graph.node.Node</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/common/Graph/graph_datastructure.html#GraphDataStruct.add_node"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#common.Graph.graph_datastructure.GraphDataStruct.add_node" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="common.Graph.graph_datastructure.GraphDataStruct.are_ids_in_same_cluster">
+<code class="sig-name descname">are_ids_in_same_cluster</code><span class="sig-paren">(</span><em class="sig-param">id_1</em>, <em class="sig-param">id_2</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/common/Graph/graph_datastructure.html#GraphDataStruct.are_ids_in_same_cluster"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#common.Graph.graph_datastructure.GraphDataStruct.are_ids_in_same_cluster" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="common.Graph.graph_datastructure.GraphDataStruct.are_names_in_same_cluster">
+<code class="sig-name descname">are_names_in_same_cluster</code><span class="sig-paren">(</span><em class="sig-param">name_1</em>, <em class="sig-param">name_2</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/common/Graph/graph_datastructure.html#GraphDataStruct.are_names_in_same_cluster"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#common.Graph.graph_datastructure.GraphDataStruct.are_names_in_same_cluster" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="common.Graph.graph_datastructure.GraphDataStruct.copy_ids_to_image">
+<code class="sig-name descname">copy_ids_to_image</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/common/Graph/graph_datastructure.html#GraphDataStruct.copy_ids_to_image"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#common.Graph.graph_datastructure.GraphDataStruct.copy_ids_to_image" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="common.Graph.graph_datastructure.GraphDataStruct.export_as_dict">
+<code class="sig-name descname">export_as_dict</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/common/Graph/graph_datastructure.html#GraphDataStruct.export_as_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#common.Graph.graph_datastructure.GraphDataStruct.export_as_dict" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="common.Graph.graph_datastructure.GraphDataStruct.get_clusters">
+<code class="sig-name descname">get_clusters</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/common/Graph/graph_datastructure.html#GraphDataStruct.get_clusters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#common.Graph.graph_datastructure.GraphDataStruct.get_clusters" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="common.Graph.graph_datastructure.GraphDataStruct.get_edges_dict">
+<code class="sig-name descname">get_edges_dict</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/common/Graph/graph_datastructure.html#GraphDataStruct.get_edges_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#common.Graph.graph_datastructure.GraphDataStruct.get_edges_dict" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="common.Graph.graph_datastructure.GraphDataStruct.load_from_dict">
+<em class="property">static </em><code class="sig-name descname">load_from_dict</code><span class="sig-paren">(</span><em class="sig-param">input</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/common/Graph/graph_datastructure.html#GraphDataStruct.load_from_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#common.Graph.graph_datastructure.GraphDataStruct.load_from_dict" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="common.Graph.graph_datastructure.GraphDataStruct.replace_id_from_mapping">
+<code class="sig-name descname">replace_id_from_mapping</code><span class="sig-paren">(</span><em class="sig-param">filename_to_id</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/common/Graph/graph_datastructure.html#GraphDataStruct.replace_id_from_mapping"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#common.Graph.graph_datastructure.GraphDataStruct.replace_id_from_mapping" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="common.Graph.graph_datastructure.load_visjs_to_graphe">
+<code class="sig-prename descclassname">common.Graph.graph_datastructure.</code><code class="sig-name descname">load_visjs_to_graphe</code><span class="sig-paren">(</span><em class="sig-param">visjs_json_path: pathlib.Path = None</em><span class="sig-paren">)</span> &#x2192; common.Graph.graph_datastructure.GraphDataStruct<a class="reference internal" href="_modules/common/Graph/graph_datastructure.html#load_visjs_to_graphe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#common.Graph.graph_datastructure.load_visjs_to_graphe" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="common.Graph.graph_datastructure.merge_edges_with_colors">
+<code class="sig-prename descclassname">common.Graph.graph_datastructure.</code><code class="sig-name descname">merge_edges_with_colors</code><span class="sig-paren">(</span><em class="sig-param">vis_edges: Dict</em>, <em class="sig-param">db_edges: Dict</em><span class="sig-paren">)</span> &#x2192; List[common.Graph.edge.Edge]<a class="reference internal" href="_modules/common/Graph/graph_datastructure.html#merge_edges_with_colors"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#common.Graph.graph_datastructure.merge_edges_with_colors" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="common.Graph.graph_datastructure.merge_graphs">
+<code class="sig-prename descclassname">common.Graph.graph_datastructure.</code><code class="sig-name descname">merge_graphs</code><span class="sig-paren">(</span><em class="sig-param">visjs_graph: common.Graph.graph_datastructure.GraphDataStruct, db_graph: common.Graph.graph_datastructure.GraphDataStruct, cluster_mapping: List[common.PerformanceDatastructs.clustermatch_datastruct.ClusterMatch]</em><span class="sig-paren">)</span> &#x2192; Dict<a class="reference internal" href="_modules/common/Graph/graph_datastructure.html#merge_graphs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#common.Graph.graph_datastructure.merge_graphs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Merge two graphs into one unique graph. Uses the list of clusters matches to merge each cluster with each other.
+:param visjs_graph: The first graph to merge (ground truth one)
+:param db_graph: The second graph to merge (extracted from server)
+:param cluster_mapping: The list of clusterMatch that say “This cluster is the same as this one” for the merge.
+:return: A datastructure (json style/ dict style) that displays all data</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-common.Graph.metadata">
+<span id="common-graph-metadata-module"></span><h2>common.Graph.metadata module<a class="headerlink" href="#module-common.Graph.metadata" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="common.Graph.metadata.Metadata">
+<em class="property">class </em><code class="sig-prename descclassname">common.Graph.metadata.</code><code class="sig-name descname">Metadata</code><span class="sig-paren">(</span><em class="sig-param">source: common.Graph.metadata.Source</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/common/Graph/metadata.html#Metadata"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#common.Graph.metadata.Metadata" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="common.Graph.metadata.Metadata.export_as_dict">
+<code class="sig-name descname">export_as_dict</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/common/Graph/metadata.html#Metadata.export_as_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#common.Graph.metadata.Metadata.export_as_dict" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="common.Graph.metadata.Metadata.load_from_dict">
+<em class="property">static </em><code class="sig-name descname">load_from_dict</code><span class="sig-paren">(</span><em class="sig-param">input</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/common/Graph/metadata.html#Metadata.load_from_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#common.Graph.metadata.Metadata.load_from_dict" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="common.Graph.metadata.Source">
+<em class="property">class </em><code class="sig-prename descclassname">common.Graph.metadata.</code><code class="sig-name descname">Source</code><a class="reference internal" href="_modules/common/Graph/metadata.html#Source"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#common.Graph.metadata.Source" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">enum.Enum</span></code></p>
+<p>An enumeration.</p>
+<dl class="attribute">
+<dt id="common.Graph.metadata.Source.DBDUMP">
+<code class="sig-name descname">DBDUMP</code><em class="property"> = 3</em><a class="headerlink" href="#common.Graph.metadata.Source.DBDUMP" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="common.Graph.metadata.Source.REDIS">
+<code class="sig-name descname">REDIS</code><em class="property"> = 2</em><a class="headerlink" href="#common.Graph.metadata.Source.REDIS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="common.Graph.metadata.Source.VISJS">
+<code class="sig-name descname">VISJS</code><em class="property"> = 1</em><a class="headerlink" href="#common.Graph.metadata.Source.VISJS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-common.Graph.node">
+<span id="common-graph-node-module"></span><h2>common.Graph.node module<a class="headerlink" href="#module-common.Graph.node" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="common.Graph.node.Node">
+<em class="property">class </em><code class="sig-prename descclassname">common.Graph.node.</code><code class="sig-name descname">Node</code><span class="sig-paren">(</span><em class="sig-param">label: str</em>, <em class="sig-param">id</em>, <em class="sig-param">image: str</em>, <em class="sig-param">metadata: common.Graph.node.Node_Meta = None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/common/Graph/node.html#Node"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#common.Graph.node.Node" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="common.Graph.node.Node.copy_ids_to_image">
+<code class="sig-name descname">copy_ids_to_image</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/common/Graph/node.html#Node.copy_ids_to_image"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#common.Graph.node.Node.copy_ids_to_image" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="common.Graph.node.Node.export_as_dict">
+<code class="sig-name descname">export_as_dict</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/common/Graph/node.html#Node.export_as_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#common.Graph.node.Node.export_as_dict" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="common.Graph.node.Node.get_str">
+<code class="sig-name descname">get_str</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/common/Graph/node.html#Node.get_str"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#common.Graph.node.Node.get_str" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="common.Graph.node.Node.load_from_dict">
+<em class="property">static </em><code class="sig-name descname">load_from_dict</code><span class="sig-paren">(</span><em class="sig-param">input</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/common/Graph/node.html#Node.load_from_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#common.Graph.node.Node.load_from_dict" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="common.Graph.node.Node_Meta">
+<em class="property">class </em><code class="sig-prename descclassname">common.Graph.node.</code><code class="sig-name descname">Node_Meta</code><a class="reference internal" href="_modules/common/Graph/node.html#Node_Meta"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#common.Graph.node.Node_Meta" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="common.Graph.node.Node_Meta.export_as_json">
+<code class="sig-name descname">export_as_json</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/common/Graph/node.html#Node_Meta.export_as_json"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#common.Graph.node.Node_Meta.export_as_json" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="common.Graph.node.Node_Meta.load_from_dict">
+<em class="property">static </em><code class="sig-name descname">load_from_dict</code><span class="sig-paren">(</span><em class="sig-param">input</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/common/Graph/node.html#Node_Meta.load_from_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#common.Graph.node.Node_Meta.load_from_dict" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-common.Graph">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-common.Graph" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">common.Graph package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-common.Graph.cluster">common.Graph.cluster module</a></li>
+<li><a class="reference internal" href="#module-common.Graph.edge">common.Graph.edge module</a></li>
+<li><a class="reference internal" href="#module-common.Graph.graph_datastructure">common.Graph.graph_datastructure module</a></li>
+<li><a class="reference internal" href="#module-common.Graph.metadata">common.Graph.metadata module</a></li>
+<li><a class="reference internal" href="#module-common.Graph.node">common.Graph.node module</a></li>
+<li><a class="reference internal" href="#module-common.Graph">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/common.Graph.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, Vincent FALCONIERI.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.2.
+    </div>
+  </body>
+</html>

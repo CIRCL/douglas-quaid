@@ -1,0 +1,175 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>carlhauser_client.EvaluationTools.SimilarityGraphExtractor package &#8212; Douglas-Quaid 0.0.4 documentation</title>
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="carlhauser-client-evaluationtools-similaritygraphextractor-package">
+<h1>carlhauser_client.EvaluationTools.SimilarityGraphExtractor package<a class="headerlink" href="#carlhauser-client-evaluationtools-similaritygraphextractor-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-carlhauser_client.EvaluationTools.SimilarityGraphExtractor.similarity_graph_extractor">
+<span id="carlhauser-client-evaluationtools-similaritygraphextractor-similarity-graph-extractor-module"></span><h2>carlhauser_client.EvaluationTools.SimilarityGraphExtractor.similarity_graph_extractor module<a class="headerlink" href="#module-carlhauser_client.EvaluationTools.SimilarityGraphExtractor.similarity_graph_extractor" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="carlhauser_client.EvaluationTools.SimilarityGraphExtractor.similarity_graph_extractor.GraphExtractor">
+<em class="property">class </em><code class="sig-prename descclassname">carlhauser_client.EvaluationTools.SimilarityGraphExtractor.similarity_graph_extractor.</code><code class="sig-name descname">GraphExtractor</code><a class="reference internal" href="_modules/carlhauser_client/EvaluationTools/SimilarityGraphExtractor/similarity_graph_extractor.html#GraphExtractor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_client.EvaluationTools.SimilarityGraphExtractor.similarity_graph_extractor.GraphExtractor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="carlhauser_client.EvaluationTools.SimilarityGraphExtractor.similarity_graph_extractor.GraphExtractor.get_proximity_graph">
+<code class="sig-name descname">get_proximity_graph</code><span class="sig-paren">(</span><em class="sig-param">image_folder: pathlib.Path</em>, <em class="sig-param">output_path: pathlib.Path</em><span class="sig-paren">)</span> &#x2192; common.Graph.graph_datastructure.GraphDataStruct<a class="reference internal" href="_modules/carlhauser_client/EvaluationTools/SimilarityGraphExtractor/similarity_graph_extractor.html#GraphExtractor.get_proximity_graph"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_client.EvaluationTools.SimilarityGraphExtractor.similarity_graph_extractor.GraphExtractor.get_proximity_graph" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extract a proximity graph from a folder of pictures, sent to DB and requested one by one.
+:param image_folder: The folder of picture to send and request, to build the similarity graph from
+:param output_path: The output path where the graph and other data will be stored
+:return: the proximity graph</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="carlhauser_client.EvaluationTools.SimilarityGraphExtractor.similarity_graph_extractor.GraphExtractor.results_list_to_graph">
+<em class="property">static </em><code class="sig-name descname">results_list_to_graph</code><span class="sig-paren">(</span><em class="sig-param">requests_list</em>, <em class="sig-param">nb_match: int = 1</em><span class="sig-paren">)</span> &#x2192; common.Graph.graph_datastructure.GraphDataStruct<a class="reference internal" href="_modules/carlhauser_client/EvaluationTools/SimilarityGraphExtractor/similarity_graph_extractor.html#GraphExtractor.results_list_to_graph"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_client.EvaluationTools.SimilarityGraphExtractor.similarity_graph_extractor.GraphExtractor.results_list_to_graph" title="Permalink to this definition">¶</a></dt>
+<dd><p>Construct a graph from results list of requests on the database
+Hypothesis : All database pictures are requested pictures
+Edges are colored : from green to red depending on the match index (Best is green)
+:param requests_list: a List of results extracted from server
+:param nb_match: Number of matches per pictures to add to the graph (1=first level match/best match, 2 = 2 best match per picture, etc.)
+:return: A graph datastructure</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="carlhauser_client.EvaluationTools.SimilarityGraphExtractor.similarity_graph_extractor.test">
+<code class="sig-prename descclassname">carlhauser_client.EvaluationTools.SimilarityGraphExtractor.similarity_graph_extractor.</code><code class="sig-name descname">test</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_client/EvaluationTools/SimilarityGraphExtractor/similarity_graph_extractor.html#test"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_client.EvaluationTools.SimilarityGraphExtractor.similarity_graph_extractor.test" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-carlhauser_client.EvaluationTools.SimilarityGraphExtractor.similarity_graph_quality_evaluator">
+<span id="carlhauser-client-evaluationtools-similaritygraphextractor-similarity-graph-quality-evaluator-module"></span><h2>carlhauser_client.EvaluationTools.SimilarityGraphExtractor.similarity_graph_quality_evaluator module<a class="headerlink" href="#module-carlhauser_client.EvaluationTools.SimilarityGraphExtractor.similarity_graph_quality_evaluator" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="carlhauser_client.EvaluationTools.SimilarityGraphExtractor.similarity_graph_quality_evaluator.GraphQualityEvaluator">
+<em class="property">class </em><code class="sig-prename descclassname">carlhauser_client.EvaluationTools.SimilarityGraphExtractor.similarity_graph_quality_evaluator.</code><code class="sig-name descname">GraphQualityEvaluator</code><a class="reference internal" href="_modules/carlhauser_client/EvaluationTools/SimilarityGraphExtractor/similarity_graph_quality_evaluator.html#GraphQualityEvaluator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_client.EvaluationTools.SimilarityGraphExtractor.similarity_graph_quality_evaluator.GraphQualityEvaluator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="carlhauser_client.EvaluationTools.SimilarityGraphExtractor.similarity_graph_quality_evaluator.GraphQualityEvaluator.compute_score_for_one_threshold">
+<code class="sig-name descname">compute_score_for_one_threshold</code><span class="sig-paren">(</span><em class="sig-param">list_results: List</em>, <em class="sig-param">gt_graph: common.Graph.graph_datastructure.GraphDataStruct</em>, <em class="sig-param">dist_threshold: float</em><span class="sig-paren">)</span> &#x2192; common.PerformanceDatastructs.stats_datastruct.Stats_datastruct<a class="reference internal" href="_modules/carlhauser_client/EvaluationTools/SimilarityGraphExtractor/similarity_graph_quality_evaluator.html#GraphQualityEvaluator.compute_score_for_one_threshold"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_client.EvaluationTools.SimilarityGraphExtractor.similarity_graph_quality_evaluator.GraphQualityEvaluator.compute_score_for_one_threshold" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute stats about the quality of a result (requests_result), given a specific threshold (dist_threshold)
+and compared to a ground truth graph (gt_graph)
+:param list_results: Result of a similarity request to server
+:param gt_graph: Ground truth file to provide to compute if matches are good or not
+:param dist_threshold: threshold to apply to the results to compare to ground truth graph
+:return: stats about the quality of a result</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="carlhauser_client.EvaluationTools.SimilarityGraphExtractor.similarity_graph_quality_evaluator.GraphQualityEvaluator.get_perf_list">
+<code class="sig-name descname">get_perf_list</code><span class="sig-paren">(</span><em class="sig-param">list_results: List</em>, <em class="sig-param">gt_graph: common.Graph.graph_datastructure.GraphDataStruct</em>, <em class="sig-param">output_folder: pathlib.Path = None</em><span class="sig-paren">)</span> &#x2192; List[common.PerformanceDatastructs.perf_datastruct.Perf]<a class="reference internal" href="_modules/carlhauser_client/EvaluationTools/SimilarityGraphExtractor/similarity_graph_quality_evaluator.html#GraphQualityEvaluator.get_perf_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_client.EvaluationTools.SimilarityGraphExtractor.similarity_graph_quality_evaluator.GraphQualityEvaluator.get_perf_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extract a list of performance datastructure from a list of results (list_results)
+compared to a ground truth file (gt_graph). Can store provided list and ground truth results if a (output_folder) is given.
+:param list_results: The list of results extracted from server (one result for each node of the graph)
+:param gt_graph: The ground truth file that serves as reference
+:param output_folder: Faculatative output folder to save inputs
+:return: a list of performance datastructure, each having a threshold and a stats datastructure. This means that for each computed threshold, we know the quality of the graph.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="carlhauser_client.EvaluationTools.SimilarityGraphExtractor.similarity_graph_quality_evaluator.GraphQualityEvaluator.is_correct">
+<em class="property">static </em><code class="sig-name descname">is_correct</code><span class="sig-paren">(</span><em class="sig-param">result: Dict</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_client/EvaluationTools/SimilarityGraphExtractor/similarity_graph_quality_evaluator.html#GraphQualityEvaluator.is_correct"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_client.EvaluationTools.SimilarityGraphExtractor.similarity_graph_quality_evaluator.GraphQualityEvaluator.is_correct" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks if a request result is valid to be evaluated.
+Check if it has enough matches, if correctly formatted …
+:param result: One request result from server
+:return: True if correct, Error if problem</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-carlhauser_client.EvaluationTools.SimilarityGraphExtractor">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-carlhauser_client.EvaluationTools.SimilarityGraphExtractor" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">carlhauser_client.EvaluationTools.SimilarityGraphExtractor package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-carlhauser_client.EvaluationTools.SimilarityGraphExtractor.similarity_graph_extractor">carlhauser_client.EvaluationTools.SimilarityGraphExtractor.similarity_graph_extractor module</a></li>
+<li><a class="reference internal" href="#module-carlhauser_client.EvaluationTools.SimilarityGraphExtractor.similarity_graph_quality_evaluator">carlhauser_client.EvaluationTools.SimilarityGraphExtractor.similarity_graph_quality_evaluator module</a></li>
+<li><a class="reference internal" href="#module-carlhauser_client.EvaluationTools.SimilarityGraphExtractor">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/carlhauser_client.EvaluationTools.SimilarityGraphExtractor.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, Vincent FALCONIERI.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.2.
+    </div>
+  </body>
+</html>

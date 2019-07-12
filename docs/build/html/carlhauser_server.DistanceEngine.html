@@ -1,0 +1,358 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>carlhauser_server.DistanceEngine package &#8212; Douglas-Quaid 0.0.4 documentation</title>
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="carlhauser-server-distanceengine-package">
+<h1>carlhauser_server.DistanceEngine package<a class="headerlink" href="#carlhauser-server-distanceengine-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="carlhauser-server-distanceengine-distance-engine-module">
+<h2>carlhauser_server.DistanceEngine.distance_engine module<a class="headerlink" href="#carlhauser-server-distanceengine-distance-engine-module" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-carlhauser_server.DistanceEngine.distance_hash">
+<span id="carlhauser-server-distanceengine-distance-hash-module"></span><h2>carlhauser_server.DistanceEngine.distance_hash module<a class="headerlink" href="#module-carlhauser_server.DistanceEngine.distance_hash" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="carlhauser_server.DistanceEngine.distance_hash.Distance_Hash">
+<em class="property">class </em><code class="sig-prename descclassname">carlhauser_server.DistanceEngine.distance_hash.</code><code class="sig-name descname">Distance_Hash</code><span class="sig-paren">(</span><em class="sig-param">db_conf: &lt;module 'carlhauser_server.Configuration.database_conf' from '/home/user/Desktop/douglas-quaid/carlhauser_server/Configuration/database_conf.py'&gt;</em>, <em class="sig-param">dist_conf: &lt;module 'carlhauser_server.Configuration.distance_engine_conf' from '/home/user/Desktop/douglas-quaid/carlhauser_server/Configuration/distance_engine_conf.py'&gt;</em>, <em class="sig-param">fe_conf: &lt;module 'carlhauser_server.Configuration.feature_extractor_conf' from '/home/user/Desktop/douglas-quaid/carlhauser_server/Configuration/feature_extractor_conf.py'&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/DistanceEngine/distance_hash.html#Distance_Hash"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.DistanceEngine.distance_hash.Distance_Hash" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="carlhauser_server.DistanceEngine.distance_hash.Distance_Hash.add_results">
+<code class="sig-name descname">add_results</code><span class="sig-paren">(</span><em class="sig-param">algo_conf: carlhauser_server.Configuration.algo_conf.Algo_conf</em>, <em class="sig-param">pic_package_from</em>, <em class="sig-param">pic_package_to</em>, <em class="sig-param">answer: Dict</em><span class="sig-paren">)</span> &#x2192; Dict<a class="reference internal" href="_modules/carlhauser_server/DistanceEngine/distance_hash.html#Distance_Hash.add_results"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.DistanceEngine.distance_hash.Distance_Hash.add_results" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="carlhauser_server.DistanceEngine.distance_hash.Distance_Hash.compute_decision_from_distance">
+<em class="property">static </em><code class="sig-name descname">compute_decision_from_distance</code><span class="sig-paren">(</span><em class="sig-param">algo_conf: carlhauser_server.Configuration.algo_conf.Algo_conf</em>, <em class="sig-param">dist: float</em><span class="sig-paren">)</span> &#x2192; carlhauser_server.DistanceEngine.scoring_datastrutures.DecisionTypes<a class="reference internal" href="_modules/carlhauser_server/DistanceEngine/distance_hash.html#Distance_Hash.compute_decision_from_distance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.DistanceEngine.distance_hash.Distance_Hash.compute_decision_from_distance" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="carlhauser_server.DistanceEngine.distance_hash.Distance_Hash.compute_hash_distance">
+<em class="property">static </em><code class="sig-name descname">compute_hash_distance</code><span class="sig-paren">(</span><em class="sig-param">hash1</em>, <em class="sig-param">hash2</em><span class="sig-paren">)</span> &#x2192; float<a class="reference internal" href="_modules/carlhauser_server/DistanceEngine/distance_hash.html#Distance_Hash.compute_hash_distance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.DistanceEngine.distance_hash.Distance_Hash.compute_hash_distance" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="carlhauser_server.DistanceEngine.distance_hash.Distance_Hash.compute_tlsh_distance">
+<em class="property">static </em><code class="sig-name descname">compute_tlsh_distance</code><span class="sig-paren">(</span><em class="sig-param">hash1</em>, <em class="sig-param">hash2</em><span class="sig-paren">)</span> &#x2192; float<a class="reference internal" href="_modules/carlhauser_server/DistanceEngine/distance_hash.html#Distance_Hash.compute_tlsh_distance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.DistanceEngine.distance_hash.Distance_Hash.compute_tlsh_distance" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="carlhauser_server.DistanceEngine.distance_hash.Distance_Hash.hash_distance">
+<code class="sig-name descname">hash_distance</code><span class="sig-paren">(</span><em class="sig-param">pic_package_from</em>, <em class="sig-param">pic_package_to</em><span class="sig-paren">)</span> &#x2192; Dict[str, carlhauser_server.DistanceEngine.scoring_datastrutures.AlgoMatch]<a class="reference internal" href="_modules/carlhauser_server/DistanceEngine/distance_hash.html#Distance_Hash.hash_distance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.DistanceEngine.distance_hash.Distance_Hash.hash_distance" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-carlhauser_server.DistanceEngine.distance_orb">
+<span id="carlhauser-server-distanceengine-distance-orb-module"></span><h2>carlhauser_server.DistanceEngine.distance_orb module<a class="headerlink" href="#module-carlhauser_server.DistanceEngine.distance_orb" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="carlhauser_server.DistanceEngine.distance_orb.Distance_ORB">
+<em class="property">class </em><code class="sig-prename descclassname">carlhauser_server.DistanceEngine.distance_orb.</code><code class="sig-name descname">Distance_ORB</code><span class="sig-paren">(</span><em class="sig-param">db_conf: carlhauser_server.Configuration.database_conf.Default_database_conf</em>, <em class="sig-param">dist_conf: carlhauser_server.Configuration.distance_engine_conf.Default_distance_engine_conf</em>, <em class="sig-param">fe_conf: carlhauser_server.Configuration.feature_extractor_conf.Default_feature_extractor_conf</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/DistanceEngine/distance_orb.html#Distance_ORB"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.DistanceEngine.distance_orb.Distance_ORB" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="carlhauser_server.DistanceEngine.distance_orb.Distance_ORB.add_results">
+<code class="sig-name descname">add_results</code><span class="sig-paren">(</span><em class="sig-param">algo_conf: carlhauser_server.Configuration.algo_conf.Algo_conf</em>, <em class="sig-param">pic_package_from: Dict</em>, <em class="sig-param">pic_package_to: Dict</em>, <em class="sig-param">answer: Dict</em><span class="sig-paren">)</span> &#x2192; Dict<a class="reference internal" href="_modules/carlhauser_server/DistanceEngine/distance_orb.html#Distance_ORB.add_results"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.DistanceEngine.distance_orb.Distance_ORB.add_results" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="carlhauser_server.DistanceEngine.distance_orb.Distance_ORB.compute_decision_from_distance">
+<em class="property">static </em><code class="sig-name descname">compute_decision_from_distance</code><span class="sig-paren">(</span><em class="sig-param">algo_conf: carlhauser_server.Configuration.algo_conf.Algo_conf</em>, <em class="sig-param">dist: float</em><span class="sig-paren">)</span> &#x2192; carlhauser_server.DistanceEngine.scoring_datastrutures.DecisionTypes<a class="reference internal" href="_modules/carlhauser_server/DistanceEngine/distance_orb.html#Distance_ORB.compute_decision_from_distance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.DistanceEngine.distance_orb.Distance_ORB.compute_decision_from_distance" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="carlhauser_server.DistanceEngine.distance_orb.Distance_ORB.compute_orb_distance">
+<code class="sig-name descname">compute_orb_distance</code><span class="sig-paren">(</span><em class="sig-param">descriptors_1</em>, <em class="sig-param">descriptors_2</em><span class="sig-paren">)</span> &#x2192; float<a class="reference internal" href="_modules/carlhauser_server/DistanceEngine/distance_orb.html#Distance_ORB.compute_orb_distance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.DistanceEngine.distance_orb.Distance_ORB.compute_orb_distance" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="carlhauser_server.DistanceEngine.distance_orb.Distance_ORB.max_dist">
+<em class="property">static </em><code class="sig-name descname">max_dist</code><span class="sig-paren">(</span><em class="sig-param">all_matches: List</em>, <em class="sig-param">good_matches: List</em><span class="sig-paren">)</span> &#x2192; float<a class="reference internal" href="_modules/carlhauser_server/DistanceEngine/distance_orb.html#Distance_ORB.max_dist"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.DistanceEngine.distance_orb.Distance_ORB.max_dist" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="carlhauser_server.DistanceEngine.distance_orb.Distance_ORB.orb_distance">
+<code class="sig-name descname">orb_distance</code><span class="sig-paren">(</span><em class="sig-param">pic_package_from: Dict</em>, <em class="sig-param">pic_package_to: Dict</em><span class="sig-paren">)</span> &#x2192; Dict[str, carlhauser_server.DistanceEngine.scoring_datastrutures.AlgoMatch]<a class="reference internal" href="_modules/carlhauser_server/DistanceEngine/distance_orb.html#Distance_ORB.orb_distance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.DistanceEngine.distance_orb.Distance_ORB.orb_distance" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="carlhauser_server.DistanceEngine.distance_orb.Distance_ORB.threeshold_distance_filter">
+<em class="property">static </em><code class="sig-name descname">threeshold_distance_filter</code><span class="sig-paren">(</span><em class="sig-param">matches: List</em><span class="sig-paren">)</span> &#x2192; List<a class="reference internal" href="_modules/carlhauser_server/DistanceEngine/distance_orb.html#Distance_ORB.threeshold_distance_filter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.DistanceEngine.distance_orb.Distance_ORB.threeshold_distance_filter" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-carlhauser_server.DistanceEngine.merging_engine">
+<span id="carlhauser-server-distanceengine-merging-engine-module"></span><h2>carlhauser_server.DistanceEngine.merging_engine module<a class="headerlink" href="#module-carlhauser_server.DistanceEngine.merging_engine" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="carlhauser_server.DistanceEngine.merging_engine.Merging_Engine">
+<em class="property">class </em><code class="sig-prename descclassname">carlhauser_server.DistanceEngine.merging_engine.</code><code class="sig-name descname">Merging_Engine</code><span class="sig-paren">(</span><em class="sig-param">db_conf: carlhauser_server.Configuration.database_conf.Default_database_conf</em>, <em class="sig-param">dist_conf: carlhauser_server.Configuration.distance_engine_conf.Default_distance_engine_conf</em>, <em class="sig-param">fe_conf: carlhauser_server.Configuration.feature_extractor_conf.Default_feature_extractor_conf</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/DistanceEngine/merging_engine.html#Merging_Engine"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.DistanceEngine.merging_engine.Merging_Engine" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="carlhauser_server.DistanceEngine.merging_engine.Merging_Engine.get_harmonic_mean_dict">
+<em class="property">static </em><code class="sig-name descname">get_harmonic_mean_dict</code><span class="sig-paren">(</span><em class="sig-param">matches_package: Dict[str, carlhauser_server.DistanceEngine.scoring_datastrutures.AlgoMatch]</em><span class="sig-paren">)</span> &#x2192; float<a class="reference internal" href="_modules/carlhauser_server/DistanceEngine/merging_engine.html#Merging_Engine.get_harmonic_mean_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.DistanceEngine.merging_engine.Merging_Engine.get_harmonic_mean_dict" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="carlhauser_server.DistanceEngine.merging_engine.Merging_Engine.get_majority_decision">
+<code class="sig-name descname">get_majority_decision</code><span class="sig-paren">(</span><em class="sig-param">matches_package: Dict[str, carlhauser_server.DistanceEngine.scoring_datastrutures.AlgoMatch]</em><span class="sig-paren">)</span> &#x2192; carlhauser_server.DistanceEngine.scoring_datastrutures.DecisionTypes<a class="reference internal" href="_modules/carlhauser_server/DistanceEngine/merging_engine.html#Merging_Engine.get_majority_decision"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.DistanceEngine.merging_engine.Merging_Engine.get_majority_decision" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="carlhauser_server.DistanceEngine.merging_engine.Merging_Engine.get_max_dict">
+<em class="property">static </em><code class="sig-name descname">get_max_dict</code><span class="sig-paren">(</span><em class="sig-param">matches_package: Dict[str, carlhauser_server.DistanceEngine.scoring_datastrutures.AlgoMatch]</em><span class="sig-paren">)</span> &#x2192; float<a class="reference internal" href="_modules/carlhauser_server/DistanceEngine/merging_engine.html#Merging_Engine.get_max_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.DistanceEngine.merging_engine.Merging_Engine.get_max_dict" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="carlhauser_server.DistanceEngine.merging_engine.Merging_Engine.get_mean_dict">
+<em class="property">static </em><code class="sig-name descname">get_mean_dict</code><span class="sig-paren">(</span><em class="sig-param">matches_package: Dict[str, carlhauser_server.DistanceEngine.scoring_datastrutures.AlgoMatch]</em><span class="sig-paren">)</span> &#x2192; float<a class="reference internal" href="_modules/carlhauser_server/DistanceEngine/merging_engine.html#Merging_Engine.get_mean_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.DistanceEngine.merging_engine.Merging_Engine.get_mean_dict" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="carlhauser_server.DistanceEngine.merging_engine.Merging_Engine.get_min_dict">
+<em class="property">static </em><code class="sig-name descname">get_min_dict</code><span class="sig-paren">(</span><em class="sig-param">matches_package: Dict[str, carlhauser_server.DistanceEngine.scoring_datastrutures.AlgoMatch]</em><span class="sig-paren">)</span> &#x2192; float<a class="reference internal" href="_modules/carlhauser_server/DistanceEngine/merging_engine.html#Merging_Engine.get_min_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.DistanceEngine.merging_engine.Merging_Engine.get_min_dict" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="carlhauser_server.DistanceEngine.merging_engine.Merging_Engine.get_nb_decisions">
+<code class="sig-name descname">get_nb_decisions</code><span class="sig-paren">(</span><em class="sig-param">matches_package: Dict[str, carlhauser_server.DistanceEngine.scoring_datastrutures.AlgoMatch], weighted=False</em><span class="sig-paren">)</span> &#x2192; Dict<a class="reference internal" href="_modules/carlhauser_server/DistanceEngine/merging_engine.html#Merging_Engine.get_nb_decisions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.DistanceEngine.merging_engine.Merging_Engine.get_nb_decisions" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="carlhauser_server.DistanceEngine.merging_engine.Merging_Engine.get_pareto_decision">
+<code class="sig-name descname">get_pareto_decision</code><span class="sig-paren">(</span><em class="sig-param">matches_package: Dict[str, carlhauser_server.DistanceEngine.scoring_datastrutures.AlgoMatch]</em><span class="sig-paren">)</span> &#x2192; carlhauser_server.DistanceEngine.scoring_datastrutures.DecisionTypes<a class="reference internal" href="_modules/carlhauser_server/DistanceEngine/merging_engine.html#Merging_Engine.get_pareto_decision"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.DistanceEngine.merging_engine.Merging_Engine.get_pareto_decision" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="carlhauser_server.DistanceEngine.merging_engine.Merging_Engine.get_prevalent_decision">
+<em class="property">static </em><code class="sig-name descname">get_prevalent_decision</code><span class="sig-paren">(</span><em class="sig-param">decision_counter: Dict[carlhauser_server.DistanceEngine.scoring_datastrutures.DecisionTypes, int]</em><span class="sig-paren">)</span> &#x2192; carlhauser_server.DistanceEngine.scoring_datastrutures.DecisionTypes<a class="reference internal" href="_modules/carlhauser_server/DistanceEngine/merging_engine.html#Merging_Engine.get_prevalent_decision"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.DistanceEngine.merging_engine.Merging_Engine.get_prevalent_decision" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="carlhauser_server.DistanceEngine.merging_engine.Merging_Engine.get_pyramid_decision">
+<code class="sig-name descname">get_pyramid_decision</code><span class="sig-paren">(</span><em class="sig-param">matches_package: Dict[str, carlhauser_server.DistanceEngine.scoring_datastrutures.AlgoMatch]</em><span class="sig-paren">)</span> &#x2192; carlhauser_server.DistanceEngine.scoring_datastrutures.DecisionTypes<a class="reference internal" href="_modules/carlhauser_server/DistanceEngine/merging_engine.html#Merging_Engine.get_pyramid_decision"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.DistanceEngine.merging_engine.Merging_Engine.get_pyramid_decision" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="carlhauser_server.DistanceEngine.merging_engine.Merging_Engine.get_weighted_majority_decision">
+<code class="sig-name descname">get_weighted_majority_decision</code><span class="sig-paren">(</span><em class="sig-param">matches_package: Dict[str, carlhauser_server.DistanceEngine.scoring_datastrutures.AlgoMatch]</em><span class="sig-paren">)</span> &#x2192; carlhauser_server.DistanceEngine.scoring_datastrutures.DecisionTypes<a class="reference internal" href="_modules/carlhauser_server/DistanceEngine/merging_engine.html#Merging_Engine.get_weighted_majority_decision"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.DistanceEngine.merging_engine.Merging_Engine.get_weighted_majority_decision" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="carlhauser_server.DistanceEngine.merging_engine.Merging_Engine.get_weighted_mean_dict">
+<code class="sig-name descname">get_weighted_mean_dict</code><span class="sig-paren">(</span><em class="sig-param">matches_package: Dict[str, carlhauser_server.DistanceEngine.scoring_datastrutures.AlgoMatch]</em><span class="sig-paren">)</span> &#x2192; float<a class="reference internal" href="_modules/carlhauser_server/DistanceEngine/merging_engine.html#Merging_Engine.get_weighted_mean_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.DistanceEngine.merging_engine.Merging_Engine.get_weighted_mean_dict" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="carlhauser_server.DistanceEngine.merging_engine.Merging_Engine.merge_algos_decision">
+<code class="sig-name descname">merge_algos_decision</code><span class="sig-paren">(</span><em class="sig-param">matches_package: Dict[str, carlhauser_server.DistanceEngine.scoring_datastrutures.AlgoMatch]</em><span class="sig-paren">)</span> &#x2192; carlhauser_server.DistanceEngine.scoring_datastrutures.DecisionTypes<a class="reference internal" href="_modules/carlhauser_server/DistanceEngine/merging_engine.html#Merging_Engine.merge_algos_decision"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.DistanceEngine.merging_engine.Merging_Engine.merge_algos_decision" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="carlhauser_server.DistanceEngine.merging_engine.Merging_Engine.merge_algos_distance">
+<code class="sig-name descname">merge_algos_distance</code><span class="sig-paren">(</span><em class="sig-param">matches_package: Dict[str, carlhauser_server.DistanceEngine.scoring_datastrutures.AlgoMatch]</em><span class="sig-paren">)</span> &#x2192; float<a class="reference internal" href="_modules/carlhauser_server/DistanceEngine/merging_engine.html#Merging_Engine.merge_algos_distance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.DistanceEngine.merging_engine.Merging_Engine.merge_algos_distance" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="carlhauser_server.DistanceEngine.merging_engine.Merging_Engine.merge_pictures_decisions">
+<code class="sig-name descname">merge_pictures_decisions</code><span class="sig-paren">(</span><em class="sig-param">decision_list: List[carlhauser_server.DistanceEngine.scoring_datastrutures.DecisionTypes]</em><span class="sig-paren">)</span> &#x2192; carlhauser_server.DistanceEngine.scoring_datastrutures.DecisionTypes<a class="reference internal" href="_modules/carlhauser_server/DistanceEngine/merging_engine.html#Merging_Engine.merge_pictures_decisions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.DistanceEngine.merging_engine.Merging_Engine.merge_pictures_decisions" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="carlhauser_server.DistanceEngine.merging_engine.Merging_Engine.merge_pictures_distance">
+<code class="sig-name descname">merge_pictures_distance</code><span class="sig-paren">(</span><em class="sig-param">distance_list: List[float]</em><span class="sig-paren">)</span> &#x2192; float<a class="reference internal" href="_modules/carlhauser_server/DistanceEngine/merging_engine.html#Merging_Engine.merge_pictures_distance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.DistanceEngine.merging_engine.Merging_Engine.merge_pictures_distance" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-carlhauser_server.DistanceEngine.scoring_datastrutures">
+<span id="carlhauser-server-distanceengine-scoring-datastrutures-module"></span><h2>carlhauser_server.DistanceEngine.scoring_datastrutures module<a class="headerlink" href="#module-carlhauser_server.DistanceEngine.scoring_datastrutures" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="carlhauser_server.DistanceEngine.scoring_datastrutures.AlgoMatch">
+<em class="property">class </em><code class="sig-prename descclassname">carlhauser_server.DistanceEngine.scoring_datastrutures.</code><code class="sig-name descname">AlgoMatch</code><span class="sig-paren">(</span><em class="sig-param">name=None</em>, <em class="sig-param">distance=None</em>, <em class="sig-param">decision=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/DistanceEngine/scoring_datastrutures.html#AlgoMatch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.DistanceEngine.scoring_datastrutures.AlgoMatch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="carlhauser_server.DistanceEngine.scoring_datastrutures.AlgoMatch.get_str">
+<code class="sig-name descname">get_str</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/DistanceEngine/scoring_datastrutures.html#AlgoMatch.get_str"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.DistanceEngine.scoring_datastrutures.AlgoMatch.get_str" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="carlhauser_server.DistanceEngine.scoring_datastrutures.AlgoMatch.to_obj">
+<code class="sig-name descname">to_obj</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/DistanceEngine/scoring_datastrutures.html#AlgoMatch.to_obj"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.DistanceEngine.scoring_datastrutures.AlgoMatch.to_obj" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="carlhauser_server.DistanceEngine.scoring_datastrutures.ClusterMatch">
+<em class="property">class </em><code class="sig-prename descclassname">carlhauser_server.DistanceEngine.scoring_datastrutures.</code><code class="sig-name descname">ClusterMatch</code><span class="sig-paren">(</span><em class="sig-param">cluster_id=None</em>, <em class="sig-param">distance=None</em>, <em class="sig-param">decision=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/DistanceEngine/scoring_datastrutures.html#ClusterMatch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.DistanceEngine.scoring_datastrutures.ClusterMatch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="carlhauser_server.DistanceEngine.scoring_datastrutures.ClusterMatch.get_str">
+<code class="sig-name descname">get_str</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/DistanceEngine/scoring_datastrutures.html#ClusterMatch.get_str"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.DistanceEngine.scoring_datastrutures.ClusterMatch.get_str" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="carlhauser_server.DistanceEngine.scoring_datastrutures.ClusterMatch.to_obj">
+<code class="sig-name descname">to_obj</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/DistanceEngine/scoring_datastrutures.html#ClusterMatch.to_obj"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.DistanceEngine.scoring_datastrutures.ClusterMatch.to_obj" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="carlhauser_server.DistanceEngine.scoring_datastrutures.DecisionTypes">
+<em class="property">class </em><code class="sig-prename descclassname">carlhauser_server.DistanceEngine.scoring_datastrutures.</code><code class="sig-name descname">DecisionTypes</code><a class="reference internal" href="_modules/carlhauser_server/DistanceEngine/scoring_datastrutures.html#DecisionTypes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.DistanceEngine.scoring_datastrutures.DecisionTypes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="carlhauser_server.Configuration.html#carlhauser_server.Configuration.template_conf.JSON_parsable_Enum" title="carlhauser_server.Configuration.template_conf.JSON_parsable_Enum"><code class="xref py py-class docutils literal notranslate"><span class="pre">carlhauser_server.Configuration.template_conf.JSON_parsable_Enum</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">enum.Enum</span></code></p>
+<p>An enumeration.</p>
+<dl class="attribute">
+<dt id="carlhauser_server.DistanceEngine.scoring_datastrutures.DecisionTypes.MAYBE">
+<code class="sig-name descname">MAYBE</code><em class="property"> = 2</em><a class="headerlink" href="#carlhauser_server.DistanceEngine.scoring_datastrutures.DecisionTypes.MAYBE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="carlhauser_server.DistanceEngine.scoring_datastrutures.DecisionTypes.NO">
+<code class="sig-name descname">NO</code><em class="property"> = 3</em><a class="headerlink" href="#carlhauser_server.DistanceEngine.scoring_datastrutures.DecisionTypes.NO" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="carlhauser_server.DistanceEngine.scoring_datastrutures.DecisionTypes.YES">
+<code class="sig-name descname">YES</code><em class="property"> = 1</em><a class="headerlink" href="#carlhauser_server.DistanceEngine.scoring_datastrutures.DecisionTypes.YES" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="carlhauser_server.DistanceEngine.scoring_datastrutures.ImageMatch">
+<em class="property">class </em><code class="sig-prename descclassname">carlhauser_server.DistanceEngine.scoring_datastrutures.</code><code class="sig-name descname">ImageMatch</code><span class="sig-paren">(</span><em class="sig-param">image_id=None</em>, <em class="sig-param">cluster_id=None</em>, <em class="sig-param">distance=None</em>, <em class="sig-param">decision=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/DistanceEngine/scoring_datastrutures.html#ImageMatch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.DistanceEngine.scoring_datastrutures.ImageMatch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="carlhauser_server.DistanceEngine.scoring_datastrutures.ImageMatch.get_str">
+<code class="sig-name descname">get_str</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/DistanceEngine/scoring_datastrutures.html#ImageMatch.get_str"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.DistanceEngine.scoring_datastrutures.ImageMatch.get_str" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="carlhauser_server.DistanceEngine.scoring_datastrutures.ImageMatch.to_obj">
+<code class="sig-name descname">to_obj</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/DistanceEngine/scoring_datastrutures.html#ImageMatch.to_obj"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.DistanceEngine.scoring_datastrutures.ImageMatch.to_obj" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="carlhauser_server.DistanceEngine.scoring_datastrutures.TopN">
+<em class="property">class </em><code class="sig-prename descclassname">carlhauser_server.DistanceEngine.scoring_datastrutures.</code><code class="sig-name descname">TopN</code><span class="sig-paren">(</span><em class="sig-param">top_n</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/DistanceEngine/scoring_datastrutures.html#TopN"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.DistanceEngine.scoring_datastrutures.TopN" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="carlhauser_server.DistanceEngine.scoring_datastrutures.TopN.add_element">
+<code class="sig-name descname">add_element</code><span class="sig-paren">(</span><em class="sig-param">element</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/DistanceEngine/scoring_datastrutures.html#TopN.add_element"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.DistanceEngine.scoring_datastrutures.TopN.add_element" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="carlhauser_server.DistanceEngine.scoring_datastrutures.TopN.get_top_n">
+<code class="sig-name descname">get_top_n</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/DistanceEngine/scoring_datastrutures.html#TopN.get_top_n"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.DistanceEngine.scoring_datastrutures.TopN.get_top_n" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="carlhauser_server.DistanceEngine.scoring_datastrutures.build_response">
+<code class="sig-prename descclassname">carlhauser_server.DistanceEngine.scoring_datastrutures.</code><code class="sig-name descname">build_response</code><span class="sig-paren">(</span><em class="sig-param">request_id, list_cluster: List[carlhauser_server.DistanceEngine.scoring_datastrutures.ClusterMatch], list_pictures: List[carlhauser_server.DistanceEngine.scoring_datastrutures.ImageMatch]</em><span class="sig-paren">)</span> &#x2192; dict<a class="reference internal" href="_modules/carlhauser_server/DistanceEngine/scoring_datastrutures.html#build_response"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.DistanceEngine.scoring_datastrutures.build_response" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-carlhauser_server.DistanceEngine">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-carlhauser_server.DistanceEngine" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">carlhauser_server.DistanceEngine package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#carlhauser-server-distanceengine-distance-engine-module">carlhauser_server.DistanceEngine.distance_engine module</a></li>
+<li><a class="reference internal" href="#module-carlhauser_server.DistanceEngine.distance_hash">carlhauser_server.DistanceEngine.distance_hash module</a></li>
+<li><a class="reference internal" href="#module-carlhauser_server.DistanceEngine.distance_orb">carlhauser_server.DistanceEngine.distance_orb module</a></li>
+<li><a class="reference internal" href="#module-carlhauser_server.DistanceEngine.merging_engine">carlhauser_server.DistanceEngine.merging_engine module</a></li>
+<li><a class="reference internal" href="#module-carlhauser_server.DistanceEngine.scoring_datastrutures">carlhauser_server.DistanceEngine.scoring_datastrutures module</a></li>
+<li><a class="reference internal" href="#module-carlhauser_server.DistanceEngine">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/carlhauser_server.DistanceEngine.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, Vincent FALCONIERI.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.2.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,138 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>carlhauser_server.Configuration.distance_engine_conf &#8212; Douglas-Quaid 0.0.4 documentation</title>
+    <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for carlhauser_server.Configuration.distance_engine_conf</h1><div class="highlight"><pre>
+<span></span><span class="c1"># ==================== ------ STD LIBRARIES ------- ====================</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">namedtuple</span>
+
+<span class="c1"># ==================== ------ PERSONAL LIBRARIES ------- ====================</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">pardir</span><span class="p">))</span>
+<span class="kn">from</span> <span class="nn">carlhauser_server.Configuration.template_conf</span> <span class="k">import</span> <span class="n">JSON_parsable_Dict</span>
+
+
+<div class="viewcode-block" id="Default_distance_engine_conf"><a class="viewcode-back" href="../../../carlhauser_server.Configuration.html#carlhauser_server.Configuration.distance_engine_conf.Default_distance_engine_conf">[docs]</a><span class="k">class</span> <span class="nc">Default_distance_engine_conf</span><span class="p">(</span><span class="n">JSON_parsable_Dict</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Inputs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">TOP_N_CLUSTERS</span> <span class="p">:</span> <span class="nb">int</span><span class="o">=</span> <span class="mi">3</span>  <span class="c1"># Nb of &quot;best clusters&quot; to be matched on picture representative</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">TOP_N_PICTURES</span> <span class="p">:</span> <span class="nb">int</span><span class="o">=</span> <span class="mi">10</span>  <span class="c1"># Nb of &quot;best pictures&quot; to be returned, from TOP_N_CLUSTERS best clusters (total, not per cluster)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">PICT_TO_TEST_PER_CLUSTER</span> <span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># Nb of &quot;central picture&quot; to test per cluster</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">MAX_DIST_FOR_NEW_CLUSTER</span> <span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.2</span>  <span class="c1"># Distance threshold to create a new cluster. Lesser the more cluster.</span>
+
+        <span class="c1"># HASH PARAMETERS</span>
+
+        <span class="c1"># ORB PARAMETERS</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">CROSSCHECK</span> <span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span></div>
+
+
+<div class="viewcode-block" id="parse_from_dict"><a class="viewcode-back" href="../../../carlhauser_server.Configuration.html#carlhauser_server.Configuration.distance_engine_conf.parse_from_dict">[docs]</a><span class="k">def</span> <span class="nf">parse_from_dict</span><span class="p">(</span><span class="n">conf</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s2">&quot;Default_distance_engine_conf&quot;</span><span class="p">,</span> <span class="n">conf</span><span class="o">.</span><span class="n">keys</span><span class="p">())(</span><span class="o">*</span><span class="n">conf</span><span class="o">.</span><span class="n">values</span><span class="p">())</span></div>
+
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    self.GROUND_TRUTH_PATH = None</span>
+<span class="sd">    self.IMG_TYPE = SUPPORTED_IMAGE_TYPE.PNG</span>
+<span class="sd">    # Processing</span>
+<span class="sd">    self.ALGO = ALGO_TYPE.A_HASH</span>
+<span class="sd">    self.SELECTION_THREESHOLD = None #TODO : To fix and to use, to prevent &quot;forced linked&quot; if none</span>
+<span class="sd">    # Threshold</span>
+<span class="sd">    self.THREESHOLD_EVALUATION = THRESHOLD_MODE.MAXIMIZE_TRUE_POSITIVE</span>
+<span class="sd">    # Output</span>
+<span class="sd">    self.SAVE_PICTURE_INSTRUCTION_LIST = []</span>
+<span class="sd">    self.OUTPUT_DIR = None</span>
+<span class="sd">&#39;&#39;&#39;</span>
+
+
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd"># ==================== To string ====================</span>
+
+<span class="sd"># Overwrite to print the content of the cluster instead of the cluster memory address</span>
+<span class="sd">def __repr__(self):</span>
+<span class="sd">    return self.get_str()</span>
+
+<span class="sd">def __str__(self):</span>
+<span class="sd">    return self.get_str()</span>
+
+<span class="sd">def get_str(self):</span>
+<span class="sd">    return &#39;&#39;.join(map(str, [&#39; \nTOP_N_CLUSTERS=&#39;, self.TOP_N_CLUSTERS,</span>
+<span class="sd">                             &#39; \nTOP_N_PICTURES=&#39;, self.TOP_N_PICTURES,</span>
+<span class="sd">                             &#39; \nPICT_TO_TEST_PER_CLUSTER=&#39;, self.PICT_TO_TEST_PER_CLUSTER,</span>
+<span class="sd">                             &#39; \nMAX_DIST_FOR_NEW_CLUSTER=&#39;, self.MAX_DIST_FOR_NEW_CLUSTER,</span>
+<span class="sd">                             &#39; \nCROSSCHECK=&#39;, self.CROSSCHECK]))</span>
+
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, Vincent FALCONIERI.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.2.
+    </div>
+  </body>
+</html>

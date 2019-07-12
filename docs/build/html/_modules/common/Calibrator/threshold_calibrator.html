@@ -1,0 +1,587 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>common.Calibrator.threshold_calibrator &#8212; Douglas-Quaid 0.0.4 documentation</title>
+    <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for common.Calibrator.threshold_calibrator</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">pathlib</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">List</span>
+
+<span class="kn">import</span> <span class="nn">carlhauser_client.EvaluationTools.SimilarityGraphExtractor.similarity_graph_quality_evaluator</span> <span class="k">as</span>  <span class="nn">graph_quality_evaluator</span>
+<span class="kn">import</span> <span class="nn">carlhauser_server.Configuration.distance_engine_conf</span> <span class="k">as</span> <span class="nn">distance_engine_conf</span>
+<span class="kn">import</span> <span class="nn">common.Calibrator.calibrator_conf</span> <span class="k">as</span> <span class="nn">calibrator_conf</span>
+<span class="kn">import</span> <span class="nn">common.ChartMaker.two_dimensions_plot</span> <span class="k">as</span> <span class="nn">two_dimensions_plot</span>
+<span class="kn">import</span> <span class="nn">common.Graph.graph_datastructure</span> <span class="k">as</span> <span class="nn">graph_datastructure</span>
+<span class="kn">import</span> <span class="nn">common.ImportExport.json_import_export</span> <span class="k">as</span> <span class="nn">json_import_export</span>
+<span class="kn">import</span> <span class="nn">common.PerformanceDatastructs.perf_datastruct</span> <span class="k">as</span> <span class="nn">perf_datastruct</span>
+<span class="kn">import</span> <span class="nn">common.TestInstanceLauncher.test_database_conf</span> <span class="k">as</span> <span class="nn">test_database_only_conf</span>
+<span class="kn">import</span> <span class="nn">common.TestInstanceLauncher.test_instance_launcher</span> <span class="k">as</span> <span class="nn">test_database_handler</span>
+<span class="kn">from</span> <span class="nn">carlhauser_client.API.extended_api</span> <span class="k">import</span> <span class="n">Extended_API</span>
+<span class="kn">from</span> <span class="nn">carlhauser_client.EvaluationTools.SimilarityGraphExtractor.similarity_graph_extractor</span> <span class="k">import</span> <span class="n">GraphExtractor</span>
+<span class="kn">from</span> <span class="nn">carlhauser_server.Configuration</span> <span class="k">import</span> <span class="n">feature_extractor_conf</span>
+<span class="kn">from</span> <span class="nn">carlhauser_server.Configuration.algo_conf</span> <span class="k">import</span> <span class="n">Algo_conf</span>
+
+
+<div class="viewcode-block" id="Calibrator"><a class="viewcode-back" href="../../../common.Calibrator.html#common.Calibrator.threshold_calibrator.Calibrator">[docs]</a><span class="k">class</span> <span class="nc">Calibrator</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot; Create an instance of douglas quaid for each algorithm and for each threshold :</span>
+<span class="sd">        send provided pictures, get quality statistics compared with provided ground truth file</span>
+<span class="sd">        and do it again. Outputs a fine tuned config file at the end. &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ext_api</span><span class="p">:</span> <span class="n">Extended_API</span> <span class="o">=</span> <span class="n">Extended_API</span><span class="o">.</span><span class="n">get_api</span><span class="p">()</span>
+
+        <span class="c1"># Inputs</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        self.folder_of_pictures = None</span>
+<span class="sd">        self.ground_truth_file = None</span>
+<span class="sd">        self.output_folder = None</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db_conf</span><span class="p">:</span> <span class="n">test_database_only_conf</span><span class="o">.</span><span class="n">TestInstance_database_conf</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fe_conf</span><span class="p">:</span> <span class="n">feature_extractor_conf</span><span class="o">.</span><span class="n">Default_feature_extractor_conf</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_db_handler</span><span class="p">:</span> <span class="n">test_database_handler</span><span class="o">.</span><span class="n">TestInstanceLauncher</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">calibrator_conf</span><span class="p">:</span> <span class="n">calibrator_conf</span><span class="o">.</span><span class="n">Default_calibrator_conf</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="Calibrator.set_calibrator_conf"><a class="viewcode-back" href="../../../common.Calibrator.html#common.Calibrator.threshold_calibrator.Calibrator.set_calibrator_conf">[docs]</a>    <span class="k">def</span> <span class="nf">set_calibrator_conf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">calibrator_conf</span><span class="p">:</span> <span class="n">calibrator_conf</span><span class="o">.</span><span class="n">Default_calibrator_conf</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Setting configuration&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">calibrator_conf</span> <span class="o">=</span> <span class="n">calibrator_conf</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Validation of the configuration ... &quot;</span><span class="p">)</span>
+        <span class="n">calibrator_conf</span><span class="o">.</span><span class="n">validate</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Calibrator.calibrate_douglas_quaid"><a class="viewcode-back" href="../../../common.Calibrator.html#common.Calibrator.threshold_calibrator.Calibrator.calibrate_douglas_quaid">[docs]</a>    <span class="k">def</span> <span class="nf">calibrate_douglas_quaid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">folder_of_pictures</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">,</span>
+                                <span class="n">ground_truth_file</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">,</span>
+                                <span class="n">output_folder</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Algo_conf</span><span class="p">]:</span>
+        <span class="c1"># Outputs a configuration file optimized for the provided dataset and ground truth file</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Launching calibration of douglas quaid configuration ... &quot;</span><span class="p">)</span>
+
+        <span class="c1"># Check inputs</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">folder_of_pictures</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Folder of picture </span><span class="si">{folder_of_pictures}</span><span class="s2"> does not exist ! Please check path. &quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">ground_truth_file</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Ground truth file </span><span class="si">{ground_truth_file}</span><span class="s2"> does not exist ! Please check path. &quot;</span><span class="p">)</span>
+        <span class="c1"># Verify output folder</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">output_folder</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">output_folder</span><span class="o">.</span><span class="n">mkdir</span><span class="p">()</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Output folder does not exist and impossible to create it. Aborting. Please check permissions (most likely)&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Paths provided checked and corrects.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Call each algorithm evaluator</span>
+        <span class="n">calibrated_algos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">algorithms_evaluator</span><span class="p">(</span><span class="n">folder_of_pictures</span><span class="p">,</span> <span class="n">ground_truth_file</span><span class="p">,</span> <span class="n">output_folder</span><span class="p">)</span>
+
+        <span class="c1"># save algorithm evaluator results</span>
+        <span class="n">json_import_export</span><span class="o">.</span><span class="n">save_json</span><span class="p">(</span><span class="n">calibrated_algos</span><span class="p">,</span> <span class="n">output_folder</span> <span class="o">/</span> <span class="s2">&quot;calibrated_algo.json&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">calibrated_algos</span></div>
+
+<div class="viewcode-block" id="Calibrator.algorithms_evaluator"><a class="viewcode-back" href="../../../common.Calibrator.html#common.Calibrator.threshold_calibrator.Calibrator.algorithms_evaluator">[docs]</a>    <span class="k">def</span> <span class="nf">algorithms_evaluator</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">folder_of_pictures</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">,</span>
+                             <span class="n">ground_truth_file</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">,</span>
+                             <span class="n">output_folder</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Algo_conf</span><span class="p">]:</span>
+        <span class="c1"># Evaluate all algorithms on the specific dataset, returns the &quot;best&quot; configuration file</span>
+        <span class="c1"># Uses ground truth files and provided pictures list</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Iterate over all algorithms ... &quot;</span><span class="p">)</span>
+
+        <span class="n">default_feature_conf</span> <span class="o">=</span> <span class="n">feature_extractor_conf</span><span class="o">.</span><span class="n">Default_feature_extractor_conf</span><span class="p">()</span>
+        <span class="n">list_calibrated_algos</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># For each possible algorithm, evaluate the algorithms</span>
+        <span class="c1"># TODO : Restrict the algorithms list</span>
+        <span class="k">for</span> <span class="n">algo</span> <span class="ow">in</span> <span class="n">default_feature_conf</span><span class="o">.</span><span class="n">list_algos</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Current algorithm calibration </span><span class="si">{algo.algo_name}</span><span class="s2"> ... &quot;</span><span class="p">)</span>
+
+            <span class="c1"># Create the output folder for this algo</span>
+            <span class="n">tmp_output_folder_algo</span> <span class="o">=</span> <span class="p">(</span><span class="n">output_folder</span> <span class="o">/</span> <span class="n">algo</span><span class="o">.</span><span class="n">algo_name</span><span class="p">)</span>
+            <span class="n">tmp_output_folder_algo</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="c1"># Evaluation of this algorithm</span>
+            <span class="n">calibrated_algo</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">algorithm_evaluator</span><span class="p">(</span><span class="n">folder_of_pictures</span><span class="p">,</span> <span class="n">ground_truth_file</span><span class="p">,</span> <span class="n">algo</span><span class="p">,</span> <span class="n">tmp_output_folder_algo</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Calibrated algorithm </span><span class="si">{algo.algo_name}</span><span class="s2"> with : </span><span class="si">{calibrated_algo}</span><span class="s2"> &quot;</span><span class="p">)</span>
+
+            <span class="c1"># Keeping the best configuration for this algorithm</span>
+            <span class="n">list_calibrated_algos</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">calibrated_algo</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">list_calibrated_algos</span></div>
+
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        # HASH parameters</span>
+<span class="sd">        self.A_HASH = Algo_conf(&quot;A_HASH&quot;, False, 0.2, 0.6, distance_weight=1)</span>
+<span class="sd">        self.P_HASH = Algo_conf(&quot;P_HASH&quot;, True, 0.2, 0.6, distance_weight=1)</span>
+<span class="sd">        self.P_HASH_SIMPLE = Algo_conf(&quot;P_HASH_SIMPLE&quot;, False, 0.2, 0.6, distance_weight=1)</span>
+<span class="sd">        self.D_HASH = Algo_conf(&quot;D_HASH&quot;, True, 0.2, 0.6, distance_weight=1)</span>
+<span class="sd">        self.D_HASH_VERTICAL = Algo_conf(&quot;D_HASH_VERTICAL&quot;, False, 0.2, 0.6, distance_weight=1)</span>
+<span class="sd">        self.W_HASH = Algo_conf(&quot;W_HASH&quot;, False, 0.2, 0.6, distance_weight=1)</span>
+<span class="sd">        self.TLSH = Algo_conf(&quot;TLSH&quot;, True, 0.2, 0.6, distance_weight=1)</span>
+
+<span class="sd">        # Visual Descriptors parameters</span>
+<span class="sd">        self.ORB = Algo_conf(&quot;ORB&quot;, True, 0.2, 0.6, distance_weight=5)</span>
+<span class="sd">        self.ORB_KEYPOINTS_NB = 500</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+<div class="viewcode-block" id="Calibrator.algorithm_evaluator"><a class="viewcode-back" href="../../../common.Calibrator.html#common.Calibrator.threshold_calibrator.Calibrator.algorithm_evaluator">[docs]</a>    <span class="k">def</span> <span class="nf">algorithm_evaluator</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">folder_of_pictures</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">,</span>
+                            <span class="n">ground_truth_file</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">,</span>
+                            <span class="n">to_calibrate_algo</span><span class="p">:</span> <span class="n">Algo_conf</span><span class="p">,</span>
+                            <span class="n">output_folder</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Algo_conf</span><span class="p">:</span>
+        <span class="c1"># Take an algorithm to calibrate and return a calibrated version of this algo (of its threshold, exactly)</span>
+        <span class="c1"># Uses the ground truth files and provided pictures list</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Evaluate </span><span class="si">{to_calibrate_algo.algo_name}</span><span class="s2"> ... &quot;</span><span class="p">)</span>
+
+        <span class="c1"># Configurations files</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db_conf</span> <span class="o">=</span> <span class="n">test_database_only_conf</span><span class="o">.</span><span class="n">TestInstance_database_conf</span><span class="p">()</span>  <span class="c1"># For test sockets only</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fe_conf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_feature_conf</span><span class="p">(</span><span class="n">to_calibrate_algo</span><span class="p">)</span>  <span class="c1"># For 1 algo only</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">de_conf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_distance_conf</span><span class="p">()</span>  <span class="c1"># For internal inter distance cluster that allow to test all pictures</span>
+
+        <span class="c1"># Launch a modified server</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Creation of a full instance of redis (Test only) ... &quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_db_handler</span> <span class="o">=</span> <span class="n">test_database_handler</span><span class="o">.</span><span class="n">TestInstanceLauncher</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_db_handler</span><span class="o">.</span><span class="n">create_full_instance</span><span class="p">(</span><span class="n">db_conf</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">db_conf</span><span class="p">,</span> <span class="n">fe_conf</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">fe_conf</span><span class="p">)</span>
+
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>  <span class="c1"># Necessary for the instance to be ready.</span>
+
+        <span class="c1"># Launch an evaluator client to extract the graphe</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Launching Algorithm evaluation ... &quot;</span><span class="p">)</span>
+        <span class="n">graph_extractor</span> <span class="o">=</span> <span class="n">GraphExtractor</span><span class="p">()</span>
+        <span class="n">perfs_list</span><span class="p">,</span> <span class="n">tmp_calibrator_conf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_best_thresholds</span><span class="p">(</span><span class="n">image_folder</span><span class="o">=</span><span class="n">folder_of_pictures</span><span class="p">,</span>
+                                                                   <span class="n">visjs_json_path</span><span class="o">=</span><span class="n">ground_truth_file</span><span class="p">,</span>
+                                                                   <span class="n">output_path</span><span class="o">=</span><span class="n">output_folder</span><span class="p">,</span>
+                                                                   <span class="n">cal_conf</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">calibrator_conf</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Algorithm evaluation results : perflist = </span><span class="si">{perfs_list}</span><span class="s2"> &quot;</span><span class="p">)</span>
+
+        <span class="c1"># Kill server instance</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Shutting down Redis test instance&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_db_handler</span><span class="o">.</span><span class="n">tearDown</span><span class="p">()</span>
+
+        <span class="c1"># Evaluate the graphe to find thresholds</span>
+        <span class="c1"># = Already done in thresholds object = thresholds</span>
+
+        <span class="c1"># Construct result algo_conf depending on thresholds</span>
+        <span class="c1"># TOOD : Extract only setted values</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Export to algorithm configuration&quot;</span><span class="p">)</span>
+        <span class="n">updated_algo_conf</span> <span class="o">=</span> <span class="n">tmp_calibrator_conf</span><span class="o">.</span><span class="n">export_to_Algo</span><span class="p">(</span><span class="n">to_calibrate_algo</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">updated_algo_conf</span>  <span class="c1"># perfs_list,</span></div>
+
+<div class="viewcode-block" id="Calibrator.generate_feature_conf"><a class="viewcode-back" href="../../../common.Calibrator.html#common.Calibrator.threshold_calibrator.Calibrator.generate_feature_conf">[docs]</a>    <span class="k">def</span> <span class="nf">generate_feature_conf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">to_calibrate_algo</span><span class="p">:</span> <span class="n">Algo_conf</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">feature_extractor_conf</span><span class="o">.</span><span class="n">Default_feature_extractor_conf</span><span class="p">:</span>
+        <span class="c1"># Generate a feature configuration object with only one algorithm activated</span>
+
+        <span class="n">fe_conf</span> <span class="o">=</span> <span class="n">feature_extractor_conf</span><span class="o">.</span><span class="n">Default_feature_extractor_conf</span><span class="p">()</span>
+
+        <span class="n">DEFAULT_LOW</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">DEFAULT_HIGH</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">fe_conf</span><span class="o">.</span><span class="n">A_HASH</span> <span class="o">=</span> <span class="n">Algo_conf</span><span class="p">(</span><span class="s2">&quot;A_HASH&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="n">DEFAULT_LOW</span><span class="p">,</span> <span class="n">DEFAULT_HIGH</span><span class="p">,</span> <span class="n">distance_weight</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">fe_conf</span><span class="o">.</span><span class="n">P_HASH</span> <span class="o">=</span> <span class="n">Algo_conf</span><span class="p">(</span><span class="s2">&quot;P_HASH&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="n">DEFAULT_LOW</span><span class="p">,</span> <span class="n">DEFAULT_HIGH</span><span class="p">,</span> <span class="n">distance_weight</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">fe_conf</span><span class="o">.</span><span class="n">P_HASH_SIMPLE</span> <span class="o">=</span> <span class="n">Algo_conf</span><span class="p">(</span><span class="s2">&quot;P_HASH_SIMPLE&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="n">DEFAULT_LOW</span><span class="p">,</span> <span class="n">DEFAULT_HIGH</span><span class="p">,</span> <span class="n">distance_weight</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">fe_conf</span><span class="o">.</span><span class="n">D_HASH</span> <span class="o">=</span> <span class="n">Algo_conf</span><span class="p">(</span><span class="s2">&quot;D_HASH&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="n">DEFAULT_LOW</span><span class="p">,</span> <span class="n">DEFAULT_HIGH</span><span class="p">,</span> <span class="n">distance_weight</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">fe_conf</span><span class="o">.</span><span class="n">D_HASH_VERTICAL</span> <span class="o">=</span> <span class="n">Algo_conf</span><span class="p">(</span><span class="s2">&quot;D_HASH_VERTICAL&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="n">DEFAULT_LOW</span><span class="p">,</span> <span class="n">DEFAULT_HIGH</span><span class="p">,</span> <span class="n">distance_weight</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">fe_conf</span><span class="o">.</span><span class="n">W_HASH</span> <span class="o">=</span> <span class="n">Algo_conf</span><span class="p">(</span><span class="s2">&quot;W_HASH&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="n">DEFAULT_LOW</span><span class="p">,</span> <span class="n">DEFAULT_HIGH</span><span class="p">,</span> <span class="n">distance_weight</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">fe_conf</span><span class="o">.</span><span class="n">TLSH</span> <span class="o">=</span> <span class="n">Algo_conf</span><span class="p">(</span><span class="s2">&quot;TLSH&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="n">DEFAULT_LOW</span><span class="p">,</span> <span class="n">DEFAULT_HIGH</span><span class="p">,</span> <span class="n">distance_weight</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">fe_conf</span><span class="o">.</span><span class="n">ORB</span> <span class="o">=</span> <span class="n">Algo_conf</span><span class="p">(</span><span class="s2">&quot;ORB&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="n">DEFAULT_LOW</span><span class="p">,</span> <span class="n">DEFAULT_HIGH</span><span class="p">,</span> <span class="n">distance_weight</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># Reset current algorithm object values</span>
+        <span class="n">to_calibrate_algo</span><span class="o">.</span><span class="n">distance_weight</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">to_calibrate_algo</span><span class="o">.</span><span class="n">decision_weight</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">to_calibrate_algo</span><span class="o">.</span><span class="n">is_enabled</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="c1"># Put the algorithm to activate</span>
+        <span class="k">if</span> <span class="n">to_calibrate_algo</span><span class="o">.</span><span class="n">algo_name</span> <span class="o">==</span> <span class="s2">&quot;A_HASH&quot;</span><span class="p">:</span>
+            <span class="n">fe_conf</span><span class="o">.</span><span class="n">A_HASH</span> <span class="o">=</span> <span class="n">to_calibrate_algo</span>
+        <span class="k">elif</span> <span class="n">to_calibrate_algo</span><span class="o">.</span><span class="n">algo_name</span> <span class="o">==</span> <span class="s2">&quot;P_HASH&quot;</span><span class="p">:</span>
+            <span class="n">fe_conf</span><span class="o">.</span><span class="n">P_HASH</span> <span class="o">=</span> <span class="n">to_calibrate_algo</span>
+        <span class="k">elif</span> <span class="n">to_calibrate_algo</span><span class="o">.</span><span class="n">algo_name</span> <span class="o">==</span> <span class="s2">&quot;P_HASH_SIMPLE&quot;</span><span class="p">:</span>
+            <span class="n">fe_conf</span><span class="o">.</span><span class="n">P_HASH_SIMPLE</span> <span class="o">=</span> <span class="n">to_calibrate_algo</span>
+        <span class="k">elif</span> <span class="n">to_calibrate_algo</span><span class="o">.</span><span class="n">algo_name</span> <span class="o">==</span> <span class="s2">&quot;D_HASH&quot;</span><span class="p">:</span>
+            <span class="n">fe_conf</span><span class="o">.</span><span class="n">D_HASH</span> <span class="o">=</span> <span class="n">to_calibrate_algo</span>
+        <span class="k">elif</span> <span class="n">to_calibrate_algo</span><span class="o">.</span><span class="n">algo_name</span> <span class="o">==</span> <span class="s2">&quot;D_HASH_VERTICAL&quot;</span><span class="p">:</span>
+            <span class="n">fe_conf</span><span class="o">.</span><span class="n">D_HASH_VERTICAL</span> <span class="o">=</span> <span class="n">to_calibrate_algo</span>
+        <span class="k">elif</span> <span class="n">to_calibrate_algo</span><span class="o">.</span><span class="n">algo_name</span> <span class="o">==</span> <span class="s2">&quot;W_HASH&quot;</span><span class="p">:</span>
+            <span class="n">fe_conf</span><span class="o">.</span><span class="n">W_HASH</span> <span class="o">=</span> <span class="n">to_calibrate_algo</span>
+        <span class="k">elif</span> <span class="n">to_calibrate_algo</span><span class="o">.</span><span class="n">algo_name</span> <span class="o">==</span> <span class="s2">&quot;TLSH&quot;</span><span class="p">:</span>
+            <span class="n">fe_conf</span><span class="o">.</span><span class="n">TLSH</span> <span class="o">=</span> <span class="n">to_calibrate_algo</span>
+        <span class="k">elif</span> <span class="n">to_calibrate_algo</span><span class="o">.</span><span class="n">algo_name</span> <span class="o">==</span> <span class="s2">&quot;ORB&quot;</span><span class="p">:</span>
+            <span class="n">fe_conf</span><span class="o">.</span><span class="n">ORB</span> <span class="o">=</span> <span class="n">to_calibrate_algo</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Unhandled algo name. Structural problem in threshold_calibrator&quot;</span><span class="p">)</span>
+
+        <span class="n">fe_conf</span><span class="o">.</span><span class="n">list_algos</span> <span class="o">=</span> <span class="p">[</span><span class="n">fe_conf</span><span class="o">.</span><span class="n">A_HASH</span><span class="p">,</span> <span class="n">fe_conf</span><span class="o">.</span><span class="n">P_HASH</span><span class="p">,</span> <span class="n">fe_conf</span><span class="o">.</span><span class="n">P_HASH_SIMPLE</span><span class="p">,</span>
+                              <span class="n">fe_conf</span><span class="o">.</span><span class="n">D_HASH</span><span class="p">,</span> <span class="n">fe_conf</span><span class="o">.</span><span class="n">D_HASH_VERTICAL</span><span class="p">,</span> <span class="n">fe_conf</span><span class="o">.</span><span class="n">W_HASH</span><span class="p">,</span>
+                              <span class="n">fe_conf</span><span class="o">.</span><span class="n">TLSH</span><span class="p">,</span>
+                              <span class="n">fe_conf</span><span class="o">.</span><span class="n">ORB</span><span class="p">]</span>
+
+        <span class="c1"># Reset distance and decision merging method</span>
+        <span class="n">fe_conf</span><span class="o">.</span><span class="n">DISTANCE_MERGING_METHOD</span> <span class="o">=</span> <span class="n">feature_extractor_conf</span><span class="o">.</span><span class="n">Distance_MergingMethod</span><span class="o">.</span><span class="n">MAX</span><span class="o">.</span><span class="n">name</span>
+        <span class="n">fe_conf</span><span class="o">.</span><span class="n">DECISION_MERGING_METHOD</span> <span class="o">=</span> <span class="n">feature_extractor_conf</span><span class="o">.</span><span class="n">Decision_MergingMethod</span><span class="o">.</span><span class="n">MAJORITY</span><span class="o">.</span><span class="n">name</span>
+
+        <span class="k">return</span> <span class="n">fe_conf</span></div>
+
+<div class="viewcode-block" id="Calibrator.generate_distance_conf"><a class="viewcode-back" href="../../../common.Calibrator.html#common.Calibrator.threshold_calibrator.Calibrator.generate_distance_conf">[docs]</a>    <span class="k">def</span> <span class="nf">generate_distance_conf</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">distance_engine_conf</span><span class="o">.</span><span class="n">Default_distance_engine_conf</span><span class="p">:</span>
+        <span class="c1"># Generate a distance configuration object which is less performant but with maximal score in quality</span>
+
+        <span class="n">de_conf</span> <span class="o">=</span> <span class="n">distance_engine_conf</span><span class="o">.</span><span class="n">Default_distance_engine_conf</span><span class="p">()</span>
+        <span class="n">de_conf</span><span class="o">.</span><span class="n">MAX_DIST_FOR_NEW_CLUSTER</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># Only one big cluter with a lot of pictures. Will check all pictures.</span>
+
+        <span class="k">return</span> <span class="n">de_conf</span></div>
+
+<div class="viewcode-block" id="Calibrator.get_best_thresholds"><a class="viewcode-back" href="../../../common.Calibrator.html#common.Calibrator.threshold_calibrator.Calibrator.get_best_thresholds">[docs]</a>    <span class="k">def</span> <span class="nf">get_best_thresholds</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">image_folder</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">,</span>
+                            <span class="n">output_path</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">,</span>
+                            <span class="n">visjs_json_path</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">,</span>
+                            <span class="n">cal_conf</span><span class="p">:</span> <span class="n">calibrator_conf</span><span class="o">.</span><span class="n">Default_calibrator_conf</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="n">List</span><span class="p">[</span><span class="n">perf_datastruct</span><span class="o">.</span><span class="n">Perf</span><span class="p">],</span> <span class="n">calibrator_conf</span><span class="o">.</span><span class="n">Default_calibrator_conf</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Compute the best threshold to apply to distance to have an optimized number of False Positive, True Positive, etc.</span>
+<span class="sd">        :param image_folder: The folder of picture to send and request, to optimize parameters for</span>
+<span class="sd">        :param output_path: The output path where the graph and other data will be stored</span>
+<span class="sd">        :param visjs_json_path: The &quot;ground truth&quot; file that serves as reference to optimize False Positive, etc.</span>
+<span class="sd">        :param cal_conf: Values of False Positive, True Positive, etc. expected</span>
+<span class="sd">        :return: List of performance values (threshold + False Positive, True Positive, etc. performances) and a modified cal_conf with &quot;best threshold&quot; regarding False Positive, True Positive, etc. target values</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="c1"># Get results from DB and ground truth graph from visjs file</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Sending pictures ... &quot;</span><span class="p">)</span>
+        <span class="n">list_results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ext_api</span><span class="o">.</span><span class="n">add_request_dump_pictures</span><span class="p">(</span><span class="n">image_folder</span><span class="p">)</span>
+
+        <span class="c1"># Save to file</span>
+        <span class="n">json_import_export</span><span class="o">.</span><span class="n">save_json</span><span class="p">(</span><span class="n">list_results</span><span class="p">,</span> <span class="n">output_path</span> <span class="o">/</span> <span class="s2">&quot;requests_result.json&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Results raw json saved.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Load ground truth file</span>
+        <span class="n">gt_graph</span> <span class="o">=</span> <span class="n">graph_datastructure</span><span class="o">.</span><span class="n">load_visjs_to_graphe</span><span class="p">(</span><span class="n">visjs_json_path</span><span class="p">)</span>
+
+        <span class="c1"># Call the graph evaluator on this pair result_list + gt_graph</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Extracting performance list &quot;</span><span class="p">)</span>
+        <span class="n">perf_eval</span> <span class="o">=</span> <span class="n">graph_quality_evaluator</span><span class="o">.</span><span class="n">GraphQualityEvaluator</span><span class="p">()</span>
+        <span class="n">perfs_list</span> <span class="o">=</span> <span class="n">perf_eval</span><span class="o">.</span><span class="n">get_perf_list</span><span class="p">(</span><span class="n">list_results</span><span class="p">,</span> <span class="n">gt_graph</span><span class="p">)</span>  <span class="c1"># ==&gt; List of scores</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Fetched performance list : </span><span class="si">{perfs_list}</span><span class="s2"> &quot;</span><span class="p">)</span>
+
+        <span class="c1"># Save to file</span>
+        <span class="n">json_import_export</span><span class="o">.</span><span class="n">save_json</span><span class="p">(</span><span class="n">perfs_list</span><span class="p">,</span> <span class="n">output_path</span> <span class="o">/</span> <span class="s2">&quot;graph_perfs.json&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Graph performances json saved.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Save to graph</span>
+        <span class="n">twoDplot</span> <span class="o">=</span> <span class="n">two_dimensions_plot</span><span class="o">.</span><span class="n">TwoDimensionsPlot</span><span class="p">()</span>
+        <span class="n">twoDplot</span><span class="o">.</span><span class="n">print_graph</span><span class="p">(</span><span class="n">perfs_list</span><span class="p">,</span> <span class="n">output_path</span><span class="p">)</span>
+
+        <span class="c1"># TODO : copy_cal_conf = cal_conf.deepcopy()</span>
+        <span class="n">copy_cal_conf</span> <span class="o">=</span> <span class="n">cal_conf</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Current configuraiton : </span><span class="si">{copy_cal_conf}</span><span class="s2"> &quot;</span><span class="p">)</span>
+
+        <span class="c1"># Call the graph evaluator on this pair result_list + gt_graph</span>
+        <span class="k">if</span> <span class="n">copy_cal_conf</span><span class="o">.</span><span class="n">Minimum_true_positive_rate</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">thre_max_TPR</span><span class="p">,</span> <span class="n">val_TPR</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_threshold_where_upper_are_more_than_xpercent_TP</span><span class="p">(</span><span class="n">perfs_list</span><span class="o">=</span><span class="n">perfs_list</span><span class="p">,</span>
+                                                                                             <span class="n">percent</span><span class="o">=</span><span class="n">copy_cal_conf</span><span class="o">.</span><span class="n">Minimum_true_positive_rate</span><span class="p">)</span>
+            <span class="n">copy_cal_conf</span><span class="o">.</span><span class="n">thre_upper_at_least_xpercent_TPR</span> <span class="o">=</span> <span class="n">thre_max_TPR</span>
+
+        <span class="k">if</span> <span class="n">copy_cal_conf</span><span class="o">.</span><span class="n">Acceptable_false_negative_rate</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">thre_max_FNR</span><span class="p">,</span> <span class="n">val_FNR</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_threshold_where_upper_are_less_than_xpercent_FN</span><span class="p">(</span><span class="n">perfs_list</span><span class="o">=</span><span class="n">perfs_list</span><span class="p">,</span>
+                                                                                             <span class="n">percent</span><span class="o">=</span><span class="n">copy_cal_conf</span><span class="o">.</span><span class="n">Acceptable_false_negative_rate</span><span class="p">)</span>
+            <span class="n">copy_cal_conf</span><span class="o">.</span><span class="n">thre_upper_at_most_xpercent_FNR</span> <span class="o">=</span> <span class="n">thre_max_FNR</span>
+
+        <span class="k">if</span> <span class="n">copy_cal_conf</span><span class="o">.</span><span class="n">Minimum_true_negative_rate</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">thre_max_TNR</span><span class="p">,</span> <span class="n">val_TNR</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_threshold_where_below_are_more_than_xpercent_TN</span><span class="p">(</span><span class="n">perfs_list</span><span class="o">=</span><span class="n">perfs_list</span><span class="p">,</span>
+                                                                                             <span class="n">percent</span><span class="o">=</span><span class="n">copy_cal_conf</span><span class="o">.</span><span class="n">Minimum_true_negative_rate</span><span class="p">)</span>
+            <span class="n">copy_cal_conf</span><span class="o">.</span><span class="n">thre_below_at_least_xpercent_TNR</span> <span class="o">=</span> <span class="n">thre_max_TNR</span>
+
+        <span class="k">if</span> <span class="n">copy_cal_conf</span><span class="o">.</span><span class="n">Acceptable_false_positive_rate</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">thre_max_FPR</span><span class="p">,</span> <span class="n">val_FPR</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_threshold_where_below_are_less_than_xpercent_FP</span><span class="p">(</span><span class="n">perfs_list</span><span class="o">=</span><span class="n">perfs_list</span><span class="p">,</span>
+                                                                                             <span class="n">percent</span><span class="o">=</span><span class="n">copy_cal_conf</span><span class="o">.</span><span class="n">Acceptable_false_positive_rate</span><span class="p">)</span>
+            <span class="n">copy_cal_conf</span><span class="o">.</span><span class="n">thre_below_at_most_xpercent_FPR</span> <span class="o">=</span> <span class="n">thre_max_FPR</span>
+
+        <span class="n">thre_max_F1</span><span class="p">,</span> <span class="n">val_F1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_max_threshold_for_max_F1</span><span class="p">(</span><span class="n">perfs_list</span><span class="o">=</span><span class="n">perfs_list</span><span class="p">)</span>
+        <span class="n">copy_cal_conf</span><span class="o">.</span><span class="n">maximum_F1</span> <span class="o">=</span> <span class="n">thre_max_F1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Computed thresholds </span><span class="si">{copy_cal_conf}</span><span class="s2"> &quot;</span><span class="p">)</span>
+
+        <span class="c1"># Save to graph</span>
+        <span class="n">twoDplot</span><span class="o">.</span><span class="n">print_graph_with_thresholds</span><span class="p">(</span><span class="n">perfs_list</span><span class="p">,</span> <span class="n">copy_cal_conf</span><span class="p">,</span> <span class="n">output_path</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">perfs_list</span><span class="p">,</span> <span class="n">copy_cal_conf</span></div>
+
+<div class="viewcode-block" id="Calibrator.get_optimal_for_optimized_attribute"><a class="viewcode-back" href="../../../common.Calibrator.html#common.Calibrator.threshold_calibrator.Calibrator.get_optimal_for_optimized_attribute">[docs]</a>    <span class="k">def</span> <span class="nf">get_optimal_for_optimized_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">perfs_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">perf_datastruct</span><span class="o">.</span><span class="n">Perf</span><span class="p">],</span> <span class="n">attribute</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">maximize_threshold</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">maximize_attribute</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">is_increasing</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+                                            <span class="n">tolerance</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">):</span>
+        <span class="c1"># Extract the threshold for a specific kind of value</span>
+        <span class="c1"># Max threshold, Max attribute = Get the rightmost higher value of the attribute</span>
+        <span class="c1"># Max threshold, Min attribute = Get the rightmost lower value of the attribute, with attribute &gt; Tolerance of the graph_evaluator</span>
+        <span class="c1"># Min threshold, Max attribute = Get the leftmost higher value of the attribute, with attribute &lt; Tolerance of the graph_evaluator</span>
+        <span class="c1"># Min threshold, Min attribute = Get the leftmost lower value of the attribute</span>
+        <span class="c1"># is_increasing define if the graph is going up and up or not.</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">perfs_list</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Performance list empty ! Impossible to get threshold out of it.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># We could have assumed the performance list is sorted</span>
+        <span class="n">perfs_list</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">k</span><span class="p">:</span> <span class="n">k</span><span class="o">.</span><span class="n">threshold</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="n">is_increasing</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_increasing</span><span class="p">:</span>
+            <span class="n">maximize_threshold</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">maximize_threshold</span>
+            <span class="n">maximize_attribute</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">maximize_attribute</span>
+
+        <span class="c1"># We want a decreasing graph, always.</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        l = [1,2,5,3,7]</span>
+<span class="sd">        l.sort() = [1, 2, 3, 5, 7]</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Threshold list : {[p.threshold for p in perfs_list]}&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Perf list : {[getattr(p.score, attribute) for p in perfs_list]}&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">maximize_threshold</span> <span class="ow">and</span> <span class="n">maximize_attribute</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_max_threshold_for_max_attr</span><span class="p">(</span><span class="n">perfs_list</span><span class="p">,</span> <span class="n">attribute</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">maximize_threshold</span> <span class="ow">is</span> <span class="kc">False</span> <span class="ow">and</span> <span class="n">maximize_attribute</span><span class="p">:</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Minimum </span><span class="si">{attribute}</span><span class="s2"> allowed : {1 - tolerance}&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_min_threshold_for_max_attr_with_tolerance</span><span class="p">(</span><span class="n">perfs_list</span><span class="p">,</span> <span class="n">attribute</span><span class="p">,</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">tolerance</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">maximize_threshold</span> <span class="ow">and</span> <span class="n">maximize_attribute</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Minimum </span><span class="si">{attribute}</span><span class="s2"> allowed : </span><span class="si">{tolerance}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_min_threshold_for_max_attr_with_tolerance</span><span class="p">(</span><span class="n">perfs_list</span><span class="p">,</span> <span class="n">attribute</span><span class="p">,</span> <span class="n">tolerance</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">maximize_threshold</span> <span class="ow">is</span> <span class="kc">False</span> <span class="ow">and</span> <span class="n">maximize_attribute</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_min_threshold_for_min_attr</span><span class="p">(</span><span class="n">perfs_list</span><span class="p">,</span> <span class="n">attribute</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Calibrator.get_min_threshold_for_max_attr_with_tolerance"><a class="viewcode-back" href="../../../common.Calibrator.html#common.Calibrator.threshold_calibrator.Calibrator.get_min_threshold_for_max_attr_with_tolerance">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_min_threshold_for_max_attr_with_tolerance</span><span class="p">(</span><span class="n">perfs_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">perf_datastruct</span><span class="o">.</span><span class="n">Perf</span><span class="p">],</span> <span class="n">attribute</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">tolerance</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">):</span>
+        <span class="n">max_value</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">perfs_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">score</span><span class="p">,</span> <span class="n">attribute</span><span class="p">)</span>
+        <span class="n">threshold</span> <span class="o">=</span> <span class="n">perfs_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">threshold</span>
+        <span class="c1"># Work on a decreasing graph ONLY !</span>
+        <span class="c1"># Dummy constraint search. At the point where the constraint (be above the threshold) is borken, we break and return the found values.</span>
+        <span class="k">for</span> <span class="n">curr_perf</span> <span class="ow">in</span> <span class="n">perfs_list</span><span class="p">:</span>
+            <span class="n">curr_value</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">curr_perf</span><span class="o">.</span><span class="n">score</span><span class="p">,</span> <span class="n">attribute</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">curr_value</span> <span class="o">&gt;=</span> <span class="n">tolerance</span><span class="p">:</span>
+                <span class="n">threshold</span> <span class="o">=</span> <span class="n">curr_perf</span><span class="o">.</span><span class="n">threshold</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">break</span>
+
+        <span class="k">return</span> <span class="n">threshold</span><span class="p">,</span> <span class="n">max_value</span></div>
+
+<div class="viewcode-block" id="Calibrator.get_max_threshold_for_max_attr"><a class="viewcode-back" href="../../../common.Calibrator.html#common.Calibrator.threshold_calibrator.Calibrator.get_max_threshold_for_max_attr">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_max_threshold_for_max_attr</span><span class="p">(</span><span class="n">perfs_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">perf_datastruct</span><span class="o">.</span><span class="n">Perf</span><span class="p">],</span> <span class="n">attribute</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">):</span>
+        <span class="n">max_value</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">perfs_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">score</span><span class="p">,</span> <span class="n">attribute</span><span class="p">)</span>
+        <span class="n">threshold</span> <span class="o">=</span> <span class="n">perfs_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">threshold</span>
+
+        <span class="c1"># Dummy max search</span>
+        <span class="k">for</span> <span class="n">curr_perf</span> <span class="ow">in</span> <span class="n">perfs_list</span><span class="p">:</span>
+            <span class="n">curr_value</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">curr_perf</span><span class="o">.</span><span class="n">score</span><span class="p">,</span> <span class="n">attribute</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">curr_value</span> <span class="o">&gt;=</span> <span class="n">max_value</span><span class="p">:</span>
+                <span class="n">threshold</span> <span class="o">=</span> <span class="n">curr_perf</span><span class="o">.</span><span class="n">threshold</span>
+
+        <span class="k">return</span> <span class="n">threshold</span><span class="p">,</span> <span class="n">max_value</span></div>
+
+<div class="viewcode-block" id="Calibrator.get_min_threshold_for_min_attr"><a class="viewcode-back" href="../../../common.Calibrator.html#common.Calibrator.threshold_calibrator.Calibrator.get_min_threshold_for_min_attr">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_min_threshold_for_min_attr</span><span class="p">(</span><span class="n">perfs_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">perf_datastruct</span><span class="o">.</span><span class="n">Perf</span><span class="p">],</span> <span class="n">attribute</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">):</span>
+        <span class="n">max_value</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">perfs_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">score</span><span class="p">,</span> <span class="n">attribute</span><span class="p">)</span>
+        <span class="n">threshold</span> <span class="o">=</span> <span class="n">perfs_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">threshold</span>
+
+        <span class="c1"># Dummy min search</span>
+        <span class="k">for</span> <span class="n">curr_perf</span> <span class="ow">in</span> <span class="n">perfs_list</span><span class="p">:</span>
+            <span class="n">curr_value</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">curr_perf</span><span class="o">.</span><span class="n">score</span><span class="p">,</span> <span class="n">attribute</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">curr_value</span> <span class="o">&lt;=</span> <span class="n">max_value</span><span class="p">:</span>
+                <span class="n">threshold</span> <span class="o">=</span> <span class="n">curr_perf</span><span class="o">.</span><span class="n">threshold</span>
+
+        <span class="k">return</span> <span class="n">threshold</span><span class="p">,</span> <span class="n">max_value</span></div>
+
+    <span class="c1"># =================== Optimizer for one value ===================</span>
+    <span class="c1"># get_x_percent_FN_min_threshold</span>
+<div class="viewcode-block" id="Calibrator.get_threshold_where_upper_are_less_than_xpercent_FN"><a class="viewcode-back" href="../../../common.Calibrator.html#common.Calibrator.threshold_calibrator.Calibrator.get_threshold_where_upper_are_less_than_xpercent_FN">[docs]</a>    <span class="k">def</span> <span class="nf">get_threshold_where_upper_are_less_than_xpercent_FN</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">perfs_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">perf_datastruct</span><span class="o">.</span><span class="n">Perf</span><span class="p">],</span> <span class="n">percent</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+        <span class="c1"># upper to this threshold, there is less than X percent of false negative</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_optimal_for_optimized_attribute</span><span class="p">(</span><span class="n">perfs_list</span><span class="o">=</span><span class="n">perfs_list</span><span class="p">,</span>
+                                                        <span class="n">attribute</span><span class="o">=</span><span class="s2">&quot;FNR&quot;</span><span class="p">,</span>
+                                                        <span class="n">maximize_attribute</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                                        <span class="n">maximize_threshold</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                                                        <span class="n">is_increasing</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                                                        <span class="n">tolerance</span><span class="o">=</span><span class="n">percent</span><span class="p">)</span></div>
+
+    <span class="c1"># get_x_percent_TP_min_threshold</span>
+<div class="viewcode-block" id="Calibrator.get_threshold_where_upper_are_more_than_xpercent_TP"><a class="viewcode-back" href="../../../common.Calibrator.html#common.Calibrator.threshold_calibrator.Calibrator.get_threshold_where_upper_are_more_than_xpercent_TP">[docs]</a>    <span class="k">def</span> <span class="nf">get_threshold_where_upper_are_more_than_xpercent_TP</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">perfs_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">perf_datastruct</span><span class="o">.</span><span class="n">Perf</span><span class="p">],</span> <span class="n">percent</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+        <span class="c1"># upper to this threshold, there is more than X percent of true positive</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_optimal_for_optimized_attribute</span><span class="p">(</span><span class="n">perfs_list</span><span class="o">=</span><span class="n">perfs_list</span><span class="p">,</span>
+                                                        <span class="n">attribute</span><span class="o">=</span><span class="s2">&quot;TPR&quot;</span><span class="p">,</span>
+                                                        <span class="n">maximize_attribute</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                                        <span class="n">maximize_threshold</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                                                        <span class="n">is_increasing</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                                        <span class="n">tolerance</span><span class="o">=</span><span class="n">percent</span><span class="p">)</span></div>
+
+    <span class="c1"># get_x_percent_TN_max_threshold</span>
+<div class="viewcode-block" id="Calibrator.get_threshold_where_below_are_more_than_xpercent_TN"><a class="viewcode-back" href="../../../common.Calibrator.html#common.Calibrator.threshold_calibrator.Calibrator.get_threshold_where_below_are_more_than_xpercent_TN">[docs]</a>    <span class="k">def</span> <span class="nf">get_threshold_where_below_are_more_than_xpercent_TN</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">perfs_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">perf_datastruct</span><span class="o">.</span><span class="n">Perf</span><span class="p">],</span> <span class="n">percent</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+        <span class="c1"># below to this threshold, there is more than X percent of true negative</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_optimal_for_optimized_attribute</span><span class="p">(</span><span class="n">perfs_list</span><span class="o">=</span><span class="n">perfs_list</span><span class="p">,</span>
+                                                        <span class="n">attribute</span><span class="o">=</span><span class="s2">&quot;TNR&quot;</span><span class="p">,</span>
+                                                        <span class="n">maximize_attribute</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                                                        <span class="n">maximize_threshold</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                                        <span class="n">is_increasing</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                                                        <span class="n">tolerance</span><span class="o">=</span><span class="mi">1</span> <span class="o">-</span> <span class="n">percent</span><span class="p">)</span></div>
+
+    <span class="c1"># get_x_percent_FP_max_threshold</span>
+<div class="viewcode-block" id="Calibrator.get_threshold_where_below_are_less_than_xpercent_FP"><a class="viewcode-back" href="../../../common.Calibrator.html#common.Calibrator.threshold_calibrator.Calibrator.get_threshold_where_below_are_less_than_xpercent_FP">[docs]</a>    <span class="k">def</span> <span class="nf">get_threshold_where_below_are_less_than_xpercent_FP</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">perfs_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">perf_datastruct</span><span class="o">.</span><span class="n">Perf</span><span class="p">],</span> <span class="n">percent</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+        <span class="c1"># below to this threshold, there is less than X percent of false positive</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_optimal_for_optimized_attribute</span><span class="p">(</span><span class="n">perfs_list</span><span class="o">=</span><span class="n">perfs_list</span><span class="p">,</span>
+                                                        <span class="n">attribute</span><span class="o">=</span><span class="s2">&quot;FPR&quot;</span><span class="p">,</span>
+                                                        <span class="n">maximize_attribute</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                                                        <span class="n">maximize_threshold</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                                        <span class="n">is_increasing</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                                        <span class="n">tolerance</span><span class="o">=</span><span class="mi">1</span> <span class="o">-</span> <span class="n">percent</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Calibrator.get_max_threshold_for_max_F1"><a class="viewcode-back" href="../../../common.Calibrator.html#common.Calibrator.threshold_calibrator.Calibrator.get_max_threshold_for_max_F1">[docs]</a>    <span class="k">def</span> <span class="nf">get_max_threshold_for_max_F1</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">perfs_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">perf_datastruct</span><span class="o">.</span><span class="n">Perf</span><span class="p">]):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_optimal_for_optimized_attribute</span><span class="p">(</span><span class="n">perfs_list</span><span class="o">=</span><span class="n">perfs_list</span><span class="p">,</span>
+                                                        <span class="n">attribute</span><span class="o">=</span><span class="s2">&quot;F1&quot;</span><span class="p">,</span>
+                                                        <span class="n">maximize_attribute</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                                        <span class="n">maximize_threshold</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                                        <span class="n">is_increasing</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="dir_path"><a class="viewcode-back" href="../../../common.Calibrator.html#common.Calibrator.threshold_calibrator.dir_path">[docs]</a><span class="k">def</span> <span class="nf">dir_path</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+        <span class="k">return</span> <span class="n">path</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentTypeError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;readable_dir:</span><span class="si">{path}</span><span class="s2"> is not a valid path&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="default_conf"><a class="viewcode-back" href="../../../common.Calibrator.html#common.Calibrator.threshold_calibrator.default_conf">[docs]</a><span class="k">def</span> <span class="nf">default_conf</span><span class="p">(</span><span class="n">args</span><span class="p">):</span>
+    <span class="n">cal_conf</span> <span class="o">=</span> <span class="n">calibrator_conf</span><span class="o">.</span><span class="n">Default_calibrator_conf</span><span class="o">.</span><span class="n">get_default_instance</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">cal_conf</span></div>
+
+
+<div class="viewcode-block" id="load_from_file"><a class="viewcode-back" href="../../../common.Calibrator.html#common.Calibrator.threshold_calibrator.load_from_file">[docs]</a><span class="k">def</span> <span class="nf">load_from_file</span><span class="p">(</span><span class="n">args</span><span class="p">):</span>
+    <span class="n">cal_conf</span> <span class="o">=</span> <span class="n">calibrator_conf</span><span class="o">.</span><span class="n">Default_calibrator_conf</span><span class="p">()</span>
+    <span class="c1"># TODO : Load from file !</span>
+    <span class="k">return</span> <span class="n">cal_conf</span></div>
+
+
+<div class="viewcode-block" id="load_from_args"><a class="viewcode-back" href="../../../common.Calibrator.html#common.Calibrator.threshold_calibrator.load_from_args">[docs]</a><span class="k">def</span> <span class="nf">load_from_args</span><span class="p">(</span><span class="n">args</span><span class="p">):</span>
+    <span class="c1"># Create a calibrator configuration from args</span>
+
+    <span class="n">cal_conf</span> <span class="o">=</span> <span class="n">calibrator_conf</span><span class="o">.</span><span class="n">Default_calibrator_conf</span><span class="p">()</span>
+    <span class="n">cal_conf</span><span class="o">.</span><span class="n">Acceptable_false_positive_rate</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">AFPR</span>
+    <span class="n">cal_conf</span><span class="o">.</span><span class="n">Acceptable_false_negative_rate</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">AFNR</span>
+    <span class="n">cal_conf</span><span class="o">.</span><span class="n">Minimum_true_positive_rate</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">MTPR</span>
+    <span class="n">cal_conf</span><span class="o">.</span><span class="n">Minimum_true_negative_rate</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">MTNR</span>
+
+    <span class="c1"># validate the values</span>
+    <span class="n">cal_conf</span><span class="o">.</span><span class="n">validate</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">cal_conf</span></div>
+
+
+<span class="c1"># Launcher for this worker. Launch this file to launch a worker</span>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="c1"># Launch command examples :</span>
+    <span class="c1"># python3 ./threshold_calibrator.py -s -gt -d from_conf_file</span>
+    <span class="c1"># python3 ./threshold_calibrator.py -s ./../../datasets/MINI_DATASET -gt ./../../datasets/MINI_DATASET_VISJS.json -d ./TEST/ from_cmd_args -AFPR 0.1 -MTPR 0.9</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s1">&#39;Launch DouglasQuaid Calibrator on your own dataset to get custom configuration files&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-s&quot;</span><span class="p">,</span> <span class="s1">&#39;--source_path&#39;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;src&quot;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">dir_path</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store&#39;</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Source path of folder of pictures to evaluate. Should be a subset of your production data.&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-gt&quot;</span><span class="p">,</span> <span class="s1">&#39;--ground_truth&#39;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;gt&quot;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">dir_path</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store&#39;</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Ground truth file path which has clustered version of the provided data. Very important as it is on what the optimization will based its calculations !&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-d&quot;</span><span class="p">,</span> <span class="s1">&#39;--dest_path&#39;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;dest&quot;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">dir_path</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store&#39;</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Destination path to store results of the evaluation (configuration files generated, etc.)&#39;</span><span class="p">)</span>
+
+    <span class="n">subparsers</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_subparsers</span><span class="p">(</span><span class="n">help</span><span class="o">=</span><span class="s1">&#39;Handle a configuration file&#39;</span><span class="p">)</span>
+
+    <span class="c1"># create the parser for the &quot;command_0&quot; command</span>
+    <span class="n">parser_a</span> <span class="o">=</span> <span class="n">subparsers</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span><span class="s1">&#39;from_default&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Set-up expected values/thresholds from default configuration&#39;</span><span class="p">)</span>
+    <span class="n">parser_a</span><span class="o">.</span><span class="n">set_defaults</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">default_conf</span><span class="p">)</span>
+
+    <span class="c1"># create the parser for the &quot;command_1&quot; command</span>
+    <span class="n">parser_a</span> <span class="o">=</span> <span class="n">subparsers</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span><span class="s1">&#39;from_conf_file&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Set-up expected values/thresholds from configuration file&#39;</span><span class="p">)</span>
+    <span class="n">parser_a</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-c&quot;</span><span class="p">,</span> <span class="s1">&#39;--conf&#39;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;conf&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">dir_path</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Configuration file (Calibrator_conf) file path.&#39;</span><span class="p">)</span>
+    <span class="n">parser_a</span><span class="o">.</span><span class="n">set_defaults</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">load_from_file</span><span class="p">)</span>
+
+    <span class="c1"># create the parser for the &quot;command_2&quot; command</span>
+    <span class="n">parser_b</span> <span class="o">=</span> <span class="n">subparsers</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span><span class="s1">&#39;from_cmd_args&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Set-up expected values/thresholds from command line [(TNR or FPR) AND (TPR or FNR)]&#39;</span><span class="p">)</span>
+    <span class="n">parser_b</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-AFPR&#39;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;AFPR&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Acceptable False Positive Rate (target)&#39;</span><span class="p">)</span>
+    <span class="n">parser_b</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-AFNR&#39;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;AFNR&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Acceptable False Positive Rate (target)&#39;</span><span class="p">)</span>
+    <span class="n">parser_b</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-MTPR&#39;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;MTPR&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Minimum True Positive Rate (target)&#39;</span><span class="p">)</span>
+    <span class="n">parser_b</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-MTNR&#39;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;MTNR&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Minimum True Negative Rate (target)&#39;</span><span class="p">)</span>
+    <span class="n">parser_b</span><span class="o">.</span><span class="n">set_defaults</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">load_from_args</span><span class="p">)</span>
+
+    <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">func</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">func</span>
+        <span class="n">calibrator_conf</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+        <span class="n">calibrator</span> <span class="o">=</span> <span class="n">Calibrator</span><span class="p">()</span>
+        <span class="n">calibrator</span><span class="o">.</span><span class="n">set_calibrator_conf</span><span class="p">(</span><span class="n">calibrator_conf</span><span class="p">)</span>
+        <span class="n">calibrator</span><span class="o">.</span><span class="n">calibrate_douglas_quaid</span><span class="p">(</span><span class="n">folder_of_pictures</span><span class="o">=</span><span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">src</span><span class="p">),</span>
+                                           <span class="n">ground_truth_file</span><span class="o">=</span><span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">gt</span><span class="p">),</span>
+                                           <span class="n">output_folder</span><span class="o">=</span><span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">dest</span><span class="p">))</span>
+
+    <span class="k">except</span> <span class="ne">AttributeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Too few arguments : </span><span class="si">{e}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, Vincent FALCONIERI.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.2.
+    </div>
+  </body>
+</html>

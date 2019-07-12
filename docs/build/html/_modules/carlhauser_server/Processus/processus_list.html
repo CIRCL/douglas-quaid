@@ -1,0 +1,176 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>carlhauser_server.Processus.processus_list &#8212; Douglas-Quaid 0.0.4 documentation</title>
+    <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for carlhauser_server.Processus.processus_list</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="c1"># ==================== ------ STD LIBRARIES ------- ====================</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">subprocess</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">List</span>
+
+<span class="c1"># ==================== ------ PERSONAL LIBRARIES ------- ====================</span>
+<span class="kn">import</span> <span class="nn">carlhauser_server.Processus.worker_processus</span> <span class="k">as</span> <span class="nn">worker_processus</span>
+
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">pardir</span><span class="p">))</span>
+
+<span class="c1"># ==================== ------ PATHS ------- ====================</span>
+
+<div class="viewcode-block" id="ProcessusList"><a class="viewcode-back" href="../../../carlhauser_server.Processus.html#carlhauser_server.Processus.processus_list.ProcessusList">[docs]</a><span class="k">class</span> <span class="nc">ProcessusList</span><span class="p">:</span>
+    <span class="c1"># Handle a list of processus of one type</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">list_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">processus_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">worker_processus</span><span class="o">.</span><span class="n">WorkerProcessus</span><span class="p">]):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">list_name</span> <span class="o">=</span> <span class="n">list_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">processus_list</span> <span class="o">=</span> <span class="n">processus_list</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ProcessusList.append"><a class="viewcode-back" href="../../../carlhauser_server.Processus.html#carlhauser_server.Processus.processus_list.ProcessusList.append">[docs]</a>    <span class="k">def</span> <span class="nf">append</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">process</span><span class="p">:</span> <span class="n">worker_processus</span><span class="o">.</span><span class="n">WorkerProcessus</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Adding worker : </span><span class="si">{process}</span><span class="s2"> to processes list </span><span class="si">{self.list_name}</span><span class="s2">.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">processus_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">process</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ProcessusList.flush"><a class="viewcode-back" href="../../../carlhauser_server.Processus.html#carlhauser_server.Processus.processus_list.ProcessusList.flush">[docs]</a>    <span class="k">def</span> <span class="nf">flush</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">processus_list</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="ProcessusList.flush_not_running"><a class="viewcode-back" href="../../../carlhauser_server.Processus.html#carlhauser_server.Processus.processus_list.ProcessusList.flush_not_running">[docs]</a>    <span class="k">def</span> <span class="nf">flush_not_running</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># TODO</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="ProcessusList.kill_all_processus"><a class="viewcode-back" href="../../../carlhauser_server.Processus.html#carlhauser_server.Processus.processus_list.ProcessusList.kill_all_processus">[docs]</a>    <span class="k">def</span> <span class="nf">kill_all_processus</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">grace_time</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
+        <span class="c1"># Try to kill all workers of the given list, waiting &lt;grace_time&gt; for each processus to finish (2 sec per default)</span>
+
+        <span class="k">for</span> <span class="n">proc</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">processus_list</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Trying to stop </span><span class="si">{proc.process}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">proc</span><span class="o">.</span><span class="n">process</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
+                <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.2</span><span class="p">)</span>
+            <span class="k">finally</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">proc</span><span class="o">.</span><span class="n">process</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="n">grace_time</span><span class="p">)</span>
+                <span class="k">except</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">TimeoutExpired</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Processus </span><span class="si">{proc.process}</span><span class="s2"> did not terminate in time. Trying to kill it.&quot;</span><span class="p">)</span>
+                <span class="k">finally</span><span class="p">:</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">proc</span><span class="o">.</span><span class="n">process</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Processus exited with </span><span class="si">{proc.process.returncode}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="k">except</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">TimeoutExpired</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Processus </span><span class="si">{proc.process}</span><span class="s2"> is still alive .. Don&#39;t know how to stop it.&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ProcessusList.get_running_processus"><a class="viewcode-back" href="../../../carlhauser_server.Processus.html#carlhauser_server.Processus.processus_list.ProcessusList.get_running_processus">[docs]</a>    <span class="k">def</span> <span class="nf">get_running_processus</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Provide a sublist of the list of processus, which are currently running</span>
+        <span class="n">running_workers</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">worker</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">processus_list</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">worker</span><span class="o">.</span><span class="n">is_running</span><span class="p">():</span>
+                <span class="c1"># All running workers are there</span>
+                <span class="n">running_workers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">worker</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">running_workers</span></div>
+
+<div class="viewcode-block" id="ProcessusList.is_there_alive_workers"><a class="viewcode-back" href="../../../carlhauser_server.Processus.html#carlhauser_server.Processus.processus_list.ProcessusList.is_there_alive_workers">[docs]</a>    <span class="k">def</span> <span class="nf">is_there_alive_workers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Check if workers are alive, and return True if all worker are down</span>
+
+        <span class="n">all_have_stopped</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;{len(self.processus_list)} worker(s) are presents in </span><span class="si">{self.list_name}</span><span class="s2">.&quot;</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">curr_proc</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">processus_list</span><span class="p">):</span>
+            <span class="n">is_stopped</span> <span class="o">=</span> <span class="n">curr_proc</span><span class="o">.</span><span class="n">check_status</span><span class="p">(</span><span class="n">id_to_display</span><span class="o">=</span><span class="n">i</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">is_stopped</span><span class="p">:</span>
+                <span class="c1"># If waiting has timeouted, return</span>
+                <span class="n">all_have_stopped</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="k">break</span>
+
+        <span class="k">return</span> <span class="n">all_have_stopped</span></div>
+
+<div class="viewcode-block" id="ProcessusList.wait_until_all_stopped"><a class="viewcode-back" href="../../../carlhauser_server.Processus.html#carlhauser_server.Processus.processus_list.ProcessusList.wait_until_all_stopped">[docs]</a>    <span class="k">def</span> <span class="nf">wait_until_all_stopped</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">60</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="c1"># Wait until all the workers are stopped (= terminated)</span>
+        <span class="c1"># Put timeout -1 if you don&#39;t want to function to timeout</span>
+
+        <span class="n">all_have_stopped</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">curr_proc</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">processus_list</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;List </span><span class="si">{self.list_name}</span><span class="s2"> - waiting for worker </span><span class="si">{i}</span><span class="s2"> to stop ... &quot;</span><span class="p">)</span>
+            <span class="n">are_stopped</span> <span class="o">=</span> <span class="n">curr_proc</span><span class="o">.</span><span class="n">wait_until_stopped</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">are_stopped</span><span class="p">:</span>
+                <span class="c1"># If waiting has timeouted, return</span>
+                <span class="n">all_have_stopped</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="k">break</span>
+
+        <span class="k">return</span> <span class="n">all_have_stopped</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, Vincent FALCONIERI.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.2.
+    </div>
+  </body>
+</html>

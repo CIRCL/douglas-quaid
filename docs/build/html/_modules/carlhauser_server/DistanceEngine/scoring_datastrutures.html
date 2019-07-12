@@ -1,0 +1,231 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>carlhauser_server.DistanceEngine.scoring_datastrutures &#8212; Douglas-Quaid 0.0.4 documentation</title>
+    <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for carlhauser_server.DistanceEngine.scoring_datastrutures</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="c1"># ==================== ------ STD LIBRARIES ------- ====================</span>
+<span class="kn">from</span> <span class="nn">enum</span> <span class="k">import</span> <span class="n">Enum</span><span class="p">,</span> <span class="n">auto</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">List</span>
+
+<span class="c1"># ==================== ------ PERSONAL LIBRARIES ------- ====================</span>
+<span class="kn">from</span> <span class="nn">carlhauser_server.Configuration.template_conf</span> <span class="k">import</span> <span class="n">JSON_parsable_Enum</span>
+
+<div class="viewcode-block" id="DecisionTypes"><a class="viewcode-back" href="../../../carlhauser_server.DistanceEngine.html#carlhauser_server.DistanceEngine.scoring_datastrutures.DecisionTypes">[docs]</a><span class="k">class</span> <span class="nc">DecisionTypes</span><span class="p">(</span><span class="n">JSON_parsable_Enum</span><span class="p">,</span> <span class="n">Enum</span><span class="p">):</span>
+    <span class="c1"># Possible answer to the question &quot;Are these pictures the same ?&quot;</span>
+    <span class="n">YES</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+    <span class="n">MAYBE</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+    <span class="n">NO</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="AlgoMatch"><a class="viewcode-back" href="../../../carlhauser_server.DistanceEngine.html#carlhauser_server.DistanceEngine.scoring_datastrutures.AlgoMatch">[docs]</a><span class="k">class</span> <span class="nc">AlgoMatch</span><span class="p">:</span>
+    <span class="c1"># Datastructure to handle the returned values of a &quot;distance evaluation&quot; between two hashs, Orb ...</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">distance</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">decision</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">distance</span> <span class="o">=</span> <span class="n">distance</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">decision</span> <span class="o">=</span> <span class="n">decision</span>
+
+<div class="viewcode-block" id="AlgoMatch.to_obj"><a class="viewcode-back" href="../../../carlhauser_server.DistanceEngine.html#carlhauser_server.DistanceEngine.scoring_datastrutures.AlgoMatch.to_obj">[docs]</a>    <span class="k">def</span> <span class="nf">to_obj</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">tmp_obj</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">tmp_obj</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
+        <span class="n">tmp_obj</span><span class="p">[</span><span class="s2">&quot;distance&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">distance</span>
+        <span class="n">tmp_obj</span><span class="p">[</span><span class="s2">&quot;decision&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">decision</span><span class="o">.</span><span class="n">name</span>
+
+        <span class="k">return</span> <span class="n">tmp_obj</span></div>
+
+    <span class="c1"># ==================== To string ====================</span>
+
+    <span class="c1"># Overwrite to print the content of the cluster instead of the cluster memory address</span>
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_str</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_str</span><span class="p">()</span>
+
+<div class="viewcode-block" id="AlgoMatch.get_str"><a class="viewcode-back" href="../../../carlhauser_server.DistanceEngine.html#carlhauser_server.DistanceEngine.scoring_datastrutures.AlgoMatch.get_str">[docs]</a>    <span class="k">def</span> <span class="nf">get_str</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39; name=&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                                 <span class="s1">&#39; distance=&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">distance</span><span class="p">,</span>
+                                 <span class="s1">&#39; decision=&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">decision</span><span class="p">]))</span></div></div>
+
+
+<span class="c1"># Datastructures to handle a list of matches</span>
+<div class="viewcode-block" id="ClusterMatch"><a class="viewcode-back" href="../../../carlhauser_server.DistanceEngine.html#carlhauser_server.DistanceEngine.scoring_datastrutures.ClusterMatch">[docs]</a><span class="k">class</span> <span class="nc">ClusterMatch</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cluster_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">distance</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">decision</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cluster_id</span> <span class="o">=</span> <span class="n">cluster_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">distance</span> <span class="o">=</span> <span class="n">distance</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">decision</span> <span class="o">=</span> <span class="n">decision</span>
+
+<div class="viewcode-block" id="ClusterMatch.to_obj"><a class="viewcode-back" href="../../../carlhauser_server.DistanceEngine.html#carlhauser_server.DistanceEngine.scoring_datastrutures.ClusterMatch.to_obj">[docs]</a>    <span class="k">def</span> <span class="nf">to_obj</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">tmp_obj</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">tmp_obj</span><span class="p">[</span><span class="s2">&quot;cluster_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cluster_id</span>
+        <span class="n">tmp_obj</span><span class="p">[</span><span class="s2">&quot;distance&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">distance</span>
+        <span class="n">tmp_obj</span><span class="p">[</span><span class="s2">&quot;decision&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">decision</span><span class="o">.</span><span class="n">name</span>
+
+        <span class="k">return</span> <span class="n">tmp_obj</span></div>
+
+    <span class="c1"># ==================== To string ====================</span>
+
+    <span class="c1"># Overwrite to print the content of the cluster instead of the cluster memory address</span>
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_str</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_str</span><span class="p">()</span>
+
+<div class="viewcode-block" id="ClusterMatch.get_str"><a class="viewcode-back" href="../../../carlhauser_server.DistanceEngine.html#carlhauser_server.DistanceEngine.scoring_datastrutures.ClusterMatch.get_str">[docs]</a>    <span class="k">def</span> <span class="nf">get_str</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39; cluster_id=&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cluster_id</span><span class="p">,</span>
+                                 <span class="s1">&#39; distance=&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">distance</span><span class="p">,</span>
+                                 <span class="s1">&#39; decision=&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">decision</span><span class="p">]))</span></div></div>
+
+
+<div class="viewcode-block" id="ImageMatch"><a class="viewcode-back" href="../../../carlhauser_server.DistanceEngine.html#carlhauser_server.DistanceEngine.scoring_datastrutures.ImageMatch">[docs]</a><span class="k">class</span> <span class="nc">ImageMatch</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">image_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cluster_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">distance</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">decision</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">image_id</span> <span class="o">=</span> <span class="n">image_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cluster_id</span> <span class="o">=</span> <span class="n">cluster_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">distance</span> <span class="o">=</span> <span class="n">distance</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">decision</span> <span class="o">=</span> <span class="n">decision</span>
+
+<div class="viewcode-block" id="ImageMatch.to_obj"><a class="viewcode-back" href="../../../carlhauser_server.DistanceEngine.html#carlhauser_server.DistanceEngine.scoring_datastrutures.ImageMatch.to_obj">[docs]</a>    <span class="k">def</span> <span class="nf">to_obj</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">tmp_obj</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">tmp_obj</span><span class="p">[</span><span class="s2">&quot;image_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">image_id</span>
+        <span class="n">tmp_obj</span><span class="p">[</span><span class="s2">&quot;cluster_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cluster_id</span>
+        <span class="n">tmp_obj</span><span class="p">[</span><span class="s2">&quot;distance&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">distance</span>
+        <span class="n">tmp_obj</span><span class="p">[</span><span class="s2">&quot;decision&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">decision</span><span class="o">.</span><span class="n">name</span>
+
+        <span class="k">return</span> <span class="n">tmp_obj</span></div>
+
+    <span class="c1"># ==================== To string ====================</span>
+
+    <span class="c1"># Overwrite to print the content of the cluster instead of the cluster memory address</span>
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_str</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_str</span><span class="p">()</span>
+
+<div class="viewcode-block" id="ImageMatch.get_str"><a class="viewcode-back" href="../../../carlhauser_server.DistanceEngine.html#carlhauser_server.DistanceEngine.scoring_datastrutures.ImageMatch.get_str">[docs]</a>    <span class="k">def</span> <span class="nf">get_str</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39; image_id=&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">image_id</span><span class="p">,</span>
+                                 <span class="s1">&#39; cluster_id=&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cluster_id</span><span class="p">,</span>
+                                 <span class="s1">&#39; distance=&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">distance</span><span class="p">,</span>
+                                 <span class="s1">&#39; decision=&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">decision</span><span class="p">]))</span></div></div>
+
+
+<div class="viewcode-block" id="TopN"><a class="viewcode-back" href="../../../carlhauser_server.DistanceEngine.html#carlhauser_server.DistanceEngine.scoring_datastrutures.TopN">[docs]</a><span class="k">class</span> <span class="nc">TopN</span><span class="p">:</span>
+    <span class="c1"># TODO : Improve datastructure (priority queue, probably)</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">top_n</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">list_top_n_elements</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">top_n</span> <span class="o">=</span> <span class="n">top_n</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sorted</span> <span class="o">=</span> <span class="kc">False</span>
+
+<div class="viewcode-block" id="TopN.add_element"><a class="viewcode-back" href="../../../carlhauser_server.DistanceEngine.html#carlhauser_server.DistanceEngine.scoring_datastrutures.TopN.add_element">[docs]</a>    <span class="k">def</span> <span class="nf">add_element</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">list_top_n_elements</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">element</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sorted</span> <span class="o">=</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="TopN.get_top_n"><a class="viewcode-back" href="../../../carlhauser_server.DistanceEngine.html#carlhauser_server.DistanceEngine.scoring_datastrutures.TopN.get_top_n">[docs]</a>    <span class="k">def</span> <span class="nf">get_top_n</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Get the top n of the elements of the list</span>
+
+        <span class="c1"># Sort elements if not sorted</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">sorted</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">list_top_n_elements</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">distance</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sorted</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="c1"># Return the top n elements of the list</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">list_top_n_elements</span><span class="p">[:</span><span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">top_n</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">list_top_n_elements</span><span class="p">))]</span></div></div>
+
+
+<span class="c1"># ==================== ------ BACKGROUND COMPUTATION ------- ====================</span>
+
+<div class="viewcode-block" id="build_response"><a class="viewcode-back" href="../../../carlhauser_server.DistanceEngine.html#carlhauser_server.DistanceEngine.scoring_datastrutures.build_response">[docs]</a><span class="k">def</span> <span class="nf">build_response</span><span class="p">(</span><span class="n">request_id</span><span class="p">,</span> <span class="n">list_cluster</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">ClusterMatch</span><span class="p">],</span> <span class="n">list_pictures</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">ImageMatch</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="c1"># Store request id</span>
+    <span class="n">results</span><span class="p">[</span><span class="s2">&quot;request_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">request_id</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">list_pictures</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">results</span><span class="p">[</span><span class="s2">&quot;status&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;matches_found&quot;</span>
+
+        <span class="c1"># Store clusters</span>
+        <span class="n">tmp_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">cluster</span><span class="o">.</span><span class="n">to_obj</span><span class="p">()</span> <span class="k">for</span> <span class="n">cluster</span> <span class="ow">in</span> <span class="n">list_cluster</span><span class="p">]</span>
+        <span class="n">results</span><span class="p">[</span><span class="s2">&quot;list_cluster&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tmp_list</span>
+
+        <span class="c1"># Store pictures</span>
+        <span class="n">tmp_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">picture</span><span class="o">.</span><span class="n">to_obj</span><span class="p">()</span> <span class="k">for</span> <span class="n">picture</span> <span class="ow">in</span> <span class="n">list_pictures</span><span class="p">]</span>
+        <span class="n">results</span><span class="p">[</span><span class="s2">&quot;list_pictures&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tmp_list</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">results</span><span class="p">[</span><span class="s2">&quot;status&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;matches_not_found&quot;</span>
+
+    <span class="k">return</span> <span class="n">results</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, Vincent FALCONIERI.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.2.
+    </div>
+  </body>
+</html>

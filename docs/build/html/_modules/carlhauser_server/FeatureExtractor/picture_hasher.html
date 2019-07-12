@@ -1,0 +1,149 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>carlhauser_server.FeatureExtractor.picture_hasher &#8212; Douglas-Quaid 0.0.4 documentation</title>
+    <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for carlhauser_server.FeatureExtractor.picture_hasher</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">import</span> <span class="nn">io</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="c1"># ==================== ------ STD LIBRARIES ------- ====================</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">tlsh</span>
+
+<span class="kn">import</span> <span class="nn">PIL.Image</span> <span class="k">as</span> <span class="nn">Image</span>
+<span class="kn">import</span> <span class="nn">imagehash</span>
+
+<span class="c1"># ==================== ------ PERSONAL LIBRARIES ------- ====================</span>
+
+<span class="kn">import</span> <span class="nn">carlhauser_server.Configuration.feature_extractor_conf</span> <span class="k">as</span> <span class="nn">feature_extractor_conf</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">pardir</span><span class="p">))</span>
+
+
+<div class="viewcode-block" id="Picture_Hasher"><a class="viewcode-back" href="../../../carlhauser_server.FeatureExtractor.html#carlhauser_server.FeatureExtractor.picture_hasher.Picture_Hasher">[docs]</a><span class="k">class</span> <span class="nc">Picture_Hasher</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fe_conf</span><span class="p">:</span> <span class="n">feature_extractor_conf</span><span class="p">):</span>
+        <span class="c1"># STD attributes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fe_conf</span> <span class="o">=</span> <span class="n">fe_conf</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Creation of a Picture Hasher&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Picture_Hasher.hash_picture"><a class="viewcode-back" href="../../../carlhauser_server.FeatureExtractor.html#carlhauser_server.FeatureExtractor.picture_hasher.Picture_Hasher.hash_picture">[docs]</a>    <span class="k">def</span> <span class="nf">hash_picture</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">curr_picture</span><span class="p">):</span>
+        <span class="n">answer</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Hashing picture ... &quot;</span><span class="p">)</span>
+
+        <span class="c1"># Convert bytes in PIL image</span>
+        <span class="n">pil_picture</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">io</span><span class="o">.</span><span class="n">BytesIO</span><span class="p">(</span><span class="n">curr_picture</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Picture converted to PIL Image {type(pil_picture)}&quot;</span><span class="p">)</span>
+
+        <span class="c1"># DEBUG # pil_picture.save(&#39;/home/user/Desktop/debug_pil.bmp&#39;)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># Note : @image must be a PIL instance.</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">fe_conf</span><span class="o">.</span><span class="n">A_HASH</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;is_enabled&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;A-HASH ... &quot;</span><span class="p">)</span>
+                <span class="n">answer</span><span class="p">[</span><span class="s2">&quot;A_HASH&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_null_hash</span><span class="p">(</span><span class="n">imagehash</span><span class="o">.</span><span class="n">average_hash</span><span class="p">(</span><span class="n">pil_picture</span><span class="p">))</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">fe_conf</span><span class="o">.</span><span class="n">P_HASH</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;is_enabled&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;P_HASH ... &quot;</span><span class="p">)</span>
+                <span class="n">answer</span><span class="p">[</span><span class="s2">&quot;P_HASH&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_null_hash</span><span class="p">(</span><span class="n">imagehash</span><span class="o">.</span><span class="n">phash</span><span class="p">(</span><span class="n">pil_picture</span><span class="p">))</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">fe_conf</span><span class="o">.</span><span class="n">P_HASH_SIMPLE</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;is_enabled&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;P_HASH_SIMPLE ... &quot;</span><span class="p">)</span>
+                <span class="n">answer</span><span class="p">[</span><span class="s2">&quot;P_HASH_SIMPLE&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_null_hash</span><span class="p">(</span><span class="n">imagehash</span><span class="o">.</span><span class="n">phash_simple</span><span class="p">(</span><span class="n">pil_picture</span><span class="p">))</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">fe_conf</span><span class="o">.</span><span class="n">D_HASH</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;is_enabled&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;D_HASH ... &quot;</span><span class="p">)</span>
+                <span class="n">answer</span><span class="p">[</span><span class="s2">&quot;D_HASH&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_null_hash</span><span class="p">(</span><span class="n">imagehash</span><span class="o">.</span><span class="n">dhash</span><span class="p">(</span><span class="n">pil_picture</span><span class="p">))</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">fe_conf</span><span class="o">.</span><span class="n">D_HASH_VERTICAL</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;is_enabled&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;D_HASH_VERTICAL ... &quot;</span><span class="p">)</span>
+                <span class="n">answer</span><span class="p">[</span><span class="s2">&quot;D_HASH_VERTICAL&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_null_hash</span><span class="p">(</span><span class="n">imagehash</span><span class="o">.</span><span class="n">dhash_vertical</span><span class="p">(</span><span class="n">pil_picture</span><span class="p">))</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">fe_conf</span><span class="o">.</span><span class="n">W_HASH</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;is_enabled&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;W_HASH ... &quot;</span><span class="p">)</span>
+                <span class="n">answer</span><span class="p">[</span><span class="s2">&quot;W_HASH&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_null_hash</span><span class="p">(</span><span class="n">imagehash</span><span class="o">.</span><span class="n">whash</span><span class="p">(</span><span class="n">pil_picture</span><span class="p">))</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">fe_conf</span><span class="o">.</span><span class="n">TLSH</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;is_enabled&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;TLSH ... &quot;</span><span class="p">)</span>
+                <span class="n">answer</span><span class="p">[</span><span class="s2">&quot;TLSH&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_null_hash</span><span class="p">(</span><span class="n">tlsh</span><span class="o">.</span><span class="n">hash</span><span class="p">(</span><span class="n">curr_picture</span><span class="p">))</span>
+
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Error during hashing : &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">answer</span></div>
+
+<div class="viewcode-block" id="Picture_Hasher.check_null_hash"><a class="viewcode-back" href="../../../carlhauser_server.FeatureExtractor.html#carlhauser_server.FeatureExtractor.picture_hasher.Picture_Hasher.check_null_hash">[docs]</a>    <span class="k">def</span> <span class="nf">check_null_hash</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">hash</span><span class="p">):</span>
+        <span class="c1"># Check if the hash provided is null/None/empty. If yes, provide a default hash</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Checking hash ... &quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hash</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;0000000000000000000000000000000000000000000000000000000000000000000000&#39;</span>
+        <span class="k">return</span> <span class="nb">hash</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, Vincent FALCONIERI.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.2.
+    </div>
+  </body>
+</html>

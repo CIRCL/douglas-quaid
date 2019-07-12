@@ -1,0 +1,164 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>common.TestInstanceLauncher package &#8212; Douglas-Quaid 0.0.4 documentation</title>
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="common-testinstancelauncher-package">
+<h1>common.TestInstanceLauncher package<a class="headerlink" href="#common-testinstancelauncher-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-common.TestInstanceLauncher.test_database_conf">
+<span id="common-testinstancelauncher-test-database-conf-module"></span><h2>common.TestInstanceLauncher.test_database_conf module<a class="headerlink" href="#module-common.TestInstanceLauncher.test_database_conf" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="common.TestInstanceLauncher.test_database_conf.TestInstance_database_conf">
+<em class="property">class </em><code class="sig-prename descclassname">common.TestInstanceLauncher.test_database_conf.</code><code class="sig-name descname">TestInstance_database_conf</code><a class="reference internal" href="_modules/common/TestInstanceLauncher/test_database_conf.html#TestInstance_database_conf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#common.TestInstanceLauncher.test_database_conf.TestInstance_database_conf" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="carlhauser_server.Configuration.html#carlhauser_server.Configuration.database_conf.Default_database_conf" title="carlhauser_server.Configuration.database_conf.Default_database_conf"><code class="xref py py-class docutils literal notranslate"><span class="pre">carlhauser_server.Configuration.database_conf.Default_database_conf</span></code></a></p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-common.TestInstanceLauncher.test_instance_launcher">
+<span id="common-testinstancelauncher-test-instance-launcher-module"></span><h2>common.TestInstanceLauncher.test_instance_launcher module<a class="headerlink" href="#module-common.TestInstanceLauncher.test_instance_launcher" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="common.TestInstanceLauncher.test_instance_launcher.TestInstanceLauncher">
+<em class="property">class </em><code class="sig-prename descclassname">common.TestInstanceLauncher.test_instance_launcher.</code><code class="sig-name descname">TestInstanceLauncher</code><a class="reference internal" href="_modules/common/TestInstanceLauncher/test_instance_launcher.html#TestInstanceLauncher"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#common.TestInstanceLauncher.test_instance_launcher.TestInstanceLauncher" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Create a running instance of douglas-quaid, all linked on a unique test database
+Modify the behavior of the core launcher handler, to use only one database.</p>
+<dl class="method">
+<dt id="common.TestInstanceLauncher.test_instance_launcher.TestInstanceLauncher.create_core_launcher">
+<code class="sig-name descname">create_core_launcher</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/common/TestInstanceLauncher/test_instance_launcher.html#TestInstanceLauncher.create_core_launcher"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#common.TestInstanceLauncher.test_instance_launcher.TestInstanceLauncher.create_core_launcher" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a core launcher and overwrite its configuraiton</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="common.TestInstanceLauncher.test_instance_launcher.TestInstanceLauncher.create_database_only_instance">
+<code class="sig-name descname">create_database_only_instance</code><span class="sig-paren">(</span><em class="sig-param">db_conf: carlhauser_server.Configuration.database_conf.Default_database_conf = None</em>, <em class="sig-param">dist_conf: carlhauser_server.Configuration.distance_engine_conf.Default_distance_engine_conf = None</em>, <em class="sig-param">fe_conf: carlhauser_server.Configuration.feature_extractor_conf.Default_feature_extractor_conf = None</em>, <em class="sig-param">ws_conf: carlhauser_server.Configuration.webservice_conf.Default_webservice_conf = None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/common/TestInstanceLauncher/test_instance_launcher.html#TestInstanceLauncher.create_database_only_instance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#common.TestInstanceLauncher.test_instance_launcher.TestInstanceLauncher.create_database_only_instance" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="common.TestInstanceLauncher.test_instance_launcher.TestInstanceLauncher.create_full_instance">
+<code class="sig-name descname">create_full_instance</code><span class="sig-paren">(</span><em class="sig-param">db_conf: carlhauser_server.Configuration.database_conf.Default_database_conf = None</em>, <em class="sig-param">dist_conf: carlhauser_server.Configuration.distance_engine_conf.Default_distance_engine_conf = None</em>, <em class="sig-param">fe_conf: carlhauser_server.Configuration.feature_extractor_conf.Default_feature_extractor_conf = None</em>, <em class="sig-param">ws_conf: carlhauser_server.Configuration.webservice_conf.Default_webservice_conf = None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/common/TestInstanceLauncher/test_instance_launcher.html#TestInstanceLauncher.create_full_instance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#common.TestInstanceLauncher.test_instance_launcher.TestInstanceLauncher.create_full_instance" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="common.TestInstanceLauncher.test_instance_launcher.TestInstanceLauncher.create_modified_db_handler">
+<code class="sig-name descname">create_modified_db_handler</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; carlhauser_server.Singletons.database_start_stop.Database_StartStop<a class="reference internal" href="_modules/common/TestInstanceLauncher/test_instance_launcher.html#TestInstanceLauncher.create_modified_db_handler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#common.TestInstanceLauncher.test_instance_launcher.TestInstanceLauncher.create_modified_db_handler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a database handler (start/stop), modify its configuration and launch the DB</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="common.TestInstanceLauncher.test_instance_launcher.TestInstanceLauncher.launcher_core_launcher">
+<code class="sig-name descname">launcher_core_launcher</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/common/TestInstanceLauncher/test_instance_launcher.html#TestInstanceLauncher.launcher_core_launcher"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#common.TestInstanceLauncher.test_instance_launcher.TestInstanceLauncher.launcher_core_launcher" title="Permalink to this definition">¶</a></dt>
+<dd><p>Launch the whole “ecosystem” of workers around the database. Handled by the core</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="common.TestInstanceLauncher.test_instance_launcher.TestInstanceLauncher.overwrite_socket_and_script_db_handler">
+<em class="property">static </em><code class="sig-name descname">overwrite_socket_and_script_db_handler</code><span class="sig-paren">(</span><em class="sig-param">db_handler: carlhauser_server.Singletons.database_start_stop.Database_StartStop</em>, <em class="sig-param">db_conf: carlhauser_server.Configuration.database_conf.Default_database_conf</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/common/TestInstanceLauncher/test_instance_launcher.html#TestInstanceLauncher.overwrite_socket_and_script_db_handler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#common.TestInstanceLauncher.test_instance_launcher.TestInstanceLauncher.overwrite_socket_and_script_db_handler" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="common.TestInstanceLauncher.test_instance_launcher.TestInstanceLauncher.set_configurations">
+<code class="sig-name descname">set_configurations</code><span class="sig-paren">(</span><em class="sig-param">db_conf: carlhauser_server.Configuration.database_conf.Default_database_conf = None</em>, <em class="sig-param">dist_conf: carlhauser_server.Configuration.distance_engine_conf.Default_distance_engine_conf = None</em>, <em class="sig-param">fe_conf: carlhauser_server.Configuration.feature_extractor_conf.Default_feature_extractor_conf = None</em>, <em class="sig-param">ws_conf: carlhauser_server.Configuration.webservice_conf.Default_webservice_conf = None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/common/TestInstanceLauncher/test_instance_launcher.html#TestInstanceLauncher.set_configurations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#common.TestInstanceLauncher.test_instance_launcher.TestInstanceLauncher.set_configurations" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="common.TestInstanceLauncher.test_instance_launcher.TestInstanceLauncher.tearDown">
+<code class="sig-name descname">tearDown</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/common/TestInstanceLauncher/test_instance_launcher.html#TestInstanceLauncher.tearDown"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#common.TestInstanceLauncher.test_instance_launcher.TestInstanceLauncher.tearDown" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-common.TestInstanceLauncher">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-common.TestInstanceLauncher" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">common.TestInstanceLauncher package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-common.TestInstanceLauncher.test_database_conf">common.TestInstanceLauncher.test_database_conf module</a></li>
+<li><a class="reference internal" href="#module-common.TestInstanceLauncher.test_instance_launcher">common.TestInstanceLauncher.test_instance_launcher module</a></li>
+<li><a class="reference internal" href="#module-common.TestInstanceLauncher">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/common.TestInstanceLauncher.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, Vincent FALCONIERI.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.2.
+    </div>
+  </body>
+</html>
