@@ -36,7 +36,7 @@ class GraphExtractor:
     def get_proximity_graph(self, image_folder: pathlib.Path, output_path: pathlib.Path) -> GraphDataStruct:
         '''
         Extract a proximity graph from a folder of pictures, sent to DB and requested one by one.
-        :param image_folder: The folder of picture to send and request, to build the graph from
+        :param image_folder: The folder of picture to send and request, to build the similarity graph from
         :param output_path: The output path where the graph and other data will be stored
         :return: the proximity graph
         '''
