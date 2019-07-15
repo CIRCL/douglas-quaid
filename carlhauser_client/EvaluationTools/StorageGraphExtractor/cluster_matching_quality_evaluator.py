@@ -9,11 +9,12 @@ import sys
 from typing import Dict
 from typing import List
 
-# ==================== ------ PERSONAL LIBRARIES ------- ====================
-sys.path.append(os.path.abspath(os.path.pardir))
-from common.environment_variable import get_homedir
 import common.PerformanceDatastructs.stats_datastruct as scores
 from common.PerformanceDatastructs.clustermatch_datastruct import ClusterMatch
+# ==================== ------ PERSONAL LIBRARIES ------- ====================
+from common.environment_variable import get_homedir
+
+sys.path.append(os.path.abspath(os.path.pardir))
 
 # ==================== ------ PREPARATION ------- ====================
 # load the logging configuration

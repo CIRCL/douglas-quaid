@@ -69,7 +69,7 @@ class CLI:
         if args.mapfile:
             print(f"Mapping file detected. Reversing the ids ... ")
             mapping = load_json(args.mapfile)
-            db = apply_revert_mapping(db, mapping)
+            results = apply_revert_mapping(results, mapping)
 
         save_json(results, args.resultfile)
         return results

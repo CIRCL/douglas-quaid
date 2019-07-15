@@ -3,14 +3,10 @@
 
 # ==================== ------ STD LIBRARIES ------- ====================
 import os
-import pathlib
 import sys
-import time
 from typing import Dict, List
 
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
-from carlhauser_client.API.simple_api import Simple_API
-from common.Graph.graph_datastructure import GraphDataStruct
 
 sys.path.append(os.path.abspath(os.path.pardir))
 
@@ -30,6 +26,7 @@ def copy_id_to_image(dict_to_modify: Dict) -> Dict:
         i["image"] = i["id"]
 
     return dict_to_modify
+
 
 def revert_mapping(mapping: Dict) -> Dict:
     '''
@@ -52,7 +49,7 @@ def apply_mapping(dict_to_modify: Dict, mapping: Dict) -> Dict:
     return update_values_dict(dict_to_modify, {}, mapping)
 
 
-def apply_revert_mapping(dict_to_modify, mapping_to_revert: Dict) : # -> Dict or List or value ...
+def apply_revert_mapping(dict_to_modify, mapping_to_revert: Dict):  # -> Dict or List or value ...
     '''
     Revert the value/keys of a dictionnary and apply it to all
     occurences in dict_to_modify of keys-values in mapping, by their value
@@ -93,20 +90,21 @@ def update_values_dict(original_dict: Dict, future_dict: Dict, new_mapping: Dict
         # It's not a dict, maybe a int, a string, etc. so we replace it with what is needed
         return original_dict if original_dict not in new_mapping else new_mapping[original_dict]
 
+
 def get_clear_matches(request):
-        '''
-        Extract a clean list of matches from a request : remove the picture itself from the matches
-        :param request: result of a request, a dict
-        :return: a clean list of matches (wihtout the picture itself)
-        '''
+    '''
+    Extract a clean list of matches from a request : remove the picture itself from the matches
+    :param request: result of a request, a dict
+    :return: a clean list of matches (wihtout the picture itself)
+    '''
 
-        # We remove the picture "itself" from the matches
-        tmp_clean_matches = []
+    # We remove the picture "itself" from the matches
+    tmp_clean_matches = []
 
-        for match in request.get("list_pictures", []):
-            if match["image_id"] != request["request_id"]:
-                tmp_clean_matches.append(match)
-            # elif match["distance"] != 0:
-            #     self.logger.warning(f"Picture {request['request_id']} has not a distance 0 to itself. Strange.")
+    for match in request.get("list_pictures", []):
+        if match["image_id"] != request["request_id"]:
+            tmp_clean_matches.append(match)
+        # elif match["distance"] != 0:
+        #     self.logger.warning(f"Picture {request['request_id']} has not a distance 0 to itself. Strange.")
 
-        return tmp_clean_matches
+    return tmp_clean_matches

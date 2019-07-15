@@ -212,7 +212,6 @@ class Extended_API(Simple_API):
         '''
         Send pictures of a folder, request all pictures one by one, construct a list of results, revert the mapping to get back pictures names
         :param image_folder: The folder of images to send
-        :param output_path: The output path where the graph and other data will be stored
         :return: The list of results
         '''
 

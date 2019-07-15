@@ -64,7 +64,8 @@ class Simple_API:
         self.logger.debug(f"Ready to send picture in client : {type(img)} {img}")
         return files
 
-    def utility_request_id_to_HTTP_payload(self, request_id: str) -> Dict:
+    @staticmethod
+    def utility_request_id_to_HTTP_payload(request_id: str) -> Dict:
         # Construct the files attribute of the put request
         # Construct the HTTP payload of the get request
         payload = {'request_id': request_id}
