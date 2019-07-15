@@ -54,8 +54,8 @@ class Simple_API:
         :return: json format of the response
         '''
         data = r.json()  # Check the JSON Response Content documentation below
-        self.logger.info("Response data : ", data)
-        self.logger.info("Response content : ", r.content)
+        self.logger.info(f"Response data : {data}")
+        self.logger.info(f"Response content : {r.content}")
         return data
 
     def utility_image_to_HTTP_payload(self, file_path: pathlib.Path, img) -> Dict:
@@ -77,15 +77,15 @@ class Simple_API:
         Ping the server to check if he is alive with both GET and POST requests.
         :return: True if the server is alive (for GET and POST), False if the server is not
         '''
-        r_get = self.ping_server_GET()
+        r_get = self.ping_server_get()
         data_get = self.utility_extract_and_log_response(r_get)
 
-        r_post = self.ping_server_POST()
+        r_post = self.ping_server_post()
         data_post = self.utility_extract_and_log_response(r_post)
 
         return data_get["Called_function"] == "ping" and data_post["Called_function"] == "ping"
 
-    def ping_server_GET(self) -> requests.Response:
+    def ping_server_get(self) -> requests.Response:
         '''
         Ping the server to check if he is alive with GET request
         :return: the response from the server
@@ -94,7 +94,7 @@ class Simple_API:
         self.logger.info(f"GET request => {r.status_code} {r.reason} {r.text}")
         return r
 
-    def ping_server_POST(self) -> requests.Response:
+    def ping_server_post(self) -> requests.Response:
         '''
         Ping the server to check if he is alive with POST request
         :return: the response from the server
