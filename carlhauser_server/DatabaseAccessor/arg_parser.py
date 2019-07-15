@@ -34,13 +34,17 @@ def add_arg_dist_conf(parser : argparse.ArgumentParser) :
     parser.add_argument("-distc", '--distance_configuration_file', dest="dist_conf", type=dir_path, help='DIST_configuration_file stored as json. Path')
     return parser
 
+def add_mode(parser : argparse.ArgumentParser) :
+    parser.add_argument("-m", '--mode', dest="mode", required=True, type=str, choices={"ADD", "REQUEST"}, help='Specify queues to work from/to for the worker.')
+    return parser
+
 def parse_conf_files(args) -> (database_conf.Default_database_conf,
                                distance_engine_conf.Default_distance_engine_conf,
                                feature_extractor_conf.Default_feature_extractor_conf,
                                webservice_conf.Default_webservice_conf):
     """
     Parse args to configuration files, if they exist.
-    Usage example : db_conf, dist_conf, fe_conf, ws_conf = parse_conf_files(args)
+    Usage example : db_conf, dist_conf, fe_conf, ws_conf = arg_parser.parse_conf_files(args)
     :param args: parsed arguments from command line
     :return: db_conf, dist_conf, feature_conf, webservice_conf
     """

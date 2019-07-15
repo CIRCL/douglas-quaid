@@ -33,6 +33,8 @@ class Database_Common(database_accessor.Database_Worker):
         self.de = distance_engine.Distance_Engine(self, tmp_db_conf, dist_conf, fe_conf)
         self.db_utils = db_utils.DBUtilities(db_access_decode=self.storage_db_decode, db_access_no_decode=self.storage_db_no_decode)
 
+    '''
+
     def _to_run_forever(self):
         """
         Method called infinitely, in loop. Specified from the parent version. Fetch from database queue and call a process function on it.
@@ -63,7 +65,7 @@ class Database_Common(database_accessor.Database_Worker):
         """
 
         self.logger.error(f"'process_fetched_data' must be overwritten ! No action performed by this worker.")
-
+    '''
     # ==== COMMON ACTION OF BOTH ADDER AND REQUESTER ====
 
     def get_top_matching_pictures(self, fetched_dict: Dict) -> (List[scoring_datastrutures.ImageMatch], List[scoring_datastrutures.ClusterMatch]):

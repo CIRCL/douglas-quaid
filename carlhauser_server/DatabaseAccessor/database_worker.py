@@ -346,10 +346,36 @@ class Database_Worker:
 
     def _to_run_forever(self):
         """
-        Method to overwrite to specify the worker
+        Method called infinitely, in loop. Specified from the parent version. Fetch from database queue and call a process function on it.
+        :return: Nothing
+        """
+
+        # Trying to fetch from queue (from parameters)
+        fetched_id, fetched_dict = self.fetch_from_queue()
+
+        # If there is nothing fetched
+        if not fetched_id:
+            # Nothing to do
+            time.sleep(0.1)
+
+        try:
+            self.process_fetched_data(fetched_id, fetched_dict)
+
+        except Exception as e:
+            self.logger.error(f"Error in database worker (DB adder, db Request or FeatureExtractor or ... ) : {e}")
+            self.logger.error(traceback.print_tb(e.__traceback__))
+
+    def fetch_from_queue(self)-> (str,Dict):
+        return self.get_from_queue(self.cache_db_no_decode, self.input_queue, pickle=True)
+
+    def process_fetched_data(self, fetched_id, fetched_dict):
+        """
+        Method to overwrite to specify the worker. Called each time something is fetched from queue
+        :param fetched_id: id to process
+        :param fetched_dict: data to process
         :return: Nothing (or to be defined)
         """
-        self.logger.critical("YOU SHOULD OVERWRITE '_to_run_forever' of the database_worker class. This worker is actually doing NOTHING !")
+        self.logger.critical("YOU SHOULD OVERWRITE 'process_fetched_data' of the database_worker class. This worker is actually doing NOTHING !")
 
     def long_sleep(self, sleep_in_sec: int, shutdown_check: int = 10) -> bool:
         """
