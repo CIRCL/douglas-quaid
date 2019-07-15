@@ -26,7 +26,9 @@ class Database_Requester(database_common.Database_Common):
     Heritate from the database common, and so has already built in access to cache, storage ..
     """
 
-    def __init__(self, tmp_db_conf: database_conf.Default_database_conf, tmp_dist_conf: distance_engine_conf.Default_distance_engine_conf, tmp_fe_conf: feature_extractor_conf.Default_feature_extractor_conf):
+    def __init__(self, tmp_db_conf: database_conf.Default_database_conf,
+                 tmp_dist_conf: distance_engine_conf.Default_distance_engine_conf,
+                 tmp_fe_conf: feature_extractor_conf.Default_feature_extractor_conf):
         # STD attributes
         super().__init__(tmp_db_conf, tmp_dist_conf, tmp_fe_conf)
 

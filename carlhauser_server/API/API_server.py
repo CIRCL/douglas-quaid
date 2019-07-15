@@ -36,26 +36,26 @@ sys.path.append(os.path.abspath(os.path.pardir))
 # ==================== ------ SERVER Flask API definition ------- ====================
 
 class EndpointAction(object):
-    '''
+    """
     Defines an Endpoint for a specific action for any client.
-    '''
+    """
 
     def __init__(self, action):
-        '''
+        """
         Create the endpoint by specifying which action we want the endpoint to perform, at each call
         :param action: The function to execute on endpoint call
-        '''
+        """
         # Defines which action (which function) should be called
         self.action = action
 
         # DEBUG FOR TEST PURPOSES # self.response = flask.Response("Welcome to carl-hauser", status=200, headers={})
 
     def __call__(self, *args):
-        '''
+        """
         Standard method that effectively perform the stored action of this endpoint.
         :param args: Arguments to give to the stored function
         :return: The response, which is a jsonified version of the function returned value
-        '''
+        """
 
         # Perform the action
         answer = self.action(*args)
@@ -73,24 +73,24 @@ class EndpointAction(object):
 
 
 class FlaskAppWrapper(object):
-    def __init__(self, name: str, ws_conf: webservice_conf, db_conf: database_conf):
+    def __init__(self, name: str, tmp_ws_conf: webservice_conf, tmp_db_conf: database_conf):
         # STD attributes
-        self.ws_conf = ws_conf
+        self.ws_conf = tmp_ws_conf
         self.logger = logging.getLogger(__name__)
 
         # Specific attributes
         self.app = flask.Flask(name)
 
         # An accessor to push stuff in queues, mainly
-        self.database_worker: database_worker.Database_Worker = database_worker.Database_Worker(tmp_db_conf=db_conf)
+        self.database_worker: database_worker.Database_Worker = database_worker.Database_Worker(tmp_db_conf=tmp_db_conf)
         self.db_utils: db_utils.DBUtilities = None
 
     def run(self):
-        '''
+        """
         Final action to call to run the flask process, which generate endpoints, and so.
         Handle SLL Certificate, if they are provided = use them, else = self sign a certificate on the fly
         :return: no return (continuously executing. Return error code if stopped and so)
-        '''
+        """
         if self.ws_conf.CERT_FILE is None or self.ws_conf.KEY_FILE is None:
             self.logger.error(f"Provided CERT OR KEY file not found :  {self.ws_conf.CERT_FILE} and {self.ws_conf.KEY_FILE}")
             self.app.run(ssl_context='adhoc')
@@ -99,10 +99,10 @@ class FlaskAppWrapper(object):
             self.app.run(ssl_context=(str(self.ws_conf.CERT_FILE), str(self.ws_conf.KEY_FILE)))  # ssl_context='adhoc')
 
     def add_all_endpoints(self):
-        '''
+        """
         Add all endpoints = all callable URL of the API, and link them to the good functions
         :return: Nothing
-        '''
+        """
 
         # Add root endpoint
         tmp_ep_name = "/"
@@ -121,23 +121,23 @@ class FlaskAppWrapper(object):
         self.add_endpoint(endpoint=tmp_ep_name, endpoint_name=tmp_ep_name, handler=self.export_db_as_graphe)
 
     def add_endpoint(self, endpoint=None, endpoint_name=None, handler=None):
-        '''
+        """
         Add one endpoint to the flask application. Accept GET, POST and PUT.
         :param endpoint: Callable URL.
         :param endpoint_name: Name of the Endpoint
         :param handler: function to execute on call on the URL
         :return: Nothing
-        '''
+        """
         self.app.add_url_rule(endpoint, endpoint_name, EndpointAction(handler), methods=['GET', 'POST', 'PUT'])
 
     # ==================== ------ API Calls ------- ====================
 
     def ping(self, *args) -> Dict:
-        '''
+        """
         Handle a ping request on server side. Creates a pong answer
         :param args: None is required
         :return: The result json (pong)
-        '''
+        """
 
         result_json = {}
         result_json["Called_function"] = "ping"
@@ -151,10 +151,10 @@ class FlaskAppWrapper(object):
 
     # ================= ADD PICTURES =================
     def add_picture(self) -> Dict:
-        '''
+        """
         Handle an adding of a picture request on server side.
         :return: The result json (status of the request, etc.)
-        '''
+        """
         result_json = {}
         result_json["Called_function"] = EndPoints.ADD_PICTURE
         result_json = self.add_std_info(result_json)
@@ -182,10 +182,10 @@ class FlaskAppWrapper(object):
 
     # ================= ADD PICTURES - WAITING =================
     def are_pipelines_empty(self) -> Dict:
-        '''
+        """
         Handle a check of emptiness on the pipelines (list of queues)
         :return: The result json (status of the request, etc.)
-        '''
+        """
 
         result_json = {}
         result_json["Called_function"] = "are_pipelines_empty"
@@ -212,10 +212,10 @@ class FlaskAppWrapper(object):
     # ================= REQUEST PICTURES =================
 
     def request_similar_picture(self) -> Dict:
-        '''
+        """
         Handle a request of one picture, to return a list of similar pictures
         :return: The result json (status of the request, etc.)
-        '''
+        """
 
         result_json = {}
         result_json["Called_function"] = "request_similar_picture"
@@ -243,10 +243,10 @@ class FlaskAppWrapper(object):
         # Test it with curl 127.0.0.1:5000/request_similar_picture
 
     def get_results(self) -> Dict:
-        '''
+        """
         Handle a retrieval of results
         :return: The result json (status of the request, etc.)
-        '''
+        """
 
         result_json = {}
         result_json["Called_function"] = "get_results"
@@ -256,14 +256,14 @@ class FlaskAppWrapper(object):
         if flask.request.method == 'GET':
             try:
                 # Received : werkzeug.datastructures.FileStorage. Should use ".read()" to get picture's value
-                id = flask.request.args.get('request_id')
-                self.logger.debug(f"Request ID to be answered in server : {type(id)} ==> {id} ")  # {f.read()}
+                tmp_id = flask.request.args.get('request_id')
+                self.logger.debug(f"Request ID to be answered in server : {type(tmp_id)} ==> {tmp_id} ")  # {f.read()}
 
                 # Fetch results
-                result_dict = self.database_worker.get_request_result(self.database_worker.cache_db_no_decode, id)
+                result_dict = self.database_worker.get_request_result(self.database_worker.cache_db_no_decode, tmp_id)
 
                 result_json["Status"] = "Success"
-                result_json["request_id"] = id
+                result_json["request_id"] = tmp_id
                 result_json["results"] = result_dict
             except Exception as e:
                 self.logger.error(f"Error during GET handling {e}")
@@ -278,10 +278,10 @@ class FlaskAppWrapper(object):
     # ================= REQUEST PICTURES - WAITING =================
 
     def is_ready(self) -> Dict:
-        '''
+        """
         Handle a check of a request readiness
         :return: The result json (status of the request, etc.)
-        '''
+        """
 
         result_json = {}
         result_json["Called_function"] = "is_ready"
@@ -291,15 +291,15 @@ class FlaskAppWrapper(object):
         if flask.request.method == 'GET':
             try:
                 # Received : werkzeug.datastructures.FileStorage. Should use ".read()" to get picture's value
-                id = flask.request.args.get('request_id')
-                self.logger.debug(f"Request ID to be checked if ready in server : {type(id)} ==> {id} ")  # {f.read()}
+                tmp_id = flask.request.args.get('request_id')
+                self.logger.debug(f"Request ID to be checked if ready in server : {type(tmp_id)} ==> {tmp_id} ")  # {f.read()}
 
                 # Fetch results
                 # TODO : Special function for "cleaner/more performant" check ?
-                _ = self.database_worker.get_request_result(self.database_worker.cache_db_no_decode, id)
+                _ = self.database_worker.get_request_result(self.database_worker.cache_db_no_decode, tmp_id)
 
                 result_json["Status"] = "Success"
-                result_json["request_id"] = id
+                result_json["request_id"] = tmp_id
                 result_json["is_ready"] = True
             except Exception as e:
                 self.logger.error(f"Normal error during GET handling ('is_ready' request) {e}")
@@ -315,10 +315,10 @@ class FlaskAppWrapper(object):
     # ================= EXPORT AND DUMP =================
 
     def export_db_as_graphe(self) -> Dict:
-        '''
+        """
         Handle a dump of the database request
         :return: The result json (status of the request, etc.)
-        '''
+        """
 
         result_json = {}
         result_json["Called_function"] = "export_db"
@@ -350,11 +350,11 @@ class FlaskAppWrapper(object):
 
     @staticmethod
     def add_std_info(result_json: Dict) -> Dict:
-        '''
+        """
         Add standard information to the result_json
         :param result_json: The result json/dict to which to add standard values
         :return: the modified result_json
-        '''
+        """
         result_json["Call_method"] = flask.request.method  # 'GET' or 'POST' ...
         result_json["Call_time"] = time.ctime()  # 'GET' or 'POST' ...
 
@@ -362,12 +362,12 @@ class FlaskAppWrapper(object):
 
     @staticmethod
     def add_bad_method_info(result_json: Dict, good_method_instead: str = None) -> Dict:
-        '''
+        """
         Add error values to the result_json if method is bad
         :param result_json: The result json/dict to which to add standard values
         :param good_method_instead: the method that should be used by the resquest
         :return: the modified result_json
-        '''
+        """
         result_json["Status"] = "Failure"
 
         # Construct a message depending on the good method to use
@@ -386,12 +386,13 @@ class FlaskAppWrapper(object):
         return result_json
 
     def enqueue_and_save_picture(self, file: datastructures.FileStorage, result_json: Dict, queue: QueueNames) -> Dict:
-        '''
+        """
         Hash the picture, generate a BMP file, enqueue it, return the result_json with relevant values
+        :param queue: Queue to add the picture
         :param file: the file provided by the client
         :param result_json: The result json/dict to which to add standard values
         :return: the modified result_json
-        '''
+        """
         # Received : werkzeug.datastructures.FileStorage. Should use ".read()" to get picture's value
         self.logger.debug(f"Image received in server : {type(file)} ")  # {f.read()}
 
@@ -432,7 +433,7 @@ if __name__ == '__main__':
 
     # Create the Flask API and run it
     # Create Flask endpoint from configuration files
-    api = FlaskAppWrapper('api', ws_conf=ws_conf, db_conf=db_conf)
+    api = FlaskAppWrapper('api', tmp_ws_conf=ws_conf, tmp_db_conf=db_conf)
     api.add_all_endpoints()
 
     # Run Flask API endpoint

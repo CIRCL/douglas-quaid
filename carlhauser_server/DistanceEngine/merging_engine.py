@@ -66,11 +66,11 @@ class Merging_Engine:
         return score
 
     def merge_algos_decision(self, matches_package: Dict[str, sd.AlgoMatch]) -> sd.DecisionTypes:
-        '''
+        """
         Merge decisions from many algorithms outputs
         :param matches_package: A dictionary from algorithm name to matches values (distance, decision ..)
         :return: a unique decision
-        '''
+        """
 
         self.logger.info(f"Received algorithms distance to merge {matches_package}")
 
@@ -148,11 +148,11 @@ class Merging_Engine:
         return sum([algomatch.distance for algomatch in matches_package.values()]) / len(matches_package.values())
 
     def get_weighted_mean_dict(self, matches_package: Dict[str, sd.AlgoMatch]) -> float:
-        '''
+        """
         Get the weighted per algorithm type mean of distances
         :param matches_package: A dictionary from algorithm name to matches values (distance, decision ..)
         :return: the computed distance
-        '''
+        """
         sum_score = 0
         sum_weight = 0
         self.logger.debug(f"Algo list {self.fe_conf.list_algos}.")
@@ -184,11 +184,11 @@ class Merging_Engine:
 
     # ==================== ------ COMMON (DECISION) ------- ====================
     def get_pareto_decision(self, matches_package: Dict[str, sd.AlgoMatch]) -> sd.DecisionTypes:
-        '''
+        """
         Output a decision if more than 80% of the decision are the same.
         :param matches_package: A dictionary from algorithm name to matches values (distance, decision ..)
         :return: the computed decision
-        '''
+        """
         tmp_decisions = self.get_nb_decisions(matches_package)
         nb_decisions = sum(tmp_decisions.values())
 
@@ -200,22 +200,22 @@ class Merging_Engine:
         return sd.DecisionTypes.MAYBE
 
     def get_majority_decision(self, matches_package: Dict[str, sd.AlgoMatch]) -> sd.DecisionTypes:
-        '''
+        """
         Output the most prevalent decision type
         :param matches_package: A dictionary from algorithm name to matches values (distance, decision ..)
         :return: the computed decision
-        '''
+        """
         tmp_decisions = self.get_nb_decisions(matches_package)
         # Fancy way to get the max of the dict, and parse it back as DecisionType
         # return sd.DecisionTypes[max(tmp_decisions, key=lambda key: tmp_decisions[key])]
         return self.get_prevalent_decision(tmp_decisions)
 
     def get_weighted_majority_decision(self, matches_package: Dict[str, sd.AlgoMatch]) -> sd.DecisionTypes:
-        '''
+        """
         Output the most prevalent decision type, weighted by algorithm type
         :param matches_package: A dictionary from algorithm name to matches values (distance, decision ..)
         :return: the computed decision
-        '''
+        """
         tmp_decisions = self.get_nb_decisions(matches_package, weighted=True)
         # Fancy way to get the max of the dict, and parse it back as DecisionType
         # return sd.DecisionTypes[max(tmp_decisions, key=lambda key: tmp_decisions[key])]
@@ -223,20 +223,20 @@ class Merging_Engine:
 
     @staticmethod
     def get_prevalent_decision(decision_counter: Dict[sd.DecisionTypes, int]) -> sd.DecisionTypes:
-        '''
+        """
         Utility function to get the most prevalent decision out of a list of decision
         :param decision_counter: a dict which map decision types to number of occurences.
         :return: the most prevalent decision (most numerous)
-        '''
+        """
         return sd.DecisionTypes[max(decision_counter, key=lambda key: decision_counter[key])]
 
     def get_pyramid_decision(self, matches_package: Dict[str, sd.AlgoMatch]) -> sd.DecisionTypes:
-        '''
+        """
         Output only one decision out of a list of decision. Start by most truthworthy algorithms.
         If unsure, go down in the algorithm trust hierarchy, until one algorithm is sure of its decision.
         :param matches_package: A dictionary from algorithm name to matches values (distance, decision ..)
         :return: the computed decision
-        '''
+        """
         weight_to_algo = {}
         algo_list = []
 
@@ -275,12 +275,12 @@ class Merging_Engine:
         return sd.DecisionTypes.MAYBE
 
     def get_nb_decisions(self, matches_package: Dict[str, sd.AlgoMatch], weighted=False) -> Dict:
-        '''
+        """
         Utility function to compute the number of decision out of a list of decision. Can be weighted or not.
         :param matches_package: A dictionary from algorithm name to matches values (distance, decision ..)
         :param weighted: boolean to enable/disable the weight per algorithm type
         :return: a dict which map decision to number of occurrences of this decision
-        '''
+        """
         # Create a dict : YES=0, MAYBE=0, NO=0
         tmp_decisions = {decision.name: 0 for decision in list(sd.DecisionTypes)}
 
