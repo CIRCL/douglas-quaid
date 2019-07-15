@@ -4,29 +4,29 @@
 
 # ==================== ------ STD LIBRARIES ------- ====================
 
-import os
-import pathlib
-import sys
-import time
-import traceback
 import argparse
 import datetime
 import logging
-import objsize
-import redis
+import os
+import pathlib
 import pprint
+import sys
+import time
+import traceback
 from typing import Dict
 
-# ==================== ------ PERSONAL LIBRARIES ------- ====================
-
-from common.environment_variable import get_homedir, dir_path
-import common.ImportExport.json_import_export as json_import_export
-import carlhauser_server.Singletons.database_start_stop as database_start_stop
-import carlhauser_server.Helpers.pickle_import_export as pickle_import_export
+import objsize
+import redis
 
 import carlhauser_server.Configuration.database_conf as database_conf
+import carlhauser_server.Helpers.pickle_import_export as pickle_import_export
+import carlhauser_server.Singletons.database_start_stop as database_start_stop
+import common.ImportExport.json_import_export as json_import_export
 from common.ImportExport.json_import_export import Custom_JSON_Encoder
-from common.environment_variable import QueueNames, EndPoints
+from common.environment_variable import QueueNames
+from common.environment_variable import get_homedir, dir_path
+
+# ==================== ------ PERSONAL LIBRARIES ------- ====================
 
 sys.path.append(os.path.abspath(os.path.pardir))
 
@@ -69,7 +69,7 @@ class Database_Worker:
 
     # ==================== ------ GET/SET QUEUE ------- ====================
 
-    def add_to_queue(self, storage: redis.Redis, queue_name: QueueNames, input_id: str, dict_to_store: dict, pickle=False)-> bool:
+    def add_to_queue(self, storage: redis.Redis, queue_name: QueueNames, input_id: str, dict_to_store: dict, pickle=False) -> bool:
         """
         Push data to a specified queue, with a specific id. Wrapper to handle queuing of id(s) and separated storage of data linked to this id(s).
         Transparent way to push data to a queue
@@ -101,7 +101,7 @@ class Database_Worker:
         except Exception as e:
             raise Exception(f"Unable to add dict and hash to {queue_name} queue : {e}")
 
-    def get_from_queue(self, storage: redis.Redis, queue_name: QueueNames, pickle=False) -> (str,Dict):
+    def get_from_queue(self, storage: redis.Redis, queue_name: QueueNames, pickle=False) -> (str, Dict):
         """
         Fetch data from a specified queue. Wrapper to handle queuing of id(s) and separated storage of data linked to this id(s).
         Transparent way to pull data from a queue
@@ -145,7 +145,7 @@ class Database_Worker:
 
     # ==================== ------ GET/SET DICT ------- ====================
 
-    def set_dict_to_key(self, storage: redis.Redis, key, dict_to_store: dict, pickle=False, expire_time=None)-> bool:
+    def set_dict_to_key(self, storage: redis.Redis, key, dict_to_store: dict, pickle=False, expire_time=None) -> bool:
         '''
         Set a dict of values, pickled or not, to a key
         :param expire_time: The time after which the dict will be deleted (to prevent always-growing database), default = no expire
@@ -202,7 +202,7 @@ class Database_Worker:
 
     # ==================== ------ GET/SET IMAGES ------- ====================
 
-    def add_picture_to_storage(self, storage: redis.Redis, input_id: str, image_dict: dict)-> bool:
+    def add_picture_to_storage(self, storage: redis.Redis, input_id: str, image_dict: dict) -> bool:
         '''
         Store images as pickled dict in the provided storage
         :param storage: storage to which dictionary should be stored
@@ -223,7 +223,7 @@ class Database_Worker:
         return self.get_dict_from_key(storage, input_id, pickle=True)
 
     # ==================== ------ GET/SET REQUEST ------- ====================
-    def set_request_result(self, storage: redis.Redis, input_id: str, image_dict: dict)-> bool:
+    def set_request_result(self, storage: redis.Redis, input_id: str, image_dict: dict) -> bool:
         '''
         Store results as pickled dict in the provided storage with a configuration-defined expiration time
         :param storage: storage to which result dictionary should be stored
@@ -247,7 +247,6 @@ class Database_Worker:
         tmp_id = '|'.join([input_id, "result"])
         return self.get_dict_from_key(storage, tmp_id, pickle=True)
 
-
     # ==================== ------ CHECK QUEUE EMPTINESS ------- ====================
 
     def are_all_queues_empty(self) -> bool:
@@ -263,7 +262,7 @@ class Database_Worker:
 
         return False
 
-    def is_queue_empty(self, storage: redis.Redis, list_name: str)-> bool:
+    def is_queue_empty(self, storage: redis.Redis, list_name: str) -> bool:
         '''
         Check if the specified Queue in the specified storage is empty
         :param storage: the storage in which the queue exist
@@ -271,7 +270,7 @@ class Database_Worker:
         :return: True if the queue is empty, False otherwise, Exception if Queue does not exist
         '''
         val = storage.llen(list_name)
-        if val is None :
+        if val is None:
             raise Exception(f"Queue {list_name} is not accessible !")
         self.logger.debug(f"Length of {list_name} queue : {val}")
 

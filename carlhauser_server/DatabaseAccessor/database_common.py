@@ -17,6 +17,7 @@ import carlhauser_server.DistanceEngine.distance_engine as distance_engine
 
 sys.path.append(os.path.abspath(os.path.pardir))
 
+
 class Database_Common(database_accessor.Database_Worker):
     def __init__(self, db_conf: database_conf, dist_conf: distance_engine_conf, fe_conf: feature_extractor_conf):
         # STD attributes
@@ -31,16 +32,18 @@ class Database_Common(database_accessor.Database_Worker):
         self.db_utils = db_utils.DBUtilities(db_access_decode=self.storage_db_decode, db_access_no_decode=self.storage_db_no_decode)
 
     def _to_run_forever(self):
-        # Method called infinitely, in loop
+        '''
+        Method called infinitely, in loop. Specified from the parent version. Fetch from database queue and call a process function on it.
+        :return: Nothing
+        '''
 
-        # Trying to fetch from queue (to_add)
+        # Trying to fetch from queue (from parameters)
         fetched_id, fetched_dict = self.get_from_queue(self.cache_db_no_decode, self.input_queue, pickle=True)
 
         # If there is nothing fetched
         if not fetched_id:
             # Nothing to do
             time.sleep(0.1)
-            return 0
 
         try:
             self.process_fetched_data(fetched_id, fetched_dict)
@@ -49,9 +52,14 @@ class Database_Common(database_accessor.Database_Worker):
             self.logger.error(f"Error in database accessors : {e}")
             self.logger.error(traceback.print_tb(e.__traceback__))
 
-        return 1
-
     def process_fetched_data(self, fetched_id, fetched_dict):
+        '''
+        Method to overwrite to specify the worker. Called each time something is fetched from queue
+        :param fetched_id: id to process
+        :param fetched_dict: data to process
+        :return: Nothing (or to be defined)
+        '''
+
         self.logger.error(f"'process_fetched_data' must be overwritten ! No action performed by this worker.")
 
     # ==== COMMON ACTION OF BOTH ADDER AND REQUESTER ====
@@ -60,6 +68,7 @@ class Database_Common(database_accessor.Database_Worker):
         # Get top matching clusters
         self.logger.info(f"Get top matching clusters for this picture")
         cluster_list = self.db_utils.get_cluster_list()  # DECODE
+
         list_matching_clusters = self.de.get_top_matching_clusters(cluster_list, fetched_dict)  # List[scoring_datastrutures.ClusterMatch]
         list_cluster_id = [i.cluster_id for i in list_matching_clusters]
         self.logger.info(f"Top matching clusters : {list_cluster_id}")

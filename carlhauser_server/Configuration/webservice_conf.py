@@ -6,8 +6,8 @@ import pathlib
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
 sys.path.append(os.path.abspath(os.path.pardir))
 
-from carlhauser_server.Configuration.template_conf import JSON_parsable_Dict
-from common.environment_variable import get_homedir
+from common.environment_variable import get_homedir, JSON_parsable_Dict
+
 
 class Default_webservice_conf(JSON_parsable_Dict):
     def __init__(self):

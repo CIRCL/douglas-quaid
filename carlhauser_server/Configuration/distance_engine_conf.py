@@ -6,7 +6,7 @@ from collections import namedtuple
 
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
 sys.path.append(os.path.abspath(os.path.pardir))
-from carlhauser_server.Configuration.template_conf import JSON_parsable_Dict
+from common.environment_variable import JSON_parsable_Dict
 
 
 class Default_distance_engine_conf(JSON_parsable_Dict):

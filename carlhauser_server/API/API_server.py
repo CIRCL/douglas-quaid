@@ -5,32 +5,30 @@
 # Inspired from : https://github.com/D4-project/IPASN-History/blob/master/website/web/__init__.py
 # If you are derouted by the lack of decorator, go there : https://stackoverflow.com/questions/17129573/can-i-use-external-methods-as-route-decorators-in-python-flask
 
-# ==================== ------ STD LIBRARIES ------- ====================
-import flask
-import uuid
 import argparse
 import logging
 import os
 import pathlib
 import sys
 import time
+import uuid
 from typing import Dict
+
+# ==================== ------ STD LIBRARIES ------- ====================
+import flask
 import werkzeug.datastructures as datastructures
 
-# ==================== ------ PERSONAL LIBRARIES ------- ====================
-
-from common.environment_variable import get_homedir, dir_path
-from common.environment_variable import QueueNames, EndPoints
-
-import carlhauser_server.Configuration.webservice_conf as webservice_conf
 import carlhauser_server.Configuration.database_conf as database_conf
-
-import carlhauser_server.Helpers.id_generator as id_generator
-import common.ImportExport.picture_import_export as picture_import_export
-import carlhauser_server.DatabaseAccessor.database_worker as database_worker
-
-import common.ImportExport.json_import_export as json_import_export
+import carlhauser_server.Configuration.webservice_conf as webservice_conf
 import carlhauser_server.DatabaseAccessor.database_utilities as db_utils
+import carlhauser_server.DatabaseAccessor.database_worker as database_worker
+import carlhauser_server.Helpers.id_generator as id_generator
+import common.ImportExport.json_import_export as json_import_export
+import common.ImportExport.picture_import_export as picture_import_export
+from common.environment_variable import QueueNames, EndPoints
+from common.environment_variable import get_homedir, dir_path
+
+# ==================== ------ PERSONAL LIBRARIES ------- ====================
 
 sys.path.append(os.path.abspath(os.path.pardir))
 
@@ -77,15 +75,15 @@ class EndpointAction(object):
 class FlaskAppWrapper(object):
     def __init__(self, name: str, ws_conf: webservice_conf, db_conf: database_conf):
         # STD attributes
-        self.conf = ws_conf
+        self.ws_conf = ws_conf
         self.logger = logging.getLogger(__name__)
 
         # Specific attributes
         self.app = flask.Flask(name)
 
         # An accessor to push stuff in queues, mainly
-        self.database_worker = database_worker.Database_Worker(db_conf=db_conf)
-        self.db_utils = None
+        self.database_worker : database_worker.Database_Worker = database_worker.Database_Worker(db_conf=db_conf)
+        self.db_utils : db_utils.DBUtilities = None
 
     def run(self):
         '''
@@ -93,12 +91,12 @@ class FlaskAppWrapper(object):
         Handle SLL Certificate, if they are provided = use them, else = self sign a certificate on the fly
         :return: no return (continuously executing. Return error code if stopped and so)
         '''
-        if self.conf.CERT_FILE is None or self.conf.KEY_FILE is None:
-            self.logger.error(f"Provided CERT OR KEY file not found :  {self.conf.CERT_FILE} and {self.conf.KEY_FILE}")
+        if self.ws_conf.CERT_FILE is None or self.ws_conf.KEY_FILE is None:
+            self.logger.error(f"Provided CERT OR KEY file not found :  {self.ws_conf.CERT_FILE} and {self.ws_conf.KEY_FILE}")
             self.app.run(ssl_context='adhoc')
         else:
-            self.logger.info(f"Provided CERT OR KEY file used : {self.conf.CERT_FILE} and {self.conf.KEY_FILE}")
-            self.app.run(ssl_context=(str(self.conf.CERT_FILE), str(self.conf.KEY_FILE)))  # ssl_context='adhoc')
+            self.logger.info(f"Provided CERT OR KEY file used : {self.ws_conf.CERT_FILE} and {self.ws_conf.KEY_FILE}")
+            self.app.run(ssl_context=(str(self.ws_conf.CERT_FILE), str(self.ws_conf.KEY_FILE)))  # ssl_context='adhoc')
 
     def add_all_endpoints(self):
         '''
@@ -331,13 +329,13 @@ class FlaskAppWrapper(object):
             try:
                 # Request export of the database and save it as a json graph
                 self.db_utils = db_utils.DBUtilities(db_access_decode=self.database_worker.storage_db_decode, db_access_no_decode=self.database_worker.storage_db_no_decode)
-                graphe = self.db_utils.get_db_graphe()
+                graph = self.db_utils.get_storage_graph()
 
                 # Save to file
-                json_import_export.save_json(graphe, get_homedir() / "export_folder" / "db_graphe.json")
+                json_import_export.save_json(graph.export_as_dict(), get_homedir() / "export_folder" / "db_graphe.json")
 
                 result_json["Status"] = "Success"
-                result_json["db"] = graphe
+                result_json["db"] = graph
             except Exception as e:
                 self.logger.error(f"Error during GET handling {e}")
                 result_json["Status"] = "Failure"
