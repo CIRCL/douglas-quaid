@@ -1,6 +1,7 @@
 # Douglas-Quaid Project
 
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/e27a772481ed4033861670b9767249b6)](https://app.codacy.com/app/zettacircl/douglas-quaid?utm_source=github.com&utm_medium=referral&utm_content=Vincent-CIRCL/douglas-quaid&utm_campaign=Badge_Grade_Dashboard)
+<img src="./coverage.svg"/>
 
 Open source software for image correlation, distance and analysis.
 Strongly related to : [Carl-Hauser](https://github.com/CIRCL/carl-hauser) 
@@ -122,18 +123,18 @@ api = Simple_API(url='https://localhost:5000/', certificate_path=cert)
 api.ping_server()
 
 # perform uploads
-api.add_picture_server(get_homedir() / "datasets" / "simple_pictures" / "image.jpg")
+api.add_one_picture(get_homedir() / "datasets" / "simple_pictures" / "image.jpg")
 # (...)
 
 # Request a picture matches
-request_id = api.request_picture_server(get_homedir() / "datasets" / "simple_pictures" / "image.bmp")[1]
+request_id = api.request_similar(get_homedir() / "datasets" / "simple_pictures" / "image.bmp")[1]
 # (...)
 
 # Wait a bit
 api.poll_until_result_ready(request_id, max_time=60)
 
 # Retrieve results of the previous request (print on screen)
-results = api.retrieve_request_results(request_id)[1]
+results = api.get_results(request_id)[1]
 
 # Triggers a DB export of the server as-is, to be displayed with visjsclassificator. Server-side only operation.
 api.export_db_server()
@@ -153,10 +154,10 @@ api = Extended_API(url='https://localhost:5000/', certificate_path=cert)
 api.ping_server()
 
 # perform uploads
-api.add_pictures_to_db(get_homedir() / "datasets" / "simple_pictures")
+api.add_many_pictures_no_wait(get_homedir() / "datasets" / "simple_pictures")
 
 # Retrieve results of the previous request (print on screen)
-results = api.request_similar_and_wait(get_homedir() / "datasets" / "simple_pictures" / "image.bmp")
+results = api.request_one_picture_and_wait(get_homedir() / "datasets" / "simple_pictures" / "image.bmp")
 
 # Triggers a DB export of the server as-is, to be displayed with visjsclassificator. Server-side only operation.
 db_dump = api.get_db_dump_as_graph()
