@@ -8,7 +8,6 @@
 import argparse
 import logging
 import os
-import pathlib
 import sys
 import time
 import uuid
@@ -25,8 +24,9 @@ import carlhauser_server.DatabaseAccessor.database_worker as database_worker
 import carlhauser_server.Helpers.id_generator as id_generator
 import common.ImportExport.json_import_export as json_import_export
 import common.ImportExport.picture_import_export as picture_import_export
+from carlhauser_server.DatabaseAccessor import arg_parser
 from common.environment_variable import QueueNames, EndPoints
-from common.environment_variable import get_homedir, dir_path
+from common.environment_variable import get_homedir
 
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
 
@@ -82,8 +82,8 @@ class FlaskAppWrapper(object):
         self.app = flask.Flask(name)
 
         # An accessor to push stuff in queues, mainly
-        self.database_worker : database_worker.Database_Worker = database_worker.Database_Worker(db_conf=db_conf)
-        self.db_utils : db_utils.DBUtilities = None
+        self.database_worker: database_worker.Database_Worker = database_worker.Database_Worker(tmp_db_conf=db_conf)
+        self.db_utils: db_utils.DBUtilities = None
 
     def run(self):
         '''
@@ -423,13 +423,12 @@ class FlaskAppWrapper(object):
 # Launcher for this worker. Launch this file to launch a worker
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Launch Flask API on server side')
-    parser.add_argument("-dbc", '--database_configuration_file', dest="db_conf", type=dir_path, help='DB_configuration_file stored as json. Path')
-    parser.add_argument("-wsc", '--webservice_configuration_file', dest="ws_conf", type=dir_path, help='WebService_configuration_file stored as json. Path')
+    parser = arg_parser.add_arg_db_conf(parser)
+    parser = arg_parser.add_arg_ws_conf(parser)
+
     args = parser.parse_args()
 
-    # Load the provided configuration file and create back the Configuration Object
-    db_conf = database_conf.parse_from_dict(json_import_export.load_json(pathlib.Path(args.db_conf)))
-    ws_conf = webservice_conf.parse_from_dict(json_import_export.load_json(pathlib.Path(args.ws_conf)))
+    db_conf, _, _, ws_conf = arg_parser.parse_conf_files(args)
 
     # Create the Flask API and run it
     # Create Flask endpoint from configuration files

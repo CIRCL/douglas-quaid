@@ -8,7 +8,6 @@ import argparse
 import datetime
 import logging
 import os
-import pathlib
 import pprint
 import sys
 import time
@@ -21,10 +20,10 @@ import redis
 import carlhauser_server.Configuration.database_conf as database_conf
 import carlhauser_server.Helpers.pickle_import_export as pickle_import_export
 import carlhauser_server.Singletons.database_start_stop as database_start_stop
-import common.ImportExport.json_import_export as json_import_export
+from carlhauser_server.DatabaseAccessor import arg_parser
 from common.ImportExport.json_import_export import Custom_JSON_Encoder
 from common.environment_variable import QueueNames
-from common.environment_variable import get_homedir, dir_path
+from common.environment_variable import get_homedir
 
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
 
@@ -33,12 +32,12 @@ sys.path.append(os.path.abspath(os.path.pardir))
 
 class Database_Worker:
 
-    def __init__(self, db_conf: database_conf):
+    def __init__(self, tmp_db_conf: database_conf):
         self.logger = logging.getLogger(__name__)
         self.logger.info("Creation of a Database Accessor Worker")
 
         # STD attributes
-        self.db_conf = db_conf
+        self.db_conf = tmp_db_conf
         json_encoder = Custom_JSON_Encoder()
 
         # Print configuration
@@ -53,7 +52,7 @@ class Database_Worker:
         self.redis_storage = get_homedir() / self.db_conf.DB_DATA_PATH
 
         # Get sockets
-        tmp_db_handler = database_start_stop.Database_StartStop(db_conf=db_conf)
+        tmp_db_handler = database_start_stop.Database_StartStop(db_conf=tmp_db_conf)
         self.cache_db_decode = redis.Redis(unix_socket_path=tmp_db_handler.get_socket_path('cache'), decode_responses=True)
         self.cache_db_no_decode = redis.Redis(unix_socket_path=tmp_db_handler.get_socket_path('cache'), decode_responses=False)
 
@@ -146,7 +145,7 @@ class Database_Worker:
     # ==================== ------ GET/SET DICT ------- ====================
 
     def set_dict_to_key(self, storage: redis.Redis, key, dict_to_store: dict, pickle=False, expire_time=None) -> bool:
-        '''
+        """
         Set a dict of values, pickled or not, to a key
         :param expire_time: The time after which the dict will be deleted (to prevent always-growing database), default = no expire
         :param dict_to_store: the dictionnary of values to store
@@ -154,7 +153,7 @@ class Database_Worker:
         :param key: The key to which the dict is linked
         :param pickle: boolean to notify if the value to store should be pickled
         :return: boolean, True if correctly stored, False if not.
-        '''
+        """
 
         # Retrieve a dict, pickled or not
         self.logger.debug(f"Setting key : {key}")
@@ -175,13 +174,13 @@ class Database_Worker:
         return answer
 
     def get_dict_from_key(self, storage: redis.Redis, key, pickle=False) -> Dict:
-        '''
+        """
         Retrieve a dict of values, pickled or not, from a key
         :param storage: storage from which dictionary should be picked
         :param key: The key to which the dict is linked
         :param pickle: boolean to notify if the value to get is pickled
         :return: The fetched dictionary (as an object)
-        '''
+        """
 
         # Store a dict, pickled or not
         self.logger.debug(f"Fetching key : {key}")
@@ -203,46 +202,46 @@ class Database_Worker:
     # ==================== ------ GET/SET IMAGES ------- ====================
 
     def add_picture_to_storage(self, storage: redis.Redis, input_id: str, image_dict: dict) -> bool:
-        '''
+        """
         Store images as pickled dict in the provided storage
         :param storage: storage to which dictionary should be stored
         :param input_id: The key to which the picture is linked
         :param image_dict: the picture to store (as a dict)
         :return: Boolean (True = success, False = failure)
-        '''
+        """
         # Store the dictionary of hashvalues in Redis under the given id
         return self.set_dict_to_key(storage, input_id, image_dict, pickle=True)
 
     def get_picture_from_storage(self, storage: redis.Redis, input_id) -> Dict:
-        '''
+        """
         Retrieve images as pickled dict in the provided storage
         :param storage: storage from which picture (dict) should be stored
         :param input_id: The key to which the dict is linked
         :return: the picture (as a dict)
-        '''
+        """
         return self.get_dict_from_key(storage, input_id, pickle=True)
 
     # ==================== ------ GET/SET REQUEST ------- ====================
     def set_request_result(self, storage: redis.Redis, input_id: str, image_dict: dict) -> bool:
-        '''
+        """
         Store results as pickled dict in the provided storage with a configuration-defined expiration time
         :param storage: storage to which result dictionary should be stored
         :param input_id: The key to which the results is linked (modified inside)
         :param image_dict: the picture to store (as a dict)
         :return: Boolean (True = success, False = failure)
-        '''
+        """
         # Create tmp_id for this queue
         tmp_id = '|'.join([input_id, "result"])
 
         return self.set_dict_to_key(storage, tmp_id, image_dict, pickle=True, expire_time=self.db_conf.ANSWER_EXPIRATION)
 
     def get_request_result(self, storage: redis.Redis, input_id) -> Dict:
-        '''
+        """
         Retrieve results as pickled dict in the provided storage
         :param storage: storage from which results (dict) should be stored
         :param input_id: The key to which the dict is linked
         :return: the picture (as a dict)
-        '''
+        """
         # Create tmp_id for this queue
         tmp_id = '|'.join([input_id, "result"])
         return self.get_dict_from_key(storage, tmp_id, pickle=True)
@@ -250,10 +249,10 @@ class Database_Worker:
     # ==================== ------ CHECK QUEUE EMPTINESS ------- ====================
 
     def are_all_queues_empty(self) -> bool:
-        '''
+        """
         Check if all queues (TO ADD, TO REQUEST, etc.) are empty
         :return: True if all are empty, False otherwise
-        '''
+        """
         if self.is_queue_empty(self.cache_db_no_decode, QueueNames.DB_TO_ADD) and \
                 self.is_queue_empty(self.cache_db_no_decode, QueueNames.DB_TO_REQUEST) and \
                 self.is_queue_empty(self.cache_db_no_decode, QueueNames.FEATURE_TO_ADD) and \
@@ -263,12 +262,12 @@ class Database_Worker:
         return False
 
     def is_queue_empty(self, storage: redis.Redis, list_name: str) -> bool:
-        '''
+        """
         Check if the specified Queue in the specified storage is empty
         :param storage: the storage in which the queue exist
         :param list_name: the queue name to check
         :return: True if the queue is empty, False otherwise, Exception if Queue does not exist
-        '''
+        """
         val = storage.llen(list_name)
         if val is None:
             raise Exception(f"Queue {list_name} is not accessible !")
@@ -277,27 +276,27 @@ class Database_Worker:
         return val == 0
 
     def print_storage_view(self):
-        '''
+        """
         Print all keys of the storage
         :return:
-        '''
+        """
         self.logger.info("Printing REDIS Storage view")
         self.logger.info(self.storage_db_decode.keys())
 
     # ==================== ------ RUNNABLE WORKER ------- ====================
 
     def is_halt_requested(self):
-        '''
+        """
         Check if a halt had been requested
         :return: True if halt requested (or unknown for too long), False otherwise
-        '''
+        """
 
         try:
             value = self.cache_db_decode.get("halt")
             # DEBUG # self.logger.debug(f"HALT key : {value} ")
 
             if not value or value == "":
-                self.echec_nb = 0
+                self.failure_nb = 0
                 return False
             else:  # The key has been set to something, "Now","Yes", ...
                 self.logger.info("HALT key detected. Worker received stop signal ... ")
@@ -312,11 +311,11 @@ class Database_Worker:
             return False
 
     def run(self, sleep_in_sec: int):
-        '''
+        """
         Run indefinitely except if the worker have received a stop signal.
         :param sleep_in_sec: time between two check for something to do
         :return: Nothing
-        '''
+        """
         try:
 
             self.logger.info(f'Launching {self.__class__.__name__}')
@@ -346,19 +345,19 @@ class Database_Worker:
         self.logger.info(f'Shutting down {self.__class__.__name__}')
 
     def _to_run_forever(self):
-        '''
+        """
         Method to overwrite to specify the worker
         :return: Nothing (or to be defined)
-        '''
+        """
         self.logger.critical("YOU SHOULD OVERWRITE '_to_run_forever' of the database_worker class. This worker is actually doing NOTHING !")
 
     def long_sleep(self, sleep_in_sec: int, shutdown_check: int = 10) -> bool:
-        '''
+        """
         Wait a "long" time before returning, while keep checking if the worker has to stop.
         :param sleep_in_sec: time before wake-up = exit of the function
         :param shutdown_check: time between each shutdown request check.
         :return: True if no halt request had been detected, True otherwise
-        '''
+        """
         # Check shutdown at least as fast as sleep waiting time
         if shutdown_check > sleep_in_sec:
             shutdown_check = sleep_in_sec
@@ -377,13 +376,13 @@ class Database_Worker:
 # Launcher for this worker. Launch this file to launch a worker
 # NOTE THIS WORKER WON'T PERFORM ANY ACTION !
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Launch a worker for a specific task.')
-    parser.add_argument("-c", '--configuration_file', dest="conf", type=dir_path, help='DB_configuration_file stored as json. Path')
+    parser = argparse.ArgumentParser(description='Launch a worker for a specific task : unspecified')
+    parser = arg_parser.add_arg_db_conf(parser)
+
     args = parser.parse_args()
 
-    # Load the provided configuration file and Create back the Configuration Object
-    conf = database_conf.parse_from_dict(json_import_export.load_json(pathlib.Path(args.conf)))
+    db_conf, _, _, _ = arg_parser.parse_conf_files(args)
 
     # Create the Database Accessor and run it
-    db_accessor = Database_Worker(conf)
-    db_accessor.run(sleep_in_sec=conf.ADDER_WAIT_SEC)
+    db_accessor = Database_Worker(db_conf)
+    db_accessor.run(sleep_in_sec=db_conf.ADDER_WAIT_SEC)

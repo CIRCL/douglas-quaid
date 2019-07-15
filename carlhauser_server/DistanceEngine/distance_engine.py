@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import logging
 # ==================== ------ STD LIBRARIES ------- ====================
+
+import logging
 import os
 import sys
-from typing import Dict
-from typing import List
+from typing import List, Dict
 
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
 import carlhauser_server.Configuration.database_conf as database_conf
@@ -17,14 +17,18 @@ import carlhauser_server.DistanceEngine.distance_hash as distance_hash
 import carlhauser_server.DistanceEngine.distance_orb as distance_orb
 import carlhauser_server.DistanceEngine.merging_engine as merging_engine
 import carlhauser_server.DistanceEngine.scoring_datastrutures as scoring_datastrutures
-
 from common.CustomException import AlgoFeatureNotPresentError
 
 sys.path.append(os.path.abspath(os.path.pardir))
 
 
 class Distance_Engine:
-    def __init__(self, parent: database_worker, db_conf: database_conf, dist_conf: distance_engine_conf, fe_conf: feature_extractor_conf):
+    """
+    Handle distance computation between pictures and their representations.
+    """
+
+    def __init__(self, parent: database_worker, db_conf: database_conf.Default_database_conf, dist_conf: distance_engine_conf.Default_distance_engine_conf,
+                 fe_conf: feature_extractor_conf.Default_feature_extractor_conf):
         # STD attributes
         self.logger = logging.getLogger(__name__)
         self.logger.info("... which is a Distance Engine")
@@ -43,63 +47,81 @@ class Distance_Engine:
         self.merging_engine = merging_engine.Merging_Engine(db_conf, dist_conf, fe_conf)
 
     # ==================== ------ INTER ALGO DISTANCE ------- ====================
-    def get_dist_and_decision_algos_to_algos(self, pic_package_from, pic_package_to) -> Dict[str, scoring_datastrutures.AlgoMatch]:
-        # Compute a list of distance from two image representation
+    def get_dist_and_decision_algos_to_algos(self, pic_package_from: Dict, pic_package_to: Dict) -> Dict[str, scoring_datastrutures.AlgoMatch]:
+        """
+        Compute a list of distance and decision from two images representations, with activated (conf) algorithms.
+        :param pic_package_from: dict of one image features
+        :param pic_package_to: dict of one image features
+        :return: merged dict of distance and decision for each algorithm
+        """
 
         merged_dict = {}
+
         # Get hash distances
-        try :
+        try:
             hash_dict = self.distance_hash.hash_distance(pic_package_from, pic_package_to)
-            merged_dict.update(hash_dict)
             self.logger.debug(f"Computed hashes distance : {hash_dict}")
-        except AlgoFeatureNotPresentError as e :
+            merged_dict.update(hash_dict)
+        except AlgoFeatureNotPresentError as e:
             self.logger.warning(f"No feature present for hashing algorithms : {e}")
-        # except Exception as e :
-        #     self.logger.debug(f"Other error : {e}")
 
         # Get ORB distances
-        try :
+        try:
             orb_dict = self.distance_orb.orb_distance(pic_package_from, pic_package_to)
-            merged_dict.update(orb_dict)
             self.logger.debug(f"Computed orb distance : {orb_dict}")
-        except AlgoFeatureNotPresentError as e :
+            merged_dict.update(orb_dict)
+        except AlgoFeatureNotPresentError as e:
             self.logger.warning(f"No feature present for orbing algorithms : {e}")
-        # except Exception as e :
-        #     self.logger.debug(f"Other error : {e}")
 
-        # Merge distances dictionaries
-        # merged_dict = {**hash_dict, **orb_dict} # Old version not usable with try/catch
         self.logger.debug(f"Distance dict : {merged_dict}")
-
         return merged_dict
 
     # ==================== ------ INTER IMAGE DISTANCE ------- ====================
     def get_dist_and_decision_picture_to_picture(self, pic_package_from, pic_package_to) -> [float, scoring_datastrutures.DecisionTypes]:
+        """
+        Compare two pictures by their features, to return a one unique distance and a one unique decision. All activated algorithms are involved.
+        :param pic_package_from: dict of one image features
+        :param pic_package_to: dict of one image features
+        :return: distance and a decision
+        """
         # From distance between algos, obtain the distance between pictures
         merged_dict = self.get_dist_and_decision_algos_to_algos(pic_package_from, pic_package_to)
+
         dist = self.merging_engine.merge_algos_distance(merged_dict)
         decision = self.merging_engine.merge_algos_decision(merged_dict)
+
         return dist, decision
 
     def match_enough(self, matching_picture: scoring_datastrutures.ImageMatch) -> bool:
+        """
+        Check if a match is good enough. Compare the distance between pictures with the threshold between clsuters. Usable for storage graph.
+        :param matching_picture: An ImageMatch object, which includes distance between pictures
+        :return: boolean, True if pictures are close enough, False otherwise.
+        """
         # Check if the matching pictures provided are "close enough" of the current picture.
 
         # Check if the picture is too far or not
         if matching_picture.distance <= self.dist_conf.MAX_DIST_FOR_NEW_CLUSTER:
             return True
+        # TODO : Use decision ?
 
         # Picture is too "far"
         return False
 
     # ==================== ------ PICTURE TO CLUSTER DISTANCE ------- ====================
 
-    def get_top_matching_clusters(self, cluster_list: list, image_dict: dict) -> List[scoring_datastrutures.ClusterMatch]:
-        # Evaluate the similarity between the given picture and each cluster's representative picture
-        # Returns a list of the N closest clusters
+    def get_top_matching_clusters(self, cluster_list: List, image_dict: Dict) -> List[scoring_datastrutures.ClusterMatch]:
+        """
+        Evaluate the similarity between the given picture and each cluster's representative picture
+        Returns a list of the N closest clusters
+        :param cluster_list: The cluster list to iterate on, to check if the picture belongs to one of them
+        :param image_dict: the picture features to use to check if belonging to each cluster
+        :return: a top list of clusters with which the picture matches.
+        """
+
         self.logger.debug(f"Finding top matching clusters for current picture in cluster list {cluster_list}")
 
-        TOP_N_CLUSTERS = self.dist_conf.TOP_N_CLUSTERS
-        top_n_storage = scoring_datastrutures.TopN(TOP_N_CLUSTERS)
+        top_n_storage = scoring_datastrutures.TopN(self.dist_conf.TOP_N_CLUSTERS)
 
         # Evaluate similarity to each cluster
         for curr_cluster in cluster_list:
@@ -109,18 +131,26 @@ class Distance_Engine:
             tmp_dist, tmp_decision = self.get_distance_picture_to_cluster(curr_cluster, image_dict)
 
             # Store in datastructure
-            tmp_cluster_match = scoring_datastrutures.ClusterMatch(cluster_id=curr_cluster, distance=tmp_dist, decision=tmp_decision)
+            tmp_cluster_match = scoring_datastrutures.ClusterMatch(cluster_id=curr_cluster,
+                                                                   distance=tmp_dist,
+                                                                   decision=tmp_decision)
             top_n_storage.add_element(tmp_cluster_match)
 
         # get top N clusters = Ask datastructure to return its top list
         return top_n_storage.get_top_n()
 
-    def get_distance_picture_to_cluster(self, cluster_id, image_dict: dict) -> [float, scoring_datastrutures.DecisionTypes]:
-        # Go through N first picture of given cluster, and test their distance to given image
-        # Merge the result into one unified distance
+    def get_distance_picture_to_cluster(self, cluster_id: str, image_dict: Dict) -> [float, scoring_datastrutures.DecisionTypes]:
+        """
+        Go through N first picture of given cluster, and test their distance to given image
+        Merge the results into one unified distance
+        :param cluster_id: the cluster id of the cluster to compare
+        :param image_dict: the image dict of the picture to compare
+        :return: a distance and a decision, from picture to the cluster
+        """
+
         self.logger.debug(f"Computing distance between cluster {cluster_id} and current picture")
 
-        PICT_TO_TEST_PER_CLUSTER = self.dist_conf.PICT_TO_TEST_PER_CLUSTER
+        pict_to_test_per_cluster = self.dist_conf.PICT_TO_TEST_PER_CLUSTER
 
         list_dist_decision = []
         curr_picture_sorted_set = self.parent.db_utils.get_pictures_of_cluster(cluster_id)  # DECODE
@@ -128,7 +158,7 @@ class Distance_Engine:
         self.logger.debug(f"Retrieved pictures of cluster #{cluster_id} are {curr_picture_sorted_set}")
 
         for i, curr_picture in enumerate(curr_picture_sorted_set):
-            if i < PICT_TO_TEST_PER_CLUSTER:
+            if i < pict_to_test_per_cluster:
                 self.logger.debug(f"Evaluating picture #{i} of current cluster")
                 # We still have pictures to test for this cluster
                 # Get picture dict
@@ -141,22 +171,25 @@ class Distance_Engine:
                 break
 
         # Evaluation of the distance between pictures, and the decision
-        dist_picture_to_cluster = self.merging_engine.merge_pictures_distance([i[0] for i in list_dist_decision])
+        dist_picture_to_cluster = self.merging_engine.merge_max_pictures_distance([i[0] for i in list_dist_decision])
         decision_picture_to_cluster = self.merging_engine.merge_pictures_decisions([i[1] for i in list_dist_decision])
 
         return dist_picture_to_cluster, decision_picture_to_cluster
 
     # ==================== ------ PICTURE TO ALL PICTURES DISTANCE ------- ====================
 
-    def get_top_matching_pictures_from_clusters(self, cluster_list: list, image_dict: dict) -> List[scoring_datastrutures.ImageMatch]:
-        # Evaluate the similarity between the given picture and all pictures of cluster list.
-        # Returns a list of the N closest pictures and cluster, with distance
+    def get_top_matching_pictures_from_clusters(self, cluster_list: List, image_dict: Dict) -> List[scoring_datastrutures.ImageMatch]:
+        """
+        Evaluate the similarity between the given picture and all pictures of cluster list.
+        Returns a list of the N closest pictures and cluster, with distance
+        :param cluster_list: The cluster list to iterate on, to check if the picture is near one of its picture
+        :param image_dict: the picture features to use to check if near any pictures of the cluster list
+        :return: List of Imagematch, undifferenciated of their origin cluster
+        """
 
         self.logger.debug(f"Finding top matching pictures for current picture in all pictures of all clusters of the list={cluster_list}")
 
-        # TODO : 1 only ? We want to connect only to one picture the current picture ?
-        TOP_N_PICTURES = self.dist_conf.TOP_N_PICTURES
-        top_n_storage = scoring_datastrutures.TopN(TOP_N_PICTURES)
+        top_n_storage = scoring_datastrutures.TopN(self.dist_conf.TOP_N_PICTURES)
 
         # For each cluster, iterate over all pictures of this cluster
         for curr_cluster in cluster_list:

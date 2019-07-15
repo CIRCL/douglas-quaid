@@ -30,19 +30,19 @@ class DBUtilities:
 
     # ==================== ------ CLUSTER LIST ------- ====================
     def get_cluster_list(self) -> List:
-        '''
+        """
         # Get the list of pictures associated with a given cluster
         :return: List of cluster id #TODO : CHECK = Specify type
-        '''
+        """
 
         return self.db_access_decode.smembers(self.CLUSTER_LIST)
 
     def add_cluster(self, cluster_name: str) -> bool:
-        '''
+        """
         Store a cluster's name in the list of cluster's names
         :param cluster_name: The name of the cluster to add
         :return: boolean, True if successfully added, False otherwise
-        '''
+        """
 
         if self.db_access_decode.sismember(self.CLUSTER_LIST, cluster_name) == 1:
             # The set does contains the cluster we want to add
@@ -51,11 +51,11 @@ class DBUtilities:
         return self.db_access_decode.sadd(self.CLUSTER_LIST, cluster_name)
 
     def rem_cluster(self, cluster_name: str) -> bool:
-        '''
+        """
         Remove a cluster's name of the list of cluster's names
         :param cluster_name: The name of the cluster to remove
         :return: boolean, True if successfully removed, False otherwise
-        '''
+        """
 
         if self.db_access_decode.sismember(self.CLUSTER_LIST, cluster_name) == 0:
             # The set does contains the cluster we want to add
@@ -66,13 +66,13 @@ class DBUtilities:
     # ==================== ------ ADDERS ------- ====================
 
     def add_picture_to_cluster(self, image_id: str, cluster_id: str, score: int = 100) -> bool:
-        '''
+        """
         Add a picture to a cluster (already existing)
         :param image_id: id of the picture to add
         :param cluster_id: id of the cluster to which the picture will be added
         :param score: score of the picture (clusters are sorted set ! So how high the picture will be stored ?)
         :return: boolean, True if successfully added, False otherwise
-        '''
+        """
 
         set_name = self.get_setname_of_cluster(cluster_id)
 
@@ -87,12 +87,12 @@ class DBUtilities:
         return success
 
     def add_picture_to_new_cluster(self, image_id: str, score: float = 100) -> str:
-        '''
+        """
         Add a picture to a cluster (freshly created)
         :param image_id: id of the picture to add
         :param score: score of the picture (clusters are sorted set ! So how high the picture will be stored ?)
         :return: id of the created cluster for this picture
-        '''
+        """
 
         # Generate random id
         cluster_id = self.get_new_cluster_id()
@@ -108,13 +108,13 @@ class DBUtilities:
         return cluster_id
 
     def update_picture_score_of_cluster(self, cluster_id: str, image_id: str, new_score: float) -> bool:
-        '''
+        """
         Update the set "ranking" value of a picture into a cluster
         :param cluster_id: id of the cluster to which the picture belongs
         :param image_id: id of the picture to add
         :param new_score: new score of the picture
         :return: True if success, Exception if unsuccessful
-        '''
+        """
 
         set_name = self.get_setname_of_cluster(cluster_id)
         self.db_access_decode.zadd(set_name, {image_id: new_score}, xx=True)
@@ -123,21 +123,21 @@ class DBUtilities:
 
     @staticmethod
     def get_new_cluster_id() -> str:
-        '''
+        """
         Generate cluster id
         :return: a new cluster id to use
-        '''
+        """
         return '|'.join(["cluster", str(uuid.uuid4())])
 
     # ==================== ------ PICTURES LIST PER CLUSTER ------- ====================
 
     def get_pictures_of_cluster(self, cluster_name: str, with_score=False) -> set:
-        '''
+        """
         Retrieve the set of pictures ids from a cluster
         :param cluster_name: the cluster id from which to dump pictures
         :param with_score: boolean to specify if scores of pictures should also be dumped
         :return: the set of pictures (with or without scores)
-        '''
+        """
         self.logger.debug(f"Retrieving picture list of cluster {cluster_name}")
 
         if type(cluster_name) is not str:
@@ -148,22 +148,22 @@ class DBUtilities:
 
     @staticmethod
     def get_setname_of_cluster(cluster_name: str) -> str:
-        '''
+        """
         Generate the key of the set of pictures
         :param cluster_name: the cluster name to which we want to generate the set of pictures key
         :return: the set of picture key
-        '''
+        """
         return '|'.join([cluster_name, 'pics'])
 
     # ==================== ------ BACKGROUND COMPUTATION ------- ====================
 
     def add_to_review(self, image_id):
-        '''
+        """
         Add the picture to be reviewed in few time (100_queue, 1000_queue, ...)
         TODO ! !
         :param image_id:
         :return:
-        '''
+        """
 
         # TODO
         return
@@ -171,10 +171,11 @@ class DBUtilities:
     # ==================== ------ EXPORTATION ------- ====================
 
     def get_storage_graph(self) -> GraphDataStruct:
-        '''
+        """
+        # TODO : Move to API ?
         Export the current state of the database as a graph datastructure. This represents the storage graph of the server.
         :return: The storage graph of the server, as is in the database
-        '''
+        """
 
         # Create a graphe structure
         tmp_meta = Metadata(Source.DBDUMP)
