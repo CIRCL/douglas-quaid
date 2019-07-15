@@ -7,7 +7,7 @@
 
 # ==================== ------ STD LIBRARIES ------- ====================
 import flask
-
+import uuid
 import argparse
 import logging
 import os
@@ -151,6 +151,7 @@ class FlaskAppWrapper(object):
         return result_json
         # Test it with curl 127.0.0.1:5000
 
+    # ================= ADD PICTURES =================
     def add_picture(self) -> Dict:
         '''
         Handle an adding of a picture request on server side.
@@ -181,6 +182,7 @@ class FlaskAppWrapper(object):
         return result_json
         # Test it with curl 127.0.0.1:5000/add_pict
 
+    # ================= ADD PICTURES - WAITING =================
     def are_pipelines_empty(self) -> Dict:
         '''
         Handle a check of emptiness on the pipelines (list of queues)
@@ -208,6 +210,8 @@ class FlaskAppWrapper(object):
 
         return result_json
         # Test it with curl 127.0.0.1:5000/are_pipelines_empty
+
+    # ================= REQUEST PICTURES =================
 
     def request_similar_picture(self) -> Dict:
         '''
@@ -239,6 +243,41 @@ class FlaskAppWrapper(object):
 
         return result_json
         # Test it with curl 127.0.0.1:5000/request_similar_picture
+
+    def get_results(self) -> Dict:
+        '''
+        Handle a retrieval of results
+        :return: The result json (status of the request, etc.)
+        '''
+
+        result_json = {}
+        result_json["Called_function"] = "get_results"
+        result_json = self.add_std_info(result_json)
+
+        # Answer to PUT HTTP request
+        if flask.request.method == 'GET':
+            try:
+                # Received : werkzeug.datastructures.FileStorage. Should use ".read()" to get picture's value
+                id = flask.request.args.get('request_id')
+                self.logger.debug(f"Request ID to be answered in server : {type(id)} ==> {id} ")  # {f.read()}
+
+                # Fetch results
+                result_dict = self.database_worker.get_request_result(self.database_worker.cache_db_no_decode, id)
+
+                result_json["Status"] = "Success"
+                result_json["request_id"] = id
+                result_json["results"] = result_dict
+            except Exception as e:
+                self.logger.error(f"Error during GET handling {e}")
+                result_json["Status"] = "Failure"
+                result_json["Error"] = "Error during Hash computation or database request"
+        else:
+            result_json = self.add_bad_method_info(result_json, good_method_instead="GET")
+
+        return result_json
+        # Test it with curl 127.0.0.1:5000/get_results
+
+    # ================= REQUEST PICTURES - WAITING =================
 
     def is_ready(self) -> Dict:
         '''
@@ -275,38 +314,7 @@ class FlaskAppWrapper(object):
         return result_json
         # Test it with curl 127.0.0.1:5000/is_ready
 
-    def get_results(self) -> Dict:
-        '''
-        Handle a retrieval of results
-        :return: The result json (status of the request, etc.)
-        '''
-
-        result_json = {}
-        result_json["Called_function"] = "get_results"
-        result_json = self.add_std_info(result_json)
-
-        # Answer to PUT HTTP request
-        if flask.request.method == 'GET':
-            try:
-                # Received : werkzeug.datastructures.FileStorage. Should use ".read()" to get picture's value
-                id = flask.request.args.get('request_id')
-                self.logger.debug(f"Request ID to be answered in server : {type(id)} ==> {id} ")  # {f.read()}
-
-                # Fetch results
-                result_dict = self.database_worker.get_request_result(self.database_worker.cache_db_no_decode, id)
-
-                result_json["Status"] = "Success"
-                result_json["request_id"] = id
-                result_json["results"] = result_dict
-            except Exception as e:
-                self.logger.error(f"Error during GET handling {e}")
-                result_json["Status"] = "Failure"
-                result_json["Error"] = "Error during Hash computation or database request"
-        else:
-            result_json = self.add_bad_method_info(result_json, good_method_instead="GET")
-
-        return result_json
-        # Test it with curl 127.0.0.1:5000/get_results
+    # ================= EXPORT AND DUMP =================
 
     def export_db_as_graphe(self) -> Dict:
         '''
@@ -339,6 +347,8 @@ class FlaskAppWrapper(object):
 
         return result_json
         # Test it with curl 127.0.0.1:5000
+
+    # ================= UTILITIES =================
 
     @staticmethod
     def add_std_info(result_json: Dict) -> Dict:
@@ -396,17 +406,18 @@ class FlaskAppWrapper(object):
         picture_import_export.save_picture(f_bmp, get_homedir() / 'datasets' / 'received_pictures' / (str(f_hash) + '.bmp'))
         # If the filename need to be used : secure_filename(f.filename)
 
-        # TODO : Create request UUID ? Or keep image hash ?
+        # Generate uuid from SHA-1 : # Done : Create request UUID ? Or keep image hash ?
+        tmp_uuid = str(uuid.uuid5(uuid.NAMESPACE_URL, f_hash))
 
         # Enqueue picture to processing
-        self.logger.debug(f"Adding to feature queue : {f_hash} ")  # {f_bmp}
+        self.logger.debug(f"Adding to feature queue : {f_hash} hash transformed into -> {tmp_uuid} uuid v5")  # {f_bmp}
         self.database_worker.add_to_queue(self.database_worker.cache_db_decode,
                                           queue_name=queue,
-                                          id=f_hash,
+                                          id=tmp_uuid,
                                           dict_to_store={"img": f_bmp})
 
         result_json["Status"] = "Success"
-        result_json["request_id"] = f_hash
+        result_json["request_id"] = tmp_uuid
 
         return result_json
 
