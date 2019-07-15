@@ -6,6 +6,7 @@ from weakref import WeakValueDictionary
 class Singleton(type):
     # For more info : https://stackoverflow.com/questions/6760685/creating-a-singleton-in-python
     _instances = WeakValueDictionary()
+
     def __call__(cls, *args, **kwargs):
         if cls not in cls._instances:
             # This variable declaration is required to force a

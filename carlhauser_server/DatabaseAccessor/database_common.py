@@ -4,8 +4,6 @@
 # ==================== ------ STD LIBRARIES ------- ====================
 import os
 import sys
-import time
-import traceback
 from typing import List, Dict
 
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
@@ -33,39 +31,6 @@ class Database_Common(database_accessor.Database_Worker):
         self.de = distance_engine.Distance_Engine(self, tmp_db_conf, dist_conf, fe_conf)
         self.db_utils = db_utils.DBUtilities(db_access_decode=self.storage_db_decode, db_access_no_decode=self.storage_db_no_decode)
 
-    '''
-
-    def _to_run_forever(self):
-        """
-        Method called infinitely, in loop. Specified from the parent version. Fetch from database queue and call a process function on it.
-        :return: Nothing
-        """
-
-        # Trying to fetch from queue (from parameters)
-        fetched_id, fetched_dict = self.get_from_queue(self.cache_db_no_decode, self.input_queue, pickle=True)
-
-        # If there is nothing fetched
-        if not fetched_id:
-            # Nothing to do
-            time.sleep(0.1)
-
-        try:
-            self.process_fetched_data(fetched_id, fetched_dict)
-
-        except Exception as e:
-            self.logger.error(f"Error in database accessors : {e}")
-            self.logger.error(traceback.print_tb(e.__traceback__))
-
-    def process_fetched_data(self, fetched_id, fetched_dict):
-        """
-        Method to overwrite to specify the worker. Called each time something is fetched from queue
-        :param fetched_id: id to process
-        :param fetched_dict: data to process
-        :return: Nothing (or to be defined)
-        """
-
-        self.logger.error(f"'process_fetched_data' must be overwritten ! No action performed by this worker.")
-    '''
     # ==== COMMON ACTION OF BOTH ADDER AND REQUESTER ====
 
     def get_top_matching_pictures(self, fetched_dict: Dict) -> (List[scoring_datastrutures.ImageMatch], List[scoring_datastrutures.ClusterMatch]):

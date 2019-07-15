@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+
+# ==================== ------ STD LIBRARIES ------- ====================
 import _pickle as cPickle
 import copyreg
-# ==================== ------ STD LIBRARIES ------- ====================
 import os
 import pickle
 import sys
@@ -11,11 +12,15 @@ import sys
 import cv2
 
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
-import carlhauser_server.Singletons.template_singleton as template_singleton
+import carlhauser_server.Singletons.singleton as template_singleton
+
 sys.path.append(os.path.abspath(os.path.pardir))
 
-class Pickler(metaclass=template_singleton.Singleton):
 
+class Pickler(metaclass=template_singleton.Singleton):
+    """
+    Very specific file to overwrite method to pickle some specific object types.
+    """
     def __init__(self):
         self.patch_Keypoint_pickiling()
 
@@ -23,7 +28,7 @@ class Pickler(metaclass=template_singleton.Singleton):
     def patch_Keypoint_pickiling():
         # Create the bundling between class and arguements to save for Keypoint class
         # See : https://stackoverflow.com/questions/50337569/pickle-exception-for-cv2-boost-when-using-multiprocessing/50394788#50394788
-        def _pickle_keypoint(keypoint): #  : cv2.KeyPoint
+        def _pickle_keypoint(keypoint):  # : cv2.KeyPoint
             return cv2.KeyPoint, (
                 keypoint.pt[0],
                 keypoint.pt[1],
@@ -33,6 +38,7 @@ class Pickler(metaclass=template_singleton.Singleton):
                 keypoint.octave,
                 keypoint.class_id,
             )
+
         # C++ : KeyPoint (float x, float y, float _size, float _angle=-1, float _response=0, int _octave=0, int _class_id=-1)
         # Python: cv2.KeyPoint([x, y, _size[, _angle[, _response[, _octave[, _class_id]]]]]) → <KeyPoint object>
 
@@ -55,8 +61,3 @@ class Pickler(metaclass=template_singleton.Singleton):
 
         # Pickle the 'data' dictionary using the highest protocol available = the faster (>json since v3)
         return cPickle.dumps(obj, protocol=pickle.HIGHEST_PROTOCOL)
-
-
-
-
-

@@ -365,7 +365,7 @@ class Database_Worker:
             self.logger.error(f"Error in database worker (DB adder, db Request or FeatureExtractor or ... ) : {e}")
             self.logger.error(traceback.print_tb(e.__traceback__))
 
-    def fetch_from_queue(self)-> (str,Dict):
+    def fetch_from_queue(self) -> (str, Dict):
         return self.get_from_queue(self.cache_db_no_decode, self.input_queue, pickle=True)
 
     def process_fetched_data(self, fetched_id, fetched_dict):

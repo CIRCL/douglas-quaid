@@ -21,7 +21,7 @@ import carlhauser_server.Configuration.database_conf as database_conf
 import carlhauser_server.Configuration.webservice_conf as webservice_conf
 import carlhauser_server.DatabaseAccessor.database_utilities as db_utils
 import carlhauser_server.DatabaseAccessor.database_worker as database_worker
-import carlhauser_server.Helpers.id_generator as id_generator
+import carlhauser_server.API.in_memory_files_ops as id_generator
 import common.ImportExport.json_import_export as json_import_export
 import common.ImportExport.picture_import_export as picture_import_export
 from carlhauser_server.DatabaseAccessor import arg_parser
