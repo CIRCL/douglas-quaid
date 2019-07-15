@@ -1,22 +1,23 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import argparse
-import datetime
-import logging
+
 # ==================== ------ STD LIBRARIES ------- ====================
+
 import os
 import pathlib
 import sys
 import time
 import traceback
-
+import argparse
+import datetime
+import logging
 import objsize
 import redis
 import pprint
+from typing import Dict
 
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
-sys.path.append(os.path.abspath(os.path.pardir))
 
 from common.environment_variable import get_homedir, dir_path
 import common.ImportExport.json_import_export as json_import_export
@@ -25,28 +26,31 @@ import carlhauser_server.Helpers.pickle_import_export as pickle_import_export
 
 import carlhauser_server.Configuration.database_conf as database_conf
 from common.ImportExport.json_import_export import Custom_JSON_Encoder
-from carlhauser_server.Configuration.static_values import QueueNames
+from common.environment_variable import QueueNames, EndPoints
+
+sys.path.append(os.path.abspath(os.path.pardir))
 
 
 class Database_Worker:
 
     def __init__(self, db_conf: database_conf):
-        # STD attributes
-        self.conf = db_conf
         self.logger = logging.getLogger(__name__)
         self.logger.info("Creation of a Database Accessor Worker")
 
-        # Print configuration
+        # STD attributes
+        self.db_conf = db_conf
         json_encoder = Custom_JSON_Encoder()
-        self.logger.debug(f"Configuration db_conf (db worker) : {pprint.pformat(json_encoder.encode(self.conf))}")
+
+        # Print configuration
+        self.logger.debug(f"Configuration db_conf (db worker) : {pprint.pformat(json_encoder.encode(self.db_conf))}")
 
         # Specific
         self.input_queue = None
         self.ouput_queue = None
 
         # Specific attributes
-        self.redis_cache = get_homedir() / self.conf.DB_DATA_PATH
-        self.redis_storage = get_homedir() / self.conf.DB_DATA_PATH
+        self.redis_cache = get_homedir() / self.db_conf.DB_DATA_PATH
+        self.redis_storage = get_homedir() / self.db_conf.DB_DATA_PATH
 
         # Get sockets
         tmp_db_handler = database_start_stop.Database_StartStop(db_conf=db_conf)
@@ -63,47 +67,48 @@ class Database_Worker:
         self.failure_nb = 0
         self.FAILURE_THRESHOLD = 10
 
-    def add_to_queue(self, storage: redis.Redis, queue_name: str, id: str, dict_to_store: dict, pickle=False):
+    # ==================== ------ GET/SET QUEUE ------- ====================
+
+    def add_to_queue(self, storage: redis.Redis, queue_name: QueueNames, input_id: str, dict_to_store: dict, pickle=False)-> bool:
         """
         Push data to a specified queue, with a specific id. Wrapper to handle queuing of id(s) and separated storage of data linked to this id(s).
         Transparent way to push data to a queue
         :param storage: Redis storage to use
         :param queue_name: Target queue name
-        :param id: id under which the dictionary will be stored
+        :param input_id: id under which the dictionary will be stored
         :param dict_to_store: dictionary to store in the queue
         :param pickle: Do pickle the pushed data. Turn to 'False' if the data has bytes_array, even nested.
         :return: (void)
         """
         # Do stuff
         self.logger.debug(f"Worker trying to add stuff to queue={queue_name}")
-        # self.logger.debug(f"Added dict: {dict_to_store}")
 
         try:
             # Create tmp_id for this queue
-            tmp_id = '|'.join([queue_name, id])
+            tmp_id = '|'.join([queue_name, input_id])
             self.logger.debug(f"About to add id = {tmp_id}")
 
             # Store the dict
             self.set_dict_to_key(storage, tmp_id, dict_to_store, pickle)
 
             # Set an expire date
-            storage.expire(tmp_id, self.conf.REQUEST_EXPIRATION)
-
+            storage.expire(tmp_id, self.db_conf.REQUEST_EXPIRATION)
             self.logger.debug(f"Stored= {tmp_id}")
 
             # Add id to the queue, to be processed
             storage.rpush(queue_name, tmp_id)  # Add the id to the queue
+            return True
         except Exception as e:
             raise Exception(f"Unable to add dict and hash to {queue_name} queue : {e}")
 
-    def get_from_queue(self, storage: redis.Redis, queue_name: str, pickle=False):
+    def get_from_queue(self, storage: redis.Redis, queue_name: QueueNames, pickle=False) -> (str,Dict):
         """
         Fetch data from a specified queue. Wrapper to handle queuing of id(s) and separated storage of data linked to this id(s).
         Transparent way to pull data from a queue
         :param storage: Redis storage to use
         :param queue_name: Source queue name
         :param pickle: Do unpickle the fetched data. Turn to 'False' if the data has bytes_array, even nested.
-        :return: The dict fetched from queue
+        :return: The fetched id of the item in the queue and the dict fetched from queue
         """
         # self.logger.debug(f"Worker trying to remove stuff from queue={queue_name}")
 
@@ -127,8 +132,8 @@ class Database_Worker:
                     to_split = str(tmp_id.decode('utf-8'))
 
                 stored_queue_name, stored_id = to_split.split("|")
+                # TODO : Handle removal ? self.cache_db.delete(tmp_id) ==> Already expire time (24H)
 
-                # TODO : Handle removal ? self.cache_db.delete(tmp_id)
                 self.logger.debug(f"Stuff had been fetched from queue={queue_name}")
 
                 return stored_id, fetched_dict
@@ -138,25 +143,19 @@ class Database_Worker:
         except Exception as e:
             raise Exception(f"Unable to get dict and hash from {queue_name} queue : {e}")
 
-    def get_dict_from_key(self, storage: redis.Redis, key, pickle=False):
-        # Store a dict, pickled or not
-        self.logger.debug(f"Fetching key : {key}")
+    # ==================== ------ GET/SET DICT ------- ====================
 
-        if pickle:
-            # If correct, fetch data behind it
-            pickled_object = storage.get(key)
+    def set_dict_to_key(self, storage: redis.Redis, key, dict_to_store: dict, pickle=False, expire_time=None)-> bool:
+        '''
+        Set a dict of values, pickled or not, to a key
+        :param expire_time: The time after which the dict will be deleted (to prevent always-growing database), default = no expire
+        :param dict_to_store: the dictionnary of values to store
+        :param storage: storage to which dictionary should be stored
+        :param key: The key to which the dict is linked
+        :param pickle: boolean to notify if the value to store should be pickled
+        :return: boolean, True if correctly stored, False if not.
+        '''
 
-            # Unpickling the dict
-            fetched_dict = self.pickler.get_object_from_pickle(pickled_object)
-        else:
-            # If correct, fetch data behind it
-            fetched_dict = storage.hgetall(key)
-
-        self.logger.debug(f"Fetched dictionary : {fetched_dict.keys()}")
-
-        return fetched_dict
-
-    def set_dict_to_key(self, storage: redis.Redis, key, dict_to_store: dict, pickle=False, expire_time=None):
         # Retrieve a dict, pickled or not
         self.logger.debug(f"Setting key : {key}")
 
@@ -175,68 +174,125 @@ class Database_Worker:
 
         return answer
 
-    def add_picture_to_storage(self, storage: redis.Redis, id, image_dict: dict):
+    def get_dict_from_key(self, storage: redis.Redis, key, pickle=False) -> Dict:
+        '''
+        Retrieve a dict of values, pickled or not, from a key
+        :param storage: storage from which dictionary should be picked
+        :param key: The key to which the dict is linked
+        :param pickle: boolean to notify if the value to get is pickled
+        :return: The fetched dictionary (as an object)
+        '''
+
+        # Store a dict, pickled or not
+        self.logger.debug(f"Fetching key : {key}")
+
+        if pickle:
+            # fetch data linked to the key
+            pickled_object = storage.get(key)
+
+            # Unpickling the dict
+            fetched_dict = self.pickler.get_object_from_pickle(pickled_object)
+        else:
+            # fetch data linked to the key
+            fetched_dict = storage.hgetall(key)
+
+        self.logger.debug(f"Fetched dictionary : {fetched_dict.keys()}")
+
+        return fetched_dict
+
+    # ==================== ------ GET/SET IMAGES ------- ====================
+
+    def add_picture_to_storage(self, storage: redis.Redis, input_id: str, image_dict: dict)-> bool:
+        '''
+        Store images as pickled dict in the provided storage
+        :param storage: storage to which dictionary should be stored
+        :param input_id: The key to which the picture is linked
+        :param image_dict: the picture to store (as a dict)
+        :return: Boolean (True = success, False = failure)
+        '''
         # Store the dictionary of hashvalues in Redis under the given id
-        return self.set_dict_to_key(storage, id, image_dict, pickle=True)
+        return self.set_dict_to_key(storage, input_id, image_dict, pickle=True)
 
-    def get_picture_from_storage(self, storage: redis.Redis, id):
-        return self.get_dict_from_key(storage, id, pickle=True)
+    def get_picture_from_storage(self, storage: redis.Redis, input_id) -> Dict:
+        '''
+        Retrieve images as pickled dict in the provided storage
+        :param storage: storage from which picture (dict) should be stored
+        :param input_id: The key to which the dict is linked
+        :return: the picture (as a dict)
+        '''
+        return self.get_dict_from_key(storage, input_id, pickle=True)
 
-    def set_request_result(self, storage: redis.Redis, id, image_dict: dict):
-        # TODO : Create real request id ?
-
+    # ==================== ------ GET/SET REQUEST ------- ====================
+    def set_request_result(self, storage: redis.Redis, input_id: str, image_dict: dict)-> bool:
+        '''
+        Store results as pickled dict in the provided storage with a configuration-defined expiration time
+        :param storage: storage to which result dictionary should be stored
+        :param input_id: The key to which the results is linked (modified inside)
+        :param image_dict: the picture to store (as a dict)
+        :return: Boolean (True = success, False = failure)
+        '''
         # Create tmp_id for this queue
-        tmp_id = '|'.join([id, "result"])
+        tmp_id = '|'.join([input_id, "result"])
 
-        return self.set_dict_to_key(storage, tmp_id, image_dict, pickle=True, expire_time=self.conf.ANSWER_EXPIRATION)
+        return self.set_dict_to_key(storage, tmp_id, image_dict, pickle=True, expire_time=self.db_conf.ANSWER_EXPIRATION)
 
-    def get_request_result(self, storage: redis.Redis, id):
-        # TODO : Create real request id ?
-
+    def get_request_result(self, storage: redis.Redis, input_id) -> Dict:
+        '''
+        Retrieve results as pickled dict in the provided storage
+        :param storage: storage from which results (dict) should be stored
+        :param input_id: The key to which the dict is linked
+        :return: the picture (as a dict)
+        '''
         # Create tmp_id for this queue
-        tmp_id = '|'.join([id, "result"])
+        tmp_id = '|'.join([input_id, "result"])
         return self.get_dict_from_key(storage, tmp_id, pickle=True)
 
-    def are_all_queues_empty(self):
-        if self.is_adding_list_empty(self.cache_db_no_decode) and \
-                self.is_request_list_empty(self.cache_db_no_decode) and \
-                self.is_feature_request_list_empty(self.cache_db_no_decode) and \
-                self.is_feature_adding_list_empty(self.cache_db_no_decode):
+
+    # ==================== ------ CHECK QUEUE EMPTINESS ------- ====================
+
+    def are_all_queues_empty(self) -> bool:
+        '''
+        Check if all queues (TO ADD, TO REQUEST, etc.) are empty
+        :return: True if all are empty, False otherwise
+        '''
+        if self.is_queue_empty(self.cache_db_no_decode, QueueNames.DB_TO_ADD) and \
+                self.is_queue_empty(self.cache_db_no_decode, QueueNames.DB_TO_REQUEST) and \
+                self.is_queue_empty(self.cache_db_no_decode, QueueNames.FEATURE_TO_ADD) and \
+                self.is_queue_empty(self.cache_db_no_decode, QueueNames.FEATURE_TO_REQUEST):
             return True
 
         return False
 
-    def is_adding_list_empty(self, storage: redis.Redis):
-        return self.is_list_empty(storage, QueueNames.DB_TO_ADD)
-
-    def is_request_list_empty(self, storage: redis.Redis):
-        return self.is_list_empty(storage, QueueNames.DB_TO_REQUEST)
-
-    def is_feature_adding_list_empty(self, storage: redis.Redis):
-        return self.is_list_empty(storage, QueueNames.FEATURE_TO_ADD)
-
-    def is_feature_request_list_empty(self, storage: redis.Redis):
-        return self.is_list_empty(storage, QueueNames.FEATURE_TO_REQUEST)
-
-    def is_list_empty(self, storage: redis.Redis, list_name: str):
-        val = storage.llen("db_to_add")
+    def is_queue_empty(self, storage: redis.Redis, list_name: str)-> bool:
+        '''
+        Check if the specified Queue in the specified storage is empty
+        :param storage: the storage in which the queue exist
+        :param list_name: the queue name to check
+        :return: True if the queue is empty, False otherwise, Exception if Queue does not exist
+        '''
+        val = storage.llen(list_name)
+        if val is None :
+            raise Exception(f"Queue {list_name} is not accessible !")
         self.logger.debug(f"Length of {list_name} queue : {val}")
+
         return val == 0
 
     def print_storage_view(self):
+        '''
+        Print all keys of the storage
+        :return:
+        '''
         self.logger.info("Printing REDIS Storage view")
         self.logger.info(self.storage_db_decode.keys())
-
-    '''
-    @staticmethod
-    def get_unique_key(queue_name : str, id:str):
-        return '|'.join([queue_name, id])
-    '''
 
     # ==================== ------ RUNNABLE WORKER ------- ====================
 
     def is_halt_requested(self):
-        # Check if a halt had been requested
+        '''
+        Check if a halt had been requested
+        :return: True if halt requested (or unknown for too long), False otherwise
+        '''
+
         try:
             value = self.cache_db_decode.get("halt")
             # DEBUG # self.logger.debug(f"HALT key : {value} ")
@@ -257,6 +313,11 @@ class Database_Worker:
             return False
 
     def run(self, sleep_in_sec: int):
+        '''
+        Run indefinitely except if the worker have received a stop signal.
+        :param sleep_in_sec: time between two check for something to do
+        :return: Nothing
+        '''
         try:
 
             self.logger.info(f'Launching {self.__class__.__name__}')
@@ -286,9 +347,19 @@ class Database_Worker:
         self.logger.info(f'Shutting down {self.__class__.__name__}')
 
     def _to_run_forever(self):
+        '''
+        Method to overwrite to specify the worker
+        :return: Nothing (or to be defined)
+        '''
         self.logger.critical("YOU SHOULD OVERWRITE '_to_run_forever' of the database_worker class. This worker is actually doing NOTHING !")
 
     def long_sleep(self, sleep_in_sec: int, shutdown_check: int = 10) -> bool:
+        '''
+        Wait a "long" time before returning, while keep checking if the worker has to stop.
+        :param sleep_in_sec: time before wake-up = exit of the function
+        :param shutdown_check: time between each shutdown request check.
+        :return: True if no halt request had been detected, True otherwise
+        '''
         # Check shutdown at least as fast as sleep waiting time
         if shutdown_check > sleep_in_sec:
             shutdown_check = sleep_in_sec

@@ -413,7 +413,7 @@ class FlaskAppWrapper(object):
         self.logger.debug(f"Adding to feature queue : {f_hash} hash transformed into -> {tmp_uuid} uuid v5")  # {f_bmp}
         self.database_worker.add_to_queue(self.database_worker.cache_db_decode,
                                           queue_name=queue,
-                                          id=tmp_uuid,
+                                          input_id=tmp_uuid,
                                           dict_to_store={"img": f_bmp})
 
         result_json["Status"] = "Success"
