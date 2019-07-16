@@ -72,6 +72,7 @@
 <li class="toctree-l1"><a class="reference internal" href="common.ImportExport.html">common.ImportExport package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="common.ImportExport.html#submodules">Submodules</a></li>
 <li class="toctree-l2"><a class="reference internal" href="common.ImportExport.html#module-common.ImportExport.json_import_export">common.ImportExport.json_import_export module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="common.ImportExport.html#module-common.ImportExport.pickle_import_export">common.ImportExport.pickle_import_export module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="common.ImportExport.html#module-common.ImportExport.picture_import_export">common.ImportExport.picture_import_export module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="common.ImportExport.html#module-common.ImportExport">Module contents</a></li>
 </ul>
@@ -87,14 +88,13 @@
 <li class="toctree-l2"><a class="reference internal" href="common.PerformanceDatastructs.html#module-common.PerformanceDatastructs.clustermatch_datastruct">common.PerformanceDatastructs.clustermatch_datastruct module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="common.PerformanceDatastructs.html#module-common.PerformanceDatastructs.perf_datastruct">common.PerformanceDatastructs.perf_datastruct module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="common.PerformanceDatastructs.html#module-common.PerformanceDatastructs.stats_datastruct">common.PerformanceDatastructs.stats_datastruct module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="common.PerformanceDatastructs.html#module-common.PerformanceDatastructs.thresholds_datastruct">common.PerformanceDatastructs.thresholds_datastruct module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="common.PerformanceDatastructs.html#module-common.PerformanceDatastructs">Module contents</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="common.TestInstanceLauncher.html">common.TestInstanceLauncher package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="common.TestInstanceLauncher.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="common.TestInstanceLauncher.html#module-common.TestInstanceLauncher.test_database_conf">common.TestInstanceLauncher.test_database_conf module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="common.TestInstanceLauncher.html#module-common.TestInstanceLauncher.test_instance_launcher">common.TestInstanceLauncher.test_instance_launcher module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="common.TestInstanceLauncher.html#module-common.TestInstanceLauncher.one_db_conf">common.TestInstanceLauncher.one_db_conf module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="common.TestInstanceLauncher.html#module-common.TestInstanceLauncher.one_db_instance_launcher">common.TestInstanceLauncher.one_db_instance_launcher module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="common.TestInstanceLauncher.html#module-common.TestInstanceLauncher">Module contents</a></li>
 </ul>
 </li>
@@ -118,7 +118,7 @@
 <dl class="class">
 <dt id="common.environment_variable.EndPoints">
 <em class="property">class </em><code class="sig-prename descclassname">common.environment_variable.</code><code class="sig-name descname">EndPoints</code><a class="reference internal" href="_modules/common/environment_variable.html#EndPoints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#common.environment_variable.EndPoints" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="carlhauser_server.Configuration.html#carlhauser_server.Configuration.template_conf.JSON_parsable_Dict" title="carlhauser_server.Configuration.template_conf.JSON_parsable_Dict"><code class="xref py py-class docutils literal notranslate"><span class="pre">carlhauser_server.Configuration.template_conf.JSON_parsable_Dict</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#common.environment_variable.JSON_parsable_Dict" title="common.environment_variable.JSON_parsable_Dict"><code class="xref py py-class docutils literal notranslate"><span class="pre">common.environment_variable.JSON_parsable_Dict</span></code></a></p>
 <dl class="attribute">
 <dt id="common.environment_variable.EndPoints.ADD_PICTURE">
 <code class="sig-name descname">ADD_PICTURE</code><em class="property"> = 'add_picture'</em><a class="headerlink" href="#common.environment_variable.EndPoints.ADD_PICTURE" title="Permalink to this definition">¶</a></dt>
@@ -152,9 +152,21 @@
 </dd></dl>
 
 <dl class="class">
+<dt id="common.environment_variable.JSON_parsable_Dict">
+<em class="property">class </em><code class="sig-prename descclassname">common.environment_variable.</code><code class="sig-name descname">JSON_parsable_Dict</code><a class="reference internal" href="_modules/common/environment_variable.html#JSON_parsable_Dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#common.environment_variable.JSON_parsable_Dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="common.environment_variable.JSON_parsable_Enum">
+<em class="property">class </em><code class="sig-prename descclassname">common.environment_variable.</code><code class="sig-name descname">JSON_parsable_Enum</code><a class="reference internal" href="_modules/common/environment_variable.html#JSON_parsable_Enum"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#common.environment_variable.JSON_parsable_Enum" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+</dd></dl>
+
+<dl class="class">
 <dt id="common.environment_variable.QueueNames">
 <em class="property">class </em><code class="sig-prename descclassname">common.environment_variable.</code><code class="sig-name descname">QueueNames</code><a class="reference internal" href="_modules/common/environment_variable.html#QueueNames"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#common.environment_variable.QueueNames" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="carlhauser_server.Configuration.html#carlhauser_server.Configuration.template_conf.JSON_parsable_Dict" title="carlhauser_server.Configuration.template_conf.JSON_parsable_Dict"><code class="xref py py-class docutils literal notranslate"><span class="pre">carlhauser_server.Configuration.template_conf.JSON_parsable_Dict</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#common.environment_variable.JSON_parsable_Dict" title="common.environment_variable.JSON_parsable_Dict"><code class="xref py py-class docutils literal notranslate"><span class="pre">common.environment_variable.JSON_parsable_Dict</span></code></a></p>
 <dl class="attribute">
 <dt id="common.environment_variable.QueueNames.DB_TO_ADD">
 <code class="sig-name descname">DB_TO_ADD</code><em class="property"> = 'db_to_add'</em><a class="headerlink" href="#common.environment_variable.QueueNames.DB_TO_ADD" title="Permalink to this definition">¶</a></dt>
@@ -185,6 +197,26 @@
 <dl class="function">
 <dt id="common.environment_variable.get_homedir">
 <code class="sig-prename descclassname">common.environment_variable.</code><code class="sig-name descname">get_homedir</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; pathlib.Path<a class="reference internal" href="_modules/common/environment_variable.html#get_homedir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#common.environment_variable.get_homedir" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="common.environment_variable.load_client_logging_conf_file">
+<code class="sig-prename descclassname">common.environment_variable.</code><code class="sig-name descname">load_client_logging_conf_file</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/common/environment_variable.html#load_client_logging_conf_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#common.environment_variable.load_client_logging_conf_file" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="common.environment_variable.load_server_logging_conf_file">
+<code class="sig-prename descclassname">common.environment_variable.</code><code class="sig-name descname">load_server_logging_conf_file</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/common/environment_variable.html#load_server_logging_conf_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#common.environment_variable.load_server_logging_conf_file" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="common.environment_variable.make_big_line">
+<code class="sig-prename descclassname">common.environment_variable.</code><code class="sig-name descname">make_big_line</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/common/environment_variable.html#make_big_line"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#common.environment_variable.make_big_line" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="common.environment_variable.make_small_line">
+<code class="sig-prename descclassname">common.environment_variable.</code><code class="sig-name descname">make_small_line</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/common/environment_variable.html#make_small_line"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#common.environment_variable.make_small_line" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">

@@ -38,18 +38,22 @@
 <span></span><span class="ch">#!/usr/bin/env python3</span>
 <span class="c1"># -*- coding: utf-8 -*-</span>
 
-<span class="kn">import</span> <span class="nn">logging</span>
-<span class="c1"># ==================== ------ STD LIBRARIES ------- ====================</span>
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">pathlib</span>
-<span class="kn">import</span> <span class="nn">sys</span>
 
-<span class="c1"># ==================== ------ PERSONAL LIBRARIES ------- ====================</span>
-<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">pardir</span><span class="p">))</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">pathlib</span>
+
+<span class="kn">from</span> <span class="nn">common.environment_variable</span> <span class="k">import</span> <span class="n">load_server_logging_conf_file</span>
+
+<span class="n">load_server_logging_conf_file</span><span class="p">()</span>
 
 
 <div class="viewcode-block" id="save_picture"><a class="viewcode-back" href="../../../common.ImportExport.html#common.ImportExport.picture_import_export.save_picture">[docs]</a><span class="k">def</span> <span class="nf">save_picture</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">):</span>
-    <span class="c1"># Save a bytes representation of a picture to a file</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Save a bytes representation of a picture to a file</span>
+<span class="sd">    :param obj: Object to save (is a picture)</span>
+<span class="sd">    :param file_path: path to which the object should be saved</span>
+<span class="sd">    :return: Nothing</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span>
 
@@ -63,7 +67,11 @@
 
 
 <div class="viewcode-block" id="load_picture"><a class="viewcode-back" href="../../../common.ImportExport.html#common.ImportExport.picture_import_export.load_picture">[docs]</a><span class="k">def</span> <span class="nf">load_picture</span><span class="p">(</span><span class="n">file_path</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">):</span>
-    <span class="c1"># Return a bytes representation of a picture</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return a bytes representation of a picture</span>
+<span class="sd">    :param file_path: the path of the picture to load</span>
+<span class="sd">    :return: The loaded picture</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="c1"># Send the picture</span>
     <span class="c1"># rb = Open a file for reading only in binary format. Starts reading from beginning of file.</span>

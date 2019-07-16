@@ -12,10 +12,10 @@ carlhauser\_server.Singletons.database\_start\_stop module
    :undoc-members:
    :show-inheritance:
 
-carlhauser\_server.Singletons.template\_singleton module
---------------------------------------------------------
+carlhauser\_server.Singletons.singleton module
+----------------------------------------------
 
-.. automodule:: carlhauser_server.Singletons.template_singleton
+.. automodule:: carlhauser_server.Singletons.singleton
    :members:
    :undoc-members:
    :show-inheritance:

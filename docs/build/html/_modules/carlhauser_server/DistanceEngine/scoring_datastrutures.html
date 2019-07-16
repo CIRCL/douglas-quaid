@@ -38,22 +38,29 @@
 <span></span><span class="ch">#!/usr/bin/env python3</span>
 <span class="c1"># -*- coding: utf-8 -*-</span>
 
-<span class="c1"># ==================== ------ STD LIBRARIES ------- ====================</span>
 <span class="kn">from</span> <span class="nn">enum</span> <span class="k">import</span> <span class="n">Enum</span><span class="p">,</span> <span class="n">auto</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">List</span>
 
-<span class="c1"># ==================== ------ PERSONAL LIBRARIES ------- ====================</span>
-<span class="kn">from</span> <span class="nn">carlhauser_server.Configuration.template_conf</span> <span class="k">import</span> <span class="n">JSON_parsable_Enum</span>
+<span class="kn">from</span> <span class="nn">common.environment_variable</span> <span class="k">import</span> <span class="n">JSON_parsable_Enum</span>
+<span class="kn">from</span> <span class="nn">common.environment_variable</span> <span class="k">import</span> <span class="n">load_server_logging_conf_file</span>
+
+<span class="n">load_server_logging_conf_file</span><span class="p">()</span>
+
 
 <div class="viewcode-block" id="DecisionTypes"><a class="viewcode-back" href="../../../carlhauser_server.DistanceEngine.html#carlhauser_server.DistanceEngine.scoring_datastrutures.DecisionTypes">[docs]</a><span class="k">class</span> <span class="nc">DecisionTypes</span><span class="p">(</span><span class="n">JSON_parsable_Enum</span><span class="p">,</span> <span class="n">Enum</span><span class="p">):</span>
-    <span class="c1"># Possible answer to the question &quot;Are these pictures the same ?&quot;</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Possible answer to the question &quot;Are these pictures the same ?&quot;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">YES</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
     <span class="n">MAYBE</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
     <span class="n">NO</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="AlgoMatch"><a class="viewcode-back" href="../../../carlhauser_server.DistanceEngine.html#carlhauser_server.DistanceEngine.scoring_datastrutures.AlgoMatch">[docs]</a><span class="k">class</span> <span class="nc">AlgoMatch</span><span class="p">:</span>
-    <span class="c1"># Datastructure to handle the returned values of a &quot;distance evaluation&quot; between two hashs, Orb ...</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Datastructure to handle the returned values of a &quot;distance evaluation&quot; between two hashs, Orb ...</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">distance</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">decision</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">distance</span> <span class="o">=</span> <span class="n">distance</span>
@@ -82,8 +89,12 @@
                                  <span class="s1">&#39; decision=&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">decision</span><span class="p">]))</span></div></div>
 
 
-<span class="c1"># Datastructures to handle a list of matches</span>
+<span class="c1">#</span>
 <div class="viewcode-block" id="ClusterMatch"><a class="viewcode-back" href="../../../carlhauser_server.DistanceEngine.html#carlhauser_server.DistanceEngine.scoring_datastrutures.ClusterMatch">[docs]</a><span class="k">class</span> <span class="nc">ClusterMatch</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">     Datastructures to handle a list of matches</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cluster_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">distance</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">decision</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cluster_id</span> <span class="o">=</span> <span class="n">cluster_id</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">distance</span> <span class="o">=</span> <span class="n">distance</span>
@@ -113,6 +124,10 @@
 
 
 <div class="viewcode-block" id="ImageMatch"><a class="viewcode-back" href="../../../carlhauser_server.DistanceEngine.html#carlhauser_server.DistanceEngine.scoring_datastrutures.ImageMatch">[docs]</a><span class="k">class</span> <span class="nc">ImageMatch</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">     Datastructures to handle a list of matches</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">image_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cluster_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">distance</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">decision</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">image_id</span> <span class="o">=</span> <span class="n">image_id</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cluster_id</span> <span class="o">=</span> <span class="n">cluster_id</span>
@@ -145,6 +160,10 @@
 
 
 <div class="viewcode-block" id="TopN"><a class="viewcode-back" href="../../../carlhauser_server.DistanceEngine.html#carlhauser_server.DistanceEngine.scoring_datastrutures.TopN">[docs]</a><span class="k">class</span> <span class="nc">TopN</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">     Datastructures to handle a list of matches</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="c1"># TODO : Improve datastructure (priority queue, probably)</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">top_n</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">list_top_n_elements</span> <span class="o">=</span> <span class="p">[]</span>
@@ -155,7 +174,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">list_top_n_elements</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">element</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sorted</span> <span class="o">=</span> <span class="kc">False</span></div>
 
-<div class="viewcode-block" id="TopN.get_top_n"><a class="viewcode-back" href="../../../carlhauser_server.DistanceEngine.html#carlhauser_server.DistanceEngine.scoring_datastrutures.TopN.get_top_n">[docs]</a>    <span class="k">def</span> <span class="nf">get_top_n</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TopN.get_top_n"><a class="viewcode-back" href="../../../carlhauser_server.DistanceEngine.html#carlhauser_server.DistanceEngine.scoring_datastrutures.TopN.get_top_n">[docs]</a>    <span class="k">def</span> <span class="nf">get_top_n</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">:</span>
         <span class="c1"># Get the top n of the elements of the list</span>
 
         <span class="c1"># Sort elements if not sorted</span>

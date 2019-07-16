@@ -14,7 +14,7 @@ class test_template(unittest.TestCase):
 
     def setUp(self):
         self.logger = logging.getLogger()
-        self.base_folder = pathlib.Path("./DataTurks_tests").resolve()
+        self.base_folder = pathlib.Path("./DataTurksAlgo/DataTurks_tests").resolve()
 
     def create_sorted(self, base_path: pathlib.Path) -> PicturesExporter:
         """

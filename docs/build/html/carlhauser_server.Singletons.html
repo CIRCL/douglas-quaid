@@ -42,56 +42,75 @@
 <span id="carlhauser-server-singletons-database-start-stop-module"></span><h2>carlhauser_server.Singletons.database_start_stop module<a class="headerlink" href="#module-carlhauser_server.Singletons.database_start_stop" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="carlhauser_server.Singletons.database_start_stop.Database_StartStop">
-<em class="property">class </em><code class="sig-prename descclassname">carlhauser_server.Singletons.database_start_stop.</code><code class="sig-name descname">Database_StartStop</code><span class="sig-paren">(</span><em class="sig-param">db_conf: &lt;module 'carlhauser_server.Configuration.database_conf' from '/home/user/Desktop/douglas-quaid/carlhauser_server/Configuration/database_conf.py'&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/Singletons/database_start_stop.html#Database_StartStop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.Singletons.database_start_stop.Database_StartStop" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">carlhauser_server.Singletons.database_start_stop.</code><code class="sig-name descname">Database_StartStop</code><span class="sig-paren">(</span><em class="sig-param">db_conf: carlhauser_server.Configuration.database_conf.Default_database_conf</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/Singletons/database_start_stop.html#Database_StartStop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.Singletons.database_start_stop.Database_StartStop" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Singleton class that handle database access</p>
 <dl class="method">
 <dt id="carlhauser_server.Singletons.database_start_stop.Database_StartStop.flush_all_redis">
 <code class="sig-name descname">flush_all_redis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/Singletons/database_start_stop.html#Database_StartStop.flush_all_redis"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.Singletons.database_start_stop.Database_StartStop.flush_all_redis" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Flush the cache, storage and test instance of redis
+:return: Nothing</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="carlhauser_server.Singletons.database_start_stop.Database_StartStop.get_socket_path">
 <code class="sig-name descname">get_socket_path</code><span class="sig-paren">(</span><em class="sig-param">name: str</em><span class="sig-paren">)</span> &#x2192; str<a class="reference internal" href="_modules/carlhauser_server/Singletons/database_start_stop.html#Database_StartStop.get_socket_path"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.Singletons.database_start_stop.Database_StartStop.get_socket_path" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Redis is configured to allow connection from/to Unix socket
+Unix sockets paths for Redis are defined in cache.conf and storage.conf
+:param name: The name of the socket Type to get
+:return: The socket object</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="carlhauser_server.Singletons.database_start_stop.Database_StartStop.launch_all_redis">
 <code class="sig-name descname">launch_all_redis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/Singletons/database_start_stop.html#Database_StartStop.launch_all_redis"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.Singletons.database_start_stop.Database_StartStop.launch_all_redis" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Launch the cache, storage and test instance of redis
+:return: Nothing</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="carlhauser_server.Singletons.database_start_stop.Database_StartStop.prevent_workers_shutdown">
 <code class="sig-name descname">prevent_workers_shutdown</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/Singletons/database_start_stop.html#Database_StartStop.prevent_workers_shutdown"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.Singletons.database_start_stop.Database_StartStop.prevent_workers_shutdown" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Remove HALT key in all redis instance. Worker then can’t stop themselves on launch
+:return: Nothing</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="carlhauser_server.Singletons.database_start_stop.Database_StartStop.request_workers_shutdown">
 <code class="sig-name descname">request_workers_shutdown</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/Singletons/database_start_stop.html#Database_StartStop.request_workers_shutdown"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.Singletons.database_start_stop.Database_StartStop.request_workers_shutdown" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Post a HALT key in all redis instance. Worker should react “quickly” and stop themselves
+:return: Nothing</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="carlhauser_server.Singletons.database_start_stop.Database_StartStop.stop_all_redis">
 <code class="sig-name descname">stop_all_redis</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/Singletons/database_start_stop.html#Database_StartStop.stop_all_redis"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.Singletons.database_start_stop.Database_StartStop.stop_all_redis" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Stop the cache, storage and test instance of redis
+:return: Nothing</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="carlhauser_server.Singletons.database_start_stop.Database_StartStop.wait_until_all_redis_running">
 <code class="sig-name descname">wait_until_all_redis_running</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/Singletons/database_start_stop.html#Database_StartStop.wait_until_all_redis_running"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.Singletons.database_start_stop.Database_StartStop.wait_until_all_redis_running" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Blocking function that wait until all database are launched.
+:return: True if all are launched, False otherwise</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="carlhauser_server.Singletons.database_start_stop.Database_StartStop.wait_until_all_redis_stopped">
 <code class="sig-name descname">wait_until_all_redis_stopped</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/Singletons/database_start_stop.html#Database_StartStop.wait_until_all_redis_stopped"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.Singletons.database_start_stop.Database_StartStop.wait_until_all_redis_stopped" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Blocking function that wait until all database are stopped.
+:return: True if all are stopped, False otherwise</p>
+</dd></dl>
 
 </dd></dl>
 
 </div>
-<div class="section" id="module-carlhauser_server.Singletons.template_singleton">
-<span id="carlhauser-server-singletons-template-singleton-module"></span><h2>carlhauser_server.Singletons.template_singleton module<a class="headerlink" href="#module-carlhauser_server.Singletons.template_singleton" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-carlhauser_server.Singletons.singleton">
+<span id="carlhauser-server-singletons-singleton-module"></span><h2>carlhauser_server.Singletons.singleton module<a class="headerlink" href="#module-carlhauser_server.Singletons.singleton" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
-<dt id="carlhauser_server.Singletons.template_singleton.Singleton">
-<em class="property">class </em><code class="sig-prename descclassname">carlhauser_server.Singletons.template_singleton.</code><code class="sig-name descname">Singleton</code><a class="reference internal" href="_modules/carlhauser_server/Singletons/template_singleton.html#Singleton"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.Singletons.template_singleton.Singleton" title="Permalink to this definition">¶</a></dt>
+<dt id="carlhauser_server.Singletons.singleton.Singleton">
+<em class="property">class </em><code class="sig-prename descclassname">carlhauser_server.Singletons.singleton.</code><code class="sig-name descname">Singleton</code><a class="reference internal" href="_modules/carlhauser_server/Singletons/singleton.html#Singleton"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.Singletons.singleton.Singleton" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">type</span></code></p>
 </dd></dl>
 
@@ -99,48 +118,108 @@
 <div class="section" id="module-carlhauser_server.Singletons.worker_start_stop">
 <span id="carlhauser-server-singletons-worker-start-stop-module"></span><h2>carlhauser_server.Singletons.worker_start_stop module<a class="headerlink" href="#module-carlhauser_server.Singletons.worker_start_stop" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
+<dt id="carlhauser_server.Singletons.worker_start_stop.WorkerTypes">
+<em class="property">class </em><code class="sig-prename descclassname">carlhauser_server.Singletons.worker_start_stop.</code><code class="sig-name descname">WorkerTypes</code><a class="reference internal" href="_modules/carlhauser_server/Singletons/worker_start_stop.html#WorkerTypes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.Singletons.worker_start_stop.WorkerTypes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="common.html#common.environment_variable.JSON_parsable_Enum" title="common.environment_variable.JSON_parsable_Enum"><code class="xref py py-class docutils literal notranslate"><span class="pre">common.environment_variable.JSON_parsable_Enum</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">enum.Enum</span></code></p>
+<p>An enumeration.</p>
+<dl class="attribute">
+<dt id="carlhauser_server.Singletons.worker_start_stop.WorkerTypes.ADDER">
+<code class="sig-name descname">ADDER</code><em class="property"> = 1</em><a class="headerlink" href="#carlhauser_server.Singletons.worker_start_stop.WorkerTypes.ADDER" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="carlhauser_server.Singletons.worker_start_stop.WorkerTypes.FEATURE_ADDER">
+<code class="sig-name descname">FEATURE_ADDER</code><em class="property"> = 3</em><a class="headerlink" href="#carlhauser_server.Singletons.worker_start_stop.WorkerTypes.FEATURE_ADDER" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="carlhauser_server.Singletons.worker_start_stop.WorkerTypes.FEATURE_REQUESTER">
+<code class="sig-name descname">FEATURE_REQUESTER</code><em class="property"> = 4</em><a class="headerlink" href="#carlhauser_server.Singletons.worker_start_stop.WorkerTypes.FEATURE_REQUESTER" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="carlhauser_server.Singletons.worker_start_stop.WorkerTypes.FLASK">
+<code class="sig-name descname">FLASK</code><em class="property"> = 5</em><a class="headerlink" href="#carlhauser_server.Singletons.worker_start_stop.WorkerTypes.FLASK" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="carlhauser_server.Singletons.worker_start_stop.WorkerTypes.REQUESTER">
+<code class="sig-name descname">REQUESTER</code><em class="property"> = 2</em><a class="headerlink" href="#carlhauser_server.Singletons.worker_start_stop.WorkerTypes.REQUESTER" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
 <dt id="carlhauser_server.Singletons.worker_start_stop.Worker_StartStop">
 <em class="property">class </em><code class="sig-prename descclassname">carlhauser_server.Singletons.worker_start_stop.</code><code class="sig-name descname">Worker_StartStop</code><span class="sig-paren">(</span><em class="sig-param">db_conf: &lt;module 'carlhauser_server.Configuration.database_conf' from '/home/user/Desktop/douglas-quaid/carlhauser_server/Configuration/database_conf.py'&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/Singletons/worker_start_stop.html#Worker_StartStop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.Singletons.worker_start_stop.Worker_StartStop" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Singleton class that handle workers and processses management</p>
 <dl class="method">
 <dt id="carlhauser_server.Singletons.worker_start_stop.Worker_StartStop.get_all_processes_lists">
-<code class="sig-name descname">get_all_processes_lists</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; List[carlhauser_server.Processus.processus_list.ProcessusList]<a class="reference internal" href="_modules/carlhauser_server/Singletons/worker_start_stop.html#Worker_StartStop.get_all_processes_lists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.Singletons.worker_start_stop.Worker_StartStop.get_all_processes_lists" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<code class="sig-name descname">get_all_processes_lists</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; List[carlhauser_server.Processus.processus_list.ProcessesList]<a class="reference internal" href="_modules/carlhauser_server/Singletons/worker_start_stop.html#Worker_StartStop.get_all_processes_lists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.Singletons.worker_start_stop.Worker_StartStop.get_all_processes_lists" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns all lists of workers lists
+:return: A list of ProcessesList</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="carlhauser_server.Singletons.worker_start_stop.Worker_StartStop.get_list_running_workers">
-<code class="sig-name descname">get_list_running_workers</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/Singletons/worker_start_stop.html#Worker_StartStop.get_list_running_workers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.Singletons.worker_start_stop.Worker_StartStop.get_list_running_workers" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<code class="sig-name descname">get_list_running_workers</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; List[carlhauser_server.Processus.worker_process.WorkerProcessus]<a class="reference internal" href="_modules/carlhauser_server/Singletons/worker_start_stop.html#Worker_StartStop.get_list_running_workers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.Singletons.worker_start_stop.Worker_StartStop.get_list_running_workers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the list of currently running workers (all types)
+:return: List of running processes</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="carlhauser_server.Singletons.worker_start_stop.Worker_StartStop.get_processes_list">
-<code class="sig-name descname">get_processes_list</code><span class="sig-paren">(</span><em class="sig-param">name: carlhauser_server.Processus.worker_types.WorkerTypes</em><span class="sig-paren">)</span> &#x2192; carlhauser_server.Processus.processus_list.ProcessusList<a class="reference internal" href="_modules/carlhauser_server/Singletons/worker_start_stop.html#Worker_StartStop.get_processes_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.Singletons.worker_start_stop.Worker_StartStop.get_processes_list" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<code class="sig-name descname">get_processes_list</code><span class="sig-paren">(</span><em class="sig-param">name: carlhauser_server.Singletons.worker_start_stop.WorkerTypes</em><span class="sig-paren">)</span> &#x2192; carlhauser_server.Processus.processus_list.ProcessesList<a class="reference internal" href="_modules/carlhauser_server/Singletons/worker_start_stop.html#Worker_StartStop.get_processes_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.Singletons.worker_start_stop.Worker_StartStop.get_processes_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the workers list of the asked worker type
+:param name: The type of worker, to return the list of processes
+:return: A list of processes in a ProccessusList Object</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="carlhauser_server.Singletons.worker_start_stop.Worker_StartStop.is_there_alive_workers">
 <code class="sig-name descname">is_there_alive_workers</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/Singletons/worker_start_stop.html#Worker_StartStop.is_there_alive_workers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.Singletons.worker_start_stop.Worker_StartStop.is_there_alive_workers" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Check if workers are alive, and return True if all workers are down
+:return: True if at least a worker is alive, Fale otherwise</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="carlhauser_server.Singletons.worker_start_stop.Worker_StartStop.kill_and_flush_workers">
 <code class="sig-name descname">kill_and_flush_workers</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/Singletons/worker_start_stop.html#Worker_StartStop.kill_and_flush_workers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.Singletons.worker_start_stop.Worker_StartStop.kill_and_flush_workers" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Kill each worker and then empty lists. Very violent. Use at your own risks :)
+:return: Nothing. Void and Death only.</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="carlhauser_server.Singletons.worker_start_stop.Worker_StartStop.start_and_add_n_worker">
-<code class="sig-name descname">start_and_add_n_worker</code><span class="sig-paren">(</span><em class="sig-param">worker_type: carlhauser_server.Processus.worker_types.WorkerTypes</em>, <em class="sig-param">db_conf: &lt;module 'carlhauser_server.Configuration.database_conf' from '/home/user/Desktop/douglas-quaid/carlhauser_server/Configuration/database_conf.py'&gt; = None</em>, <em class="sig-param">dist_conf: &lt;module 'carlhauser_server.Configuration.distance_engine_conf' from '/home/user/Desktop/douglas-quaid/carlhauser_server/Configuration/distance_engine_conf.py'&gt; = None</em>, <em class="sig-param">fe_conf: &lt;module 'carlhauser_server.Configuration.feature_extractor_conf' from '/home/user/Desktop/douglas-quaid/carlhauser_server/Configuration/feature_extractor_conf.py'&gt; = None</em>, <em class="sig-param">ws_conf: &lt;module 'carlhauser_server.Configuration.webservice_conf' from '/home/user/Desktop/douglas-quaid/carlhauser_server/Configuration/webservice_conf.py'&gt; = None</em>, <em class="sig-param">nb=1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/Singletons/worker_start_stop.html#Worker_StartStop.start_and_add_n_worker"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.Singletons.worker_start_stop.Worker_StartStop.start_and_add_n_worker" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<code class="sig-name descname">start_and_add_n_worker</code><span class="sig-paren">(</span><em class="sig-param">worker_type: carlhauser_server.Singletons.worker_start_stop.WorkerTypes</em>, <em class="sig-param">db_conf: &lt;module 'carlhauser_server.Configuration.database_conf' from '/home/user/Desktop/douglas-quaid/carlhauser_server/Configuration/database_conf.py'&gt; = None</em>, <em class="sig-param">dist_conf: &lt;module 'carlhauser_server.Configuration.distance_engine_conf' from '/home/user/Desktop/douglas-quaid/carlhauser_server/Configuration/distance_engine_conf.py'&gt; = None</em>, <em class="sig-param">fe_conf: &lt;module 'carlhauser_server.Configuration.feature_extractor_conf' from '/home/user/Desktop/douglas-quaid/carlhauser_server/Configuration/feature_extractor_conf.py'&gt; = None</em>, <em class="sig-param">ws_conf: &lt;module 'carlhauser_server.Configuration.webservice_conf' from '/home/user/Desktop/douglas-quaid/carlhauser_server/Configuration/webservice_conf.py'&gt; = None</em>, <em class="sig-param">nb=1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/Singletons/worker_start_stop.html#Worker_StartStop.start_and_add_n_worker"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.Singletons.worker_start_stop.Worker_StartStop.start_and_add_n_worker" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add &lt;nb&gt; workers to the &lt;list_to_add&gt; workers lists, by launching &lt;worker_path&gt;
+as a subprocess and giving &lt;XX_conf&gt; as parameters (many at once is possible)
+:param db_conf: configuration file
+:param dist_conf: configuration file
+:param fe_conf: configuration file
+:param ws_conf: configuration file
+:param mode:  configuration element
+:param nb: Number of worker of this type to launch
+:return: Nothing</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="carlhauser_server.Singletons.worker_start_stop.Worker_StartStop.stop_list_worker">
-<code class="sig-name descname">stop_list_worker</code><span class="sig-paren">(</span><em class="sig-param">worker_type: carlhauser_server.Processus.worker_types.WorkerTypes</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/Singletons/worker_start_stop.html#Worker_StartStop.stop_list_worker"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.Singletons.worker_start_stop.Worker_StartStop.stop_list_worker" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<code class="sig-name descname">stop_list_worker</code><span class="sig-paren">(</span><em class="sig-param">worker_type: carlhauser_server.Singletons.worker_start_stop.WorkerTypes</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="_modules/carlhauser_server/Singletons/worker_start_stop.html#Worker_StartStop.stop_list_worker"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.Singletons.worker_start_stop.Worker_StartStop.stop_list_worker" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stop the worker of the provided type
+:param worker_type: The workers to stop
+:return: True if workers successfuly stop, False otherwise</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="carlhauser_server.Singletons.worker_start_stop.Worker_StartStop.wait_for_worker_shutdown">
-<code class="sig-name descname">wait_for_worker_shutdown</code><span class="sig-paren">(</span><em class="sig-param">max_wait=60</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/Singletons/worker_start_stop.html#Worker_StartStop.wait_for_worker_shutdown"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.Singletons.worker_start_stop.Worker_StartStop.wait_for_worker_shutdown" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<code class="sig-name descname">wait_for_worker_shutdown</code><span class="sig-paren">(</span><em class="sig-param">max_wait=60</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="_modules/carlhauser_server/Singletons/worker_start_stop.html#Worker_StartStop.wait_for_worker_shutdown"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.Singletons.worker_start_stop.Worker_StartStop.wait_for_worker_shutdown" title="Permalink to this definition">¶</a></dt>
+<dd><p>Send signal to all processes to stop (via redis database). Wait while processes are still running,
+in the limit of a maximal amount of time. Send back a boolean to notify if all workers had been stopped, or not.
+:param max_wait: maximum waiting time for each worker
+:return: True if all stopped, False otherwise</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="carlhauser_server.Singletons.worker_start_stop.Worker_StartStop.wait_for_worker_startup">
@@ -166,7 +245,7 @@
 <li><a class="reference internal" href="#">carlhauser_server.Singletons package</a><ul>
 <li><a class="reference internal" href="#submodules">Submodules</a></li>
 <li><a class="reference internal" href="#module-carlhauser_server.Singletons.database_start_stop">carlhauser_server.Singletons.database_start_stop module</a></li>
-<li><a class="reference internal" href="#module-carlhauser_server.Singletons.template_singleton">carlhauser_server.Singletons.template_singleton module</a></li>
+<li><a class="reference internal" href="#module-carlhauser_server.Singletons.singleton">carlhauser_server.Singletons.singleton module</a></li>
 <li><a class="reference internal" href="#module-carlhauser_server.Singletons.worker_start_stop">carlhauser_server.Singletons.worker_start_stop module</a></li>
 <li><a class="reference internal" href="#module-carlhauser_server.Singletons">Module contents</a></li>
 </ul>

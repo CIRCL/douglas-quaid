@@ -36,14 +36,6 @@ carlhauser\_server.Configuration.feature\_extractor\_conf module
    :undoc-members:
    :show-inheritance:
 
-carlhauser\_server.Configuration.template\_conf module
-------------------------------------------------------
-
-.. automodule:: carlhauser_server.Configuration.template_conf
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 carlhauser\_server.Configuration.webservice\_conf module
 --------------------------------------------------------
 

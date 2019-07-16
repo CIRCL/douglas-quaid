@@ -35,28 +35,20 @@
           <div class="body" role="main">
             
   <h1>Source code for carlhauser_server.Configuration.webservice_conf</h1><div class="highlight"><pre>
-<span></span><span class="c1"># ==================== ------ STD LIBRARIES ------- ====================</span>
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">sys</span>
+<span></span><span class="kn">import</span> <span class="nn">pathlib</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">namedtuple</span>
-<span class="kn">import</span> <span class="nn">pathlib</span>
-<span class="c1"># ==================== ------ PERSONAL LIBRARIES ------- ====================</span>
-<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">pardir</span><span class="p">))</span>
 
-<span class="kn">from</span> <span class="nn">carlhauser_server.Configuration.template_conf</span> <span class="k">import</span> <span class="n">JSON_parsable_Dict</span>
-<span class="kn">from</span> <span class="nn">common.environment_variable</span> <span class="k">import</span> <span class="n">get_homedir</span>
+<span class="kn">from</span> <span class="nn">common.environment_variable</span> <span class="k">import</span> <span class="n">get_homedir</span><span class="p">,</span> <span class="n">JSON_parsable_Dict</span>
 
 <div class="viewcode-block" id="Default_webservice_conf"><a class="viewcode-back" href="../../../carlhauser_server.Configuration.html#carlhauser_server.Configuration.webservice_conf.Default_webservice_conf">[docs]</a><span class="k">class</span> <span class="nc">Default_webservice_conf</span><span class="p">(</span><span class="n">JSON_parsable_Dict</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># Please note that CERT and KEY files must be in carl-hauser/carlhauser_server (where the flask server is)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">CERT_FILE</span> <span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span> <span class="o">=</span> <span class="n">get_homedir</span><span class="p">()</span> <span class="o">/</span> <span class="s1">&#39;carlhauser_server&#39;</span> <span class="o">/</span><span class="s1">&#39;cert.pem&#39;</span> <span class="c1"># &#39;./cert.pem&#39;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">KEY_FILE</span> <span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span> <span class="o">=</span> <span class="n">get_homedir</span><span class="p">()</span> <span class="o">/</span> <span class="s1">&#39;carlhauser_server&#39;</span> <span class="o">/</span> <span class="s1">&#39;key.pem&#39;</span> <span class="c1"># &#39;./key.pem&#39;</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">CERT_FILE</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span> <span class="o">=</span> <span class="n">get_homedir</span><span class="p">()</span> <span class="o">/</span> <span class="s1">&#39;carlhauser_server&#39;</span> <span class="o">/</span> <span class="s1">&#39;cert.pem&#39;</span>  <span class="c1"># &#39;./cert.pem&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">KEY_FILE</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span> <span class="o">=</span> <span class="n">get_homedir</span><span class="p">()</span> <span class="o">/</span> <span class="s1">&#39;carlhauser_server&#39;</span> <span class="o">/</span> <span class="s1">&#39;key.pem&#39;</span>  <span class="c1"># &#39;./key.pem&#39;</span></div>
+
 
 <div class="viewcode-block" id="parse_from_dict"><a class="viewcode-back" href="../../../carlhauser_server.Configuration.html#carlhauser_server.Configuration.webservice_conf.parse_from_dict">[docs]</a><span class="k">def</span> <span class="nf">parse_from_dict</span><span class="p">(</span><span class="n">conf</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s2">&quot;Default_webservice_conf&quot;</span><span class="p">,</span> <span class="n">conf</span><span class="o">.</span><span class="n">keys</span><span class="p">())(</span><span class="o">*</span><span class="n">conf</span><span class="o">.</span><span class="n">values</span><span class="p">())</span></div>
-
-
-
 
 
 <span class="sd">&#39;&#39;&#39;</span>

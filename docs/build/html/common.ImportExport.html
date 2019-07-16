@@ -48,22 +48,9 @@
 <dl class="method">
 <dt id="common.ImportExport.json_import_export.Custom_JSON_Encoder.default">
 <code class="sig-name descname">default</code><span class="sig-paren">(</span><em class="sig-param">o</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/common/ImportExport/json_import_export.html#Custom_JSON_Encoder.default"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#common.ImportExport.json_import_export.Custom_JSON_Encoder.default" title="Permalink to this definition">¶</a></dt>
-<dd><p>Implement this method in a subclass such that it returns
-a serializable object for <code class="docutils literal notranslate"><span class="pre">o</span></code>, or calls the base implementation
-(to raise a <code class="docutils literal notranslate"><span class="pre">TypeError</span></code>).</p>
-<p>For example, to support arbitrary iterators, you could
-implement default like this:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">default</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">o</span><span class="p">):</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">iterable</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">(</span><span class="n">o</span><span class="p">)</span>
-    <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
-        <span class="k">pass</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">iterable</span><span class="p">)</span>
-    <span class="c1"># Let the base class default method raise the TypeError</span>
-    <span class="k">return</span> <span class="n">JSONEncoder</span><span class="o">.</span><span class="n">default</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">o</span><span class="p">)</span>
-</pre></div>
-</div>
+<dd><p>How to handle an object to encode
+:param o: the object to encode
+:return: the object encoded as json</p>
 </dd></dl>
 
 </dd></dl>
@@ -71,12 +58,44 @@ implement default like this:</p>
 <dl class="function">
 <dt id="common.ImportExport.json_import_export.load_json">
 <code class="sig-prename descclassname">common.ImportExport.json_import_export.</code><code class="sig-name descname">load_json</code><span class="sig-paren">(</span><em class="sig-param">file_path: pathlib.Path</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/common/ImportExport/json_import_export.html#load_json"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#common.ImportExport.json_import_export.load_json" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Loading an object/data from json.
+:param file_path: The path to the json to load
+:return: The data extracted</p>
+</dd></dl>
 
 <dl class="function">
 <dt id="common.ImportExport.json_import_export.save_json">
 <code class="sig-prename descclassname">common.ImportExport.json_import_export.</code><code class="sig-name descname">save_json</code><span class="sig-paren">(</span><em class="sig-param">obj</em>, <em class="sig-param">file_path: pathlib.Path</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/common/ImportExport/json_import_export.html#save_json"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#common.ImportExport.json_import_export.save_json" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save an object as JSON
+:param obj: the object to save
+:param file_path: the path to which the object should be saved
+:return: Nothing</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-common.ImportExport.pickle_import_export">
+<span id="common-importexport-pickle-import-export-module"></span><h2>common.ImportExport.pickle_import_export module<a class="headerlink" href="#module-common.ImportExport.pickle_import_export" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="common.ImportExport.pickle_import_export.Pickler">
+<em class="property">class </em><code class="sig-prename descclassname">common.ImportExport.pickle_import_export.</code><code class="sig-name descname">Pickler</code><a class="reference internal" href="_modules/common/ImportExport/pickle_import_export.html#Pickler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#common.ImportExport.pickle_import_export.Pickler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Very specific file to overwrite method to pickle some specific object types.</p>
+<dl class="method">
+<dt id="common.ImportExport.pickle_import_export.Pickler.get_object_from_pickle">
+<em class="property">static </em><code class="sig-name descname">get_object_from_pickle</code><span class="sig-paren">(</span><em class="sig-param">pickle_obj</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/common/ImportExport/pickle_import_export.html#Pickler.get_object_from_pickle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#common.ImportExport.pickle_import_export.Pickler.get_object_from_pickle" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="method">
+<dt id="common.ImportExport.pickle_import_export.Pickler.get_pickle_from_object">
+<em class="property">static </em><code class="sig-name descname">get_pickle_from_object</code><span class="sig-paren">(</span><em class="sig-param">obj</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/common/ImportExport/pickle_import_export.html#Pickler.get_pickle_from_object"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#common.ImportExport.pickle_import_export.Pickler.get_pickle_from_object" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="common.ImportExport.pickle_import_export.Pickler.patch_Keypoint_pickiling">
+<em class="property">static </em><code class="sig-name descname">patch_Keypoint_pickiling</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/common/ImportExport/pickle_import_export.html#Pickler.patch_Keypoint_pickiling"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#common.ImportExport.pickle_import_export.Pickler.patch_Keypoint_pickiling" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
 
 </div>
 <div class="section" id="module-common.ImportExport.picture_import_export">
@@ -84,12 +103,19 @@ implement default like this:</p>
 <dl class="function">
 <dt id="common.ImportExport.picture_import_export.load_picture">
 <code class="sig-prename descclassname">common.ImportExport.picture_import_export.</code><code class="sig-name descname">load_picture</code><span class="sig-paren">(</span><em class="sig-param">file_path: pathlib.Path</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/common/ImportExport/picture_import_export.html#load_picture"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#common.ImportExport.picture_import_export.load_picture" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Return a bytes representation of a picture
+:param file_path: the path of the picture to load
+:return: The loaded picture</p>
+</dd></dl>
 
 <dl class="function">
 <dt id="common.ImportExport.picture_import_export.save_picture">
 <code class="sig-prename descclassname">common.ImportExport.picture_import_export.</code><code class="sig-name descname">save_picture</code><span class="sig-paren">(</span><em class="sig-param">obj</em>, <em class="sig-param">file_path: pathlib.Path</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/common/ImportExport/picture_import_export.html#save_picture"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#common.ImportExport.picture_import_export.save_picture" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Save a bytes representation of a picture to a file
+:param obj: Object to save (is a picture)
+:param file_path: path to which the object should be saved
+:return: Nothing</p>
+</dd></dl>
 
 </div>
 <div class="section" id="module-common.ImportExport">
@@ -108,6 +134,7 @@ implement default like this:</p>
 <li><a class="reference internal" href="#">common.ImportExport package</a><ul>
 <li><a class="reference internal" href="#submodules">Submodules</a></li>
 <li><a class="reference internal" href="#module-common.ImportExport.json_import_export">common.ImportExport.json_import_export module</a></li>
+<li><a class="reference internal" href="#module-common.ImportExport.pickle_import_export">common.ImportExport.pickle_import_export module</a></li>
 <li><a class="reference internal" href="#module-common.ImportExport.picture_import_export">common.ImportExport.picture_import_export module</a></li>
 <li><a class="reference internal" href="#module-common.ImportExport">Module contents</a></li>
 </ul>

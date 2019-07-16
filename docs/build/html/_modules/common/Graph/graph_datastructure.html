@@ -38,65 +38,59 @@
 <span></span><span class="ch">#!/usr/bin/env python3</span>
 <span class="c1"># -*- coding: utf-8 -*-</span>
 
-
-<span class="c1"># ==================== ------ STD LIBRARIES ------- ====================</span>
 <span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">sys</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Set</span>
 <span class="kn">import</span> <span class="nn">pathlib</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span>
 
-<span class="c1"># ==================== ------ PERSONAL LIBRARIES ------- ====================</span>
-
-<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">pardir</span><span class="p">))</span>
-<span class="n">FORMATTER</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%(asctime)s</span><span class="s1"> - + </span><span class="si">%(relativeCreated)d</span><span class="s1"> - </span><span class="si">%(name)s</span><span class="s1"> - </span><span class="si">%(levelname)s</span><span class="s1"> - </span><span class="si">%(message)s</span><span class="s1">&#39;</span><span class="p">)</span>
-
-<span class="kn">from</span> <span class="nn">common.Graph</span> <span class="k">import</span> <span class="n">cluster</span><span class="p">,</span> <span class="n">edge</span><span class="p">,</span> <span class="n">metadata</span><span class="p">,</span> <span class="n">node</span>
 <span class="kn">import</span> <span class="nn">common.ImportExport.json_import_export</span> <span class="k">as</span> <span class="nn">json_import_export</span>
+<span class="kn">from</span> <span class="nn">common.Graph</span> <span class="k">import</span> <span class="n">cluster</span><span class="p">,</span> <span class="n">edge</span><span class="p">,</span> <span class="n">metadata</span><span class="p">,</span> <span class="n">node</span>
 <span class="kn">from</span> <span class="nn">common.PerformanceDatastructs.clustermatch_datastruct</span> <span class="k">import</span> <span class="n">ClusterMatch</span>
+<span class="kn">from</span> <span class="nn">common.environment_variable</span> <span class="k">import</span> <span class="n">load_server_logging_conf_file</span>
+
+<span class="n">load_server_logging_conf_file</span><span class="p">()</span>
 
 
 <div class="viewcode-block" id="GraphDataStruct"><a class="viewcode-back" href="../../../common.Graph.html#common.Graph.graph_datastructure.GraphDataStruct">[docs]</a><span class="k">class</span> <span class="nc">GraphDataStruct</span><span class="p">:</span>
-    <span class="c1"># Handle the complete graph</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Handle the complete graph</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">meta</span><span class="p">:</span> <span class="n">metadata</span><span class="o">.</span><span class="n">Metadata</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">meta</span> <span class="o">=</span> <span class="n">meta</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">clusters</span> <span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span><span class="n">cluster</span><span class="o">.</span><span class="n">Cluster</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">edges</span> <span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">edge</span><span class="o">.</span><span class="n">Edge</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span> <span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span><span class="n">node</span><span class="o">.</span><span class="n">Node</span><span class="p">]</span><span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clusters</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">cluster</span><span class="o">.</span><span class="n">Cluster</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">edges</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">edge</span><span class="o">.</span><span class="n">Edge</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">node</span><span class="o">.</span><span class="n">Node</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
 
     <span class="c1"># ==================== Adding elements to the graph ====================</span>
 
 <div class="viewcode-block" id="GraphDataStruct.add_node"><a class="viewcode-back" href="../../../common.Graph.html#common.Graph.graph_datastructure.GraphDataStruct.add_node">[docs]</a>    <span class="k">def</span> <span class="nf">add_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">node</span><span class="o">.</span><span class="n">Node</span><span class="p">):</span>
-        <span class="c1"># Add a node to the graph (a picture, not a cluster)</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add a node to the graph (a picture, not a cluster)</span>
+<span class="sd">        :param node: Node to add to the graph</span>
+<span class="sd">        :return: Nothing</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">node</span></div>
 
 <div class="viewcode-block" id="GraphDataStruct.add_cluster"><a class="viewcode-back" href="../../../common.Graph.html#common.Graph.graph_datastructure.GraphDataStruct.add_cluster">[docs]</a>    <span class="k">def</span> <span class="nf">add_cluster</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cluster</span><span class="p">:</span> <span class="n">cluster</span><span class="o">.</span><span class="n">Cluster</span><span class="p">):</span>
-        <span class="c1"># Add a cluster to the graph (not a picture)</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add a cluster to the graph (not a picture)</span>
+<span class="sd">        :param cluster: Cluster to add to the graph</span>
+<span class="sd">        :return: Nothing</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">clusters</span><span class="p">[</span><span class="n">cluster</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">cluster</span></div>
 
-<div class="viewcode-block" id="GraphDataStruct.add_edge"><a class="viewcode-back" href="../../../common.Graph.html#common.Graph.graph_datastructure.GraphDataStruct.add_edge">[docs]</a>    <span class="k">def</span> <span class="nf">add_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edge</span><span class="p">:</span> <span class="n">edge</span><span class="o">.</span><span class="n">Edge</span><span class="p">):</span>
-        <span class="c1"># Add an edge to the graph</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">edges</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">edge</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">edge</span><span class="o">.</span><span class="n">_from</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">clusters</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">clusters</span><span class="p">[</span><span class="n">edge</span><span class="o">.</span><span class="n">_from</span><span class="p">]</span><span class="o">.</span><span class="n">add_member_id</span><span class="p">(</span><span class="n">edge</span><span class="o">.</span><span class="n">_to</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">edge</span><span class="o">.</span><span class="n">_to</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">clusters</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">clusters</span><span class="p">[</span><span class="n">edge</span><span class="o">.</span><span class="n">_to</span><span class="p">]</span><span class="o">.</span><span class="n">add_member_id</span><span class="p">(</span><span class="n">edge</span><span class="o">.</span><span class="n">_from</span><span class="p">)</span></div>
-        <span class="c1"># TODO ? Other way too ?</span>
+<div class="viewcode-block" id="GraphDataStruct.add_cluster_with_nodes"><a class="viewcode-back" href="../../../common.Graph.html#common.Graph.graph_datastructure.GraphDataStruct.add_cluster_with_nodes">[docs]</a>    <span class="k">def</span> <span class="nf">add_cluster_with_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cluster</span><span class="p">:</span> <span class="n">cluster</span><span class="o">.</span><span class="n">Cluster</span><span class="p">,</span> <span class="n">nodes</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">Node</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;gray&quot;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add a cluster to the graph with its nodes</span>
+<span class="sd">        :param cluster: Cluster to add to the graph</span>
+<span class="sd">        :param nodes: List of nodes to add to the graph and to link to the cluster</span>
+<span class="sd">        :param color: Color of the links between this cluster and these nodes</span>
+<span class="sd">        :return: Nothing</span>
+<span class="sd">        &quot;&quot;&quot;</span>
 
-    <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">    def rem_edge(self, edge:edge.Edge):</span>
-<span class="sd">        # Add an edge to the graph</span>
-<span class="sd">        self.edges.remove(edge)</span>
-<span class="sd">        if edge._from in self.clusters.keys():</span>
-<span class="sd">            self.clusters[edge._from].remove_member_id(edge._to)</span>
-<span class="sd">    &#39;&#39;&#39;</span>
-
-<div class="viewcode-block" id="GraphDataStruct.add_cluster_of_nodes"><a class="viewcode-back" href="../../../common.Graph.html#common.Graph.graph_datastructure.GraphDataStruct.add_cluster_of_nodes">[docs]</a>    <span class="k">def</span> <span class="nf">add_cluster_of_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cluster</span><span class="p">:</span> <span class="n">cluster</span><span class="o">.</span><span class="n">Cluster</span><span class="p">,</span> <span class="n">nodes</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">Node</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;gray&quot;</span><span class="p">):</span>
-        <span class="c1"># Add a cluster to the graph</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">clusters</span><span class="p">[</span><span class="n">cluster</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">cluster</span>
 
         <span class="c1"># For each node, add the node and add an edge between the cluster and the node</span>
@@ -104,50 +98,90 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">n</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">n</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">edges</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">edge</span><span class="o">.</span><span class="n">Edge</span><span class="p">(</span><span class="n">cluster</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">n</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">color</span><span class="p">))</span></div>
 
+<div class="viewcode-block" id="GraphDataStruct.add_edge"><a class="viewcode-back" href="../../../common.Graph.html#common.Graph.graph_datastructure.GraphDataStruct.add_edge">[docs]</a>    <span class="k">def</span> <span class="nf">add_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edge</span><span class="p">:</span> <span class="n">edge</span><span class="o">.</span><span class="n">Edge</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add an edge to the graph</span>
+<span class="sd">        :param edge: Edge to add to the graph</span>
+<span class="sd">        :return: Nothing</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">edges</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">edge</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">edge</span><span class="o">.</span><span class="n">_from</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">clusters</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">clusters</span><span class="p">[</span><span class="n">edge</span><span class="o">.</span><span class="n">_from</span><span class="p">]</span><span class="o">.</span><span class="n">add_member_id</span><span class="p">(</span><span class="n">edge</span><span class="o">.</span><span class="n">_to</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">edge</span><span class="o">.</span><span class="n">_to</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">clusters</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">clusters</span><span class="p">[</span><span class="n">edge</span><span class="o">.</span><span class="n">_to</span><span class="p">]</span><span class="o">.</span><span class="n">add_member_id</span><span class="p">(</span><span class="n">edge</span><span class="o">.</span><span class="n">_from</span><span class="p">)</span></div>
+
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    def rem_edge(self, edge:edge.Edge):</span>
+<span class="sd">        # Remove an edge to the graph</span>
+<span class="sd">        self.edges.remove(edge)</span>
+<span class="sd">        if edge._from in self.clusters.keys():</span>
+<span class="sd">            self.clusters[edge._from].remove_member_id(edge._to)</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
     <span class="c1"># ==================== Request ====================</span>
 
 <div class="viewcode-block" id="GraphDataStruct.are_ids_in_same_cluster"><a class="viewcode-back" href="../../../common.Graph.html#common.Graph.graph_datastructure.GraphDataStruct.are_ids_in_same_cluster">[docs]</a>    <span class="k">def</span> <span class="nf">are_ids_in_same_cluster</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">id_1</span><span class="p">,</span> <span class="n">id_2</span><span class="p">):</span>
-        <span class="c1"># Return True if both nodes id are in this cluster (by ids)</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return True if both nodes ids are in this cluster (by ids) # TODO : make test !</span>
+<span class="sd">        :param id_1: first id</span>
+<span class="sd">        :param id_2: second id</span>
+<span class="sd">        :return: True if both ids are in the same cluster, false otherwise</span>
+<span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">are_in_same</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">clusters</span><span class="o">.</span><span class="n">values</span><span class="p">()</span> <span class="p">:</span>
-            <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">are_in_same_cluster</span><span class="p">(</span><span class="n">id_1</span><span class="p">,</span> <span class="n">id_2</span><span class="p">)</span> <span class="p">:</span>
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">clusters</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">are_in_same_cluster</span><span class="p">(</span><span class="n">id_1</span><span class="p">,</span> <span class="n">id_2</span><span class="p">):</span>
                 <span class="k">return</span> <span class="kc">True</span>
-        <span class="c1"># TODO : make test !</span>
+
         <span class="k">return</span> <span class="n">are_in_same</span></div>
 
-<div class="viewcode-block" id="GraphDataStruct.are_names_in_same_cluster"><a class="viewcode-back" href="../../../common.Graph.html#common.Graph.graph_datastructure.GraphDataStruct.are_names_in_same_cluster">[docs]</a>    <span class="k">def</span> <span class="nf">are_names_in_same_cluster</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name_1</span><span class="p">,</span> <span class="n">name_2</span><span class="p">):</span>
-        <span class="c1"># Return True if both nodes id are in this cluster (by name)</span>
+<div class="viewcode-block" id="GraphDataStruct.are_names_in_same_cluster"><a class="viewcode-back" href="../../../common.Graph.html#common.Graph.graph_datastructure.GraphDataStruct.are_names_in_same_cluster">[docs]</a>    <span class="k">def</span> <span class="nf">are_names_in_same_cluster</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name_1</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">name_2</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return True if both nodes id are in this cluster (by name).</span>
+<span class="sd">        Translate names to id and fallback to check if ids in same cluster # TODO : make test !</span>
+<span class="sd">        :param name_1: first name</span>
+<span class="sd">        :param name_2: second name</span>
+<span class="sd">        :return: True if both names are in the same cluster, false otherwise</span>
+<span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">one_found</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="n">id_1</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">id_2</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
-            <span class="k">if</span> <span class="n">n</span><span class="o">.</span><span class="n">image</span> <span class="o">==</span> <span class="n">name_1</span> <span class="p">:</span>
-                <span class="n">id_1</span> <span class="o">=</span> <span class="n">n</span><span class="o">.</span><span class="n">id</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="n">one_found</span> <span class="p">:</span>
-                    <span class="n">one_found</span> <span class="o">=</span> <span class="kc">True</span>
-                <span class="k">elif</span> <span class="n">one_found</span> <span class="p">:</span>
-                    <span class="k">break</span> <span class="c1"># Second found !</span>
-            <span class="k">if</span> <span class="n">n</span><span class="o">.</span><span class="n">image</span> <span class="o">==</span> <span class="n">name_2</span> <span class="p">:</span>
-                <span class="n">id_2</span> <span class="o">=</span> <span class="n">n</span><span class="o">.</span><span class="n">id</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="n">one_found</span> <span class="p">:</span>
-                    <span class="n">one_found</span> <span class="o">=</span> <span class="kc">True</span>
-                <span class="k">elif</span> <span class="n">one_found</span> <span class="p">:</span>
-                    <span class="k">break</span> <span class="c1"># Second found !</span>
 
-        <span class="k">if</span> <span class="n">id_1</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">id_2</span> <span class="ow">is</span> <span class="kc">None</span> <span class="p">:</span>
+        <span class="c1"># For each node</span>
+        <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">n</span><span class="o">.</span><span class="n">image</span> <span class="o">==</span> <span class="n">name_1</span><span class="p">:</span>
+                <span class="n">id_1</span> <span class="o">=</span> <span class="n">n</span><span class="o">.</span><span class="n">id</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">one_found</span><span class="p">:</span>  <span class="c1"># First id found = Continue</span>
+                    <span class="n">one_found</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="k">elif</span> <span class="n">one_found</span><span class="p">:</span>
+                    <span class="k">break</span>  <span class="c1"># Second id found ! = Stop</span>
+            <span class="k">if</span> <span class="n">n</span><span class="o">.</span><span class="n">image</span> <span class="o">==</span> <span class="n">name_2</span><span class="p">:</span>
+                <span class="n">id_2</span> <span class="o">=</span> <span class="n">n</span><span class="o">.</span><span class="n">id</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">one_found</span><span class="p">:</span>  <span class="c1"># First id found = Continue</span>
+                    <span class="n">one_found</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="k">elif</span> <span class="n">one_found</span><span class="p">:</span>
+                    <span class="k">break</span>  <span class="c1"># Second id found ! = Stop</span>
+
+        <span class="k">if</span> <span class="n">id_1</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">id_2</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Image Name not found in graph structure ! </span><span class="si">{id_1}</span><span class="s2"> or </span><span class="si">{id_2}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-        <span class="c1"># TODO : make test !</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">are_ids_in_same_cluster</span><span class="p">(</span><span class="n">id_1</span><span class="p">,</span><span class="n">id_2</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">are_ids_in_same_cluster</span><span class="p">(</span><span class="n">id_1</span><span class="p">,</span> <span class="n">id_2</span><span class="p">)</span></div>
 
     <span class="c1"># ==================== Conversion ====================</span>
 
-<div class="viewcode-block" id="GraphDataStruct.replace_id_from_mapping"><a class="viewcode-back" href="../../../common.Graph.html#common.Graph.graph_datastructure.GraphDataStruct.replace_id_from_mapping">[docs]</a>    <span class="k">def</span> <span class="nf">replace_id_from_mapping</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename_to_id</span><span class="p">):</span>
+<div class="viewcode-block" id="GraphDataStruct.replace_id_from_mapping"><a class="viewcode-back" href="../../../common.Graph.html#common.Graph.graph_datastructure.GraphDataStruct.replace_id_from_mapping">[docs]</a>    <span class="k">def</span> <span class="nf">replace_id_from_mapping</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename_to_id</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Replace olds id by new ids, if provided in the input list (filename_to_id).</span>
+<span class="sd">        Ex : {&quot;toto&quot;:id=2} input with {Edge : {&quot;toto&quot;:id=1}} input =&gt; {Edge : {&quot;toto&quot;:id=2}} output</span>
+<span class="sd">        :param filename_to_id: a mapping from name to ids</span>
+<span class="sd">        :return: a mapping from old id to new ids (Ex : {2:1} in previus example) + change state of the graph</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="n">mapping_old_id_new_id</span> <span class="o">=</span> <span class="p">{}</span>
 
-        <span class="c1"># For all nodes</span>
+        <span class="c1"># For all nodes, transform the input mapping into a dict</span>
         <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
             <span class="n">tmp_old_id</span> <span class="o">=</span> <span class="n">n</span><span class="o">.</span><span class="n">id</span>
             <span class="c1"># Modify the name if presents in the provided mapping, or keep original id</span>
@@ -155,31 +189,41 @@
             <span class="c1"># Store the modification in a mapping</span>
             <span class="n">mapping_old_id_new_id</span><span class="p">[</span><span class="n">tmp_old_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">n</span><span class="o">.</span><span class="n">id</span>
 
-        <span class="c1"># For all clusters and egdes updates ids</span>
+        <span class="c1"># For all clusters updates ids</span>
         <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">clusters</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
             <span class="k">for</span> <span class="n">old</span><span class="p">,</span> <span class="n">new</span> <span class="ow">in</span> <span class="n">mapping_old_id_new_id</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                 <span class="n">c</span><span class="o">.</span><span class="n">update_member_id</span><span class="p">(</span><span class="n">old</span><span class="p">,</span> <span class="n">new</span><span class="p">)</span>
 
+        <span class="c1"># For all edges updates ids</span>
         <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">edges</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">old</span><span class="p">,</span> <span class="n">new</span> <span class="ow">in</span> <span class="n">mapping_old_id_new_id</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                 <span class="n">e</span><span class="o">.</span><span class="n">update_member_id</span><span class="p">(</span><span class="n">old</span><span class="p">,</span> <span class="n">new</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Be aware that performing an ID mapping can leads to node fusion : some nodes can be mapped to the same id, and so, some nodes can be lost.&quot;</span><span class="p">)</span>
-        <span class="c1"># Create new node dict, with new ids</span>
+
+        <span class="c1"># Reconstruct node dict, with new ids</span>
         <span class="n">tmp_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">n</span><span class="o">.</span><span class="n">id</span><span class="p">:</span> <span class="n">n</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="o">.</span><span class="n">values</span><span class="p">()}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span> <span class="o">=</span> <span class="n">tmp_dict</span>
 
-        <span class="c1"># Create new cluster dict, with new ids</span>
+        <span class="c1"># Reconstruct cluster dict, with new ids</span>
         <span class="n">tmp_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">c</span><span class="o">.</span><span class="n">id</span><span class="p">:</span> <span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">clusters</span><span class="o">.</span><span class="n">values</span><span class="p">()}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">clusters</span> <span class="o">=</span> <span class="n">tmp_dict</span>
 
         <span class="k">return</span> <span class="n">mapping_old_id_new_id</span></div>
 
-<div class="viewcode-block" id="GraphDataStruct.get_clusters"><a class="viewcode-back" href="../../../common.Graph.html#common.Graph.graph_datastructure.GraphDataStruct.get_clusters">[docs]</a>    <span class="k">def</span> <span class="nf">get_clusters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="GraphDataStruct.get_clusters"><a class="viewcode-back" href="../../../common.Graph.html#common.Graph.graph_datastructure.GraphDataStruct.get_clusters">[docs]</a>    <span class="k">def</span> <span class="nf">get_clusters</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">cluster</span><span class="o">.</span><span class="n">Cluster</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the list of cluster</span>
+<span class="sd">        :return: List of clusters of the graph</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">clusters</span><span class="o">.</span><span class="n">values</span><span class="p">())</span></div>
 
-<div class="viewcode-block" id="GraphDataStruct.get_edges_dict"><a class="viewcode-back" href="../../../common.Graph.html#common.Graph.graph_datastructure.GraphDataStruct.get_edges_dict">[docs]</a>    <span class="k">def</span> <span class="nf">get_edges_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="c1"># Returns a list of edges as a dict, node_id =&gt; cluster_id</span>
+<div class="viewcode-block" id="GraphDataStruct.get_edges_dict"><a class="viewcode-back" href="../../../common.Graph.html#common.Graph.graph_datastructure.GraphDataStruct.get_edges_dict">[docs]</a>    <span class="k">def</span> <span class="nf">get_edges_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a list of edges as a dict in the order (node_id =&gt; has edge to =&gt; cluster_id)</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="n">tmp_dict</span> <span class="o">=</span> <span class="p">{}</span>
 
         <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">edges</span><span class="p">:</span>
@@ -195,10 +239,20 @@
     <span class="c1"># ==================== Export / Import ====================</span>
 
 <div class="viewcode-block" id="GraphDataStruct.copy_ids_to_image"><a class="viewcode-back" href="../../../common.Graph.html#common.Graph.graph_datastructure.GraphDataStruct.copy_ids_to_image">[docs]</a>    <span class="k">def</span> <span class="nf">copy_ids_to_image</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="c1"># Copy &quot;id&quot; values of nodes to their &quot;image&quot; field (useful if we have no image, and id are actual path)</span>
-        <span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">copy_ids_to_image</span><span class="p">()</span> <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span></div>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Copy &quot;id&quot; values of nodes to their &quot;image&quot; field</span>
+<span class="sd">        (useful if we have no image, and id are actual path)</span>
+<span class="sd">        :return: Nothing (+ change the internal state)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">tmp_node</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="n">tmp_node</span><span class="o">.</span><span class="n">copy_ids_to_image</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="GraphDataStruct.export_as_dict"><a class="viewcode-back" href="../../../common.Graph.html#common.Graph.graph_datastructure.GraphDataStruct.export_as_dict">[docs]</a>    <span class="k">def</span> <span class="nf">export_as_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="GraphDataStruct.export_as_dict"><a class="viewcode-back" href="../../../common.Graph.html#common.Graph.graph_datastructure.GraphDataStruct.export_as_dict">[docs]</a>    <span class="k">def</span> <span class="nf">export_as_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Export the current graph as a dict</span>
+<span class="sd">        :return: A dict version of the graph</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="n">tmp_dict</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="n">tmp_dict</span><span class="p">[</span><span class="s2">&quot;meta&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">meta</span><span class="o">.</span><span class="n">export_as_dict</span><span class="p">()</span>
         <span class="n">tmp_dict</span><span class="p">[</span><span class="s2">&quot;clusters&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">cluster</span><span class="o">.</span><span class="n">export_as_dict</span><span class="p">()</span> <span class="k">for</span> <span class="n">cluster</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">clusters</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span>
@@ -208,13 +262,19 @@
         <span class="k">return</span> <span class="n">tmp_dict</span></div>
 
 <div class="viewcode-block" id="GraphDataStruct.load_from_dict"><a class="viewcode-back" href="../../../common.Graph.html#common.Graph.graph_datastructure.GraphDataStruct.load_from_dict">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">load_from_dict</span><span class="p">(</span><span class="nb">input</span><span class="p">):</span>
-        <span class="n">meta</span> <span class="o">=</span> <span class="n">metadata</span><span class="o">.</span><span class="n">Metadata</span><span class="o">.</span><span class="n">load_from_dict</span><span class="p">(</span><span class="nb">input</span><span class="p">[</span><span class="s2">&quot;meta&quot;</span><span class="p">])</span>
+    <span class="k">def</span> <span class="nf">load_from_dict</span><span class="p">(</span><span class="n">tmp_input</span><span class="p">:</span> <span class="n">Dict</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Load/ Import a graph from a dict</span>
+<span class="sd">        :param tmp_input: A Dict version of the graph to import</span>
+<span class="sd">        :return: The graph as an object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">meta</span> <span class="o">=</span> <span class="n">metadata</span><span class="o">.</span><span class="n">Metadata</span><span class="o">.</span><span class="n">load_from_dict</span><span class="p">(</span><span class="n">tmp_input</span><span class="p">[</span><span class="s2">&quot;meta&quot;</span><span class="p">])</span>
         <span class="n">tmp_graph</span> <span class="o">=</span> <span class="n">GraphDataStruct</span><span class="p">(</span><span class="n">meta</span><span class="p">)</span>
 
-        <span class="n">tmp_clusters</span> <span class="o">=</span> <span class="p">[</span><span class="n">cluster</span><span class="o">.</span><span class="n">Cluster</span><span class="o">.</span><span class="n">load_from_dict</span><span class="p">(</span><span class="n">cluster_dict</span><span class="p">)</span> <span class="k">for</span> <span class="n">cluster_dict</span> <span class="ow">in</span> <span class="nb">input</span><span class="p">[</span><span class="s2">&quot;clusters&quot;</span><span class="p">]]</span>
-        <span class="n">tmp_nodes</span> <span class="o">=</span> <span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">Node</span><span class="o">.</span><span class="n">load_from_dict</span><span class="p">(</span><span class="n">node_dict</span><span class="p">)</span> <span class="k">for</span> <span class="n">node_dict</span> <span class="ow">in</span> <span class="nb">input</span><span class="p">[</span><span class="s2">&quot;nodes&quot;</span><span class="p">]]</span>
-        <span class="n">tmp_edges</span> <span class="o">=</span> <span class="p">[</span><span class="n">edge</span><span class="o">.</span><span class="n">Edge</span><span class="o">.</span><span class="n">load_from_dict</span><span class="p">(</span><span class="n">edge_dict</span><span class="p">)</span> <span class="k">for</span> <span class="n">edge_dict</span> <span class="ow">in</span> <span class="nb">input</span><span class="p">[</span><span class="s2">&quot;edges&quot;</span><span class="p">]]</span>
+        <span class="n">tmp_clusters</span> <span class="o">=</span> <span class="p">[</span><span class="n">cluster</span><span class="o">.</span><span class="n">Cluster</span><span class="o">.</span><span class="n">load_from_dict</span><span class="p">(</span><span class="n">cluster_dict</span><span class="p">)</span> <span class="k">for</span> <span class="n">cluster_dict</span> <span class="ow">in</span> <span class="n">tmp_input</span><span class="p">[</span><span class="s2">&quot;clusters&quot;</span><span class="p">]]</span>
+        <span class="n">tmp_nodes</span> <span class="o">=</span> <span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">Node</span><span class="o">.</span><span class="n">load_from_dict</span><span class="p">(</span><span class="n">node_dict</span><span class="p">)</span> <span class="k">for</span> <span class="n">node_dict</span> <span class="ow">in</span> <span class="n">tmp_input</span><span class="p">[</span><span class="s2">&quot;nodes&quot;</span><span class="p">]]</span>
+        <span class="n">tmp_edges</span> <span class="o">=</span> <span class="p">[</span><span class="n">edge</span><span class="o">.</span><span class="n">Edge</span><span class="o">.</span><span class="n">load_from_dict</span><span class="p">(</span><span class="n">edge_dict</span><span class="p">)</span> <span class="k">for</span> <span class="n">edge_dict</span> <span class="ow">in</span> <span class="n">tmp_input</span><span class="p">[</span><span class="s2">&quot;edges&quot;</span><span class="p">]]</span>
 
         <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">tmp_clusters</span><span class="p">:</span>
             <span class="n">tmp_graph</span><span class="o">.</span><span class="n">add_cluster</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
@@ -228,15 +288,15 @@
         <span class="k">return</span> <span class="n">tmp_graph</span></div></div>
 
 
-<div class="viewcode-block" id="merge_graphs"><a class="viewcode-back" href="../../../common.Graph.html#common.Graph.graph_datastructure.merge_graphs">[docs]</a><span class="k">def</span> <span class="nf">merge_graphs</span><span class="p">(</span><span class="n">visjs_graph</span><span class="p">:</span> <span class="n">GraphDataStruct</span><span class="p">,</span> <span class="n">db_graph</span><span class="p">:</span> <span class="n">GraphDataStruct</span><span class="p">,</span> <span class="n">cluster_mapping</span> <span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">ClusterMatch</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+<div class="viewcode-block" id="merge_graphs"><a class="viewcode-back" href="../../../common.Graph.html#common.Graph.graph_datastructure.merge_graphs">[docs]</a><span class="k">def</span> <span class="nf">merge_graphs</span><span class="p">(</span><span class="n">visjs_graph</span><span class="p">:</span> <span class="n">GraphDataStruct</span><span class="p">,</span> <span class="n">db_graph</span><span class="p">:</span> <span class="n">GraphDataStruct</span><span class="p">,</span> <span class="n">cluster_mapping</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">ClusterMatch</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Merge two graphs into one unique graph. Uses the list of clusters matches to merge each cluster with each other.</span>
+<span class="sd">    Merge a visjs and db graph to produce only one visjs graph, with colors depending on good/bad matches</span>
 <span class="sd">    :param visjs_graph: The first graph to merge (ground truth one)</span>
 <span class="sd">    :param db_graph: The second graph to merge (extracted from server)</span>
 <span class="sd">    :param cluster_mapping: The list of clusterMatch that say &quot;This cluster is the same as this one&quot; for the merge.</span>
 <span class="sd">    :return: A datastructure (json style/ dict style) that displays all data</span>
 <span class="sd">    &#39;&#39;&#39;</span>
-    <span class="c1"># Merge a visjs and db graph to produce only one visjs graph, with colors depending on good/bad matches</span>
 
     <span class="n">tmp_dict</span> <span class="o">=</span> <span class="p">{}</span>
 
@@ -267,6 +327,12 @@
 
 
 <div class="viewcode-block" id="merge_edges_with_colors"><a class="viewcode-back" href="../../../common.Graph.html#common.Graph.graph_datastructure.merge_edges_with_colors">[docs]</a><span class="k">def</span> <span class="nf">merge_edges_with_colors</span><span class="p">(</span><span class="n">vis_edges</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">db_edges</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">edge</span><span class="o">.</span><span class="n">Edge</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Merge a edges of two graphs with colors depending on good/bad matches</span>
+<span class="sd">    :param vis_edges: The first edges set to merge (ground truth one)</span>
+<span class="sd">    :param db_edges: The second edges set to merge (extracted from server)</span>
+<span class="sd">    :return: A list of edges with colors</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Merge edges dictionnary</span>
     <span class="n">edge_list</span> <span class="o">=</span> <span class="p">[]</span>
 
@@ -274,20 +340,26 @@
     <span class="k">for</span> <span class="n">v_edge_from</span><span class="p">,</span> <span class="n">v_edge_to</span> <span class="ow">in</span> <span class="n">vis_edges</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="c1"># If edge is present in db and with same &quot;to&quot;, put green</span>
         <span class="k">if</span> <span class="n">v_edge_from</span> <span class="ow">in</span> <span class="n">db_edges</span> <span class="ow">and</span> <span class="n">v_edge_to</span> <span class="o">==</span> <span class="n">db_edges</span><span class="p">[</span><span class="n">v_edge_from</span><span class="p">]:</span>
-            <span class="n">edge_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">edge</span><span class="o">.</span><span class="n">Edge</span><span class="p">(</span><span class="n">v_edge_from</span><span class="p">,</span> <span class="n">v_edge_to</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;color&quot;</span><span class="p">:</span><span class="s2">&quot;green&quot;</span><span class="p">}))</span>
+            <span class="n">edge_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">edge</span><span class="o">.</span><span class="n">Edge</span><span class="p">(</span><span class="n">v_edge_from</span><span class="p">,</span> <span class="n">v_edge_to</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="s2">&quot;green&quot;</span><span class="p">}))</span>
 
         <span class="c1"># If edge is present in db, but not with same &quot;to&quot;, put red</span>
         <span class="k">elif</span> <span class="n">v_edge_from</span> <span class="ow">in</span> <span class="n">db_edges</span> <span class="ow">and</span> <span class="n">v_edge_to</span> <span class="o">!=</span> <span class="n">db_edges</span><span class="p">[</span><span class="n">v_edge_from</span><span class="p">]:</span>
-            <span class="n">edge_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">edge</span><span class="o">.</span><span class="n">Edge</span><span class="p">(</span><span class="n">v_edge_from</span><span class="p">,</span> <span class="n">v_edge_to</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;color&quot;</span><span class="p">:</span><span class="s2">&quot;orange&quot;</span><span class="p">}))</span>
-            <span class="n">edge_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">edge</span><span class="o">.</span><span class="n">Edge</span><span class="p">(</span><span class="n">v_edge_from</span><span class="p">,</span> <span class="n">db_edges</span><span class="p">[</span><span class="n">v_edge_from</span><span class="p">],</span> <span class="p">{</span><span class="s2">&quot;color&quot;</span><span class="p">:</span><span class="s2">&quot;red&quot;</span><span class="p">}))</span>
+            <span class="n">edge_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">edge</span><span class="o">.</span><span class="n">Edge</span><span class="p">(</span><span class="n">v_edge_from</span><span class="p">,</span> <span class="n">v_edge_to</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="s2">&quot;orange&quot;</span><span class="p">}))</span>
+            <span class="n">edge_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">edge</span><span class="o">.</span><span class="n">Edge</span><span class="p">(</span><span class="n">v_edge_from</span><span class="p">,</span> <span class="n">db_edges</span><span class="p">[</span><span class="n">v_edge_from</span><span class="p">],</span> <span class="p">{</span><span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="s2">&quot;red&quot;</span><span class="p">}))</span>
 
         <span class="c1"># If edge is not present in db, problem = put black</span>
         <span class="k">else</span><span class="p">:</span>  <span class="c1"># v_edge_from not in db_edges :</span>
-            <span class="n">edge_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">edge</span><span class="o">.</span><span class="n">Edge</span><span class="p">(</span><span class="n">v_edge_from</span><span class="p">,</span> <span class="n">v_edge_to</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;color&quot;</span><span class="p">:</span><span class="s2">&quot;black&quot;</span><span class="p">}))</span>
+            <span class="n">edge_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">edge</span><span class="o">.</span><span class="n">Edge</span><span class="p">(</span><span class="n">v_edge_from</span><span class="p">,</span> <span class="n">v_edge_to</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="s2">&quot;black&quot;</span><span class="p">}))</span>
 
     <span class="k">return</span> <span class="n">edge_list</span></div>
 
-<div class="viewcode-block" id="load_visjs_to_graphe"><a class="viewcode-back" href="../../../common.Graph.html#common.Graph.graph_datastructure.load_visjs_to_graphe">[docs]</a><span class="k">def</span> <span class="nf">load_visjs_to_graphe</span><span class="p">(</span><span class="n">visjs_json_path</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GraphDataStruct</span><span class="p">:</span>
+
+<div class="viewcode-block" id="load_visjs_to_graph"><a class="viewcode-back" href="../../../common.Graph.html#common.Graph.graph_datastructure.load_visjs_to_graph">[docs]</a><span class="k">def</span> <span class="nf">load_visjs_to_graph</span><span class="p">(</span><span class="n">visjs_json_path</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GraphDataStruct</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Load VisJS to graph datastructure</span>
+<span class="sd">    :param visjs_json_path: path to the visjs graph storage</span>
+<span class="sd">    :return: The graph datastructure as an object</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">visjs_json_path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;VisJS ground truth path not set. Impossible to evaluate.&quot;</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
@@ -298,7 +370,6 @@
         <span class="n">visjs</span> <span class="o">=</span> <span class="n">GraphDataStruct</span><span class="o">.</span><span class="n">load_from_dict</span><span class="p">(</span><span class="n">visjs</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">visjs</span></div>
-
 </pre></div>
 
           </div>

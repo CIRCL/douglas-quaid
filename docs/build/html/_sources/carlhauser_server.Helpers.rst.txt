@@ -4,18 +4,10 @@ carlhauser\_server.Helpers package
 Submodules
 ----------
 
-carlhauser\_server.Helpers.id\_generator module
------------------------------------------------
+carlhauser\_server.Helpers.arg\_parser module
+---------------------------------------------
 
-.. automodule:: carlhauser_server.Helpers.id_generator
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-carlhauser\_server.Helpers.pickle\_import\_export module
---------------------------------------------------------
-
-.. automodule:: carlhauser_server.Helpers.pickle_import_export
+.. automodule:: carlhauser_server.Helpers.arg_parser
    :members:
    :undoc-members:
    :show-inheritance:

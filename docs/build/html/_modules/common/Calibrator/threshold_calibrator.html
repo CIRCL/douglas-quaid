@@ -51,12 +51,15 @@
 <span class="kn">import</span> <span class="nn">common.Graph.graph_datastructure</span> <span class="k">as</span> <span class="nn">graph_datastructure</span>
 <span class="kn">import</span> <span class="nn">common.ImportExport.json_import_export</span> <span class="k">as</span> <span class="nn">json_import_export</span>
 <span class="kn">import</span> <span class="nn">common.PerformanceDatastructs.perf_datastruct</span> <span class="k">as</span> <span class="nn">perf_datastruct</span>
-<span class="kn">import</span> <span class="nn">common.TestInstanceLauncher.test_database_conf</span> <span class="k">as</span> <span class="nn">test_database_only_conf</span>
-<span class="kn">import</span> <span class="nn">common.TestInstanceLauncher.test_instance_launcher</span> <span class="k">as</span> <span class="nn">test_database_handler</span>
+<span class="kn">import</span> <span class="nn">common.TestInstanceLauncher.one_db_conf</span> <span class="k">as</span> <span class="nn">test_database_only_conf</span>
+<span class="kn">import</span> <span class="nn">common.TestInstanceLauncher.one_db_instance_launcher</span> <span class="k">as</span> <span class="nn">test_database_handler</span>
 <span class="kn">from</span> <span class="nn">carlhauser_client.API.extended_api</span> <span class="k">import</span> <span class="n">Extended_API</span>
 <span class="kn">from</span> <span class="nn">carlhauser_client.EvaluationTools.SimilarityGraphExtractor.similarity_graph_extractor</span> <span class="k">import</span> <span class="n">GraphExtractor</span>
 <span class="kn">from</span> <span class="nn">carlhauser_server.Configuration</span> <span class="k">import</span> <span class="n">feature_extractor_conf</span>
 <span class="kn">from</span> <span class="nn">carlhauser_server.Configuration.algo_conf</span> <span class="k">import</span> <span class="n">Algo_conf</span>
+<span class="kn">from</span> <span class="nn">common.environment_variable</span> <span class="k">import</span> <span class="n">load_server_logging_conf_file</span>
+
+<span class="n">load_server_logging_conf_file</span><span class="p">()</span>
 
 
 <div class="viewcode-block" id="Calibrator"><a class="viewcode-back" href="../../../common.Calibrator.html#common.Calibrator.threshold_calibrator.Calibrator">[docs]</a><span class="k">class</span> <span class="nc">Calibrator</span><span class="p">:</span>
@@ -281,11 +284,11 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Results raw json saved.&quot;</span><span class="p">)</span>
 
         <span class="c1"># Load ground truth file</span>
-        <span class="n">gt_graph</span> <span class="o">=</span> <span class="n">graph_datastructure</span><span class="o">.</span><span class="n">load_visjs_to_graphe</span><span class="p">(</span><span class="n">visjs_json_path</span><span class="p">)</span>
+        <span class="n">gt_graph</span> <span class="o">=</span> <span class="n">graph_datastructure</span><span class="o">.</span><span class="n">load_visjs_to_graph</span><span class="p">(</span><span class="n">visjs_json_path</span><span class="p">)</span>
 
         <span class="c1"># Call the graph evaluator on this pair result_list + gt_graph</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Extracting performance list &quot;</span><span class="p">)</span>
-        <span class="n">perf_eval</span> <span class="o">=</span> <span class="n">graph_quality_evaluator</span><span class="o">.</span><span class="n">GraphQualityEvaluator</span><span class="p">()</span>
+        <span class="n">perf_eval</span> <span class="o">=</span> <span class="n">graph_quality_evaluator</span><span class="o">.</span><span class="n">similarity_graph_quality_evaluator</span><span class="p">()</span>
         <span class="n">perfs_list</span> <span class="o">=</span> <span class="n">perf_eval</span><span class="o">.</span><span class="n">get_perf_list</span><span class="p">(</span><span class="n">list_results</span><span class="p">,</span> <span class="n">gt_graph</span><span class="p">)</span>  <span class="c1"># ==&gt; List of scores</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Fetched performance list : </span><span class="si">{perfs_list}</span><span class="s2"> &quot;</span><span class="p">)</span>
 

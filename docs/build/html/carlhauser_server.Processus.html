@@ -41,117 +41,118 @@
 <div class="section" id="module-carlhauser_server.Processus.processus_list">
 <span id="carlhauser-server-processus-processus-list-module"></span><h2>carlhauser_server.Processus.processus_list module<a class="headerlink" href="#module-carlhauser_server.Processus.processus_list" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
-<dt id="carlhauser_server.Processus.processus_list.ProcessusList">
-<em class="property">class </em><code class="sig-prename descclassname">carlhauser_server.Processus.processus_list.</code><code class="sig-name descname">ProcessusList</code><span class="sig-paren">(</span><em class="sig-param">list_name: str, processus_list: List[carlhauser_server.Processus.worker_processus.WorkerProcessus]</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/Processus/processus_list.html#ProcessusList"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.Processus.processus_list.ProcessusList" title="Permalink to this definition">¶</a></dt>
+<dt id="carlhauser_server.Processus.processus_list.ProcessesList">
+<em class="property">class </em><code class="sig-prename descclassname">carlhauser_server.Processus.processus_list.</code><code class="sig-name descname">ProcessesList</code><span class="sig-paren">(</span><em class="sig-param">list_name: str, processus_list: List[carlhauser_server.Processus.worker_process.WorkerProcessus]</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/Processus/processus_list.html#ProcessesList"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.Processus.processus_list.ProcessesList" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Handle a list of process of one type</p>
 <dl class="method">
-<dt id="carlhauser_server.Processus.processus_list.ProcessusList.append">
-<code class="sig-name descname">append</code><span class="sig-paren">(</span><em class="sig-param">process: carlhauser_server.Processus.worker_processus.WorkerProcessus</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/Processus/processus_list.html#ProcessusList.append"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.Processus.processus_list.ProcessusList.append" title="Permalink to this definition">¶</a></dt>
+<dt id="carlhauser_server.Processus.processus_list.ProcessesList.append">
+<code class="sig-name descname">append</code><span class="sig-paren">(</span><em class="sig-param">process: carlhauser_server.Processus.worker_process.WorkerProcessus</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/Processus/processus_list.html#ProcessesList.append"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.Processus.processus_list.ProcessesList.append" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="carlhauser_server.Processus.processus_list.ProcessusList.flush">
-<code class="sig-name descname">flush</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/Processus/processus_list.html#ProcessusList.flush"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.Processus.processus_list.ProcessusList.flush" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt id="carlhauser_server.Processus.processus_list.ProcessesList.flush">
+<code class="sig-name descname">flush</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/Processus/processus_list.html#ProcessesList.flush"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.Processus.processus_list.ProcessesList.flush" title="Permalink to this definition">¶</a></dt>
+<dd><p>Flush the list of processes
+:return: Nothing. Change internal state of the object.</p>
+</dd></dl>
 
 <dl class="method">
-<dt id="carlhauser_server.Processus.processus_list.ProcessusList.flush_not_running">
-<code class="sig-name descname">flush_not_running</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/Processus/processus_list.html#ProcessusList.flush_not_running"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.Processus.processus_list.ProcessusList.flush_not_running" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt id="carlhauser_server.Processus.processus_list.ProcessesList.flush_not_running">
+<code class="sig-name descname">flush_not_running</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/Processus/processus_list.html#ProcessesList.flush_not_running"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.Processus.processus_list.ProcessesList.flush_not_running" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove all the proccesses that are not detected as curently running.
+:return: Nothing. Change internal state of the object.</p>
+</dd></dl>
 
 <dl class="method">
-<dt id="carlhauser_server.Processus.processus_list.ProcessusList.get_running_processus">
-<code class="sig-name descname">get_running_processus</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/Processus/processus_list.html#ProcessusList.get_running_processus"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.Processus.processus_list.ProcessusList.get_running_processus" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt id="carlhauser_server.Processus.processus_list.ProcessesList.get_running_processus">
+<code class="sig-name descname">get_running_processus</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; List[carlhauser_server.Processus.worker_process.WorkerProcessus]<a class="reference internal" href="_modules/carlhauser_server/Processus/processus_list.html#ProcessesList.get_running_processus"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.Processus.processus_list.ProcessesList.get_running_processus" title="Permalink to this definition">¶</a></dt>
+<dd><p>Provide a sublist of the list of processus, which are currently running
+:return: a list of running workers</p>
+</dd></dl>
 
 <dl class="method">
-<dt id="carlhauser_server.Processus.processus_list.ProcessusList.is_there_alive_workers">
-<code class="sig-name descname">is_there_alive_workers</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/Processus/processus_list.html#ProcessusList.is_there_alive_workers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.Processus.processus_list.ProcessusList.is_there_alive_workers" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt id="carlhauser_server.Processus.processus_list.ProcessesList.is_there_alive_workers">
+<code class="sig-name descname">is_there_alive_workers</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="_modules/carlhauser_server/Processus/processus_list.html#ProcessesList.is_there_alive_workers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.Processus.processus_list.ProcessesList.is_there_alive_workers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if workers are alive, and return True if all worker are down
+:return: True if at least one worker is alive, False otherwise</p>
+</dd></dl>
 
 <dl class="method">
-<dt id="carlhauser_server.Processus.processus_list.ProcessusList.kill_all_processus">
-<code class="sig-name descname">kill_all_processus</code><span class="sig-paren">(</span><em class="sig-param">grace_time=2</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/Processus/processus_list.html#ProcessusList.kill_all_processus"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.Processus.processus_list.ProcessusList.kill_all_processus" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt id="carlhauser_server.Processus.processus_list.ProcessesList.kill_all_processus">
+<code class="sig-name descname">kill_all_processus</code><span class="sig-paren">(</span><em class="sig-param">grace_time=2</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="_modules/carlhauser_server/Processus/processus_list.html#ProcessesList.kill_all_processus"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.Processus.processus_list.ProcessesList.kill_all_processus" title="Permalink to this definition">¶</a></dt>
+<dd><p>Try to kill all workers of the given list, waiting &lt;grace_time&gt;
+for each processus to finish (2 sec per default)
+:param grace_time: Waiting time for a process before hard kill
+:return: True if successfully stopped, False otherwise</p>
+</dd></dl>
 
 <dl class="method">
-<dt id="carlhauser_server.Processus.processus_list.ProcessusList.wait_until_all_stopped">
-<code class="sig-name descname">wait_until_all_stopped</code><span class="sig-paren">(</span><em class="sig-param">timeout: int = 60</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="_modules/carlhauser_server/Processus/processus_list.html#ProcessusList.wait_until_all_stopped"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.Processus.processus_list.ProcessusList.wait_until_all_stopped" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt id="carlhauser_server.Processus.processus_list.ProcessesList.wait_until_all_stopped">
+<code class="sig-name descname">wait_until_all_stopped</code><span class="sig-paren">(</span><em class="sig-param">timeout: int = 60</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="_modules/carlhauser_server/Processus/processus_list.html#ProcessesList.wait_until_all_stopped"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.Processus.processus_list.ProcessesList.wait_until_all_stopped" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wait until all the workers are stopped (= terminated)
+Put timeout -1 if you don’t want to function to timeout
+:param timeout: maximum waiting time for all proccesses to stop
+:return: True if all have stopped, False otherwise</p>
+</dd></dl>
 
 </dd></dl>
 
 </div>
-<div class="section" id="module-carlhauser_server.Processus.worker_processus">
-<span id="carlhauser-server-processus-worker-processus-module"></span><h2>carlhauser_server.Processus.worker_processus module<a class="headerlink" href="#module-carlhauser_server.Processus.worker_processus" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-carlhauser_server.Processus.worker_process">
+<span id="carlhauser-server-processus-worker-process-module"></span><h2>carlhauser_server.Processus.worker_process module<a class="headerlink" href="#module-carlhauser_server.Processus.worker_process" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
-<dt id="carlhauser_server.Processus.worker_processus.WorkerProcessus">
-<em class="property">class </em><code class="sig-prename descclassname">carlhauser_server.Processus.worker_processus.</code><code class="sig-name descname">WorkerProcessus</code><span class="sig-paren">(</span><em class="sig-param">worker_path: pathlib.Path</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/Processus/worker_processus.html#WorkerProcessus"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.Processus.worker_processus.WorkerProcessus" title="Permalink to this definition">¶</a></dt>
+<dt id="carlhauser_server.Processus.worker_process.WorkerProcessus">
+<em class="property">class </em><code class="sig-prename descclassname">carlhauser_server.Processus.worker_process.</code><code class="sig-name descname">WorkerProcessus</code><span class="sig-paren">(</span><em class="sig-param">worker_path: pathlib.Path</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/Processus/worker_process.html#WorkerProcessus"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.Processus.worker_process.WorkerProcessus" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="method">
-<dt id="carlhauser_server.Processus.worker_processus.WorkerProcessus.check_status">
-<code class="sig-name descname">check_status</code><span class="sig-paren">(</span><em class="sig-param">id_to_display</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/Processus/worker_processus.html#WorkerProcessus.check_status"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.Processus.worker_processus.WorkerProcessus.check_status" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="carlhauser_server.Processus.worker_processus.WorkerProcessus.get_str">
-<code class="sig-name descname">get_str</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/Processus/worker_processus.html#WorkerProcessus.get_str"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.Processus.worker_processus.WorkerProcessus.get_str" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="carlhauser_server.Processus.worker_processus.WorkerProcessus.is_running">
-<code class="sig-name descname">is_running</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/Processus/worker_processus.html#WorkerProcessus.is_running"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.Processus.worker_processus.WorkerProcessus.is_running" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="carlhauser_server.Processus.worker_processus.WorkerProcessus.launch">
-<code class="sig-name descname">launch</code><span class="sig-paren">(</span><em class="sig-param">db_conf: &lt;module 'carlhauser_server.Configuration.database_conf' from '/home/user/Desktop/douglas-quaid/carlhauser_server/Configuration/database_conf.py'&gt; = None</em>, <em class="sig-param">dist_conf: &lt;module 'carlhauser_server.Configuration.distance_engine_conf' from '/home/user/Desktop/douglas-quaid/carlhauser_server/Configuration/distance_engine_conf.py'&gt; = None</em>, <em class="sig-param">fe_conf: &lt;module 'carlhauser_server.Configuration.feature_extractor_conf' from '/home/user/Desktop/douglas-quaid/carlhauser_server/Configuration/feature_extractor_conf.py'&gt; = None</em>, <em class="sig-param">ws_conf: &lt;module 'carlhauser_server.Configuration.webservice_conf' from '/home/user/Desktop/douglas-quaid/carlhauser_server/Configuration/webservice_conf.py'&gt; = None</em>, <em class="sig-param">mode=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/Processus/worker_processus.html#WorkerProcessus.launch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.Processus.worker_processus.WorkerProcessus.launch" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="carlhauser_server.Processus.worker_processus.WorkerProcessus.shutdown">
-<code class="sig-name descname">shutdown</code><span class="sig-paren">(</span><em class="sig-param">grace_time=10</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/Processus/worker_processus.html#WorkerProcessus.shutdown"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.Processus.worker_processus.WorkerProcessus.shutdown" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="carlhauser_server.Processus.worker_processus.WorkerProcessus.wait_until_stopped">
-<code class="sig-name descname">wait_until_stopped</code><span class="sig-paren">(</span><em class="sig-param">timeout: int = 60</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="_modules/carlhauser_server/Processus/worker_processus.html#WorkerProcessus.wait_until_stopped"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.Processus.worker_processus.WorkerProcessus.wait_until_stopped" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
+<dt id="carlhauser_server.Processus.worker_process.WorkerProcessus.check_status">
+<code class="sig-name descname">check_status</code><span class="sig-paren">(</span><em class="sig-param">id_to_display</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/Processus/worker_process.html#WorkerProcessus.check_status"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.Processus.worker_process.WorkerProcessus.check_status" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check and display status on logging output
+:param id_to_display: # of the worker, if you want to print one
+:return: True if process running, False otherwise</p>
 </dd></dl>
 
-</div>
-<div class="section" id="module-carlhauser_server.Processus.worker_types">
-<span id="carlhauser-server-processus-worker-types-module"></span><h2>carlhauser_server.Processus.worker_types module<a class="headerlink" href="#module-carlhauser_server.Processus.worker_types" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
-<dt id="carlhauser_server.Processus.worker_types.WorkerTypes">
-<em class="property">class </em><code class="sig-prename descclassname">carlhauser_server.Processus.worker_types.</code><code class="sig-name descname">WorkerTypes</code><a class="reference internal" href="_modules/carlhauser_server/Processus/worker_types.html#WorkerTypes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.Processus.worker_types.WorkerTypes" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="carlhauser_server.Configuration.html#carlhauser_server.Configuration.template_conf.JSON_parsable_Enum" title="carlhauser_server.Configuration.template_conf.JSON_parsable_Enum"><code class="xref py py-class docutils literal notranslate"><span class="pre">carlhauser_server.Configuration.template_conf.JSON_parsable_Enum</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">enum.Enum</span></code></p>
-<p>An enumeration.</p>
-<dl class="attribute">
-<dt id="carlhauser_server.Processus.worker_types.WorkerTypes.ADDER">
-<code class="sig-name descname">ADDER</code><em class="property"> = 1</em><a class="headerlink" href="#carlhauser_server.Processus.worker_types.WorkerTypes.ADDER" title="Permalink to this definition">¶</a></dt>
+<dl class="method">
+<dt id="carlhauser_server.Processus.worker_process.WorkerProcessus.get_str">
+<code class="sig-name descname">get_str</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/Processus/worker_process.html#WorkerProcessus.get_str"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.Processus.worker_process.WorkerProcessus.get_str" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
-<dt id="carlhauser_server.Processus.worker_types.WorkerTypes.FEATURE_ADDER">
-<code class="sig-name descname">FEATURE_ADDER</code><em class="property"> = 3</em><a class="headerlink" href="#carlhauser_server.Processus.worker_types.WorkerTypes.FEATURE_ADDER" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dl class="method">
+<dt id="carlhauser_server.Processus.worker_process.WorkerProcessus.is_running">
+<code class="sig-name descname">is_running</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="_modules/carlhauser_server/Processus/worker_process.html#WorkerProcessus.is_running"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.Processus.worker_process.WorkerProcessus.is_running" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if current processus is running
+:return: True if process running, False otherwise</p>
+</dd></dl>
 
-<dl class="attribute">
-<dt id="carlhauser_server.Processus.worker_types.WorkerTypes.FEATURE_REQUESTER">
-<code class="sig-name descname">FEATURE_REQUESTER</code><em class="property"> = 4</em><a class="headerlink" href="#carlhauser_server.Processus.worker_types.WorkerTypes.FEATURE_REQUESTER" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dl class="method">
+<dt id="carlhauser_server.Processus.worker_process.WorkerProcessus.launch">
+<code class="sig-name descname">launch</code><span class="sig-paren">(</span><em class="sig-param">db_conf: carlhauser_server.Configuration.database_conf.Default_database_conf = None</em>, <em class="sig-param">dist_conf: carlhauser_server.Configuration.distance_engine_conf.Default_distance_engine_conf = None</em>, <em class="sig-param">fe_conf: carlhauser_server.Configuration.feature_extractor_conf.Default_feature_extractor_conf = None</em>, <em class="sig-param">ws_conf: carlhauser_server.Configuration.webservice_conf.Default_webservice_conf = None</em>, <em class="sig-param">mode=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/Processus/worker_process.html#WorkerProcessus.launch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.Processus.worker_process.WorkerProcessus.launch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Construct an argument list and launch the process.
+:param db_conf: configuration file
+:param dist_conf: configuration file
+:param fe_conf: configuration file
+:param ws_conf: configuration file
+:param mode:  configuration element
+:return: Nothing</p>
+</dd></dl>
 
-<dl class="attribute">
-<dt id="carlhauser_server.Processus.worker_types.WorkerTypes.FLASK">
-<code class="sig-name descname">FLASK</code><em class="property"> = 5</em><a class="headerlink" href="#carlhauser_server.Processus.worker_types.WorkerTypes.FLASK" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dl class="method">
+<dt id="carlhauser_server.Processus.worker_process.WorkerProcessus.shutdown">
+<code class="sig-name descname">shutdown</code><span class="sig-paren">(</span><em class="sig-param">grace_time=10</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="_modules/carlhauser_server/Processus/worker_process.html#WorkerProcessus.shutdown"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.Processus.worker_process.WorkerProcessus.shutdown" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tru to stop within &lt;gracetime&gt; seconds the current processus/worker
+:param grace_time: maximum waiting time
+:return: True if stopped, False otherwise</p>
+</dd></dl>
 
-<dl class="attribute">
-<dt id="carlhauser_server.Processus.worker_types.WorkerTypes.REQUESTER">
-<code class="sig-name descname">REQUESTER</code><em class="property"> = 2</em><a class="headerlink" href="#carlhauser_server.Processus.worker_types.WorkerTypes.REQUESTER" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dl class="method">
+<dt id="carlhauser_server.Processus.worker_process.WorkerProcessus.wait_until_stopped">
+<code class="sig-name descname">wait_until_stopped</code><span class="sig-paren">(</span><em class="sig-param">timeout: int = 60</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="_modules/carlhauser_server/Processus/worker_process.html#WorkerProcessus.wait_until_stopped"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.Processus.worker_process.WorkerProcessus.wait_until_stopped" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wait until the worker is stopped (= terminated)
+Put timeout -1 if you don’t want to function to timeout
+:param timeout: maximal waiting time for the process to stop
+:return: True if stopped, False otherwise</p>
+</dd></dl>
 
 </dd></dl>
 
@@ -172,8 +173,7 @@
 <li><a class="reference internal" href="#">carlhauser_server.Processus package</a><ul>
 <li><a class="reference internal" href="#submodules">Submodules</a></li>
 <li><a class="reference internal" href="#module-carlhauser_server.Processus.processus_list">carlhauser_server.Processus.processus_list module</a></li>
-<li><a class="reference internal" href="#module-carlhauser_server.Processus.worker_processus">carlhauser_server.Processus.worker_processus module</a></li>
-<li><a class="reference internal" href="#module-carlhauser_server.Processus.worker_types">carlhauser_server.Processus.worker_types module</a></li>
+<li><a class="reference internal" href="#module-carlhauser_server.Processus.worker_process">carlhauser_server.Processus.worker_process module</a></li>
 <li><a class="reference internal" href="#module-carlhauser_server.Processus">Module contents</a></li>
 </ul>
 </li>

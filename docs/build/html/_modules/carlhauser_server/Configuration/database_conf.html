@@ -35,15 +35,10 @@
           <div class="body" role="main">
             
   <h1>Source code for carlhauser_server.Configuration.database_conf</h1><div class="highlight"><pre>
-<span></span><span class="c1"># ==================== ------ STD LIBRARIES ------- ====================</span>
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">pathlib</span>
-<span class="kn">import</span> <span class="nn">sys</span>
+<span></span><span class="kn">import</span> <span class="nn">pathlib</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">namedtuple</span>
 
-<span class="c1"># ==================== ------ PERSONAL LIBRARIES ------- ====================</span>
-<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">pardir</span><span class="p">))</span>
-<span class="kn">from</span> <span class="nn">carlhauser_server.Configuration.template_conf</span> <span class="k">import</span> <span class="n">JSON_parsable_Dict</span>
+<span class="kn">from</span> <span class="nn">common.environment_variable</span> <span class="k">import</span> <span class="n">JSON_parsable_Dict</span>
 
 
 <div class="viewcode-block" id="Default_database_conf"><a class="viewcode-back" href="../../../carlhauser_server.Configuration.html#carlhauser_server.Configuration.database_conf.Default_database_conf">[docs]</a><span class="k">class</span> <span class="nc">Default_database_conf</span><span class="p">(</span><span class="n">JSON_parsable_Dict</span><span class="p">):</span>

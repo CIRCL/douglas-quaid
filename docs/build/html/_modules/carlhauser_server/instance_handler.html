@@ -40,37 +40,34 @@
 
 <span class="kn">import</span> <span class="nn">logging.config</span>
 <span class="c1"># ==================== ------ STD LIBRARIES ------- ====================</span>
-<span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">pathlib</span>
 <span class="kn">import</span> <span class="nn">signal</span>
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">import</span> <span class="nn">traceback</span>
 
-<span class="c1"># ==================== ------ PERSONAL LIBRARIES ------- ====================</span>
-<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">pardir</span><span class="p">))</span>
-<span class="kn">from</span> <span class="nn">common.environment_variable</span> <span class="k">import</span> <span class="n">get_homedir</span>
-
-<span class="kn">import</span> <span class="nn">carlhauser_server.Singletons.database_start_stop</span> <span class="k">as</span> <span class="nn">database_start_stop</span>
 <span class="kn">import</span> <span class="nn">carlhauser_server.Configuration.database_conf</span> <span class="k">as</span> <span class="nn">database_conf</span>
-
-<span class="kn">import</span> <span class="nn">carlhauser_server.Configuration.webservice_conf</span> <span class="k">as</span> <span class="nn">webservice_conf</span>
 <span class="kn">import</span> <span class="nn">carlhauser_server.Configuration.distance_engine_conf</span> <span class="k">as</span> <span class="nn">distance_engine_conf</span>
-
 <span class="kn">import</span> <span class="nn">carlhauser_server.Configuration.feature_extractor_conf</span> <span class="k">as</span> <span class="nn">feature_extractor_conf</span>
-
+<span class="kn">import</span> <span class="nn">carlhauser_server.Configuration.webservice_conf</span> <span class="k">as</span> <span class="nn">webservice_conf</span>
+<span class="kn">import</span> <span class="nn">carlhauser_server.Singletons.database_start_stop</span> <span class="k">as</span> <span class="nn">database_start_stop</span>
+<span class="kn">import</span> <span class="nn">carlhauser_server.Singletons.singleton</span> <span class="k">as</span> <span class="nn">template_singleton</span>
 <span class="kn">import</span> <span class="nn">carlhauser_server.Singletons.worker_start_stop</span> <span class="k">as</span> <span class="nn">worker_start_stop</span>
-<span class="kn">import</span> <span class="nn">carlhauser_server.Singletons.template_singleton</span> <span class="k">as</span> <span class="nn">template_singleton</span>
-<span class="kn">from</span> <span class="nn">carlhauser_server.Processus.worker_types</span> <span class="k">import</span> <span class="n">WorkerTypes</span> <span class="k">as</span> <span class="n">workertype</span>
+<span class="kn">from</span> <span class="nn">carlhauser_server.Singletons.worker_start_stop</span> <span class="k">import</span> <span class="n">WorkerTypes</span> <span class="k">as</span> <span class="n">workertype</span>
+<span class="c1"># ==================== ------ PERSONAL LIBRARIES ------- ====================</span>
+<span class="kn">from</span> <span class="nn">common.environment_variable</span> <span class="k">import</span> <span class="n">get_homedir</span><span class="p">,</span> <span class="n">make_big_line</span>
 
 <span class="c1"># ==================== ------ PREPARATION ------- ====================</span>
 <span class="c1"># load the logging configuration</span>
 <span class="n">logconfig_path</span> <span class="o">=</span> <span class="p">(</span><span class="n">get_homedir</span><span class="p">()</span> <span class="o">/</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;carlhauser_server&quot;</span><span class="p">,</span> <span class="s2">&quot;logging.ini&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
-<span class="n">logging</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">fileConfig</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">logconfig_path</span><span class="p">))</span>
 
 
 <span class="c1"># ==================== ------ LAUNCHER ------- ====================</span>
 <div class="viewcode-block" id="Instance_Handler"><a class="viewcode-back" href="../../carlhauser_server.html#carlhauser_server.instance_handler.Instance_Handler">[docs]</a><span class="k">class</span> <span class="nc">Instance_Handler</span><span class="p">(</span><span class="n">metaclass</span><span class="o">=</span><span class="n">template_singleton</span><span class="o">.</span><span class="n">Singleton</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Handle a server instance</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
@@ -81,10 +78,14 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">di_conf</span> <span class="o">=</span> <span class="n">distance_engine_conf</span><span class="o">.</span><span class="n">Default_distance_engine_conf</span><span class="p">()</span>
 
         <span class="c1"># Handlers</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">db_handler</span> <span class="p">:</span> <span class="n">database_start_stop</span><span class="o">.</span><span class="n">Database_StartStop</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">worker_handler</span> <span class="p">:</span> <span class="n">worker_start_stop</span><span class="o">.</span><span class="n">Worker_StartStop</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db_startstop</span><span class="p">:</span> <span class="n">database_start_stop</span><span class="o">.</span><span class="n">Database_StartStop</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">worker_startstop</span><span class="p">:</span> <span class="n">worker_start_stop</span><span class="o">.</span><span class="n">Worker_StartStop</span> <span class="o">=</span> <span class="kc">None</span>
 
 <div class="viewcode-block" id="Instance_Handler.launch"><a class="viewcode-back" href="../../carlhauser_server.html#carlhauser_server.instance_handler.Instance_Handler.launch">[docs]</a>    <span class="k">def</span> <span class="nf">launch</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Launch a full server : Databases, workers (webservice to adder), wait for startup and check status of everything</span>
+<span class="sd">        :return: Nothing</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Launch elements</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">start_database</span><span class="p">(</span><span class="n">wait</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># Wait for launch</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">prevent_workers_shutdown</span><span class="p">()</span>
@@ -94,14 +95,14 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">start_feature_workers</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">start_webservice</span><span class="p">()</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">worker_handler</span><span class="o">.</span><span class="n">wait_for_worker_startup</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">worker_startstop</span><span class="o">.</span><span class="n">wait_for_worker_startup</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">check_worker</span><span class="p">()</span></div>
 
-        <span class="c1"># TODO : # If the webservice is down, then we want to shutdown everything</span>
-        <span class="c1"># self.shutdown_workers(self.db_conf)</span>
-        <span class="c1"># self.check_worker(self.db_conf)</span>
-
 <div class="viewcode-block" id="Instance_Handler.stop"><a class="viewcode-back" href="../../carlhauser_server.html#carlhauser_server.instance_handler.Instance_Handler.stop">[docs]</a>    <span class="k">def</span> <span class="nf">stop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Stop everything. Webservice, workers, and database</span>
+<span class="sd">        :return: Nothing</span>
+<span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="c1"># Shutdown Flask worker</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">stop_webservice</span><span class="p">()</span>
@@ -117,120 +118,181 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">flush_workers</span><span class="p">()</span></div>
 
     <span class="c1"># ==================== ------ DB ------- ====================</span>
-<div class="viewcode-block" id="Instance_Handler.check_db_handler"><a class="viewcode-back" href="../../carlhauser_server.html#carlhauser_server.instance_handler.Instance_Handler.check_db_handler">[docs]</a>    <span class="k">def</span> <span class="nf">check_db_handler</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="c1"># Create a Singleton instance of DB handler if none is present</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_handler</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="Instance_Handler.check_db_startstop"><a class="viewcode-back" href="../../carlhauser_server.html#carlhauser_server.instance_handler.Instance_Handler.check_db_startstop">[docs]</a>    <span class="k">def</span> <span class="nf">check_db_startstop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create a Singleton instance of DB handler if none is present</span>
+<span class="sd">        :return: Nothing. Change the state of the instance handler object (itself)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_startstop</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;DB Handler not present in core. Creation of DB handler singleton ...&quot;</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">db_handler</span> <span class="o">=</span> <span class="n">database_start_stop</span><span class="o">.</span><span class="n">Database_StartStop</span><span class="p">(</span><span class="n">db_conf</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">db_conf</span><span class="p">)</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">db_startstop</span> <span class="o">=</span> <span class="n">database_start_stop</span><span class="o">.</span><span class="n">Database_StartStop</span><span class="p">(</span><span class="n">db_conf</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">db_conf</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Instance_Handler.check_worker_handler"><a class="viewcode-back" href="../../carlhauser_server.html#carlhauser_server.instance_handler.Instance_Handler.check_worker_handler">[docs]</a>    <span class="k">def</span> <span class="nf">check_worker_handler</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="c1"># Create a Singleton instance of DB handler if none is present</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">worker_handler</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="Instance_Handler.check_worker_startstop"><a class="viewcode-back" href="../../carlhauser_server.html#carlhauser_server.instance_handler.Instance_Handler.check_worker_startstop">[docs]</a>    <span class="k">def</span> <span class="nf">check_worker_startstop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create a Singleton instance of DB handler if none is present</span>
+<span class="sd">        :return: Nothing.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">worker_startstop</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Worker Handler not present in core. Creation of Worker handler singleton ...&quot;</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">worker_handler</span> <span class="o">=</span> <span class="n">worker_start_stop</span><span class="o">.</span><span class="n">Worker_StartStop</span><span class="p">(</span><span class="n">db_conf</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">db_conf</span><span class="p">)</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">worker_startstop</span> <span class="o">=</span> <span class="n">worker_start_stop</span><span class="o">.</span><span class="n">Worker_StartStop</span><span class="p">(</span><span class="n">db_conf</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">db_conf</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Instance_Handler.start_database"><a class="viewcode-back" href="../../carlhauser_server.html#carlhauser_server.instance_handler.Instance_Handler.start_database">[docs]</a>    <span class="k">def</span> <span class="nf">start_database</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">wait</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">check_db_handler</span><span class="p">()</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Start the database, with all redis and wait until running</span>
+<span class="sd">        :param wait: bool, if True, will wait until db is started</span>
+<span class="sd">        :return: Nothing</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">check_db_startstop</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Launching redis database (x2) ...&quot;</span><span class="p">)</span>  <span class="c1"># (cache and storage)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">db_handler</span><span class="o">.</span><span class="n">launch_all_redis</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db_startstop</span><span class="o">.</span><span class="n">launch_all_redis</span><span class="p">()</span>
 
         <span class="k">if</span> <span class="n">wait</span><span class="p">:</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_handler</span><span class="o">.</span><span class="n">wait_until_all_redis_running</span><span class="p">():</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_startstop</span><span class="o">.</span><span class="n">wait_until_all_redis_running</span><span class="p">():</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Redis databases successfully launched (ping verified)&quot;</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Redis databases are NOT launched (ping verified)&quot;</span><span class="p">)</span>
                 <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Impossible to connect to database : timeout while waiting for redis to run&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Instance_Handler.stop_database"><a class="viewcode-back" href="../../carlhauser_server.html#carlhauser_server.instance_handler.Instance_Handler.stop_database">[docs]</a>    <span class="k">def</span> <span class="nf">stop_database</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">wait</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">check_db_handler</span><span class="p">()</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Stop the database, with all redis, and wait until stopped</span>
+<span class="sd">        :param wait: bool, if True, will wait until db is stopped</span>
+<span class="sd">        :return: Nothing</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">check_db_startstop</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Stopping redis database (x2) ...&quot;</span><span class="p">)</span>  <span class="c1"># (cache and storage)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">db_handler</span><span class="o">.</span><span class="n">stop_all_redis</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db_startstop</span><span class="o">.</span><span class="n">stop_all_redis</span><span class="p">()</span>
 
         <span class="k">if</span> <span class="n">wait</span><span class="p">:</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_handler</span><span class="o">.</span><span class="n">wait_until_all_redis_stopped</span><span class="p">():</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_startstop</span><span class="o">.</span><span class="n">wait_until_all_redis_stopped</span><span class="p">():</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Redis database successfully stopped (ping verified)&quot;</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Redis database had NOT stopped (ping verified)&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Instance_Handler.flush_db"><a class="viewcode-back" href="../../carlhauser_server.html#carlhauser_server.instance_handler.Instance_Handler.flush_db">[docs]</a>    <span class="k">def</span> <span class="nf">flush_db</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">check_db_handler</span><span class="p">()</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Flush the database. Use at your own risks ! You will loose data !</span>
+<span class="sd">        :return: Nothing</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">check_db_startstop</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Flushing redis database (x2) ...&quot;</span><span class="p">)</span>  <span class="c1"># (cache and storage)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">db_handler</span><span class="o">.</span><span class="n">flush_all_redis</span><span class="p">()</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db_startstop</span><span class="o">.</span><span class="n">flush_all_redis</span><span class="p">()</span></div>
 
     <span class="c1"># ==================== ------ DB WORKERS ------- ====================</span>
 
 <div class="viewcode-block" id="Instance_Handler.start_adder_workers"><a class="viewcode-back" href="../../carlhauser_server.html#carlhauser_server.instance_handler.Instance_Handler.start_adder_workers">[docs]</a>    <span class="k">def</span> <span class="nf">start_adder_workers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">check_worker_handler</span><span class="p">()</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Start adder workers (which add pictures from queue to the database)</span>
+<span class="sd">        :return: Nothing</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">check_worker_startstop</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Launching to_add worker (x</span><span class="si">{self.db_conf.ADDER_WORKER_NB}</span><span class="s2">) ...&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">worker_handler</span><span class="o">.</span><span class="n">start_and_add_n_worker</span><span class="p">(</span><span class="n">worker_type</span><span class="o">=</span><span class="n">workertype</span><span class="o">.</span><span class="n">ADDER</span><span class="p">,</span>
-                                                   <span class="n">db_conf</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">db_conf</span><span class="p">,</span> <span class="n">dist_conf</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">di_conf</span><span class="p">,</span> <span class="n">fe_conf</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">fe_conf</span><span class="p">,</span>
-                                                   <span class="n">nb</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">db_conf</span><span class="o">.</span><span class="n">ADDER_WORKER_NB</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">worker_startstop</span><span class="o">.</span><span class="n">start_and_add_n_worker</span><span class="p">(</span><span class="n">worker_type</span><span class="o">=</span><span class="n">workertype</span><span class="o">.</span><span class="n">ADDER</span><span class="p">,</span>
+                                                     <span class="n">db_conf</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">db_conf</span><span class="p">,</span> <span class="n">dist_conf</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">di_conf</span><span class="p">,</span> <span class="n">fe_conf</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">fe_conf</span><span class="p">,</span>
+                                                     <span class="n">nb</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">db_conf</span><span class="o">.</span><span class="n">ADDER_WORKER_NB</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Instance_Handler.start_requester_workers"><a class="viewcode-back" href="../../carlhauser_server.html#carlhauser_server.instance_handler.Instance_Handler.start_requester_workers">[docs]</a>    <span class="k">def</span> <span class="nf">start_requester_workers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">check_worker_handler</span><span class="p">()</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Start requester workers (which request pictures from queue to the database)</span>
+<span class="sd">        :return: Nothing</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">check_worker_startstop</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Launching to_request worker (x</span><span class="si">{self.db_conf.REQUESTER_WORKER_NB}</span><span class="s2">) ...&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">worker_handler</span><span class="o">.</span><span class="n">start_and_add_n_worker</span><span class="p">(</span><span class="n">worker_type</span><span class="o">=</span><span class="n">workertype</span><span class="o">.</span><span class="n">REQUESTER</span><span class="p">,</span>
-                                                   <span class="n">db_conf</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">db_conf</span><span class="p">,</span> <span class="n">dist_conf</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">di_conf</span><span class="p">,</span> <span class="n">fe_conf</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">fe_conf</span><span class="p">,</span>
-                                                   <span class="n">nb</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">db_conf</span><span class="o">.</span><span class="n">REQUESTER_WORKER_NB</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">worker_startstop</span><span class="o">.</span><span class="n">start_and_add_n_worker</span><span class="p">(</span><span class="n">worker_type</span><span class="o">=</span><span class="n">workertype</span><span class="o">.</span><span class="n">REQUESTER</span><span class="p">,</span>
+                                                     <span class="n">db_conf</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">db_conf</span><span class="p">,</span> <span class="n">dist_conf</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">di_conf</span><span class="p">,</span> <span class="n">fe_conf</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">fe_conf</span><span class="p">,</span>
+                                                     <span class="n">nb</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">db_conf</span><span class="o">.</span><span class="n">REQUESTER_WORKER_NB</span><span class="p">)</span></div>
 
     <span class="c1"># ==================== ------ FEATURE WORKERS ------- ====================</span>
 
 <div class="viewcode-block" id="Instance_Handler.start_feature_workers"><a class="viewcode-back" href="../../carlhauser_server.html#carlhauser_server.instance_handler.Instance_Handler.start_feature_workers">[docs]</a>    <span class="k">def</span> <span class="nf">start_feature_workers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">check_worker_handler</span><span class="p">()</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Start feature workers (which compute features from pictures from queueto an other queue)</span>
+<span class="sd">        :return: Nothing</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">check_worker_startstop</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Launching feature worker (x</span><span class="si">{self.fe_conf.FEATURE_ADDER_WORKER_NB}</span><span class="s2"> + x</span><span class="si">{self.fe_conf.FEATURE_REQUEST_WORKER_NB}</span><span class="s2">) ...&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">worker_handler</span><span class="o">.</span><span class="n">start_and_add_n_worker</span><span class="p">(</span><span class="n">worker_type</span><span class="o">=</span><span class="n">workertype</span><span class="o">.</span><span class="n">FEATURE_ADDER</span><span class="p">,</span>
-                                                   <span class="n">db_conf</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">db_conf</span><span class="p">,</span> <span class="n">fe_conf</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">fe_conf</span><span class="p">,</span>
-                                                   <span class="n">nb</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">fe_conf</span><span class="o">.</span><span class="n">FEATURE_ADDER_WORKER_NB</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">worker_handler</span><span class="o">.</span><span class="n">start_and_add_n_worker</span><span class="p">(</span><span class="n">worker_type</span><span class="o">=</span><span class="n">workertype</span><span class="o">.</span><span class="n">FEATURE_REQUESTER</span><span class="p">,</span>
-                                                   <span class="n">db_conf</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">db_conf</span><span class="p">,</span> <span class="n">fe_conf</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">fe_conf</span><span class="p">,</span>
-                                                   <span class="n">nb</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">fe_conf</span><span class="o">.</span><span class="n">FEATURE_REQUEST_WORKER_NB</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">worker_startstop</span><span class="o">.</span><span class="n">start_and_add_n_worker</span><span class="p">(</span><span class="n">worker_type</span><span class="o">=</span><span class="n">workertype</span><span class="o">.</span><span class="n">FEATURE_ADDER</span><span class="p">,</span>
+                                                     <span class="n">db_conf</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">db_conf</span><span class="p">,</span> <span class="n">fe_conf</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">fe_conf</span><span class="p">,</span>
+                                                     <span class="n">nb</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">fe_conf</span><span class="o">.</span><span class="n">FEATURE_ADDER_WORKER_NB</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">worker_startstop</span><span class="o">.</span><span class="n">start_and_add_n_worker</span><span class="p">(</span><span class="n">worker_type</span><span class="o">=</span><span class="n">workertype</span><span class="o">.</span><span class="n">FEATURE_REQUESTER</span><span class="p">,</span>
+                                                     <span class="n">db_conf</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">db_conf</span><span class="p">,</span> <span class="n">fe_conf</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">fe_conf</span><span class="p">,</span>
+                                                     <span class="n">nb</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">fe_conf</span><span class="o">.</span><span class="n">FEATURE_REQUEST_WORKER_NB</span><span class="p">)</span></div>
 
     <span class="c1"># ==================== ------ WEBSERVICE ------- ====================</span>
 
 <div class="viewcode-block" id="Instance_Handler.start_webservice"><a class="viewcode-back" href="../../carlhauser_server.html#carlhauser_server.instance_handler.Instance_Handler.start_webservice">[docs]</a>    <span class="k">def</span> <span class="nf">start_webservice</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">check_worker_handler</span><span class="p">()</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Start API webservice (Flask) to handle client requests</span>
+<span class="sd">        :return: Nothing</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">check_worker_startstop</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Launching webservice ...&quot;</span><span class="p">)</span>
 
         <span class="c1"># Create configuration file</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ws_conf</span><span class="o">.</span><span class="n">CERT_FILE</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ws_conf</span><span class="o">.</span><span class="n">CERT_FILE</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ws_conf</span><span class="o">.</span><span class="n">KEY_FILE</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ws_conf</span><span class="o">.</span><span class="n">KEY_FILE</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">worker_handler</span><span class="o">.</span><span class="n">start_and_add_n_worker</span><span class="p">(</span><span class="n">worker_type</span><span class="o">=</span><span class="n">workertype</span><span class="o">.</span><span class="n">FLASK</span><span class="p">,</span>
-                                                   <span class="n">db_conf</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">db_conf</span><span class="p">,</span> <span class="n">ws_conf</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ws_conf</span><span class="p">,</span>
-                                                   <span class="n">nb</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">worker_startstop</span><span class="o">.</span><span class="n">start_and_add_n_worker</span><span class="p">(</span><span class="n">worker_type</span><span class="o">=</span><span class="n">workertype</span><span class="o">.</span><span class="n">FLASK</span><span class="p">,</span>
+                                                     <span class="n">db_conf</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">db_conf</span><span class="p">,</span> <span class="n">ws_conf</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ws_conf</span><span class="p">,</span>
+                                                     <span class="n">nb</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Instance_Handler.stop_webservice"><a class="viewcode-back" href="../../carlhauser_server.html#carlhauser_server.instance_handler.Instance_Handler.stop_webservice">[docs]</a>    <span class="k">def</span> <span class="nf">stop_webservice</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">check_worker_handler</span><span class="p">()</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Stop the webservice which handle clients requests</span>
+<span class="sd">        :return: Nothing</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">check_worker_startstop</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Stopping webservice ...&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">worker_handler</span><span class="o">.</span><span class="n">stop_list_worker</span><span class="p">(</span><span class="n">worker_type</span><span class="o">=</span><span class="n">workertype</span><span class="o">.</span><span class="n">FLASK</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">worker_startstop</span><span class="o">.</span><span class="n">stop_list_worker</span><span class="p">(</span><span class="n">worker_type</span><span class="o">=</span><span class="n">workertype</span><span class="o">.</span><span class="n">FLASK</span><span class="p">)</span></div>
 
     <span class="c1"># ==================== ------ UTLITIES ON WORKERS ------- ====================</span>
 
 <div class="viewcode-block" id="Instance_Handler.check_worker"><a class="viewcode-back" href="../../carlhauser_server.html#carlhauser_server.instance_handler.Instance_Handler.check_worker">[docs]</a>    <span class="k">def</span> <span class="nf">check_worker</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">check_worker_handler</span><span class="p">()</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check workers status</span>
+<span class="sd">        :return: True if at least one worker alive, False otherwise</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">check_worker_startstop</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Checking for workers ...&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">worker_handler</span><span class="o">.</span><span class="n">is_there_alive_workers</span><span class="p">()</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">worker_startstop</span><span class="o">.</span><span class="n">is_there_alive_workers</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="Instance_Handler.shutdown_workers"><a class="viewcode-back" href="../../carlhauser_server.html#carlhauser_server.instance_handler.Instance_Handler.shutdown_workers">[docs]</a>    <span class="k">def</span> <span class="nf">shutdown_workers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">check_worker_handler</span><span class="p">()</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Stop workers and wait for their shutdown</span>
+<span class="sd">        :return: True if all workers are shutdown, False otherwise</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">check_worker_startstop</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Requesting workers to stop ...&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">db_handler</span><span class="o">.</span><span class="n">request_workers_shutdown</span><span class="p">()</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">worker_handler</span><span class="o">.</span><span class="n">wait_for_worker_shutdown</span><span class="p">()</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db_startstop</span><span class="o">.</span><span class="n">request_workers_shutdown</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">worker_startstop</span><span class="o">.</span><span class="n">wait_for_worker_shutdown</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="Instance_Handler.prevent_workers_shutdown"><a class="viewcode-back" href="../../carlhauser_server.html#carlhauser_server.instance_handler.Instance_Handler.prevent_workers_shutdown">[docs]</a>    <span class="k">def</span> <span class="nf">prevent_workers_shutdown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Remove the halt key from the database.</span>
+<span class="sd">        Useful on launch to prevent worker to shutdown when they start from a recovered database.</span>
+<span class="sd">        :return: Nothing</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Remove halt order to prevent workers to stop on launch...&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">db_handler</span><span class="o">.</span><span class="n">prevent_workers_shutdown</span><span class="p">()</span>
-        <span class="k">return</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db_startstop</span><span class="o">.</span><span class="n">prevent_workers_shutdown</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="Instance_Handler.flush_workers"><a class="viewcode-back" href="../../carlhauser_server.html#carlhauser_server.instance_handler.Instance_Handler.flush_workers">[docs]</a>    <span class="k">def</span> <span class="nf">flush_workers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">check_worker_handler</span><span class="p">()</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Flush all workers. Kill them all and forget it. Goes away from the past.</span>
+<span class="sd">        :return: True if all workers had been killed and removed from lists.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">check_worker_startstop</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Requesting workers to stop ...&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">worker_handler</span><span class="o">.</span><span class="n">kill_and_flush_workers</span><span class="p">()</span></div></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">worker_startstop</span><span class="o">.</span><span class="n">kill_and_flush_workers</span><span class="p">()</span></div></div>
 
 
 <div class="viewcode-block" id="exit_gracefully"><a class="viewcode-back" href="../../carlhauser_server.html#carlhauser_server.instance_handler.exit_gracefully">[docs]</a><span class="k">def</span> <span class="nf">exit_gracefully</span><span class="p">(</span><span class="n">signum</span><span class="p">,</span> <span class="n">frame</span><span class="p">):</span>
-    <span class="c1"># restore the original signal handler as otherwise evil things will happen</span>
-    <span class="c1"># in raw_input when CTRL+C is pressed, and our signal handler is not re-entrant</span>
-    <span class="c1"># signal.signal(signal.SIGINT, original_sigint) # TODO : To put back ?</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    restore the original signal handler as otherwise evil things will happen</span>
+<span class="sd">    in raw_input when CTRL+C is pressed, and our signal handler is not re-entrant</span>
+<span class="sd">    signal.signal(signal.SIGINT, original_sigint) # TODO : To put back ?</span>
+<span class="sd">    :param signum: ? Automatic</span>
+<span class="sd">    :param frame:  ? Automatic</span>
+<span class="sd">    :return: ? Automatic</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">try</span><span class="p">:</span>
         <span class="n">stopper</span> <span class="o">=</span> <span class="n">Instance_Handler</span><span class="p">()</span>
@@ -256,6 +318,9 @@
         <span class="n">launcher</span><span class="o">.</span><span class="n">launch</span><span class="p">()</span>
         <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 
+        <span class="nb">print</span><span class="p">(</span><span class="n">make_big_line</span><span class="p">())</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Server is running and ready to accept queries (if no error shown upper than this line).&quot;</span><span class="p">)</span>
+
         <span class="n">do_stop</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="k">while</span> <span class="ow">not</span> <span class="n">do_stop</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Press any key to stop ... &quot;</span><span class="p">)</span>
@@ -265,7 +330,13 @@
             <span class="k">if</span> <span class="n">value</span> <span class="o">==</span> <span class="s2">&quot;yes&quot;</span><span class="p">:</span>
                 <span class="n">do_stop</span> <span class="o">=</span> <span class="kc">True</span>
 
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Server is asked to stop, please wait until complete shutdown of the server by itself.&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">make_big_line</span><span class="p">())</span>
+
         <span class="n">launcher</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="n">make_big_line</span><span class="p">())</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Server is stopped, correctly (if no error shown upper than this line).&quot;</span><span class="p">)</span>
 
     <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Interruption detected&#39;</span><span class="p">)</span>
@@ -281,22 +352,6 @@
         <span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;Critical problem during execution </span><span class="si">{e}</span><span class="s1">&#39;</span><span class="p">)</span>
         <span class="n">launcher</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
         <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-
-<span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">if __name__ == &#39;__main__&#39;:</span>
-<span class="sd">    parser = argparse.ArgumentParser(description=&#39;Manage backend DBs.&#39;)</span>
-<span class="sd">    parser.add_argument(&quot;--start&quot;, action=&#39;store_true&#39;, default=False, help=&quot;Start all&quot;)</span>
-<span class="sd">    parser.add_argument(&quot;--stop&quot;, action=&#39;store_true&#39;, default=False, help=&quot;Stop all&quot;)</span>
-<span class="sd">    parser.add_argument(&quot;--status&quot;, action=&#39;store_true&#39;, default=True, help=&quot;Show status&quot;)</span>
-<span class="sd">    args = parser.parse_args()</span>
-
-<span class="sd">    if args.start:</span>
-<span class="sd">        launch_all()</span>
-<span class="sd">    if args.stop:</span>
-<span class="sd">        stop_all()</span>
-<span class="sd">    if not args.stop and args.status:</span>
-<span class="sd">        check_all()</span>
-<span class="sd">&#39;&#39;&#39;</span>
 </pre></div>
 
           </div>

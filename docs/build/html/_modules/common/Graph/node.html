@@ -38,19 +38,15 @@
 <span></span><span class="ch">#!/usr/bin/env python3</span>
 <span class="c1"># -*- coding: utf-8 -*-</span>
 
-<span class="c1"># ==================== ------ STD LIBRARIES ------- ====================</span>
-<span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">sys</span>
-
-<span class="c1"># ==================== ------ PERSONAL LIBRARIES ------- ====================</span>
-
-<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">pardir</span><span class="p">))</span>
-<span class="n">FORMATTER</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%(asctime)s</span><span class="s1"> - + </span><span class="si">%(relativeCreated)d</span><span class="s1"> - </span><span class="si">%(name)s</span><span class="s1"> - </span><span class="si">%(levelname)s</span><span class="s1"> - </span><span class="si">%(message)s</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Dict</span>
+<span class="kn">from</span> <span class="nn">common.environment_variable</span> <span class="k">import</span> <span class="n">load_server_logging_conf_file</span>
+<span class="n">load_server_logging_conf_file</span><span class="p">()</span>
 
 
 <div class="viewcode-block" id="Node_Meta"><a class="viewcode-back" href="../../../common.Graph.html#common.Graph.node.Node_Meta">[docs]</a><span class="k">class</span> <span class="nc">Node_Meta</span><span class="p">:</span>
-    <span class="c1"># Handle a serie of information related to the current node</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Handle a serie of information related to the current node</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">labels</span> <span class="o">=</span> <span class="p">[]</span>
@@ -70,7 +66,9 @@
 
 
 <div class="viewcode-block" id="Node"><a class="viewcode-back" href="../../../common.Graph.html#common.Graph.node.Node">[docs]</a><span class="k">class</span> <span class="nc">Node</span><span class="p">:</span>
-    <span class="c1"># Handle a node of the graph</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Handle a node of the graph</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">id</span><span class="p">,</span> <span class="n">image</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">metadata</span><span class="p">:</span> <span class="n">Node_Meta</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">label</span> <span class="o">=</span> <span class="n">label</span>
@@ -90,24 +88,33 @@
         <span class="n">tmp_json</span><span class="p">[</span><span class="s2">&quot;image&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">image</span>
         <span class="n">tmp_json</span><span class="p">[</span><span class="s2">&quot;shape&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">tmp_json</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">export_as_json</span><span class="p">()</span>
 
         <span class="k">return</span> <span class="n">tmp_json</span></div>
 
 <div class="viewcode-block" id="Node.load_from_dict"><a class="viewcode-back" href="../../../common.Graph.html#common.Graph.node.Node.load_from_dict">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">load_from_dict</span><span class="p">(</span><span class="nb">input</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">load_from_dict</span><span class="p">(</span><span class="n">tmp_input</span><span class="p">:</span> <span class="n">Dict</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Load/ Import a Node object from a dict</span>
+<span class="sd">        :param tmp_input: A Dict version of the Node to import</span>
+<span class="sd">        :return: The Node as an object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">tmp_metadata</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="k">if</span> <span class="s2">&quot;metadata&quot;</span> <span class="ow">in</span> <span class="nb">input</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-            <span class="n">tmp_metadata</span> <span class="o">=</span> <span class="n">Node_Meta</span><span class="o">.</span><span class="n">load_from_dict</span><span class="p">(</span><span class="nb">input</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="s2">&quot;metadata&quot;</span> <span class="ow">in</span> <span class="n">tmp_input</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">tmp_metadata</span> <span class="o">=</span> <span class="n">Node_Meta</span><span class="o">.</span><span class="n">load_from_dict</span><span class="p">(</span><span class="n">tmp_input</span><span class="p">[</span><span class="s2">&quot;metadata&quot;</span><span class="p">])</span>
 
-        <span class="n">tmp_node</span> <span class="o">=</span> <span class="n">Node</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="nb">input</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;label&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">),</span> <span class="nb">id</span><span class="o">=</span><span class="nb">input</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">],</span><span class="n">image</span><span class="o">=</span><span class="nb">input</span><span class="p">[</span><span class="s2">&quot;image&quot;</span><span class="p">],</span> <span class="n">metadata</span><span class="o">=</span><span class="n">tmp_metadata</span><span class="p">)</span>
-        <span class="n">tmp_node</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="nb">input</span><span class="p">[</span><span class="s2">&quot;shape&quot;</span><span class="p">]</span>
+        <span class="n">tmp_node</span> <span class="o">=</span> <span class="n">Node</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="n">tmp_input</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;label&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">),</span> <span class="nb">id</span><span class="o">=</span><span class="n">tmp_input</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">],</span> <span class="n">image</span><span class="o">=</span><span class="n">tmp_input</span><span class="p">[</span><span class="s2">&quot;image&quot;</span><span class="p">],</span> <span class="n">metadata</span><span class="o">=</span><span class="n">tmp_metadata</span><span class="p">)</span>
+        <span class="n">tmp_node</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="n">tmp_input</span><span class="p">[</span><span class="s2">&quot;shape&quot;</span><span class="p">]</span>
 
         <span class="k">return</span> <span class="n">tmp_node</span></div>
 
 <div class="viewcode-block" id="Node.copy_ids_to_image"><a class="viewcode-back" href="../../../common.Graph.html#common.Graph.node.Node.copy_ids_to_image">[docs]</a>    <span class="k">def</span> <span class="nf">copy_ids_to_image</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Copy id value to image value</span>
+<span class="sd">        :return: Nothing. Change internal state of the object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">image</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span></div>
 
     <span class="c1"># ==================== To string ====================</span>
@@ -121,7 +128,6 @@
 
 <div class="viewcode-block" id="Node.get_str"><a class="viewcode-back" href="../../../common.Graph.html#common.Graph.node.Node.get_str">[docs]</a>    <span class="k">def</span> <span class="nf">get_str</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39; label=&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="p">,</span> <span class="s1">&#39; id=&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="s1">&#39; image=&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">image</span><span class="p">]))</span></div></div>
-
 </pre></div>
 
           </div>

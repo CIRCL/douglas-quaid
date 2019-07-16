@@ -38,16 +38,13 @@
 <span></span><span class="ch">#!/usr/bin/env python3</span>
 <span class="c1"># -*- coding: utf-8 -*-</span>
 
-<span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">sys</span>
-<span class="c1"># ==================== ------ STD LIBRARIES ------- ====================</span>
+
 <span class="kn">from</span> <span class="nn">enum</span> <span class="k">import</span> <span class="n">Enum</span><span class="p">,</span> <span class="n">auto</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Dict</span>
 
-<span class="c1"># ==================== ------ PERSONAL LIBRARIES ------- ====================</span>
+<span class="kn">from</span> <span class="nn">common.environment_variable</span> <span class="k">import</span> <span class="n">load_server_logging_conf_file</span>
 
-<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">pardir</span><span class="p">))</span>
-<span class="n">FORMATTER</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%(asctime)s</span><span class="s1"> - + </span><span class="si">%(relativeCreated)d</span><span class="s1"> - </span><span class="si">%(name)s</span><span class="s1"> - </span><span class="si">%(levelname)s</span><span class="s1"> - </span><span class="si">%(message)s</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="n">load_server_logging_conf_file</span><span class="p">()</span>
 
 
 <div class="viewcode-block" id="Source"><a class="viewcode-back" href="../../../common.Graph.html#common.Graph.metadata.Source">[docs]</a><span class="k">class</span> <span class="nc">Source</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
@@ -57,7 +54,9 @@
 
 
 <div class="viewcode-block" id="Metadata"><a class="viewcode-back" href="../../../common.Graph.html#common.Graph.metadata.Metadata">[docs]</a><span class="k">class</span> <span class="nc">Metadata</span><span class="p">:</span>
-    <span class="c1"># Handle metadata of the graph</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Handle metadata of the graph</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">:</span> <span class="n">Source</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">source</span> <span class="o">=</span> <span class="n">source</span>
@@ -70,20 +69,23 @@
         <span class="k">return</span> <span class="n">tmp_json</span></div>
 
 <div class="viewcode-block" id="Metadata.load_from_dict"><a class="viewcode-back" href="../../../common.Graph.html#common.Graph.metadata.Metadata.load_from_dict">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">load_from_dict</span><span class="p">(</span><span class="nb">input</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">load_from_dict</span><span class="p">(</span><span class="n">tmp_input</span><span class="p">:</span> <span class="n">Dict</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Load/ Import a Meta object from a dict</span>
+<span class="sd">        :param tmp_input: A Dict version of the Meta to import</span>
+<span class="sd">        :return: The Meta as an object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="k">if</span> <span class="nb">input</span><span class="p">[</span><span class="s2">&quot;source&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;VISJS&quot;</span> <span class="p">:</span>
+        <span class="k">if</span> <span class="n">tmp_input</span><span class="p">[</span><span class="s2">&quot;source&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;VISJS&quot;</span><span class="p">:</span>
             <span class="n">tmp_source</span> <span class="o">=</span> <span class="n">Source</span><span class="o">.</span><span class="n">VISJS</span>
-        <span class="k">elif</span> <span class="nb">input</span><span class="p">[</span><span class="s2">&quot;source&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;REDIS&quot;</span> <span class="p">:</span>
+        <span class="k">elif</span> <span class="n">tmp_input</span><span class="p">[</span><span class="s2">&quot;source&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;REDIS&quot;</span><span class="p">:</span>
             <span class="n">tmp_source</span> <span class="o">=</span> <span class="n">Source</span><span class="o">.</span><span class="n">REDIS</span>
-        <span class="k">elif</span> <span class="nb">input</span><span class="p">[</span><span class="s2">&quot;source&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;DBDUMP&quot;</span> <span class="p">:</span>
+        <span class="k">elif</span> <span class="n">tmp_input</span><span class="p">[</span><span class="s2">&quot;source&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;DBDUMP&quot;</span><span class="p">:</span>
             <span class="n">tmp_source</span> <span class="o">=</span> <span class="n">Source</span><span class="o">.</span><span class="n">DBDUMP</span>
-        <span class="k">else</span> <span class="p">:</span>
+        <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Incorrect Source in Metadata parsing&quot;</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">Metadata</span><span class="p">(</span><span class="n">tmp_source</span><span class="p">)</span></div></div>
-
-
 </pre></div>
 
           </div>

@@ -35,34 +35,29 @@
           <div class="body" role="main">
             
   <h1>Source code for carlhauser_server.Configuration.distance_engine_conf</h1><div class="highlight"><pre>
-<span></span><span class="c1"># ==================== ------ STD LIBRARIES ------- ====================</span>
+<span></span><span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">namedtuple</span>
 
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">sys</span>
-<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">namedtuple</span>
-
-<span class="c1"># ==================== ------ PERSONAL LIBRARIES ------- ====================</span>
-<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">pardir</span><span class="p">))</span>
-<span class="kn">from</span> <span class="nn">carlhauser_server.Configuration.template_conf</span> <span class="k">import</span> <span class="n">JSON_parsable_Dict</span>
+<span class="kn">from</span> <span class="nn">common.environment_variable</span> <span class="k">import</span> <span class="n">JSON_parsable_Dict</span>
 
 
 <div class="viewcode-block" id="Default_distance_engine_conf"><a class="viewcode-back" href="../../../carlhauser_server.Configuration.html#carlhauser_server.Configuration.distance_engine_conf.Default_distance_engine_conf">[docs]</a><span class="k">class</span> <span class="nc">Default_distance_engine_conf</span><span class="p">(</span><span class="n">JSON_parsable_Dict</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># Inputs</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">TOP_N_CLUSTERS</span> <span class="p">:</span> <span class="nb">int</span><span class="o">=</span> <span class="mi">3</span>  <span class="c1"># Nb of &quot;best clusters&quot; to be matched on picture representative</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">TOP_N_PICTURES</span> <span class="p">:</span> <span class="nb">int</span><span class="o">=</span> <span class="mi">10</span>  <span class="c1"># Nb of &quot;best pictures&quot; to be returned, from TOP_N_CLUSTERS best clusters (total, not per cluster)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">PICT_TO_TEST_PER_CLUSTER</span> <span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># Nb of &quot;central picture&quot; to test per cluster</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">TOP_N_CLUSTERS</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span>  <span class="c1"># Nb of &quot;best clusters&quot; to be matched on picture representative</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">TOP_N_PICTURES</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span>  <span class="c1"># Nb of &quot;best pictures&quot; to be returned, from TOP_N_CLUSTERS best clusters (total, not per cluster)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">PICT_TO_TEST_PER_CLUSTER</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># Nb of &quot;central picture&quot; to test per cluster</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">MAX_DIST_FOR_NEW_CLUSTER</span> <span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.2</span>  <span class="c1"># Distance threshold to create a new cluster. Lesser the more cluster.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">MAX_DIST_FOR_NEW_CLUSTER</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.2</span>  <span class="c1"># Distance threshold to create a new cluster. Lesser the more cluster.</span>
 
         <span class="c1"># HASH PARAMETERS</span>
 
         <span class="c1"># ORB PARAMETERS</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">CROSSCHECK</span> <span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">CROSSCHECK</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span></div>
 
 
 <div class="viewcode-block" id="parse_from_dict"><a class="viewcode-back" href="../../../carlhauser_server.Configuration.html#carlhauser_server.Configuration.distance_engine_conf.parse_from_dict">[docs]</a><span class="k">def</span> <span class="nf">parse_from_dict</span><span class="p">(</span><span class="n">conf</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s2">&quot;Default_distance_engine_conf&quot;</span><span class="p">,</span> <span class="n">conf</span><span class="o">.</span><span class="n">keys</span><span class="p">())(</span><span class="o">*</span><span class="n">conf</span><span class="o">.</span><span class="n">values</span><span class="p">())</span></div>
+
 
 <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    self.GROUND_TRUTH_PATH = None</span>
@@ -76,7 +71,6 @@
 <span class="sd">    self.SAVE_PICTURE_INSTRUCTION_LIST = []</span>
 <span class="sd">    self.OUTPUT_DIR = None</span>
 <span class="sd">&#39;&#39;&#39;</span>
-
 
 <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd"># ==================== To string ====================</span>

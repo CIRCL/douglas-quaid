@@ -38,20 +38,18 @@
 <span></span><span class="ch">#!/usr/bin/env python3</span>
 <span class="c1"># -*- coding: utf-8 -*-</span>
 
+
 <span class="kn">import</span> <span class="nn">io</span>
 <span class="kn">import</span> <span class="nn">logging</span>
-<span class="c1"># ==================== ------ STD LIBRARIES ------- ====================</span>
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">tlsh</span>
 
 <span class="kn">import</span> <span class="nn">PIL.Image</span> <span class="k">as</span> <span class="nn">Image</span>
 <span class="kn">import</span> <span class="nn">imagehash</span>
 
-<span class="c1"># ==================== ------ PERSONAL LIBRARIES ------- ====================</span>
-
 <span class="kn">import</span> <span class="nn">carlhauser_server.Configuration.feature_extractor_conf</span> <span class="k">as</span> <span class="nn">feature_extractor_conf</span>
-<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">pardir</span><span class="p">))</span>
+<span class="kn">from</span> <span class="nn">common.environment_variable</span> <span class="k">import</span> <span class="n">load_server_logging_conf_file</span>
+
+<span class="n">load_server_logging_conf_file</span><span class="p">()</span>
 
 
 <div class="viewcode-block" id="Picture_Hasher"><a class="viewcode-back" href="../../../carlhauser_server.FeatureExtractor.html#carlhauser_server.FeatureExtractor.picture_hasher.Picture_Hasher">[docs]</a><span class="k">class</span> <span class="nc">Picture_Hasher</span><span class="p">:</span>
@@ -62,6 +60,11 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Creation of a Picture Hasher&quot;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Picture_Hasher.hash_picture"><a class="viewcode-back" href="../../../carlhauser_server.FeatureExtractor.html#carlhauser_server.FeatureExtractor.picture_hasher.Picture_Hasher.hash_picture">[docs]</a>    <span class="k">def</span> <span class="nf">hash_picture</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">curr_picture</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Hash a picture and returns the hash value</span>
+<span class="sd">        :param curr_picture: the picture to hash</span>
+<span class="sd">        :return: the hashed version of the picture</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">answer</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Hashing picture ... &quot;</span><span class="p">)</span>
 
@@ -100,13 +103,18 @@
 
         <span class="k">return</span> <span class="n">answer</span></div>
 
-<div class="viewcode-block" id="Picture_Hasher.check_null_hash"><a class="viewcode-back" href="../../../carlhauser_server.FeatureExtractor.html#carlhauser_server.FeatureExtractor.picture_hasher.Picture_Hasher.check_null_hash">[docs]</a>    <span class="k">def</span> <span class="nf">check_null_hash</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">hash</span><span class="p">):</span>
+<div class="viewcode-block" id="Picture_Hasher.check_null_hash"><a class="viewcode-back" href="../../../carlhauser_server.FeatureExtractor.html#carlhauser_server.FeatureExtractor.picture_hasher.Picture_Hasher.check_null_hash">[docs]</a>    <span class="k">def</span> <span class="nf">check_null_hash</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tmp_hash</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check if the provided hash is none, if so, provide a &quot;null version&quot; of the hash.</span>
+<span class="sd">        :param tmp_hash: the hash to check</span>
+<span class="sd">        :return: a &quot;null&quot; version of the hash if &quot;None&quot;, the hash itself without modification otherwise.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Check if the hash provided is null/None/empty. If yes, provide a default hash</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Checking hash ... &quot;</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hash</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">tmp_hash</span><span class="p">:</span>
             <span class="k">return</span> <span class="s1">&#39;0000000000000000000000000000000000000000000000000000000000000000000000&#39;</span>
-        <span class="k">return</span> <span class="nb">hash</span></div></div>
+        <span class="k">return</span> <span class="n">tmp_hash</span></div></div>
 </pre></div>
 
           </div>

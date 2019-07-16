@@ -38,30 +38,33 @@
 <span></span><span class="ch">#!/usr/bin/env python3</span>
 <span class="c1"># -*- coding: utf-8 -*-</span>
 
-<span class="c1"># ==================== ------ STD LIBRARIES ------- ====================</span>
-<span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Dict</span>
 
-<span class="c1"># ==================== ------ PERSONAL LIBRARIES ------- ====================</span>
+<span class="kn">from</span> <span class="nn">common.environment_variable</span> <span class="k">import</span> <span class="n">load_server_logging_conf_file</span>
 
-<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">pardir</span><span class="p">))</span>
-<span class="n">FORMATTER</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%(asctime)s</span><span class="s1"> - + </span><span class="si">%(relativeCreated)d</span><span class="s1"> - </span><span class="si">%(name)s</span><span class="s1"> - </span><span class="si">%(levelname)s</span><span class="s1"> - </span><span class="si">%(message)s</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="n">load_server_logging_conf_file</span><span class="p">()</span>
 
 
 <div class="viewcode-block" id="Edge"><a class="viewcode-back" href="../../../common.Graph.html#common.Graph.edge.Edge">[docs]</a><span class="k">class</span> <span class="nc">Edge</span><span class="p">:</span>
-    <span class="c1"># Handle an edge of the graph</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Handle an edge of the graph</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_from</span><span class="p">,</span> <span class="n">_to</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;gray&quot;</span><span class="p">,</span> <span class="n">label</span> <span class="p">:</span> <span class="nb">str</span> <span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_from</span> <span class="o">=</span> <span class="n">_from</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_to</span> <span class="o">=</span> <span class="n">_to</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_from</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">_to</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;gray&quot;</span><span class="p">,</span> <span class="n">label</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_from</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">_from</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_to</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">_to</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">color</span> <span class="o">=</span> <span class="n">color</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">label</span> <span class="o">=</span> <span class="n">label</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">color</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">color</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">label</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">value</span>
 
 <div class="viewcode-block" id="Edge.update_member_id"><a class="viewcode-back" href="../../../common.Graph.html#common.Graph.edge.Edge.update_member_id">[docs]</a>    <span class="k">def</span> <span class="nf">update_member_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">old_id</span><span class="p">,</span> <span class="n">new_id</span><span class="p">):</span>
-        <span class="c1"># Modify an id in the list of members. Replace old by new.</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Modify an id in the list of members. Replace old by new</span>
+<span class="sd">        :param old_id: Old id to replace</span>
+<span class="sd">        :param new_id: New id to replace to</span>
+<span class="sd">        :return: Nothing, change internal state of the object only.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_from</span> <span class="o">==</span> <span class="n">old_id</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_from</span> <span class="o">=</span> <span class="n">new_id</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_to</span> <span class="o">==</span> <span class="n">old_id</span><span class="p">:</span>
@@ -84,10 +87,18 @@
         <span class="k">return</span> <span class="n">tmp_json</span></div>
 
 <div class="viewcode-block" id="Edge.load_from_dict"><a class="viewcode-back" href="../../../common.Graph.html#common.Graph.edge.Edge.load_from_dict">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">load_from_dict</span><span class="p">(</span><span class="nb">input</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">load_from_dict</span><span class="p">(</span><span class="n">tmp_input</span><span class="p">:</span> <span class="n">Dict</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Load/ Import a Edge object from a dict</span>
+<span class="sd">        :param tmp_input: A Dict version of the Edge to import</span>
+<span class="sd">        :return: The Edge as an object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="k">return</span> <span class="n">Edge</span><span class="p">(</span><span class="n">_from</span><span class="o">=</span><span class="nb">input</span><span class="p">[</span><span class="s2">&quot;from&quot;</span><span class="p">],</span> <span class="n">_to</span><span class="o">=</span><span class="nb">input</span><span class="p">[</span><span class="s2">&quot;to&quot;</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="nb">input</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;color&quot;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
-                    <span class="n">label</span><span class="o">=</span><span class="nb">input</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;label&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span> <span class="n">value</span><span class="o">=</span><span class="nb">input</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;value&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span></div>
+        <span class="k">return</span> <span class="n">Edge</span><span class="p">(</span><span class="n">_from</span><span class="o">=</span><span class="n">tmp_input</span><span class="p">[</span><span class="s2">&quot;from&quot;</span><span class="p">],</span>
+                    <span class="n">_to</span><span class="o">=</span><span class="n">tmp_input</span><span class="p">[</span><span class="s2">&quot;to&quot;</span><span class="p">],</span>
+                    <span class="n">color</span><span class="o">=</span><span class="n">tmp_input</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;color&quot;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+                    <span class="n">label</span><span class="o">=</span><span class="n">tmp_input</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;label&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+                    <span class="n">value</span><span class="o">=</span><span class="n">tmp_input</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;value&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span></div>
 
     <span class="c1"># ==================== To string ====================</span>
 

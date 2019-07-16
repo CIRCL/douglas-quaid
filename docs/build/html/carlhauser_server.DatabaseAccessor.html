@@ -38,14 +38,90 @@
 <div class="section" id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="carlhauser-server-databaseaccessor-database-adder-module">
-<h2>carlhauser_server.DatabaseAccessor.database_adder module<a class="headerlink" href="#carlhauser-server-databaseaccessor-database-adder-module" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-carlhauser_server.DatabaseAccessor.database_adder">
+<span id="carlhauser-server-databaseaccessor-database-adder-module"></span><h2>carlhauser_server.DatabaseAccessor.database_adder module<a class="headerlink" href="#module-carlhauser_server.DatabaseAccessor.database_adder" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="carlhauser_server.DatabaseAccessor.database_adder.Database_Adder">
+<em class="property">class </em><code class="sig-prename descclassname">carlhauser_server.DatabaseAccessor.database_adder.</code><code class="sig-name descname">Database_Adder</code><span class="sig-paren">(</span><em class="sig-param">tmp_db_conf: carlhauser_server.Configuration.database_conf.Default_database_conf</em>, <em class="sig-param">tmp_dist_conf: carlhauser_server.Configuration.distance_engine_conf.Default_distance_engine_conf</em>, <em class="sig-param">tmp_fe_conf: carlhauser_server.Configuration.feature_extractor_conf.Default_feature_extractor_conf</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/DatabaseAccessor/database_adder.html#Database_Adder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.DatabaseAccessor.database_adder.Database_Adder" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#carlhauser_server.DatabaseAccessor.database_common.Database_Common" title="carlhauser_server.DatabaseAccessor.database_common.Database_Common"><code class="xref py py-class docutils literal notranslate"><span class="pre">carlhauser_server.DatabaseAccessor.database_common.Database_Common</span></code></a></p>
+<p>Heritate from the database common, and so has already built in access to cache, storage ..</p>
+<dl class="method">
+<dt id="carlhauser_server.DatabaseAccessor.database_adder.Database_Adder.compute_centrality">
+<code class="sig-name descname">compute_centrality</code><span class="sig-paren">(</span><em class="sig-param">pictures_list_id: List</em>, <em class="sig-param">picture_dict: Dict</em><span class="sig-paren">)</span> &#x2192; float<a class="reference internal" href="_modules/carlhauser_server/DatabaseAccessor/database_adder.html#Database_Adder.compute_centrality"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.DatabaseAccessor.database_adder.Database_Adder.compute_centrality" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns centrality of a picture within a list of other pictures.
+:param pictures_list_id: list of pictures id in which the centrality is measured
+:param picture_dict: the picture (dict) which centrality is computed
+:return: the centrality of the picture dict</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="carlhauser_server.DatabaseAccessor.database_adder.Database_Adder.process_fetched_data">
+<code class="sig-name descname">process_fetched_data</code><span class="sig-paren">(</span><em class="sig-param">fetched_id</em>, <em class="sig-param">fetched_dict</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/DatabaseAccessor/database_adder.html#Database_Adder.process_fetched_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.DatabaseAccessor.database_adder.Database_Adder.process_fetched_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to overwrite to specify the worker. Called each time something is fetched from queue.
+Add picture to storage, evaluate near-similar pictures, choose a good cluster and add the picture to this cluster.
+TODO : Add the picture to review and process the recalculation of representative pictures
+:param fetched_id: id to process
+:param fetched_dict: data to process
+:return: Nothing (or to be defined)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="carlhauser_server.DatabaseAccessor.database_adder.Database_Adder.reevaluate_representative_picture_order">
+<code class="sig-name descname">reevaluate_representative_picture_order</code><span class="sig-paren">(</span><em class="sig-param">cluster_id</em>, <em class="sig-param">fetched_id=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/DatabaseAccessor/database_adder.html#Database_Adder.reevaluate_representative_picture_order"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.DatabaseAccessor.database_adder.Database_Adder.reevaluate_representative_picture_order" title="Permalink to this definition">¶</a></dt>
+<dd><p>Re-evaluate the representative picture of the cluster &lt;cluster_id&gt;,
+knowing or not, that the last added and non evaluated picture of the cluster is &lt;fetched_id&gt;
+:param cluster_id: the id of the cluster to reevaluate
+:param fetched_id: optional, can speed up the process if we know the last picture which was added
+:return: Nothing</p>
+</dd></dl>
+
+</dd></dl>
+
 </div>
-<div class="section" id="carlhauser-server-databaseaccessor-database-common-module">
-<h2>carlhauser_server.DatabaseAccessor.database_common module<a class="headerlink" href="#carlhauser-server-databaseaccessor-database-common-module" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-carlhauser_server.DatabaseAccessor.database_common">
+<span id="carlhauser-server-databaseaccessor-database-common-module"></span><h2>carlhauser_server.DatabaseAccessor.database_common module<a class="headerlink" href="#module-carlhauser_server.DatabaseAccessor.database_common" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="carlhauser_server.DatabaseAccessor.database_common.Database_Common">
+<em class="property">class </em><code class="sig-prename descclassname">carlhauser_server.DatabaseAccessor.database_common.</code><code class="sig-name descname">Database_Common</code><span class="sig-paren">(</span><em class="sig-param">tmp_db_conf: carlhauser_server.Configuration.database_conf.Default_database_conf</em>, <em class="sig-param">dist_conf: carlhauser_server.Configuration.distance_engine_conf.Default_distance_engine_conf</em>, <em class="sig-param">fe_conf: carlhauser_server.Configuration.feature_extractor_conf.Default_feature_extractor_conf</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/DatabaseAccessor/database_common.html#Database_Common"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.DatabaseAccessor.database_common.Database_Common" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#carlhauser_server.DatabaseAccessor.database_worker.Database_Worker" title="carlhauser_server.DatabaseAccessor.database_worker.Database_Worker"><code class="xref py py-class docutils literal notranslate"><span class="pre">carlhauser_server.DatabaseAccessor.database_worker.Database_Worker</span></code></a></p>
+<dl class="method">
+<dt id="carlhauser_server.DatabaseAccessor.database_common.Database_Common.get_top_matching_pictures">
+<code class="sig-name descname">get_top_matching_pictures</code><span class="sig-paren">(</span><em class="sig-param">fetched_dict: Dict) -&gt; (typing.List[carlhauser_server.DistanceEngine.scoring_datastrutures.ImageMatch], typing.List[carlhauser_server.DistanceEngine.scoring_datastrutures.ClusterMatch]</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/DatabaseAccessor/database_common.html#Database_Common.get_top_matching_pictures"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.DatabaseAccessor.database_common.Database_Common.get_top_matching_pictures" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extract the list of top matching pictures and the list of top matching clusters from a result dict.
+:param fetched_dict: the result (raw) dict
+:return: the List of top matching picture and the list of top matching clusters</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="carlhauser_server.DatabaseAccessor.database_common.Database_Common.is_good_match">
+<code class="sig-name descname">is_good_match</code><span class="sig-paren">(</span><em class="sig-param">top_matching_pictures: List[carlhauser_server.DistanceEngine.scoring_datastrutures.ImageMatch]</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="_modules/carlhauser_server/DatabaseAccessor/database_common.html#Database_Common.is_good_match"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.DatabaseAccessor.database_common.Database_Common.is_good_match" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if a match is good enough (at least one match, not None ..)
+:param top_matching_pictures: list of top matching picture
+:return: True if correct (at least a match etc.), False otherwise</p>
+</dd></dl>
+
+</dd></dl>
+
 </div>
-<div class="section" id="carlhauser-server-databaseaccessor-database-requester-module">
-<h2>carlhauser_server.DatabaseAccessor.database_requester module<a class="headerlink" href="#carlhauser-server-databaseaccessor-database-requester-module" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-carlhauser_server.DatabaseAccessor.database_requester">
+<span id="carlhauser-server-databaseaccessor-database-requester-module"></span><h2>carlhauser_server.DatabaseAccessor.database_requester module<a class="headerlink" href="#module-carlhauser_server.DatabaseAccessor.database_requester" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="carlhauser_server.DatabaseAccessor.database_requester.Database_Requester">
+<em class="property">class </em><code class="sig-prename descclassname">carlhauser_server.DatabaseAccessor.database_requester.</code><code class="sig-name descname">Database_Requester</code><span class="sig-paren">(</span><em class="sig-param">tmp_db_conf: carlhauser_server.Configuration.database_conf.Default_database_conf</em>, <em class="sig-param">tmp_dist_conf: carlhauser_server.Configuration.distance_engine_conf.Default_distance_engine_conf</em>, <em class="sig-param">tmp_fe_conf: carlhauser_server.Configuration.feature_extractor_conf.Default_feature_extractor_conf</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/DatabaseAccessor/database_requester.html#Database_Requester"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.DatabaseAccessor.database_requester.Database_Requester" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#carlhauser_server.DatabaseAccessor.database_common.Database_Common" title="carlhauser_server.DatabaseAccessor.database_common.Database_Common"><code class="xref py py-class docutils literal notranslate"><span class="pre">carlhauser_server.DatabaseAccessor.database_common.Database_Common</span></code></a></p>
+<p>Heritate from the database common, and so has already built in access to cache, storage ..</p>
+<dl class="method">
+<dt id="carlhauser_server.DatabaseAccessor.database_requester.Database_Requester.process_fetched_data">
+<code class="sig-name descname">process_fetched_data</code><span class="sig-paren">(</span><em class="sig-param">fetched_id</em>, <em class="sig-param">fetched_dict</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/DatabaseAccessor/database_requester.html#Database_Requester.process_fetched_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.DatabaseAccessor.database_requester.Database_Requester.process_fetched_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to overwrite to specify the worker. Called each time something is fetched from queue.
+Perform calculation on the database to fetch near pictures. Does not add the requested picture to the database
+:param fetched_id: id to process
+:param fetched_dict: data to process
+:return: Nothing (or to be defined)</p>
+</dd></dl>
+
+</dd></dl>
+
 </div>
 <div class="section" id="module-carlhauser_server.DatabaseAccessor.database_utilities">
 <span id="carlhauser-server-databaseaccessor-database-utilities-module"></span><h2>carlhauser_server.DatabaseAccessor.database_utilities module<a class="headerlink" href="#module-carlhauser_server.DatabaseAccessor.database_utilities" title="Permalink to this headline">¶</a></h2>
@@ -55,23 +131,39 @@
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="method">
 <dt id="carlhauser_server.DatabaseAccessor.database_utilities.DBUtilities.add_cluster">
-<code class="sig-name descname">add_cluster</code><span class="sig-paren">(</span><em class="sig-param">cluster_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/DatabaseAccessor/database_utilities.html#DBUtilities.add_cluster"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.DatabaseAccessor.database_utilities.DBUtilities.add_cluster" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<code class="sig-name descname">add_cluster</code><span class="sig-paren">(</span><em class="sig-param">cluster_name: str</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="_modules/carlhauser_server/DatabaseAccessor/database_utilities.html#DBUtilities.add_cluster"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.DatabaseAccessor.database_utilities.DBUtilities.add_cluster" title="Permalink to this definition">¶</a></dt>
+<dd><p>Store a cluster’s name in the list of cluster’s names
+:param cluster_name: The name of the cluster to add
+:return: boolean, True if successfully added, False otherwise</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="carlhauser_server.DatabaseAccessor.database_utilities.DBUtilities.add_picture_to_cluster">
-<code class="sig-name descname">add_picture_to_cluster</code><span class="sig-paren">(</span><em class="sig-param">image_id</em>, <em class="sig-param">cluster_id: str</em>, <em class="sig-param">score=100</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/DatabaseAccessor/database_utilities.html#DBUtilities.add_picture_to_cluster"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.DatabaseAccessor.database_utilities.DBUtilities.add_picture_to_cluster" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<code class="sig-name descname">add_picture_to_cluster</code><span class="sig-paren">(</span><em class="sig-param">image_id: str</em>, <em class="sig-param">cluster_id: str</em>, <em class="sig-param">score: int = 100</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="_modules/carlhauser_server/DatabaseAccessor/database_utilities.html#DBUtilities.add_picture_to_cluster"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.DatabaseAccessor.database_utilities.DBUtilities.add_picture_to_cluster" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a picture to a cluster (already existing)
+:param image_id: id of the picture to add
+:param cluster_id: id of the cluster to which the picture will be added
+:param score: score of the picture (clusters are sorted set ! So how high the picture will be stored ?)
+:return: boolean, True if successfully added, False otherwise</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="carlhauser_server.DatabaseAccessor.database_utilities.DBUtilities.add_picture_to_new_cluster">
-<code class="sig-name descname">add_picture_to_new_cluster</code><span class="sig-paren">(</span><em class="sig-param">image_id</em>, <em class="sig-param">score=100</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/DatabaseAccessor/database_utilities.html#DBUtilities.add_picture_to_new_cluster"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.DatabaseAccessor.database_utilities.DBUtilities.add_picture_to_new_cluster" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<code class="sig-name descname">add_picture_to_new_cluster</code><span class="sig-paren">(</span><em class="sig-param">image_id: str</em>, <em class="sig-param">score: float = 100</em><span class="sig-paren">)</span> &#x2192; str<a class="reference internal" href="_modules/carlhauser_server/DatabaseAccessor/database_utilities.html#DBUtilities.add_picture_to_new_cluster"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.DatabaseAccessor.database_utilities.DBUtilities.add_picture_to_new_cluster" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a picture to a cluster (freshly created)
+:param image_id: id of the picture to add
+:param score: score of the picture (clusters are sorted set ! So how high the picture will be stored ?)
+:return: id of the created cluster for this picture</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="carlhauser_server.DatabaseAccessor.database_utilities.DBUtilities.add_to_review">
 <code class="sig-name descname">add_to_review</code><span class="sig-paren">(</span><em class="sig-param">image_id</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/DatabaseAccessor/database_utilities.html#DBUtilities.add_to_review"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.DatabaseAccessor.database_utilities.DBUtilities.add_to_review" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Add the picture to be reviewed in few time (100_queue, 1000_queue, …)
+TODO ! !
+:param image_id:
+:return:</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="carlhauser_server.DatabaseAccessor.database_utilities.DBUtilities.export_pictures_bmp">
@@ -80,44 +172,217 @@
 
 <dl class="method">
 <dt id="carlhauser_server.DatabaseAccessor.database_utilities.DBUtilities.get_cluster_list">
-<code class="sig-name descname">get_cluster_list</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/DatabaseAccessor/database_utilities.html#DBUtilities.get_cluster_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.DatabaseAccessor.database_utilities.DBUtilities.get_cluster_list" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="carlhauser_server.DatabaseAccessor.database_utilities.DBUtilities.get_db_graphe">
-<code class="sig-name descname">get_db_graphe</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/DatabaseAccessor/database_utilities.html#DBUtilities.get_db_graphe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.DatabaseAccessor.database_utilities.DBUtilities.get_db_graphe" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<code class="sig-name descname">get_cluster_list</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; List<a class="reference internal" href="_modules/carlhauser_server/DatabaseAccessor/database_utilities.html#DBUtilities.get_cluster_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.DatabaseAccessor.database_utilities.DBUtilities.get_cluster_list" title="Permalink to this definition">¶</a></dt>
+<dd><p># Get the list of pictures associated with a given cluster
+:return: List of cluster id #TODO : CHECK = Specify type</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="carlhauser_server.DatabaseAccessor.database_utilities.DBUtilities.get_new_cluster_id">
-<em class="property">static </em><code class="sig-name descname">get_new_cluster_id</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/DatabaseAccessor/database_utilities.html#DBUtilities.get_new_cluster_id"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.DatabaseAccessor.database_utilities.DBUtilities.get_new_cluster_id" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<em class="property">static </em><code class="sig-name descname">get_new_cluster_id</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; str<a class="reference internal" href="_modules/carlhauser_server/DatabaseAccessor/database_utilities.html#DBUtilities.get_new_cluster_id"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.DatabaseAccessor.database_utilities.DBUtilities.get_new_cluster_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate cluster id
+:return: a new cluster id to use</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="carlhauser_server.DatabaseAccessor.database_utilities.DBUtilities.get_pictures_of_cluster">
-<code class="sig-name descname">get_pictures_of_cluster</code><span class="sig-paren">(</span><em class="sig-param">cluster_name</em>, <em class="sig-param">with_score=False</em><span class="sig-paren">)</span> &#x2192; set<a class="reference internal" href="_modules/carlhauser_server/DatabaseAccessor/database_utilities.html#DBUtilities.get_pictures_of_cluster"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.DatabaseAccessor.database_utilities.DBUtilities.get_pictures_of_cluster" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<code class="sig-name descname">get_pictures_of_cluster</code><span class="sig-paren">(</span><em class="sig-param">cluster_name: str</em>, <em class="sig-param">with_score=False</em><span class="sig-paren">)</span> &#x2192; set<a class="reference internal" href="_modules/carlhauser_server/DatabaseAccessor/database_utilities.html#DBUtilities.get_pictures_of_cluster"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.DatabaseAccessor.database_utilities.DBUtilities.get_pictures_of_cluster" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve the set of pictures ids from a cluster
+:param cluster_name: the cluster id from which to dump pictures
+:param with_score: boolean to specify if scores of pictures should also be dumped
+:return: the set of pictures (with or without scores)</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="carlhauser_server.DatabaseAccessor.database_utilities.DBUtilities.get_setname_of_cluster">
-<em class="property">static </em><code class="sig-name descname">get_setname_of_cluster</code><span class="sig-paren">(</span><em class="sig-param">cluster_name: str</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/DatabaseAccessor/database_utilities.html#DBUtilities.get_setname_of_cluster"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.DatabaseAccessor.database_utilities.DBUtilities.get_setname_of_cluster" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<em class="property">static </em><code class="sig-name descname">get_setname_of_cluster</code><span class="sig-paren">(</span><em class="sig-param">cluster_name: str</em><span class="sig-paren">)</span> &#x2192; str<a class="reference internal" href="_modules/carlhauser_server/DatabaseAccessor/database_utilities.html#DBUtilities.get_setname_of_cluster"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.DatabaseAccessor.database_utilities.DBUtilities.get_setname_of_cluster" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate the key of the set of pictures
+:param cluster_name: the cluster name to which we want to generate the set of pictures key
+:return: the set of picture key</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="carlhauser_server.DatabaseAccessor.database_utilities.DBUtilities.get_storage_graph">
+<code class="sig-name descname">get_storage_graph</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; common.Graph.graph_datastructure.GraphDataStruct<a class="reference internal" href="_modules/carlhauser_server/DatabaseAccessor/database_utilities.html#DBUtilities.get_storage_graph"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.DatabaseAccessor.database_utilities.DBUtilities.get_storage_graph" title="Permalink to this definition">¶</a></dt>
+<dd><p># TODO : Move to API ?
+Export the current state of the database as a graph datastructure. This represents the storage graph of the server.
+:return: The storage graph of the server, as is in the database</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="carlhauser_server.DatabaseAccessor.database_utilities.DBUtilities.rem_cluster">
-<code class="sig-name descname">rem_cluster</code><span class="sig-paren">(</span><em class="sig-param">cluster_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/DatabaseAccessor/database_utilities.html#DBUtilities.rem_cluster"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.DatabaseAccessor.database_utilities.DBUtilities.rem_cluster" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<code class="sig-name descname">rem_cluster</code><span class="sig-paren">(</span><em class="sig-param">cluster_name: str</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="_modules/carlhauser_server/DatabaseAccessor/database_utilities.html#DBUtilities.rem_cluster"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.DatabaseAccessor.database_utilities.DBUtilities.rem_cluster" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove a cluster’s name of the list of cluster’s names
+:param cluster_name: The name of the cluster to remove
+:return: boolean, True if successfully removed, False otherwise</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="carlhauser_server.DatabaseAccessor.database_utilities.DBUtilities.update_picture_score_of_cluster">
-<code class="sig-name descname">update_picture_score_of_cluster</code><span class="sig-paren">(</span><em class="sig-param">cluster_id</em>, <em class="sig-param">image_id</em>, <em class="sig-param">new_score</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/DatabaseAccessor/database_utilities.html#DBUtilities.update_picture_score_of_cluster"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.DatabaseAccessor.database_utilities.DBUtilities.update_picture_score_of_cluster" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<code class="sig-name descname">update_picture_score_of_cluster</code><span class="sig-paren">(</span><em class="sig-param">cluster_id: str</em>, <em class="sig-param">image_id: str</em>, <em class="sig-param">new_score: float</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="_modules/carlhauser_server/DatabaseAccessor/database_utilities.html#DBUtilities.update_picture_score_of_cluster"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.DatabaseAccessor.database_utilities.DBUtilities.update_picture_score_of_cluster" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update the set “ranking” value of a picture into a cluster
+:param cluster_id: id of the cluster to which the picture belongs
+:param image_id: id of the picture to add
+:param new_score: new score of the picture
+:return: True if success, Exception if unsuccessful</p>
+</dd></dl>
 
 </dd></dl>
 
 </div>
-<div class="section" id="carlhauser-server-databaseaccessor-database-worker-module">
-<h2>carlhauser_server.DatabaseAccessor.database_worker module<a class="headerlink" href="#carlhauser-server-databaseaccessor-database-worker-module" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-carlhauser_server.DatabaseAccessor.database_worker">
+<span id="carlhauser-server-databaseaccessor-database-worker-module"></span><h2>carlhauser_server.DatabaseAccessor.database_worker module<a class="headerlink" href="#module-carlhauser_server.DatabaseAccessor.database_worker" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="carlhauser_server.DatabaseAccessor.database_worker.Database_Worker">
+<em class="property">class </em><code class="sig-prename descclassname">carlhauser_server.DatabaseAccessor.database_worker.</code><code class="sig-name descname">Database_Worker</code><span class="sig-paren">(</span><em class="sig-param">tmp_db_conf: &lt;module 'carlhauser_server.Configuration.database_conf' from '/home/user/Desktop/douglas-quaid/carlhauser_server/Configuration/database_conf.py'&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/DatabaseAccessor/database_worker.html#Database_Worker"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.DatabaseAccessor.database_worker.Database_Worker" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="carlhauser_server.DatabaseAccessor.database_worker.Database_Worker.add_picture_to_storage">
+<code class="sig-name descname">add_picture_to_storage</code><span class="sig-paren">(</span><em class="sig-param">storage: redis.client.Redis</em>, <em class="sig-param">input_id: str</em>, <em class="sig-param">image_dict: dict</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="_modules/carlhauser_server/DatabaseAccessor/database_worker.html#Database_Worker.add_picture_to_storage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.DatabaseAccessor.database_worker.Database_Worker.add_picture_to_storage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Store images as pickled dict in the provided storage
+:param storage: storage to which dictionary should be stored
+:param input_id: The key to which the picture is linked
+:param image_dict: the picture to store (as a dict)
+:return: Boolean (True = success, False = failure)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="carlhauser_server.DatabaseAccessor.database_worker.Database_Worker.add_to_queue">
+<code class="sig-name descname">add_to_queue</code><span class="sig-paren">(</span><em class="sig-param">storage: redis.client.Redis</em>, <em class="sig-param">queue_name: common.environment_variable.QueueNames</em>, <em class="sig-param">input_id: str</em>, <em class="sig-param">dict_to_store: dict</em>, <em class="sig-param">pickle=False</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="_modules/carlhauser_server/DatabaseAccessor/database_worker.html#Database_Worker.add_to_queue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.DatabaseAccessor.database_worker.Database_Worker.add_to_queue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Push data to a specified queue, with a specific id. Wrapper to handle queuing of id(s) and separated storage of data linked to this id(s).
+Transparent way to push data to a queue
+:param storage: Redis storage to use
+:param queue_name: Target queue name
+:param input_id: id under which the dictionary will be stored
+:param dict_to_store: dictionary to store in the queue
+:param pickle: Do pickle the pushed data. Turn to ‘False’ if the data has bytes_array, even nested.
+:return: (void)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="carlhauser_server.DatabaseAccessor.database_worker.Database_Worker.are_all_queues_empty">
+<code class="sig-name descname">are_all_queues_empty</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="_modules/carlhauser_server/DatabaseAccessor/database_worker.html#Database_Worker.are_all_queues_empty"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.DatabaseAccessor.database_worker.Database_Worker.are_all_queues_empty" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if all queues (TO ADD, TO REQUEST, etc.) are empty
+:return: True if all are empty, False otherwise</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="carlhauser_server.DatabaseAccessor.database_worker.Database_Worker.fetch_from_queue">
+<code class="sig-name descname">fetch_from_queue</code><span class="sig-paren">(</span><em class="sig-param">) -&gt; (&lt;class 'str'&gt;</em>, <em class="sig-param">typing.Dict</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/DatabaseAccessor/database_worker.html#Database_Worker.fetch_from_queue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.DatabaseAccessor.database_worker.Database_Worker.fetch_from_queue" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="carlhauser_server.DatabaseAccessor.database_worker.Database_Worker.get_dict_from_key">
+<code class="sig-name descname">get_dict_from_key</code><span class="sig-paren">(</span><em class="sig-param">storage: redis.client.Redis</em>, <em class="sig-param">key</em>, <em class="sig-param">pickle=False</em><span class="sig-paren">)</span> &#x2192; Dict<a class="reference internal" href="_modules/carlhauser_server/DatabaseAccessor/database_worker.html#Database_Worker.get_dict_from_key"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.DatabaseAccessor.database_worker.Database_Worker.get_dict_from_key" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve a dict of values, pickled or not, from a key
+:param storage: storage from which dictionary should be picked
+:param key: The key to which the dict is linked
+:param pickle: boolean to notify if the value to get is pickled
+:return: The fetched dictionary (as an object)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="carlhauser_server.DatabaseAccessor.database_worker.Database_Worker.get_from_queue">
+<code class="sig-name descname">get_from_queue</code><span class="sig-paren">(</span><em class="sig-param">storage: redis.client.Redis</em>, <em class="sig-param">queue_name: common.environment_variable.QueueNames</em>, <em class="sig-param">pickle=False) -&gt; (&lt;class 'str'&gt;</em>, <em class="sig-param">typing.Dict</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/DatabaseAccessor/database_worker.html#Database_Worker.get_from_queue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.DatabaseAccessor.database_worker.Database_Worker.get_from_queue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fetch data from a specified queue. Wrapper to handle queuing of id(s) and separated storage of data linked to this id(s).
+Transparent way to pull data from a queue
+:param storage: Redis storage to use
+:param queue_name: Source queue name
+:param pickle: Do unpickle the fetched data. Turn to ‘False’ if the data has bytes_array, even nested.
+:return: The fetched id of the item in the queue and the dict fetched from queue</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="carlhauser_server.DatabaseAccessor.database_worker.Database_Worker.get_picture_from_storage">
+<code class="sig-name descname">get_picture_from_storage</code><span class="sig-paren">(</span><em class="sig-param">storage: redis.client.Redis</em>, <em class="sig-param">input_id</em><span class="sig-paren">)</span> &#x2192; Dict<a class="reference internal" href="_modules/carlhauser_server/DatabaseAccessor/database_worker.html#Database_Worker.get_picture_from_storage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.DatabaseAccessor.database_worker.Database_Worker.get_picture_from_storage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve images as pickled dict in the provided storage
+:param storage: storage from which picture (dict) should be stored
+:param input_id: The key to which the dict is linked
+:return: the picture (as a dict)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="carlhauser_server.DatabaseAccessor.database_worker.Database_Worker.get_request_result">
+<code class="sig-name descname">get_request_result</code><span class="sig-paren">(</span><em class="sig-param">storage: redis.client.Redis</em>, <em class="sig-param">input_id</em><span class="sig-paren">)</span> &#x2192; Dict<a class="reference internal" href="_modules/carlhauser_server/DatabaseAccessor/database_worker.html#Database_Worker.get_request_result"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.DatabaseAccessor.database_worker.Database_Worker.get_request_result" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve results as pickled dict in the provided storage
+:param storage: storage from which results (dict) should be stored
+:param input_id: The key to which the dict is linked
+:return: the picture (as a dict)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="carlhauser_server.DatabaseAccessor.database_worker.Database_Worker.is_halt_requested">
+<code class="sig-name descname">is_halt_requested</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/DatabaseAccessor/database_worker.html#Database_Worker.is_halt_requested"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.DatabaseAccessor.database_worker.Database_Worker.is_halt_requested" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if a halt had been requested
+:return: True if halt requested (or unknown for too long), False otherwise</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="carlhauser_server.DatabaseAccessor.database_worker.Database_Worker.is_queue_empty">
+<code class="sig-name descname">is_queue_empty</code><span class="sig-paren">(</span><em class="sig-param">storage: redis.client.Redis</em>, <em class="sig-param">list_name: str</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="_modules/carlhauser_server/DatabaseAccessor/database_worker.html#Database_Worker.is_queue_empty"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.DatabaseAccessor.database_worker.Database_Worker.is_queue_empty" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if the specified Queue in the specified storage is empty
+:param storage: the storage in which the queue exist
+:param list_name: the queue name to check
+:return: True if the queue is empty, False otherwise, Exception if Queue does not exist</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="carlhauser_server.DatabaseAccessor.database_worker.Database_Worker.long_sleep">
+<code class="sig-name descname">long_sleep</code><span class="sig-paren">(</span><em class="sig-param">sleep_in_sec: int</em>, <em class="sig-param">shutdown_check: int = 10</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="_modules/carlhauser_server/DatabaseAccessor/database_worker.html#Database_Worker.long_sleep"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.DatabaseAccessor.database_worker.Database_Worker.long_sleep" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wait a “long” time before returning, while keep checking if the worker has to stop.
+:param sleep_in_sec: time before wake-up = exit of the function
+:param shutdown_check: time between each shutdown request check.
+:return: True if no halt request had been detected, True otherwise</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="carlhauser_server.DatabaseAccessor.database_worker.Database_Worker.print_storage_view">
+<code class="sig-name descname">print_storage_view</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/DatabaseAccessor/database_worker.html#Database_Worker.print_storage_view"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.DatabaseAccessor.database_worker.Database_Worker.print_storage_view" title="Permalink to this definition">¶</a></dt>
+<dd><p>Print all keys of the storage
+:return:</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="carlhauser_server.DatabaseAccessor.database_worker.Database_Worker.process_fetched_data">
+<code class="sig-name descname">process_fetched_data</code><span class="sig-paren">(</span><em class="sig-param">fetched_id</em>, <em class="sig-param">fetched_dict</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/DatabaseAccessor/database_worker.html#Database_Worker.process_fetched_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.DatabaseAccessor.database_worker.Database_Worker.process_fetched_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to overwrite to specify the worker. Called each time something is fetched from queue
+:param fetched_id: id to process
+:param fetched_dict: data to process
+:return: Nothing (or to be defined)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="carlhauser_server.DatabaseAccessor.database_worker.Database_Worker.run">
+<code class="sig-name descname">run</code><span class="sig-paren">(</span><em class="sig-param">sleep_in_sec: int</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/DatabaseAccessor/database_worker.html#Database_Worker.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.DatabaseAccessor.database_worker.Database_Worker.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run indefinitely except if the worker have received a stop signal.
+:param sleep_in_sec: time between two check for something to do
+:return: Nothing</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="carlhauser_server.DatabaseAccessor.database_worker.Database_Worker.set_dict_to_key">
+<code class="sig-name descname">set_dict_to_key</code><span class="sig-paren">(</span><em class="sig-param">storage: redis.client.Redis</em>, <em class="sig-param">key</em>, <em class="sig-param">dict_to_store: dict</em>, <em class="sig-param">pickle=False</em>, <em class="sig-param">expire_time=None</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="_modules/carlhauser_server/DatabaseAccessor/database_worker.html#Database_Worker.set_dict_to_key"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.DatabaseAccessor.database_worker.Database_Worker.set_dict_to_key" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set a dict of values, pickled or not, to a key
+:param expire_time: The time after which the dict will be deleted (to prevent always-growing database), default = no expire
+:param dict_to_store: the dictionnary of values to store
+:param storage: storage to which dictionary should be stored
+:param key: The key to which the dict is linked
+:param pickle: boolean to notify if the value to store should be pickled
+:return: boolean, True if correctly stored, False if not.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="carlhauser_server.DatabaseAccessor.database_worker.Database_Worker.set_request_result">
+<code class="sig-name descname">set_request_result</code><span class="sig-paren">(</span><em class="sig-param">storage: redis.client.Redis</em>, <em class="sig-param">input_id: str</em>, <em class="sig-param">image_dict: dict</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="_modules/carlhauser_server/DatabaseAccessor/database_worker.html#Database_Worker.set_request_result"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.DatabaseAccessor.database_worker.Database_Worker.set_request_result" title="Permalink to this definition">¶</a></dt>
+<dd><p>Store results as pickled dict in the provided storage with a configuration-defined expiration time
+:param storage: storage to which result dictionary should be stored
+:param input_id: The key to which the results is linked (modified inside)
+:param image_dict: the picture to store (as a dict)
+:return: Boolean (True = success, False = failure)</p>
+</dd></dl>
+
+</dd></dl>
+
 </div>
 <div class="section" id="module-carlhauser_server.DatabaseAccessor">
 <span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-carlhauser_server.DatabaseAccessor" title="Permalink to this headline">¶</a></h2>
@@ -134,11 +399,11 @@
   <ul>
 <li><a class="reference internal" href="#">carlhauser_server.DatabaseAccessor package</a><ul>
 <li><a class="reference internal" href="#submodules">Submodules</a></li>
-<li><a class="reference internal" href="#carlhauser-server-databaseaccessor-database-adder-module">carlhauser_server.DatabaseAccessor.database_adder module</a></li>
-<li><a class="reference internal" href="#carlhauser-server-databaseaccessor-database-common-module">carlhauser_server.DatabaseAccessor.database_common module</a></li>
-<li><a class="reference internal" href="#carlhauser-server-databaseaccessor-database-requester-module">carlhauser_server.DatabaseAccessor.database_requester module</a></li>
+<li><a class="reference internal" href="#module-carlhauser_server.DatabaseAccessor.database_adder">carlhauser_server.DatabaseAccessor.database_adder module</a></li>
+<li><a class="reference internal" href="#module-carlhauser_server.DatabaseAccessor.database_common">carlhauser_server.DatabaseAccessor.database_common module</a></li>
+<li><a class="reference internal" href="#module-carlhauser_server.DatabaseAccessor.database_requester">carlhauser_server.DatabaseAccessor.database_requester module</a></li>
 <li><a class="reference internal" href="#module-carlhauser_server.DatabaseAccessor.database_utilities">carlhauser_server.DatabaseAccessor.database_utilities module</a></li>
-<li><a class="reference internal" href="#carlhauser-server-databaseaccessor-database-worker-module">carlhauser_server.DatabaseAccessor.database_worker module</a></li>
+<li><a class="reference internal" href="#module-carlhauser_server.DatabaseAccessor.database_worker">carlhauser_server.DatabaseAccessor.database_worker module</a></li>
 <li><a class="reference internal" href="#module-carlhauser_server.DatabaseAccessor">Module contents</a></li>
 </ul>
 </li>

@@ -35,17 +35,14 @@
           <div class="body" role="main">
             
   <h1>Source code for common.Calibrator.calibrator_conf</h1><div class="highlight"><pre>
-<span></span><span class="c1"># ==================== ------ STD LIBRARIES ------- ====================</span>
-
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">sys</span>
+<span></span><span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">namedtuple</span>
-<span class="kn">import</span> <span class="nn">logging</span>
 
-<span class="c1"># ==================== ------ PERSONAL LIBRARIES ------- ====================</span>
-<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">pardir</span><span class="p">))</span>
-<span class="kn">from</span> <span class="nn">carlhauser_server.Configuration.template_conf</span> <span class="k">import</span> <span class="n">JSON_parsable_Dict</span>
 <span class="kn">from</span> <span class="nn">carlhauser_server.Configuration.algo_conf</span> <span class="k">import</span> <span class="n">Algo_conf</span>
+<span class="kn">from</span> <span class="nn">common.environment_variable</span> <span class="k">import</span> <span class="n">JSON_parsable_Dict</span>
+<span class="kn">from</span> <span class="nn">common.environment_variable</span> <span class="k">import</span> <span class="n">load_server_logging_conf_file</span>
+
+<span class="n">load_server_logging_conf_file</span><span class="p">()</span>
 
 
 <div class="viewcode-block" id="Pair_rate_threshold"><a class="viewcode-back" href="../../../common.Calibrator.html#common.Calibrator.calibrator_conf.Pair_rate_threshold">[docs]</a><span class="k">class</span> <span class="nc">Pair_rate_threshold</span><span class="p">:</span>
@@ -118,11 +115,11 @@
         <span class="n">pair_FNR</span> <span class="o">=</span> <span class="n">Pair_rate_threshold</span><span class="p">(</span><span class="n">rate</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">Acceptable_false_negative_rate</span><span class="p">,</span>
                                        <span class="n">threshold</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">thre_upper_at_most_xpercent_FNR</span><span class="p">)</span>
         <span class="n">pair_TNR</span> <span class="o">=</span> <span class="n">Pair_rate_threshold</span><span class="p">(</span><span class="n">rate</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">Minimum_true_negative_rate</span><span class="p">,</span>
-                                        <span class="n">threshold</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">thre_below_at_least_xpercent_TNR</span><span class="p">)</span>
-        <span class="n">pair_FPR</span> <span class="o">=</span><span class="n">Pair_rate_threshold</span><span class="p">(</span><span class="n">rate</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">Acceptable_false_positive_rate</span><span class="p">,</span>
-                                        <span class="n">threshold</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">thre_below_at_most_xpercent_FPR</span><span class="p">)</span>
-        <span class="n">pair_TPR</span> <span class="o">=</span><span class="n">Pair_rate_threshold</span><span class="p">(</span><span class="n">rate</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">Minimum_true_positive_rate</span><span class="p">,</span>
-                                        <span class="n">threshold</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">thre_upper_at_least_xpercent_TPR</span><span class="p">)</span>
+                                       <span class="n">threshold</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">thre_below_at_least_xpercent_TNR</span><span class="p">)</span>
+        <span class="n">pair_FPR</span> <span class="o">=</span> <span class="n">Pair_rate_threshold</span><span class="p">(</span><span class="n">rate</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">Acceptable_false_positive_rate</span><span class="p">,</span>
+                                       <span class="n">threshold</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">thre_below_at_most_xpercent_FPR</span><span class="p">)</span>
+        <span class="n">pair_TPR</span> <span class="o">=</span> <span class="n">Pair_rate_threshold</span><span class="p">(</span><span class="n">rate</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">Minimum_true_positive_rate</span><span class="p">,</span>
+                                       <span class="n">threshold</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">thre_upper_at_least_xpercent_TPR</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">case_FNR_TNR</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">pair_TNR</span><span class="p">,</span> <span class="n">pair_FNR</span>
@@ -142,7 +139,7 @@
 
         <span class="n">pair_1</span><span class="p">,</span> <span class="n">pair_2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">return_good_pair</span><span class="p">()</span>
 
-        <span class="k">if</span> <span class="n">pair_1</span><span class="o">.</span><span class="n">threshold</span> <span class="o">&gt;</span> <span class="n">pair_2</span><span class="o">.</span><span class="n">threshold</span> <span class="p">:</span>
+        <span class="k">if</span> <span class="n">pair_1</span><span class="o">.</span><span class="n">threshold</span> <span class="o">&gt;</span> <span class="n">pair_2</span><span class="o">.</span><span class="n">threshold</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="s2">&quot;Yes_to_Maybe threshold is upper than Maybe_to_no threshold : No MAYBE area !&quot;</span><span class="p">)</span>
 
         <span class="n">input_Algo_Conf</span><span class="o">.</span><span class="n">threshold_yes_to_maybe</span> <span class="o">=</span> <span class="n">pair_1</span><span class="o">.</span><span class="n">threshold</span>

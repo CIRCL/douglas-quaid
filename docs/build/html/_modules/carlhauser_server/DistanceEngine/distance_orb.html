@@ -38,16 +38,12 @@
 <span></span><span class="ch">#!/usr/bin/env python3</span>
 <span class="c1"># -*- coding: utf-8 -*-</span>
 
+
 <span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="c1"># ==================== ------ STD LIBRARIES ------- ====================</span>
-<span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">traceback</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span>
 
 <span class="kn">import</span> <span class="nn">cv2</span>
-
-<span class="c1"># ==================== ------ PERSONAL LIBRARIES ------- ====================</span>
 
 <span class="kn">import</span> <span class="nn">carlhauser_server.Configuration.database_conf</span> <span class="k">as</span> <span class="nn">database_conf</span>
 <span class="kn">import</span> <span class="nn">carlhauser_server.Configuration.distance_engine_conf</span> <span class="k">as</span> <span class="nn">distance_engine_conf</span>
@@ -55,9 +51,7 @@
 <span class="kn">import</span> <span class="nn">carlhauser_server.DistanceEngine.scoring_datastrutures</span> <span class="k">as</span> <span class="nn">sd</span>
 <span class="kn">from</span> <span class="nn">carlhauser_server.Configuration.algo_conf</span> <span class="k">import</span> <span class="n">Algo_conf</span>
 <span class="kn">from</span> <span class="nn">common.CustomException</span> <span class="k">import</span> <span class="n">AlgoFeatureNotPresentError</span>
-<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">pardir</span><span class="p">))</span>
-
-
+<span class="kn">from</span> <span class="nn">carlhauser_server.DistanceEngine.distance_hash</span> <span class="k">import</span> <span class="n">Distance_Hash</span> <span class="k">as</span> <span class="n">dist_hash</span>
 
 <div class="viewcode-block" id="Distance_ORB"><a class="viewcode-back" href="../../../carlhauser_server.DistanceEngine.html#carlhauser_server.DistanceEngine.distance_orb.Distance_ORB">[docs]</a><span class="k">class</span> <span class="nc">Distance_ORB</span><span class="p">:</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">db_conf</span><span class="p">:</span> <span class="n">database_conf</span><span class="o">.</span><span class="n">Default_database_conf</span><span class="p">,</span> <span class="n">dist_conf</span><span class="p">:</span> <span class="n">distance_engine_conf</span><span class="o">.</span><span class="n">Default_distance_engine_conf</span><span class="p">,</span> <span class="n">fe_conf</span><span class="p">:</span> <span class="n">feature_extractor_conf</span><span class="o">.</span><span class="n">Default_feature_extractor_conf</span><span class="p">):</span>
@@ -73,11 +67,18 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">orb_matcher</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">BFMatcher</span><span class="p">(</span><span class="n">cv2</span><span class="o">.</span><span class="n">NORM_HAMMING</span><span class="p">,</span> <span class="n">crossCheck</span><span class="o">=</span><span class="n">dist_conf</span><span class="o">.</span><span class="n">CROSSCHECK</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Distance_ORB.orb_distance"><a class="viewcode-back" href="../../../carlhauser_server.DistanceEngine.html#carlhauser_server.DistanceEngine.distance_orb.Distance_ORB.orb_distance">[docs]</a>    <span class="k">def</span> <span class="nf">orb_distance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pic_package_from</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">pic_package_to</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">sd</span><span class="o">.</span><span class="n">AlgoMatch</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Distance between two provided pictures (dicts) with ORB methods</span>
+<span class="sd">        :param pic_package_from: first picture dict</span>
+<span class="sd">        :param pic_package_to: second picture dict</span>
+<span class="sd">        :return: A dictionary of algo name to the match detail (distance, decision ..)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="n">answer</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Orb distance computation ... &quot;</span><span class="p">)</span>
 
         <span class="c1"># Sanity check :</span>
-        <span class="k">if</span> <span class="n">pic_package_from</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ORB_DESCRIPTORS&quot;</span><span class="p">,</span><span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">pic_package_to</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ORB_DESCRIPTORS&quot;</span><span class="p">,</span><span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">pic_package_from</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ORB_DESCRIPTORS&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">pic_package_to</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ORB_DESCRIPTORS&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;ORB descriptors are NOT presents in the results.&quot;</span><span class="p">)</span>
             <span class="k">raise</span> <span class="n">AlgoFeatureNotPresentError</span><span class="p">(</span><span class="s2">&quot;None ORB descriptors in orb distance.&quot;</span><span class="p">)</span>
 
@@ -86,13 +87,6 @@
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">fe_conf</span><span class="o">.</span><span class="n">ORB</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;is_enabled&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
                 <span class="n">answer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_results</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fe_conf</span><span class="o">.</span><span class="n">ORB</span><span class="p">,</span> <span class="n">pic_package_from</span><span class="p">,</span> <span class="n">pic_package_to</span><span class="p">,</span> <span class="n">answer</span><span class="p">)</span>
 
-                <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">                # Compute matches</span>
-<span class="sd">                matches = self.orb_matcher.match(pic_package_from[&quot;ORB_DESCRIPTORS&quot;], pic_package_to[&quot;ORB_DESCRIPTORS&quot;])</span>
-
-<span class="sd">                answer[&quot;ORB_DISTANCE&quot;] = self.max_dist(matches, self.threeshold_distance_filter(matches))</span>
-<span class="sd">                &#39;&#39;&#39;</span>
-
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">traceback</span><span class="o">.</span><span class="n">print_tb</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">__traceback__</span><span class="p">))</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Error during orb distance calculation : &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
@@ -100,8 +94,16 @@
         <span class="k">return</span> <span class="n">answer</span></div>
 
 <div class="viewcode-block" id="Distance_ORB.add_results"><a class="viewcode-back" href="../../../carlhauser_server.DistanceEngine.html#carlhauser_server.DistanceEngine.distance_orb.Distance_ORB.add_results">[docs]</a>    <span class="k">def</span> <span class="nf">add_results</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">algo_conf</span><span class="p">:</span> <span class="n">Algo_conf</span><span class="p">,</span> <span class="n">pic_package_from</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">pic_package_to</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">answer</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
-        <span class="c1"># Add results to answer dict, depending on the algorithm name we want to compute</span>
-        <span class="c1"># Ex : Input {} -&gt; Output {&quot;ORB&quot;:{&quot;name&quot;:&quot;ORB&quot;, &quot;distance&quot;:0.3,&quot;decision&quot;:YES}}</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add results to answer dict, depending on the algorithm name we want to compute</span>
+<span class="sd">        Ex : Input {} -&gt; Output {&quot;ORB&quot;:{&quot;name&quot;:&quot;ORB&quot;, &quot;distance&quot;:0.3,&quot;decision&quot;:YES}}</span>
+<span class="sd">        :param algo_conf: An algorithm configuration (to specify which algorithm to launch)</span>
+<span class="sd">        :param pic_package_from: first picture dict</span>
+<span class="sd">        :param pic_package_to: second picture dict</span>
+<span class="sd">        :param answer: Current dict of algo_name to algo match (will be updated and returned)</span>
+<span class="sd">        :return: a dict of algo_name to algo match</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="n">algo_name</span> <span class="o">=</span> <span class="n">algo_conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;algo_name&#39;</span><span class="p">)</span>
 
         <span class="n">tmp_dist</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_orb_distance</span><span class="p">(</span><span class="n">pic_package_from</span><span class="p">[</span><span class="s2">&quot;ORB_DESCRIPTORS&quot;</span><span class="p">],</span> <span class="n">pic_package_to</span><span class="p">[</span><span class="s2">&quot;ORB_DESCRIPTORS&quot;</span><span class="p">])</span>
@@ -115,6 +117,12 @@
     <span class="c1"># ==================== ------ CORE COMPUTATION FOR ORB ------- ====================</span>
 
 <div class="viewcode-block" id="Distance_ORB.compute_orb_distance"><a class="viewcode-back" href="../../../carlhauser_server.DistanceEngine.html#carlhauser_server.DistanceEngine.distance_orb.Distance_ORB.compute_orb_distance">[docs]</a>    <span class="k">def</span> <span class="nf">compute_orb_distance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">descriptors_1</span><span class="p">,</span> <span class="n">descriptors_2</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compute hash difference for ORB</span>
+<span class="sd">        :param descriptors_1: first descriptors</span>
+<span class="sd">        :param descriptors_2: second descriptors</span>
+<span class="sd">        :return: distance between descriptors</span>
+<span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="n">descriptors_1</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">descriptors_2</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="c1"># Both pictures don&#39;t have descriptors : the same !</span>
@@ -136,6 +144,12 @@
 
 <div class="viewcode-block" id="Distance_ORB.threeshold_distance_filter"><a class="viewcode-back" href="../../../carlhauser_server.DistanceEngine.html#carlhauser_server.DistanceEngine.distance_orb.Distance_ORB.threeshold_distance_filter">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">threeshold_distance_filter</span><span class="p">(</span><span class="n">matches</span><span class="p">:</span> <span class="n">List</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Keep only &quot;good&quot; matches. Filter on distance, hardcoded at 64 (known as best ratio TP/FP)</span>
+<span class="sd">        :param matches: A list of matches TODO : Define type</span>
+<span class="sd">        :return: A list of good matches only (&lt; threshold distance)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="n">dist_th</span> <span class="o">=</span> <span class="mi">64</span>
         <span class="n">good</span> <span class="o">=</span> <span class="p">[]</span>
 
@@ -147,6 +161,13 @@
 
 <div class="viewcode-block" id="Distance_ORB.max_dist"><a class="viewcode-back" href="../../../carlhauser_server.DistanceEngine.html#carlhauser_server.DistanceEngine.distance_orb.Distance_ORB.max_dist">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">max_dist</span><span class="p">(</span><span class="n">all_matches</span><span class="p">:</span> <span class="n">List</span><span class="p">,</span> <span class="n">good_matches</span><span class="p">:</span> <span class="n">List</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compute the distance from the list of all matches and the list of good matches.</span>
+<span class="sd">        :param all_matches: A list of matches TODO : Define type</span>
+<span class="sd">        :param good_matches:  A list of good matches only (&lt; threshold distance) TODO : Define type</span>
+<span class="sd">        :return: the computed distance</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="c1"># TODO : To review. Is max usefull here ?</span>
         <span class="k">return</span> <span class="mi">1</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">good_matches</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">all_matches</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">good_matches</span><span class="p">)))</span></div>
 
@@ -154,17 +175,15 @@
 
 <div class="viewcode-block" id="Distance_ORB.compute_decision_from_distance"><a class="viewcode-back" href="../../../carlhauser_server.DistanceEngine.html#carlhauser_server.DistanceEngine.distance_orb.Distance_ORB.compute_decision_from_distance">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">compute_decision_from_distance</span><span class="p">(</span><span class="n">algo_conf</span><span class="p">:</span> <span class="n">Algo_conf</span><span class="p">,</span> <span class="n">dist</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">sd</span><span class="o">.</span><span class="n">DecisionTypes</span><span class="p">:</span>
-        <span class="c1"># From a distance between orb distance, gives a decision : is it a match or not ? Or maybe ?</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        From a distance between orb distance, gives a decision : is it a match or not ? Or maybe ?</span>
+<span class="sd">        # TODO : Evolve to more complex calculation if needed for ORB !</span>
+<span class="sd">        :param algo_conf: An algorithm configuration (to specify which algorithm to launch)</span>
+<span class="sd">        :param dist: a distance between two pictures</span>
+<span class="sd">        :return: a decision (YES,MAYBE,NO)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="k">if</span> <span class="n">dist</span> <span class="o">&lt;=</span> <span class="n">algo_conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;threshold_maybe&#39;</span><span class="p">):</span>
-            <span class="c1"># It&#39;s a YES ! :)</span>
-            <span class="k">return</span> <span class="n">sd</span><span class="o">.</span><span class="n">DecisionTypes</span><span class="o">.</span><span class="n">YES</span>
-        <span class="k">elif</span> <span class="n">dist</span> <span class="o">&lt;=</span> <span class="n">algo_conf</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;threshold_no&#39;</span><span class="p">):</span>
-            <span class="c1"># It&#39;s a MAYBE :/</span>
-            <span class="k">return</span> <span class="n">sd</span><span class="o">.</span><span class="n">DecisionTypes</span><span class="o">.</span><span class="n">MAYBE</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="c1"># It&#39;s a NO :(</span>
-            <span class="k">return</span> <span class="n">sd</span><span class="o">.</span><span class="n">DecisionTypes</span><span class="o">.</span><span class="n">NO</span></div></div>
+        <span class="k">return</span> <span class="n">dist_hash</span><span class="o">.</span><span class="n">compute_decision_from_distance</span><span class="p">(</span><span class="n">algo_conf</span><span class="p">,</span> <span class="n">dist</span><span class="p">)</span></div></div>
 </pre></div>
 
           </div>

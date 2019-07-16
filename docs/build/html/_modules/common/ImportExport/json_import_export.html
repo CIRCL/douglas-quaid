@@ -38,16 +38,15 @@
 <span></span><span class="ch">#!/usr/bin/env python3</span>
 <span class="c1"># -*- coding: utf-8 -*-</span>
 
-<span class="c1"># ==================== ------ STD LIBRARIES ------- ====================</span>
-<span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">pathlib</span>
-<span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">pathlib</span>
 
-<span class="c1"># ==================== ------ PERSONAL LIBRARIES ------- ====================</span>
-<span class="kn">import</span> <span class="nn">carlhauser_server.Configuration.template_conf</span> <span class="k">as</span> <span class="nn">template_conf</span>
+<span class="kn">import</span> <span class="nn">common.environment_variable</span>
+<span class="kn">from</span> <span class="nn">common.environment_variable</span> <span class="k">import</span> <span class="n">load_server_logging_conf_file</span>
 
-<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">pardir</span><span class="p">))</span>
+<span class="n">load_server_logging_conf_file</span><span class="p">()</span>
+
 
 <div class="viewcode-block" id="Custom_JSON_Encoder"><a class="viewcode-back" href="../../../common.ImportExport.html#common.ImportExport.json_import_export.Custom_JSON_Encoder">[docs]</a><span class="k">class</span> <span class="nc">Custom_JSON_Encoder</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">JSONEncoder</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -55,18 +54,29 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="Custom_JSON_Encoder.default"><a class="viewcode-back" href="../../../common.ImportExport.html#common.ImportExport.json_import_export.Custom_JSON_Encoder.default">[docs]</a>    <span class="k">def</span> <span class="nf">default</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">o</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        How to handle an object to encode</span>
+<span class="sd">        :param o: the object to encode</span>
+<span class="sd">        :return: the object encoded as json</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">):</span>
             <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">o</span><span class="p">)</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">template_conf</span><span class="o">.</span><span class="n">JSON_parsable_Enum</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">common</span><span class="o">.</span><span class="n">environment_variable</span><span class="o">.</span><span class="n">JSON_parsable_Enum</span><span class="p">):</span>
             <span class="c1"># If this is an object flagger as String equivalent, parse it as a String</span>
             <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">o</span><span class="p">)</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">template_conf</span><span class="o">.</span><span class="n">JSON_parsable_Dict</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">common</span><span class="o">.</span><span class="n">environment_variable</span><span class="o">.</span><span class="n">JSON_parsable_Dict</span><span class="p">):</span>
             <span class="c1"># If this is an object flagged as dict equivalent, parse it as a dict.</span>
             <span class="k">return</span> <span class="n">o</span><span class="o">.</span><span class="vm">__dict__</span>
         <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">JSONEncoder</span><span class="o">.</span><span class="n">default</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">o</span><span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="save_json"><a class="viewcode-back" href="../../../common.ImportExport.html#common.ImportExport.json_import_export.save_json">[docs]</a><span class="k">def</span> <span class="nf">save_json</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Save an object as JSON</span>
+<span class="sd">    :param obj: the object to save</span>
+<span class="sd">    :param file_path: the path to which the object should be saved</span>
+<span class="sd">    :return: Nothing</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># TODO : To fix json_data = ast.literal_eval(json_data) ?</span>
     <span class="c1">#  See : https://stackoverflow.com/questions/25707558/json-valueerror-expecting-property-name-line-1-column-2-char-1</span>
     <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span>
@@ -81,6 +91,11 @@
 
 
 <div class="viewcode-block" id="load_json"><a class="viewcode-back" href="../../../common.ImportExport.html#common.ImportExport.json_import_export.load_json">[docs]</a><span class="k">def</span> <span class="nf">load_json</span><span class="p">(</span><span class="n">file_path</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Loading an object/data from json.</span>
+<span class="sd">    :param file_path: The path to the json to load</span>
+<span class="sd">    :return: The data extracted</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span>
     <span class="c1"># !! : json.load() is for loading a file. json.loads() works with strings.</span>
     <span class="c1"># json.loads will load a json string into a python dict, json.dumps will dump a python dict to a json string,</span>

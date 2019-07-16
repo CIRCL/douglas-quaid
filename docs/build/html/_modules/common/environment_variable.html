@@ -38,22 +38,41 @@
 <span></span><span class="ch">#!/usr/bin/env python3</span>
 <span class="c1"># -*- coding: utf-8 -*-</span>
 
-<span class="c1"># ==================== ------ STD LIBRARIES ------- ====================</span>
-<span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">pathlib</span>
 <span class="kn">import</span> <span class="nn">argparse</span>
+<span class="c1"># ==================== ------ STD LIBRARIES ------- ====================</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">pathlib</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">logging.config</span>
 
 <span class="c1"># ==================== ------ PERSONAL LIBRARIES ------- ====================</span>
-<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">pardir</span><span class="p">))</span>
-<span class="kn">from</span> <span class="nn">carlhauser_server.Configuration.template_conf</span> <span class="k">import</span> <span class="n">JSON_parsable_Dict</span>
+ 
 
 
 <span class="c1"># ============================ HOME DIR GETTER ============================</span>
 
 <div class="viewcode-block" id="get_homedir"><a class="viewcode-back" href="../../common.html#common.environment_variable.get_homedir">[docs]</a><span class="k">def</span> <span class="nf">get_homedir</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">:</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;CARLHAUSER_HOME&#39;</span><span class="p">):</span>
-        <span class="n">guessed_home</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">parent</span>
+        <span class="n">guessed_home</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">parent</span>
         <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;CARLHAUSER_HOME is missing. Run the following command (assuming you run the code from the cloned repository):</span><span class="se">\n</span><span class="s2">export CARLHAUSER_HOME=&#39;</span><span class="si">{guessed_home}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;CARLHAUSER_HOME&#39;</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="load_client_logging_conf_file"><a class="viewcode-back" href="../../common.html#common.environment_variable.load_client_logging_conf_file">[docs]</a><span class="k">def</span> <span class="nf">load_client_logging_conf_file</span><span class="p">():</span>
+    <span class="c1"># load the logging configuration</span>
+    <span class="n">logconfig_path</span> <span class="o">=</span> <span class="p">(</span><span class="n">get_homedir</span><span class="p">()</span> <span class="o">/</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;carlhauser_client&quot;</span><span class="p">,</span> <span class="s2">&quot;logging.ini&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">fileConfig</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">logconfig_path</span><span class="p">))</span></div>
+<span class="c1"># FORMATTER = logging.Formatter(&#39;%(asctime)s - + %(relativeCreated)d - %(name)s - %(levelname)s - %(message)s&#39;)</span>
+
+<div class="viewcode-block" id="load_server_logging_conf_file"><a class="viewcode-back" href="../../common.html#common.environment_variable.load_server_logging_conf_file">[docs]</a><span class="k">def</span> <span class="nf">load_server_logging_conf_file</span><span class="p">():</span>
+    <span class="c1"># load the logging configuration</span>
+    <span class="n">logconfig_path</span> <span class="o">=</span> <span class="p">(</span><span class="n">get_homedir</span><span class="p">()</span> <span class="o">/</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;carlhauser_server&quot;</span><span class="p">,</span> <span class="s2">&quot;logging.ini&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">fileConfig</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">logconfig_path</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="make_big_line"><a class="viewcode-back" href="../../common.html#common.environment_variable.make_big_line">[docs]</a><span class="k">def</span> <span class="nf">make_big_line</span><span class="p">():</span>
+    <span class="k">return</span> <span class="s2">&quot;=======================================================================================&quot;</span></div>
+
+<div class="viewcode-block" id="make_small_line"><a class="viewcode-back" href="../../common.html#common.environment_variable.make_small_line">[docs]</a><span class="k">def</span> <span class="nf">make_small_line</span><span class="p">():</span>
+    <span class="k">return</span> <span class="s2">&quot;---------------------------------------------------------------------------------------&quot;</span></div>
 
 
 <span class="c1"># ============================ STATIC UTILITIES ============================</span>
@@ -79,6 +98,14 @@
 
 <span class="c1"># ============================ STATIC VALUES ============================</span>
 
+<div class="viewcode-block" id="JSON_parsable_Dict"><a class="viewcode-back" href="../../common.html#common.environment_variable.JSON_parsable_Dict">[docs]</a><span class="k">class</span> <span class="nc">JSON_parsable_Dict</span><span class="p">:</span>
+    <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="JSON_parsable_Enum"><a class="viewcode-back" href="../../common.html#common.environment_variable.JSON_parsable_Enum">[docs]</a><span class="k">class</span> <span class="nc">JSON_parsable_Enum</span><span class="p">:</span>
+    <span class="k">pass</span></div>
+
+
 <div class="viewcode-block" id="QueueNames"><a class="viewcode-back" href="../../common.html#common.environment_variable.QueueNames">[docs]</a><span class="k">class</span> <span class="nc">QueueNames</span><span class="p">(</span><span class="n">JSON_parsable_Dict</span><span class="p">):</span>
     <span class="n">FEATURE_TO_ADD</span> <span class="o">=</span> <span class="s2">&quot;feature_to_add&quot;</span>
     <span class="n">FEATURE_TO_REQUEST</span> <span class="o">=</span> <span class="s2">&quot;feature_to_request&quot;</span>
@@ -90,10 +117,11 @@
     <span class="c1"># PING = &quot;ping&quot;</span>
     <span class="n">ADD_PICTURE</span> <span class="o">=</span> <span class="s2">&quot;add_picture&quot;</span>
     <span class="n">WAIT_FOR_ADD</span> <span class="o">=</span> <span class="s2">&quot;wait_for_add&quot;</span>
-    <span class="n">REQUEST_PICTURE</span> <span class="o">=</span> <span class="s2">&quot;request_similar_picture&quot;</span> <span class="c1"># &quot;request_picture&quot;</span>
-    <span class="n">WAIT_FOR_REQUEST</span> <span class="o">=</span> <span class="s2">&quot;is_ready&quot;</span> <span class="c1"># &quot;wait_for_request&quot;</span>
+    <span class="n">REQUEST_PICTURE</span> <span class="o">=</span> <span class="s2">&quot;request_similar_picture&quot;</span>  <span class="c1"># &quot;request_picture&quot;</span>
+    <span class="n">WAIT_FOR_REQUEST</span> <span class="o">=</span> <span class="s2">&quot;is_ready&quot;</span>  <span class="c1"># &quot;wait_for_request&quot;</span>
     <span class="n">GET_REQUEST_RESULT</span> <span class="o">=</span> <span class="s2">&quot;get_results&quot;</span>
     <span class="n">REQUEST_DB</span> <span class="o">=</span> <span class="s2">&quot;export_db&quot;</span></div>
+
 </pre></div>
 
           </div>

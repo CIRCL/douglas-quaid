@@ -38,14 +38,18 @@
 <span></span><span class="ch">#!/usr/bin/env python3</span>
 <span class="c1"># -*- coding: utf-8 -*-</span>
 
+<span class="kn">import</span> <span class="nn">argparse</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">pathlib</span>
-<span class="kn">import</span> <span class="nn">time</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span>
-<span class="kn">import</span> <span class="nn">argparse</span>
-<span class="kn">import</span> <span class="nn">common.ImportExport.json_import_export</span> <span class="k">as</span> <span class="nn">json_io</span>
-<span class="kn">from</span> <span class="nn">shutil</span> <span class="k">import</span> <span class="n">copyfile</span>
 <span class="kn">from</span> <span class="nn">pprint</span> <span class="k">import</span> <span class="n">pformat</span>
+<span class="kn">from</span> <span class="nn">shutil</span> <span class="k">import</span> <span class="n">copyfile</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span>
+
+<span class="kn">import</span> <span class="nn">common.ImportExport.json_import_export</span> <span class="k">as</span> <span class="nn">json_io</span>
+<span class="kn">from</span> <span class="nn">common.environment_variable</span> <span class="k">import</span> <span class="n">load_server_logging_conf_file</span>
+
+<span class="n">load_server_logging_conf_file</span><span class="p">()</span>
+
 
 <div class="viewcode-block" id="dir_path"><a class="viewcode-back" href="../../../common.DataTurksAlgos.html#common.DataTurksAlgos.pictures_exporter.dir_path">[docs]</a><span class="k">def</span> <span class="nf">dir_path</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
     <span class="k">if</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
@@ -108,7 +112,9 @@
 
 <div class="viewcode-block" id="PicturesExporter.load_pictures_to_not_copy"><a class="viewcode-back" href="../../../common.DataTurksAlgos.html#common.DataTurksAlgos.pictures_exporter.PicturesExporter.load_pictures_to_not_copy">[docs]</a>    <span class="k">def</span> <span class="nf">load_pictures_to_not_copy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">file_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_files</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dst_folder</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">pic_already_to_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">list_to_dict</span><span class="p">(</span><span class="n">file_list</span><span class="p">)</span></div>
+        <span class="n">already_copied_files</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_files</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">already_copied</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">pic_already_to_path</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">list_to_dict</span><span class="p">(</span><span class="n">file_list</span><span class="p">),</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">list_to_dict</span><span class="p">(</span><span class="n">already_copied_files</span><span class="p">)}</span></div>
 
 <div class="viewcode-block" id="PicturesExporter.iterate_over_dataturks_json"><a class="viewcode-back" href="../../../common.DataTurksAlgos.html#common.DataTurksAlgos.pictures_exporter.PicturesExporter.iterate_over_dataturks_json">[docs]</a>    <span class="k">def</span> <span class="nf">iterate_over_dataturks_json</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
@@ -125,12 +131,12 @@
             <span class="c1"># self.logger.debug(f&quot;Current element : \n{pformat(element)}&quot;)</span>
 
             <span class="c1"># Do delete = we jump</span>
-            <span class="k">try</span> <span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
                 <span class="n">annotations</span> <span class="o">=</span> <span class="n">element</span><span class="p">[</span><span class="s2">&quot;annotation&quot;</span><span class="p">]</span>
                 <span class="n">labels</span> <span class="o">=</span> <span class="n">annotations</span><span class="p">[</span><span class="s2">&quot;labels&quot;</span><span class="p">]</span>
-            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span> <span class="p">:</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Error when labels fetching from {pformat(element)} : </span><span class="si">{e}</span><span class="s2">&quot;</span><span class="p">)</span>
-                <span class="n">no_label</span><span class="o">+=</span><span class="mi">1</span>
+                <span class="n">no_label</span> <span class="o">+=</span> <span class="mi">1</span>
                 <span class="k">continue</span>
 
             <span class="k">if</span> <span class="s2">&quot;to_delete&quot;</span> <span class="ow">in</span> <span class="n">labels</span><span class="p">:</span>
@@ -148,7 +154,7 @@
             <span class="n">pack_id</span> <span class="o">=</span> <span class="n">nb_of_element</span> <span class="o">//</span> <span class="bp">self</span><span class="o">.</span><span class="n">packet_size</span>
 
             <span class="c1"># Save labels in a corner for later export</span>
-            <span class="k">if</span> <span class="n">pack_id</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dict_to_export</span><span class="p">)</span> <span class="p">:</span>
+            <span class="k">if</span> <span class="n">pack_id</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dict_to_export</span><span class="p">):</span>
                 <span class="c1"># We don&#39;t have enough dictionnary, we add one</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">dict_to_export</span><span class="o">.</span><span class="n">append</span><span class="p">({})</span>
 
@@ -161,13 +167,13 @@
             <span class="n">curr_saving_path</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
             <span class="c1"># We copy the file</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pic_to_path</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">tmp_path</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pic_to_path</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">tmp_path</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">src</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pic_to_path</span><span class="p">[</span><span class="n">tmp_path</span><span class="o">.</span><span class="n">name</span><span class="p">])</span>
                 <span class="n">dst</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">curr_saving_path</span> <span class="o">/</span> <span class="n">tmp_path</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Picture </span><span class="si">{src}</span><span class="s2"> copied to </span><span class="si">{dst}</span><span class="s2">&quot;</span><span class="p">)</span>
                 <span class="n">copyfile</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">)</span>
                 <span class="n">copied</span> <span class="o">+=</span> <span class="mi">1</span>
-            <span class="k">else</span> <span class="p">:</span>
+            <span class="k">else</span><span class="p">:</span>
                 <span class="n">not_found</span> <span class="o">+=</span> <span class="mi">1</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Picture not found as file on the disk ! </span><span class="si">{tmp_path.name}</span><span class="s2">&quot;</span><span class="p">)</span>
 
@@ -178,8 +184,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Pictures copied = </span><span class="si">{copied}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="PicturesExporter.export_dicts"><a class="viewcode-back" href="../../../common.DataTurksAlgos.html#common.DataTurksAlgos.pictures_exporter.PicturesExporter.export_dicts">[docs]</a>    <span class="k">def</span> <span class="nf">export_dicts</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">curr_dict</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dict_to_export</span><span class="p">)</span> <span class="p">:</span>
-            <span class="n">json_io</span><span class="o">.</span><span class="n">save_json</span><span class="p">(</span><span class="n">curr_dict</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dst_folder</span> <span class="o">/</span> <span class="p">(</span><span class="s2">&quot;labels_&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot;.json&quot;</span><span class="p">))</span></div></div>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">curr_dict</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dict_to_export</span><span class="p">):</span>
+            <span class="n">json_io</span><span class="o">.</span><span class="n">save_json</span><span class="p">(</span><span class="n">curr_dict</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dst_folder</span> <span class="o">/</span> <span class="p">(</span><span class="s2">&quot;labels_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;.json&quot;</span><span class="p">))</span></div></div>
+
 
 <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">  {</span>
