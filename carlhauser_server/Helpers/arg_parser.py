@@ -104,7 +104,6 @@ def parse_conf_files(args) -> (database_conf.Default_database_conf,
             tmp_db_conf = database_conf.parse_from_dict(json_import_export.load_json(pathlib.Path(conf_arg)))
     except AttributeError as e:
         logger.debug(f"No DB CONF argument : {e}")
-        pass
 
     try:
         conf_arg = getattr(args, ConfArgs.DIST_CONF_NAME)
@@ -112,7 +111,6 @@ def parse_conf_files(args) -> (database_conf.Default_database_conf,
             tmp_dist_conf = distance_engine_conf.parse_from_dict(json_import_export.load_json(pathlib.Path(conf_arg)))
     except AttributeError as e:
         logger.debug(f"No DIST CONF argument : {e}")
-        pass
 
     try:
         conf_arg = getattr(args, ConfArgs.FE_CONF_NAME)
@@ -120,7 +118,6 @@ def parse_conf_files(args) -> (database_conf.Default_database_conf,
             tmp_fe_conf = feature_extractor_conf.parse_from_dict(json_import_export.load_json(pathlib.Path(conf_arg)))
     except AttributeError as e:
         logger.debug(f"No FE CONF argument : {e}")
-        pass
 
     try:
         conf_arg = getattr(args, ConfArgs.WS_CONF_NAME)
@@ -128,6 +125,5 @@ def parse_conf_files(args) -> (database_conf.Default_database_conf,
             tmp_ws_conf = webservice_conf.parse_from_dict(json_import_export.load_json(pathlib.Path(conf_arg)))
     except AttributeError as e:
         logger.debug(f"No WS CONF argument : {e}")
-        pass
 
     return tmp_db_conf, tmp_dist_conf, tmp_fe_conf, tmp_ws_conf
