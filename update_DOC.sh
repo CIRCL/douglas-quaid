@@ -1,3 +1,5 @@
+#!/bin/sh
+
 pandoc -S -s -f latex -t markdown_github --toc --toc-depth=2 --filter=pandoc-citeproc --bibliography=./../Working_Directory_Random/StateOfTheArt/carl-hauser.bib --csl=./../Working_Directory_Random/StateOfTheArt/acm-sigchi-proceedings.csl -o ./../Working_Directory_Random/StateOfTheArt/Carlhauser_core_doc.md ./../Working_Directory_Random/StateOfTheArt/Carlhauser_core_doc.tex
 
 # cp ./../Working_Directory_Random/StateOfTheArt/Carlhauser_core_doc.md ./../douglas-quaid/docs/code_doc/core_doc.md

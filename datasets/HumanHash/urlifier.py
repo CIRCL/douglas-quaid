@@ -30,8 +30,8 @@ class Referencer:
         print(f"Done. {len(files)} converted in url and stored in {save_path}.")
 
     @staticmethod
-    def check_correctness(name:str):
-        if " " in name :
+    def check_correctness(name: str):
+        if " " in name:
             print("WARNING : space detected in namespace. Are you sure you renamed file correctly ?")
 
     def store_value(self, name: pathlib.Path, reference_path):

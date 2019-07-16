@@ -1,20 +1,18 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import logging.config
-# ==================== ------ STD LIBRARIES ------- ====================
-import pathlib
 import json
+import logging.config
+import pathlib
 
-# ==================== ------ PREPARATION ------- ====================
-
-def extract(path : pathlib.Path):
+def extract(path: pathlib.Path):
     tmp_json = load_json(path)
 
     for val in tmp_json["values"]:
         for entry in val["entry"]:
             tmp_str = tmp_json["namespace"] + ":" + val["predicate"] + '="' + entry["value"] + '",'
             print(tmp_str)
+
 
 def load_json(file_path: pathlib.Path):
     logger = logging.getLogger()
@@ -30,6 +28,7 @@ def load_json(file_path: pathlib.Path):
         raise Exception(f"Cannot load the provided path to json : path is not a valid file {file_path}")
 
     return data
+
 
 if __name__ == '__main__':
     extract(pathlib.Path("./machinetag.json"))
