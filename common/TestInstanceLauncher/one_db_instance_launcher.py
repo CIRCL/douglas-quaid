@@ -50,7 +50,8 @@ class TestInstanceLauncher:
         self.set_configurations(db_conf, dist_conf, fe_conf, ws_conf)
         self.create_modified_db_handler()
         self.create_core_launcher()
-        self.launcher_core_launcher()
+        self.core_launcher.launch(with_database=False)
+
         # TODO: Flush database ? To be sure not to have artifacts ?
         self.logger.critical("[TESTS] LAUNCHING DATABASE AS TEST : NOTHING WILL BE REMOVED ON STORAGE OR CACHE DATABASES [TESTS] / full instance")
 
@@ -170,17 +171,4 @@ class TestInstanceLauncher:
         self.core_launcher.db_startstop = self.db_handler
 
         return self.core_launcher
-
-    def launcher_core_launcher(self):
-        """ Launch the whole "ecosystem" of workers around the database. Handled by the core """
-
-        self.core_launcher.prevent_workers_shutdown()
-
-        self.core_launcher.start_adder_workers()
-        self.core_launcher.start_requester_workers()
-        self.core_launcher.start_feature_workers()
-        self.core_launcher.start_webservice()
-
-        self.core_launcher.check_worker()
-
 

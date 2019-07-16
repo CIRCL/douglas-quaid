@@ -179,7 +179,7 @@ class Simple_API:
             # Check the JSON Response Content documentation below
             data = self.utility_extract_and_log_response(r)
 
-            return data["Status"] == "Success", data["is_ready"]
+            return data["Status"] == "Success", data["are_empty"]
 
     # ================= REQUEST PICTURES =================
 

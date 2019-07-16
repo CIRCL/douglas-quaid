@@ -141,7 +141,8 @@ class similarity_graph_quality_evaluator:
                     # The distance and threshold DOES NOT IMPACT the Positive/Negative counts !
 
                     if curr_matched_node.get("distance") < dist_threshold:
-                        if gt_graph.are_names_in_same_cluster(curr_result.get("request_id"), curr_matched_node.get("image_id")):  # Even if it's request_id, it the current name of the file.
+                        # Even if it's request_id, it the current name of the file.
+                        if gt_graph.are_ids_in_same_cluster(curr_result.get("request_id"), curr_matched_node.get("image_id")):
                             tmp_score.TP += 1
                             tmp_score.P += 1
 
@@ -151,7 +152,8 @@ class similarity_graph_quality_evaluator:
 
                     if curr_matched_node.get("distance") > dist_threshold:
 
-                        if gt_graph.are_names_in_same_cluster(curr_result.get("request_id"), curr_matched_node.get("image_id")):  # Even if it's request_id, it the current name of the file.
+                        # Even if it's request_id, it the current name of the file.
+                        if gt_graph.are_ids_in_same_cluster(curr_result.get("request_id"), curr_matched_node.get("image_id")):
                             tmp_score.FN += 1
                             tmp_score.P += 1
 

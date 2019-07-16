@@ -20,9 +20,9 @@ class test_calibrator(unittest.TestCase):
         # self.test_file_path = pathlib.Path.cwd() / pathlib.Path("tests/test_files")
         self.calibrator_instance = Calibrator()
 
-        self.micro_dataset_input_path = get_homedir() / "common_tests" / "Calibrator_tests" / "MICRO_DATASET"
-        self.micro_dataset_gt_path = get_homedir() / "common_tests" / "Calibrator_tests" / "MICRO_DATASET_VISJS.json"
-        self.micro_dataset_output_path = get_homedir() / "common_tests" / "Calibrator_tests" / "OUTPUT"
+        self.micro_dataset_input_path = get_homedir() / "common_tests" / "Calibrator" / "Calibrator_tests" / "MICRO_DATASET"
+        self.micro_dataset_gt_path = get_homedir() / "common_tests" / "Calibrator" / "Calibrator_tests" / "MICRO_DATASET_VISJS.json"
+        self.micro_dataset_output_path = get_homedir() / "common_tests" / "Calibrator" / "Calibrator_tests" / "OUTPUT"
 
     def tearDown(self):
         pass
@@ -37,12 +37,11 @@ class test_calibrator(unittest.TestCase):
         new_calibrator_conf.Minimum_true_negative_rate = 0.1
         new_calibrator_conf.Minimum_true_positive_rate = 0.9
 
-        self.calibrator_instance.set_calibrator_conf(calibrator_conf=new_calibrator_conf)
+        self.calibrator_instance.set_calibrator_conf(tmp_calibrator_conf=new_calibrator_conf)
         list_algos = self.calibrator_instance.calibrate_douglas_quaid(folder_of_pictures=self.micro_dataset_input_path,
-                                                         ground_truth_file=self.micro_dataset_gt_path,
-                                                         output_folder=self.micro_dataset_output_path
-                                                         )
-        for algo in list_algos :
+                                                                      ground_truth_file=self.micro_dataset_gt_path,
+                                                                      output_folder=self.micro_dataset_output_path)
+        for algo in list_algos:
             self.assertGreater(algo.threshold_yes_to_maybe, algo.threshold_maybe_to_no)
 
     def test_feature_conf_generator(self):

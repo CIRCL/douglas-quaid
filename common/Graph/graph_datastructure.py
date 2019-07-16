@@ -128,7 +128,7 @@ class GraphDataStruct:
                     break  # Second id found ! = Stop
 
         if id_1 is None or id_2 is None:
-            raise Exception(f"Image Name not found in graph structure ! {id_1} or {id_2}")
+            raise Exception(f"Image Name not found in graph structure ! {name_1} => {id_1} or {name_2} =>{id_2}")
 
         return self.are_ids_in_same_cluster(id_1, id_2)
 

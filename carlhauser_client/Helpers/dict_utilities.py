@@ -56,7 +56,7 @@ def apply_revert_mapping(dict_to_modify, mapping_to_revert: Dict):  # -> Dict or
     :return: Original dict modified with applied reversed dict
     '''
     reverted_mapping = revert_mapping(mapping_to_revert)
-    output_dict = apply_revert_mapping(dict_to_modify, reverted_mapping)
+    output_dict = apply_mapping(dict_to_modify, reverted_mapping)
     return output_dict
 
 

@@ -44,13 +44,15 @@ class Instance_Handler(metaclass=template_singleton.Singleton):
         self.db_startstop: database_start_stop.Database_StartStop = None
         self.worker_startstop: worker_start_stop.Worker_StartStop = None
 
-    def launch(self):
+    def launch(self, with_database: bool=True):
         """
         Launch a full server : Databases, workers (webservice to adder), wait for startup and check status of everything
+        :type with_database: boolean to specify if database has to be launched. Useful for test purposes / if database is manually or externally launched.
         :return: Nothing
         """
         # Launch elements
-        self.start_database(wait=True)  # Wait for launch
+        if with_database :
+            self.start_database(wait=True)  # Wait for launch
         self.prevent_workers_shutdown()
 
         self.start_adder_workers()
@@ -61,11 +63,17 @@ class Instance_Handler(metaclass=template_singleton.Singleton):
         self.worker_startstop.wait_for_worker_startup()
         self.check_worker()
 
+        print(make_big_line())
+        print("Server is running and ready to accept queries (if no error shown upper than this line).")
+
     def stop(self):
         """
         Stop everything. Webservice, workers, and database
         :return: Nothing
         """
+
+        print("Server is asked to stop, please wait until complete shutdown of the server by itself.")
+        print(make_big_line())
 
         # Shutdown Flask worker
         self.stop_webservice()
@@ -79,6 +87,10 @@ class Instance_Handler(metaclass=template_singleton.Singleton):
         # Shutdown database
         self.stop_database(wait=True)  # Wait for stop
         self.flush_workers()
+
+        print(make_big_line())
+        print("Server is stopped, correctly (if no error shown upper than this line).")
+
 
     # ==================== ------ DB ------- ====================
     def check_db_startstop(self):
@@ -281,8 +293,6 @@ if __name__ == '__main__':
         launcher.launch()
         time.sleep(1)
 
-        print(make_big_line())
-        print("Server is running and ready to accept queries (if no error shown upper than this line).")
 
         do_stop = False
         while not do_stop:
@@ -293,13 +303,8 @@ if __name__ == '__main__':
             if value == "yes":
                 do_stop = True
 
-        print("Server is asked to stop, please wait until complete shutdown of the server by itself.")
-        print(make_big_line())
-
         launcher.stop()
 
-        print(make_big_line())
-        print("Server is stopped, correctly (if no error shown upper than this line).")
 
     except KeyboardInterrupt:
         print('Interruption detected')

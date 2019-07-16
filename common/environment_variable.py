@@ -80,8 +80,12 @@ class EndPoints(JSON_parsable_Dict):
     # PING = "ping"
     ADD_PICTURE = "add_picture"
     WAIT_FOR_ADD = "wait_for_add"
+
     REQUEST_PICTURE = "request_similar_picture"  # "request_picture"
     WAIT_FOR_REQUEST = "is_ready"  # "wait_for_request"
+
     GET_REQUEST_RESULT = "get_results"
+
     REQUEST_DB = "export_db"
+    EMPTY_PIPELINE = "are_pipelines_empty"
 

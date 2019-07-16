@@ -14,4 +14,5 @@ rm ./tmp_db_conf.json
 rm ./tmp_dist_conf.json
 rm ./tmp_fe_conf.json
 rm ./tmp_ws_conf.json
+kill $(ps -ef | grep "python3 /home/user/Desktop/douglas-quaid" | awk '{ print $2 }')
 echo "Cleaned ! Ready."

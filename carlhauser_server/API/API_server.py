@@ -110,7 +110,11 @@ class FlaskAppWrapper(object):
         tmp_ep_name = "/" + EndPoints.REQUEST_PICTURE
         self.add_endpoint(endpoint=tmp_ep_name, endpoint_name=tmp_ep_name, handler=self.request_similar_picture)
         tmp_ep_name = "/" + EndPoints.WAIT_FOR_REQUEST
-        self.add_endpoint(endpoint=tmp_ep_name, endpoint_name=tmp_ep_name, handler=self.is_ready)
+        self.add_endpoint(endpoint=tmp_ep_name, endpoint_name=tmp_ep_name, handler=self.is_request_ready)
+        tmp_ep_name = "/" + EndPoints.WAIT_FOR_ADD
+        self.add_endpoint(endpoint=tmp_ep_name, endpoint_name=tmp_ep_name, handler=self.are_pipelines_empty)
+        tmp_ep_name = "/" + EndPoints.EMPTY_PIPELINE
+        self.add_endpoint(endpoint=tmp_ep_name, endpoint_name=tmp_ep_name, handler=self.are_pipelines_empty)
         tmp_ep_name = "/" + EndPoints.GET_REQUEST_RESULT
         self.add_endpoint(endpoint=tmp_ep_name, endpoint_name=tmp_ep_name, handler=self.get_results)
         tmp_ep_name = "/" + EndPoints.REQUEST_DB
@@ -184,7 +188,7 @@ class FlaskAppWrapper(object):
         """
 
         result_json = {}
-        result_json["Called_function"] = "are_pipelines_empty"
+        result_json["Called_function"] = EndPoints.EMPTY_PIPELINE
         result_json = self.add_std_info(result_json)
 
         # Answer to PUT HTTP request
@@ -196,9 +200,9 @@ class FlaskAppWrapper(object):
                 result_json["Status"] = "Success"
 
             except Exception as e:
-                self.logger.error(f"Normal error during GET handling ('are_pipelines_empty' request) {e}")
+                self.logger.error(f"Normal error during GET handling ({EndPoints.EMPTY_PIPELINE} request) {e}")
                 result_json["Status"] = "Failure"
-                result_json["Error"] = "Error during database request"
+                result_json["Error"] = "Error during queues request"
         else:
             result_json = self.add_bad_method_info(result_json, good_method_instead="GET")
 
@@ -214,7 +218,7 @@ class FlaskAppWrapper(object):
         """
 
         result_json = {}
-        result_json["Called_function"] = "request_similar_picture"
+        result_json["Called_function"] = EndPoints.REQUEST_PICTURE
         result_json = self.add_std_info(result_json)
 
         # Answer to PUT HTTP request
@@ -245,7 +249,7 @@ class FlaskAppWrapper(object):
         """
 
         result_json = {}
-        result_json["Called_function"] = "get_results"
+        result_json["Called_function"] = EndPoints.GET_REQUEST_RESULT
         result_json = self.add_std_info(result_json)
 
         # Answer to PUT HTTP request
@@ -273,14 +277,14 @@ class FlaskAppWrapper(object):
 
     # ================= REQUEST PICTURES - WAITING =================
 
-    def is_ready(self) -> Dict:
+    def is_request_ready(self) -> Dict:
         """
         Handle a check of a request readiness
         :return: The result json (status of the request, etc.)
         """
 
         result_json = {}
-        result_json["Called_function"] = "is_ready"
+        result_json["Called_function"] = EndPoints.WAIT_FOR_REQUEST
         result_json = self.add_std_info(result_json)
 
         # Answer to PUT HTTP request
@@ -308,6 +312,16 @@ class FlaskAppWrapper(object):
         return result_json
         # Test it with curl 127.0.0.1:5000/is_ready
 
+    def is_add_ready(self) -> Dict:
+        """
+        Handle a check of a add readiness
+        :return: The result json (status of the request, etc.)
+        """
+        #TODO : Specify one id. For now, just check the "emptiness" of all pipelines
+
+        return self.are_pipelines_empty()
+        # Test it with curl 127.0.0.1:5000/wait_for_add
+
     # ================= EXPORT AND DUMP =================
 
     def export_db_as_graphe(self) -> Dict:
@@ -317,7 +331,7 @@ class FlaskAppWrapper(object):
         """
 
         result_json = {}
-        result_json["Called_function"] = "export_db"
+        result_json["Called_function"] = EndPoints.REQUEST_DB
         result_json = self.add_std_info(result_json)
 
         # Answer to PUT HTTP request

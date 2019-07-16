@@ -45,11 +45,11 @@ class Calibrator:
         self.test_db_handler: test_database_handler.TestInstanceLauncher = None
         self.calibrator_conf: calibrator_conf.Default_calibrator_conf = None
 
-    def set_calibrator_conf(self, calibrator_conf: calibrator_conf.Default_calibrator_conf):
+    def set_calibrator_conf(self, tmp_calibrator_conf: calibrator_conf.Default_calibrator_conf):
         self.logger.debug("Setting configuration")
-        self.calibrator_conf = calibrator_conf
+        self.calibrator_conf = tmp_calibrator_conf
         self.logger.debug("Validation of the configuration ... ")
-        calibrator_conf.validate()
+        tmp_calibrator_conf.validate()
 
     def calibrate_douglas_quaid(self, folder_of_pictures: pathlib.Path,
                                 ground_truth_file: pathlib.Path,

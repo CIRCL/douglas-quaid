@@ -31,7 +31,6 @@ class Extended_API(Simple_API):
         return Extended_API.get_custom_api(Extended_API)
 
     # ========= UTILITIES =============
-
     # ================= ADD PICTURES =================
 
     def add_one_picture_and_wait(self, image_path: pathlib.Path, max_time: int = 60) -> Dict:

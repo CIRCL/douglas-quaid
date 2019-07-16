@@ -16,6 +16,7 @@ import carlhauser_server.Processus.worker_process as worker_processus
 from carlhauser_server.Singletons.singleton import Singleton
 from common.environment_variable import get_homedir, JSON_parsable_Enum
 from common.environment_variable import load_server_logging_conf_file
+from carlhauser_client.API.extended_api import Extended_API
 
 load_server_logging_conf_file()
 
@@ -133,10 +134,43 @@ class Worker_StartStop(object, metaclass=Singleton):
     # ==================== ------ UTLITIES ON WORKERS ------- ====================
     def wait_for_worker_startup(self, max_wait=60):
 
-        # TODO !
+        # TODO ! other workers !
         time.sleep(1)
 
+        return self.wait_for_webservice_worker_startup()
+
+    def wait_for_webservice_worker_startup(self, max_wait=60):
+
+        # Get the API as client
+        api = Extended_API.get_api()
+
+        # Starting count-down
+        start_time = time.time()
+        self.logger.info(f"Checking if webservice worker is online. Start polling ...")
+
+        # While the answer is not ready or we haven't timed-out
+        time_out = False
+        pinged = False
+        while not pinged and not time_out:
+            try :
+                pinged = api.ping_server()
+            except Exception as e :
+                # Not ready yet, wait a bit
+                self.logger.info(f"Webservice worker not online yet, waiting ...")
+                time.sleep(2)
+
+            # Compute if we are already in time out
+            time_out = (abs(time.time() - start_time) > max_wait and max_wait != -1)
+
+            if time_out:
+                self.logger.info(f"Webservice worker is still not online. Time out ! ...")
+                return False
+
+        # Ready !
+        self.logger.info(f"Webservice worker is detected online.")
+
         return True
+
 
     def wait_for_worker_shutdown(self, max_wait=60) -> bool:
         """
