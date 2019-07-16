@@ -8,12 +8,11 @@ from common.environment_variable import get_homedir
 import carlhauser_server.API.in_memory_files_ops as id_generator
 
 
-class TestIDGenerator(unittest.TestCase):
+class TestInMemoryOperations(unittest.TestCase):
     """Basic test cases."""
 
     def setUp(self):
         self.logger = logging.getLogger()
-        # self.conf = .Default_configuration()
         self.test_file_path = get_homedir() / pathlib.Path("carlhauser_server_tests/test_Helpers/id_generator")
 
     def test_absolute_truth_and_meaning(self):
