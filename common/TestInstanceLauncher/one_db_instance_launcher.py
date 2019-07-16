@@ -36,6 +36,14 @@ class TestInstanceLauncher:
                              dist_conf: distance_engine_conf.Default_distance_engine_conf = None,
                              fe_conf: feature_extractor_conf.Default_feature_extractor_conf = None,
                              ws_conf: webservice_conf.Default_webservice_conf = None):
+        """
+        Construct a full Database instance (Database, workers etc.)
+        :param db_conf: configuration file
+        :param dist_conf: configuration file
+        :param fe_conf: configuration file
+        :param ws_conf: configuration file
+        :return: Nothing
+        """
 
         self.set_configurations(db_conf, dist_conf, fe_conf, ws_conf)
         self.create_modified_db_handler()
@@ -47,7 +55,14 @@ class TestInstanceLauncher:
                                       dist_conf: distance_engine_conf.Default_distance_engine_conf = None,
                                       fe_conf: feature_extractor_conf.Default_feature_extractor_conf = None,
                                       ws_conf: webservice_conf.Default_webservice_conf = None):
-
+        """
+        Construct a Database only instance (Database, no workers etc.)
+        :param db_conf: configuration file
+        :param dist_conf: configuration file
+        :param fe_conf: configuration file
+        :param ws_conf: configuration file
+        :return: Nothing
+        """
         self.set_configurations(db_conf, dist_conf, fe_conf, ws_conf)
         self.create_modified_db_handler()
 
@@ -79,7 +94,10 @@ class TestInstanceLauncher:
         self.logger.debug(f"Configuration ws_conf : \n{pprint.pformat(json_encoder.encode(self.ws_conf), indent=2)}")
 
     def create_modified_db_handler(self) -> database_start_stop.Database_StartStop:
-        """ Create a database handler (start/stop), modify its configuration and launch the DB """
+        """
+        Create a database handler (start/stop), modify its configuration and launch the DB
+        :return: An instance of database startstop
+        """
 
         # Create database handler from configuration file
         self.db_handler = database_start_stop.Database_StartStop(db_conf=self.db_conf)
@@ -102,8 +120,14 @@ class TestInstanceLauncher:
         return self.db_handler
 
     @staticmethod
-    def overwrite_socket_and_script_db_handler(db_handler: database_start_stop.Database_StartStop, db_conf: database_conf.Default_database_conf):
-        # Replace all attributes of db_handler by test database values
+    def overwrite_socket_and_script_db_handler(db_handler: database_start_stop.Database_StartStop,
+                                               db_conf: database_conf.Default_database_conf):
+        """
+        Replace all attributes of db_handler by test database values
+        :param db_handler: An instance of db handler
+        :param db_conf: The configuration with which to overwrite existing configuration
+        :return: A modified version of db handler
+        """
 
         # Specific attributes
         db_handler.cache_socket_path = get_homedir() / db_conf.DB_SOCKETS_PATH / 'test.sock'
@@ -127,7 +151,7 @@ class TestInstanceLauncher:
         return db_handler
 
     def create_core_launcher(self):
-        """ Create a core launcher and overwrite its configuraiton """
+        """ Create a core launcher and overwrite its configuration """
 
         # Create launcher handler to perform other launching operation
         self.core_launcher = core.Instance_Handler()
@@ -137,7 +161,7 @@ class TestInstanceLauncher:
         self.core_launcher.dist_conf = self.dist_conf
         self.core_launcher.fe_conf = self.fe_conf
         self.core_launcher.ws_conf = self.ws_conf
-        self.core_launcher.db_handler = self.db_handler
+        self.core_launcher.db_startstop = self.db_handler
 
         return self.core_launcher
 

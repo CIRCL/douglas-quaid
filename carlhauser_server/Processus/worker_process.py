@@ -15,7 +15,7 @@ import carlhauser_server.Configuration.distance_engine_conf as distance_engine_c
 import carlhauser_server.Configuration.feature_extractor_conf as feature_extractor_conf
 import carlhauser_server.Configuration.webservice_conf as webservice_conf
 import common.ImportExport.json_import_export as json_import_export
-from carlhauser_server.DatabaseAccessor.arg_parser import ConfArgs
+from carlhauser_server.Helpers.arg_parser import ConfArgs
 from common.environment_variable import get_homedir
 
 # ==================== ------ PERSONAL LIBRARIES ------- ====================

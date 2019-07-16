@@ -7,16 +7,12 @@ import os
 import pathlib
 import sys
 
-from typing import List, Set
-
-# ==================== ------ PERSONAL LIBRARIES ------- ====================
-sys.path.append(os.path.abspath(os.path.pardir))
-from common.environment_variable import get_homedir
 import common.PerformanceDatastructs.stats_datastruct as scores
-from carlhauser_server.Configuration.template_conf import JSON_parsable_Dict
 from common.Graph.cluster import Cluster
+# ==================== ------ PERSONAL LIBRARIES ------- ====================
+from common.environment_variable import get_homedir, JSON_parsable_Dict
 
-# from . import helpers
+sys.path.append(os.path.abspath(os.path.pardir))
 
 # ==================== ------ PREPARATION ------- ====================
 # load the logging configuration
@@ -26,7 +22,6 @@ logging.config.fileConfig(str(logconfig_path))
 
 class ClusterMatch(JSON_parsable_Dict):
     def __init__(self, cluster1: Cluster, cluster2: Cluster):
-        self.cluster_1 : Cluster = cluster1
-        self.cluster_2  : Cluster = cluster2
-        self.score : scores.Stats_datastruct = None
-
+        self.cluster_1: Cluster = cluster1
+        self.cluster_2: Cluster = cluster2
+        self.score: scores.Stats_datastruct = None

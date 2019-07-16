@@ -6,15 +6,12 @@ import logging.config
 import os
 import pathlib
 import sys
-
 from typing import List, Set
 
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
-sys.path.append(os.path.abspath(os.path.pardir))
-from common.environment_variable import get_homedir
-from carlhauser_server.Configuration.template_conf import JSON_parsable_Dict
+from common.environment_variable import get_homedir, JSON_parsable_Dict
 
-# from . import helpers
+sys.path.append(os.path.abspath(os.path.pardir))
 
 # ==================== ------ PREPARATION ------- ====================
 # load the logging configuration

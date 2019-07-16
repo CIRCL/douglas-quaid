@@ -7,12 +7,17 @@ import pathlib
 import time
 from typing import List
 
+import carlhauser_client.EvaluationTools.SimilarityGraphExtractor.similarity_graph_quality_evaluator as  graph_quality_evaluator
 import carlhauser_server.Configuration.distance_engine_conf as distance_engine_conf
 import common.Calibrator.calibrator_conf as calibrator_conf
+import common.ChartMaker.two_dimensions_plot as two_dimensions_plot
+import common.Graph.graph_datastructure as graph_datastructure
 import common.ImportExport.json_import_export as json_import_export
-import common.TestInstanceLauncher.test_database_conf as test_database_only_conf
-import common.TestInstanceLauncher.test_instance_launcher as test_database_handler
-from carlhauser_client.EvaluationTools.GraphExtraction.graph_extractor import GraphExtractor
+import common.PerformanceDatastructs.perf_datastruct as perf_datastruct
+import common.TestInstanceLauncher.one_db_conf as test_database_only_conf
+import common.TestInstanceLauncher.one_db_instance_launcher as test_database_handler
+from carlhauser_client.API.extended_api import Extended_API
+from carlhauser_client.EvaluationTools.SimilarityGraphExtractor.similarity_graph_extractor import GraphExtractor
 from carlhauser_server.Configuration import feature_extractor_conf
 from carlhauser_server.Configuration.algo_conf import Algo_conf
 
@@ -24,6 +29,7 @@ class Calibrator:
 
     def __init__(self):
         self.logger = logging.getLogger()
+        self.ext_api: Extended_API = Extended_API.get_api()
 
         # Inputs
         '''
@@ -136,10 +142,10 @@ class Calibrator:
         # Launch an evaluator client to extract the graphe
         self.logger.debug(f"Launching Algorithm evaluation ... ")
         graph_extractor = GraphExtractor()
-        perfs_list, tmp_calibrator_conf = graph_extractor.get_best_algorithm_threshold(image_folder=folder_of_pictures,
-                                                                                       visjs_json_path=ground_truth_file,
-                                                                                       output_path=output_folder,
-                                                                                       cal_conf=self.calibrator_conf)
+        perfs_list, tmp_calibrator_conf = self.get_best_thresholds(image_folder=folder_of_pictures,
+                                                                   visjs_json_path=ground_truth_file,
+                                                                   output_path=output_folder,
+                                                                   cal_conf=self.calibrator_conf)
         self.logger.debug(f"Algorithm evaluation results : perflist = {perfs_list} ")
 
         # Kill server instance
@@ -215,6 +221,213 @@ class Calibrator:
         de_conf.MAX_DIST_FOR_NEW_CLUSTER = 1  # Only one big cluter with a lot of pictures. Will check all pictures.
 
         return de_conf
+
+    def get_best_thresholds(self, image_folder: pathlib.Path,
+                            output_path: pathlib.Path,
+                            visjs_json_path: pathlib.Path,
+                            cal_conf: calibrator_conf.Default_calibrator_conf) -> (List[perf_datastruct.Perf], calibrator_conf.Default_calibrator_conf):
+        '''
+        Compute the best threshold to apply to distance to have an optimized number of False Positive, True Positive, etc.
+        :param image_folder: The folder of picture to send and request, to optimize parameters for
+        :param output_path: The output path where the graph and other data will be stored
+        :param visjs_json_path: The "ground truth" file that serves as reference to optimize False Positive, etc.
+        :param cal_conf: Values of False Positive, True Positive, etc. expected
+        :return: List of performance values (threshold + False Positive, True Positive, etc. performances) and a modified cal_conf with "best threshold" regarding False Positive, True Positive, etc. target values
+        '''
+
+        # Get results from DB and ground truth graph from visjs file
+        self.logger.debug(f"Sending pictures ... ")
+        list_results = self.ext_api.add_request_dump_pictures(image_folder)
+
+        # Save to file
+        json_import_export.save_json(list_results, output_path / "requests_result.json")
+        self.logger.debug(f"Results raw json saved.")
+
+        # Load ground truth file
+        gt_graph = graph_datastructure.load_visjs_to_graph(visjs_json_path)
+
+        # Call the graph evaluator on this pair result_list + gt_graph
+        self.logger.debug(f"Extracting performance list ")
+        perf_eval = graph_quality_evaluator.GraphQualityEvaluator()
+        perfs_list = perf_eval.get_perf_list(list_results, gt_graph)  # ==> List of scores
+        self.logger.debug(f"Fetched performance list : {perfs_list} ")
+
+        # Save to file
+        json_import_export.save_json(perfs_list, output_path / "graph_perfs.json")
+        self.logger.debug(f"Graph performances json saved.")
+
+        # Save to graph
+        twoDplot = two_dimensions_plot.TwoDimensionsPlot()
+        twoDplot.print_graph(perfs_list, output_path)
+
+        # TODO : copy_cal_conf = cal_conf.deepcopy()
+        copy_cal_conf = cal_conf
+
+        self.logger.debug(f"Current configuraiton : {copy_cal_conf} ")
+
+        # Call the graph evaluator on this pair result_list + gt_graph
+        if copy_cal_conf.Minimum_true_positive_rate is not None:
+            thre_max_TPR, val_TPR = self.get_threshold_where_upper_are_more_than_xpercent_TP(perfs_list=perfs_list,
+                                                                                             percent=copy_cal_conf.Minimum_true_positive_rate)
+            copy_cal_conf.thre_upper_at_least_xpercent_TPR = thre_max_TPR
+
+        if copy_cal_conf.Acceptable_false_negative_rate is not None:
+            thre_max_FNR, val_FNR = self.get_threshold_where_upper_are_less_than_xpercent_FN(perfs_list=perfs_list,
+                                                                                             percent=copy_cal_conf.Acceptable_false_negative_rate)
+            copy_cal_conf.thre_upper_at_most_xpercent_FNR = thre_max_FNR
+
+        if copy_cal_conf.Minimum_true_negative_rate is not None:
+            thre_max_TNR, val_TNR = self.get_threshold_where_below_are_more_than_xpercent_TN(perfs_list=perfs_list,
+                                                                                             percent=copy_cal_conf.Minimum_true_negative_rate)
+            copy_cal_conf.thre_below_at_least_xpercent_TNR = thre_max_TNR
+
+        if copy_cal_conf.Acceptable_false_positive_rate is not None:
+            thre_max_FPR, val_FPR = self.get_threshold_where_below_are_less_than_xpercent_FP(perfs_list=perfs_list,
+                                                                                             percent=copy_cal_conf.Acceptable_false_positive_rate)
+            copy_cal_conf.thre_below_at_most_xpercent_FPR = thre_max_FPR
+
+        thre_max_F1, val_F1 = self.get_max_threshold_for_max_F1(perfs_list=perfs_list)
+        copy_cal_conf.maximum_F1 = thre_max_F1
+        self.logger.debug(f"Computed thresholds {copy_cal_conf} ")
+
+        # Save to graph
+        twoDplot.print_graph_with_thresholds(perfs_list, copy_cal_conf, output_path)
+
+        return perfs_list, copy_cal_conf
+
+    def get_optimal_for_optimized_attribute(self, perfs_list: List[perf_datastruct.Perf], attribute: str, maximize_threshold: bool = True, maximize_attribute=False, is_increasing: bool = True,
+                                            tolerance: float = 0.1):
+        # Extract the threshold for a specific kind of value
+        # Max threshold, Max attribute = Get the rightmost higher value of the attribute
+        # Max threshold, Min attribute = Get the rightmost lower value of the attribute, with attribute > Tolerance of the graph_evaluator
+        # Min threshold, Max attribute = Get the leftmost higher value of the attribute, with attribute < Tolerance of the graph_evaluator
+        # Min threshold, Min attribute = Get the leftmost lower value of the attribute
+        # is_increasing define if the graph is going up and up or not.
+
+        if len(perfs_list) == 0:
+            raise Exception("Performance list empty ! Impossible to get threshold out of it.")
+
+        # We could have assumed the performance list is sorted
+        perfs_list.sort(key=lambda k: k.threshold, reverse=is_increasing)
+        if not is_increasing:
+            maximize_threshold = not maximize_threshold
+            maximize_attribute = not maximize_attribute
+
+        # We want a decreasing graph, always.
+        '''
+        l = [1,2,5,3,7]
+        l.sort() = [1, 2, 3, 5, 7]
+        '''
+
+        self.logger.debug(f"Threshold list : {[p.threshold for p in perfs_list]}")
+        self.logger.debug(f"Perf list : {[getattr(p.score, attribute) for p in perfs_list]}")
+
+        if maximize_threshold and maximize_attribute:
+            return self.get_max_threshold_for_max_attr(perfs_list, attribute)
+
+        elif maximize_threshold is False and maximize_attribute:
+
+            self.logger.debug(f"Minimum {attribute} allowed : {1 - tolerance}")
+            return self.get_min_threshold_for_max_attr_with_tolerance(perfs_list, attribute, 1 - tolerance)
+
+        elif maximize_threshold and maximize_attribute is False:
+            self.logger.debug(f"Minimum {attribute} allowed : {tolerance}")
+            return self.get_min_threshold_for_max_attr_with_tolerance(perfs_list, attribute, tolerance)
+
+        elif maximize_threshold is False and maximize_attribute is False:
+            return self.get_min_threshold_for_min_attr(perfs_list, attribute)
+
+    @staticmethod
+    def get_min_threshold_for_max_attr_with_tolerance(perfs_list: List[perf_datastruct.Perf], attribute: str, tolerance: float) -> (float, float):
+        max_value = getattr(perfs_list[0].score, attribute)
+        threshold = perfs_list[0].threshold
+        # Work on a decreasing graph ONLY !
+        # Dummy constraint search. At the point where the constraint (be above the threshold) is borken, we break and return the found values.
+        for curr_perf in perfs_list:
+            curr_value = getattr(curr_perf.score, attribute)
+            if curr_value >= tolerance:
+                threshold = curr_perf.threshold
+            else:
+                break
+
+        return threshold, max_value
+
+    @staticmethod
+    def get_max_threshold_for_max_attr(perfs_list: List[perf_datastruct.Perf], attribute: str) -> (float, float):
+        max_value = getattr(perfs_list[0].score, attribute)
+        threshold = perfs_list[0].threshold
+
+        # Dummy max search
+        for curr_perf in perfs_list:
+            curr_value = getattr(curr_perf.score, attribute)
+            if curr_value >= max_value:
+                threshold = curr_perf.threshold
+
+        return threshold, max_value
+
+    @staticmethod
+    def get_min_threshold_for_min_attr(perfs_list: List[perf_datastruct.Perf], attribute: str) -> (float, float):
+        max_value = getattr(perfs_list[0].score, attribute)
+        threshold = perfs_list[0].threshold
+
+        # Dummy min search
+        for curr_perf in perfs_list:
+            curr_value = getattr(curr_perf.score, attribute)
+            if curr_value <= max_value:
+                threshold = curr_perf.threshold
+
+        return threshold, max_value
+
+    # =================== Optimizer for one value ===================
+    # get_x_percent_FN_min_threshold
+    def get_threshold_where_upper_are_less_than_xpercent_FN(self, perfs_list: List[perf_datastruct.Perf], percent: float):
+        # upper to this threshold, there is less than X percent of false negative
+        return self.get_optimal_for_optimized_attribute(perfs_list=perfs_list,
+                                                        attribute="FNR",
+                                                        maximize_attribute=True,
+                                                        maximize_threshold=False,
+                                                        is_increasing=False,
+                                                        tolerance=percent)
+
+    # get_x_percent_TP_min_threshold
+    def get_threshold_where_upper_are_more_than_xpercent_TP(self, perfs_list: List[perf_datastruct.Perf], percent: float):
+        # upper to this threshold, there is more than X percent of true positive
+
+        return self.get_optimal_for_optimized_attribute(perfs_list=perfs_list,
+                                                        attribute="TPR",
+                                                        maximize_attribute=True,
+                                                        maximize_threshold=False,
+                                                        is_increasing=True,
+                                                        tolerance=percent)
+
+    # get_x_percent_TN_max_threshold
+    def get_threshold_where_below_are_more_than_xpercent_TN(self, perfs_list: List[perf_datastruct.Perf], percent: float):
+        # below to this threshold, there is more than X percent of true negative
+
+        return self.get_optimal_for_optimized_attribute(perfs_list=perfs_list,
+                                                        attribute="TNR",
+                                                        maximize_attribute=False,
+                                                        maximize_threshold=True,
+                                                        is_increasing=False,
+                                                        tolerance=1 - percent)
+
+    # get_x_percent_FP_max_threshold
+    def get_threshold_where_below_are_less_than_xpercent_FP(self, perfs_list: List[perf_datastruct.Perf], percent: float):
+        # below to this threshold, there is less than X percent of false positive
+
+        return self.get_optimal_for_optimized_attribute(perfs_list=perfs_list,
+                                                        attribute="FPR",
+                                                        maximize_attribute=False,
+                                                        maximize_threshold=True,
+                                                        is_increasing=True,
+                                                        tolerance=1 - percent)
+
+    def get_max_threshold_for_max_F1(self, perfs_list: List[perf_datastruct.Perf]):
+        return self.get_optimal_for_optimized_attribute(perfs_list=perfs_list,
+                                                        attribute="F1",
+                                                        maximize_attribute=True,
+                                                        maximize_threshold=True,
+                                                        is_increasing=True)
 
 
 def dir_path(path):

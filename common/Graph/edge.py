@@ -5,7 +5,7 @@
 import logging
 import os
 import sys
-
+from typing import Dict
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
 
 sys.path.append(os.path.abspath(os.path.pardir))
@@ -13,18 +13,25 @@ FORMATTER = logging.Formatter('%(asctime)s - + %(relativeCreated)d - %(name)s - 
 
 
 class Edge:
-    # Handle an edge of the graph
+    """
+    Handle an edge of the graph
+    """
 
-    def __init__(self, _from, _to, color="gray", label : str =None, value=None):
-        self._from = _from
-        self._to = _to
+    def __init__(self, _from: str, _to: str, color="gray", label: str = None, value=None):
+        self._from: str = _from
+        self._to: str = _to
 
-        self.color = color
-        self.label = label
-        self.value = value
+        self.color: str = color
+        self.label: str = label
+        self.value: str = value
 
     def update_member_id(self, old_id, new_id):
-        # Modify an id in the list of members. Replace old by new.
+        """
+        Modify an id in the list of members. Replace old by new
+        :param old_id: Old id to replace
+        :param new_id: New id to replace to
+        :return: Nothing, change internal state of the object only.
+        """
         if self._from == old_id:
             self._from = new_id
         if self._to == old_id:
@@ -47,10 +54,18 @@ class Edge:
         return tmp_json
 
     @staticmethod
-    def load_from_dict(input):
+    def load_from_dict(tmp_input : Dict):
+        """
+        Load/ Import a Edge object from a dict
+        :param tmp_input: A Dict version of the Edge to import
+        :return: The Edge as an object
+        """
 
-        return Edge(_from=input["from"], _to=input["to"], color=input.get("color", ''),
-                    label=input.get("label", None), value=input.get("value", None))
+        return Edge(_from=tmp_input["from"],
+                    _to=tmp_input["to"],
+                    color=tmp_input.get("color", ''),
+                    label=tmp_input.get("label", None),
+                    value=tmp_input.get("value", None))
 
     # ==================== To string ====================
 

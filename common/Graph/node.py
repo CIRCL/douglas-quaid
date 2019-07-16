@@ -5,7 +5,7 @@
 import logging
 import os
 import sys
-
+from typing import Dict
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
 
 sys.path.append(os.path.abspath(os.path.pardir))
@@ -13,7 +13,9 @@ FORMATTER = logging.Formatter('%(asctime)s - + %(relativeCreated)d - %(name)s - 
 
 
 class Node_Meta:
-    # Handle a serie of information related to the current node
+    """
+    Handle a serie of information related to the current node
+    """
 
     def __init__(self):
         self.labels = []
@@ -33,7 +35,9 @@ class Node_Meta:
 
 
 class Node:
-    # Handle a node of the graph
+    """
+    Handle a node of the graph
+    """
 
     def __init__(self, label: str, id, image: str, metadata: Node_Meta = None):
         self.label = label
@@ -59,18 +63,27 @@ class Node:
         return tmp_json
 
     @staticmethod
-    def load_from_dict(input):
+    def load_from_dict(tmp_input : Dict):
+        """
+        Load/ Import a Node object from a dict
+        :param tmp_input: A Dict version of the Node to import
+        :return: The Node as an object
+        """
 
         tmp_metadata = None
-        if "metadata" in input.keys():
-            tmp_metadata = Node_Meta.load_from_dict(input["metadata"])
+        if "metadata" in tmp_input.keys():
+            tmp_metadata = Node_Meta.load_from_dict(tmp_input["metadata"])
 
-        tmp_node = Node(label=input.get("label", ""), id=input["id"],image=input["image"], metadata=tmp_metadata)
-        tmp_node.shape = input["shape"]
+        tmp_node = Node(label=tmp_input.get("label", ""), id=tmp_input["id"], image=tmp_input["image"], metadata=tmp_metadata)
+        tmp_node.shape = tmp_input["shape"]
 
         return tmp_node
 
     def copy_ids_to_image(self):
+        """
+        Copy id value to image value
+        :return: Nothing. Change internal state of the object
+        """
         self.image = self.id
 
     # ==================== To string ====================

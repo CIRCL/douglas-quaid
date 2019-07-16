@@ -14,7 +14,7 @@ import carlhauser_server.Configuration.feature_extractor_conf as feature_extract
 import carlhauser_server.DatabaseAccessor.database_worker as database_accessor
 import carlhauser_server.FeatureExtractor.picture_hasher as picture_hasher
 import carlhauser_server.FeatureExtractor.picture_orber as picture_orber
-from carlhauser_server.DatabaseAccessor import arg_parser
+from carlhauser_server.Helpers import arg_parser
 from common.environment_variable import QueueNames
 
 sys.path.append(os.path.abspath(os.path.pardir))

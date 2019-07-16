@@ -12,7 +12,7 @@ import carlhauser_server.Configuration.database_conf as database_conf
 import carlhauser_server.Configuration.distance_engine_conf as distance_engine_conf
 import carlhauser_server.Configuration.feature_extractor_conf as feature_extractor_conf
 import carlhauser_server.DatabaseAccessor.database_common as database_common
-from carlhauser_server.DatabaseAccessor import arg_parser
+from carlhauser_server.Helpers import arg_parser
 from common.environment_variable import QueueNames
 
 sys.path.append(os.path.abspath(os.path.pardir))

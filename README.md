@@ -1,7 +1,7 @@
 # Douglas-Quaid Project
 
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/e27a772481ed4033861670b9767249b6)](https://app.codacy.com/app/zettacircl/douglas-quaid?utm_source=github.com&utm_medium=referral&utm_content=Vincent-CIRCL/douglas-quaid&utm_campaign=Badge_Grade_Dashboard)
-<img src="./coverage.svg"/>
+<img src="./htmlcov/coverage.svg"/>
 
 Open source software for image correlation, distance and analysis.
 Strongly related to : [Carl-Hauser](https://github.com/CIRCL/carl-hauser) 

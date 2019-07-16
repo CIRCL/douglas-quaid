@@ -71,7 +71,9 @@ class PicturesExporter:
 
     def load_pictures_to_not_copy(self):
         file_list = self.load_files(self.dst_folder)
-        self.pic_already_to_path = self.list_to_dict(file_list)
+        already_copied_files = self.load_files(self.already_copied)
+
+        self.pic_already_to_path = {**self.list_to_dict(file_list), **self.list_to_dict(already_copied_files)}
 
     def iterate_over_dataturks_json(self):
 
