@@ -31,6 +31,13 @@ def load_server_logging_conf_file():
     logconfig_path = (get_homedir() / pathlib.Path("carlhauser_server", "logging.ini")).resolve()
     logging.config.fileConfig(str(logconfig_path))
 
+def make_big_line():
+    return "======================================================================================="
+
+def make_small_line():
+    return "---------------------------------------------------------------------------------------"
+
+
 # ============================ STATIC UTILITIES ============================
 
 def dir_path(path):

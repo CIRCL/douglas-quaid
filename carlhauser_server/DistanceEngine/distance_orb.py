@@ -14,7 +14,7 @@ import carlhauser_server.Configuration.feature_extractor_conf as feature_extract
 import carlhauser_server.DistanceEngine.scoring_datastrutures as sd
 from carlhauser_server.Configuration.algo_conf import Algo_conf
 from common.CustomException import AlgoFeatureNotPresentError
-
+from carlhauser_server.DistanceEngine.distance_hash import Distance_Hash as dist_hash
 
 class Distance_ORB:
     def __init__(self, db_conf: database_conf.Default_database_conf, dist_conf: distance_engine_conf.Default_distance_engine_conf, fe_conf: feature_extractor_conf.Default_feature_extractor_conf):
@@ -140,17 +140,10 @@ class Distance_ORB:
     def compute_decision_from_distance(algo_conf: Algo_conf, dist: float) -> sd.DecisionTypes:
         """
         From a distance between orb distance, gives a decision : is it a match or not ? Or maybe ?
+        # TODO : Evolve to more complex calculation if needed for ORB !
         :param algo_conf: An algorithm configuration (to specify which algorithm to launch)
         :param dist: a distance between two pictures
         :return: a decision (YES,MAYBE,NO)
         """
 
-        if dist <= algo_conf.get('threshold_maybe'):
-            # It's a YES ! :)
-            return sd.DecisionTypes.YES
-        elif dist <= algo_conf.get('threshold_no'):
-            # It's a MAYBE :/
-            return sd.DecisionTypes.MAYBE
-        else:
-            # It's a NO :(
-            return sd.DecisionTypes.NO
+        return dist_hash.compute_decision_from_distance(algo_conf, dist)

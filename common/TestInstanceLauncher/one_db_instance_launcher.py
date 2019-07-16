@@ -52,6 +52,7 @@ class TestInstanceLauncher:
         self.create_core_launcher()
         self.launcher_core_launcher()
         # TODO: Flush database ? To be sure not to have artifacts ?
+        self.logger.critical("[TESTS] LAUNCHING DATABASE AS TEST : NOTHING WILL BE REMOVED ON STORAGE OR CACHE DATABASES [TESTS] / full instance")
 
     def create_database_only_instance(self, db_conf: database_conf.Default_database_conf = None,
                                       dist_conf: distance_engine_conf.Default_distance_engine_conf = None,
@@ -67,8 +68,11 @@ class TestInstanceLauncher:
         """
         self.set_configurations(db_conf, dist_conf, fe_conf, ws_conf)
         self.create_modified_db_handler()
+        self.logger.critical("[TESTS] LAUNCHING DATABASE AS TEST : NOTHING WILL BE REMOVED ON STORAGE OR CACHE DATABASES [TESTS] / DB only instance")
 
     def tearDown(self):
+        self.logger.critical("[TESTS] STOPPING DATABASE AS TEST : NOTHING WILL BE REMOVED ON STORAGE OR CACHE DATABASES [TESTS]")
+
         # Shut down the database
         self.core_launcher.stop()
 

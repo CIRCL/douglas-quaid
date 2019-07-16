@@ -11,8 +11,7 @@ import carlhauser_server.DatabaseAccessor.database_worker as database_accessor
 import carlhauser_server.FeatureExtractor.picture_hasher as picture_hasher
 import carlhauser_server.FeatureExtractor.picture_orber as picture_orber
 from carlhauser_server.Helpers import arg_parser
-from common.environment_variable import QueueNames
-from common.environment_variable import load_server_logging_conf_file
+from common.environment_variable import load_server_logging_conf_file, make_small_line, QueueNames
 
 load_server_logging_conf_file()
 
@@ -65,7 +64,8 @@ class Feature_Worker(database_accessor.Database_Worker):
         # Remove old data and send dictionary in hashmap to redis
         # TODO : self.cache_db.del(fetched_id) # There is already an expire time
         self.add_to_queue(self.cache_db_no_decode, self.ouput_queue, fetched_id, merged_dict, pickle=True)
-
+        print(make_small_line())
+        print("Feature Worker ready to accept more queries.")
 
 # Launcher for this worker. Launch this file to launch a worker
 if __name__ == '__main__':

@@ -19,7 +19,7 @@ load_client_logging_conf_file()
 
 
 # ==================== ------ LAUNCHER ------- ====================
-class GraphQualityEvaluator:
+class similarity_graph_quality_evaluator:
     def __init__(self):
         self.logger = logging.getLogger(__name__)
         self.ext_api = Extended_API.get_api()

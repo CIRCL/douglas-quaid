@@ -130,7 +130,7 @@ class Simple_API:
                 # Check the JSON Response Content documentation below
                 data = self.utility_extract_and_log_response(r)
 
-                return data["Status"] == "Success", data["img_id"]
+                return data["Status"] == "Success", data["id"] # picture_id
 
     # ================= ADD PICTURES - WAITING =================
 
@@ -208,7 +208,7 @@ class Simple_API:
                 # Check the JSON Response Content documentation below
                 data = self.utility_extract_and_log_response(r)
 
-                return data["Status"] == "Success", data["request_id"]
+                return data["Status"] == "Success", data["id"] # request_id
 
     def get_results(self, request_id: str) -> (bool, Dict):
         '''

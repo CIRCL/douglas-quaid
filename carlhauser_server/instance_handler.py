@@ -3,34 +3,26 @@
 
 import logging.config
 # ==================== ------ STD LIBRARIES ------- ====================
-import os
 import pathlib
 import signal
 import sys
 import time
 import traceback
 
-# ==================== ------ PERSONAL LIBRARIES ------- ====================
-from common.environment_variable import get_homedir
-
-import carlhauser_server.Singletons.database_start_stop as database_start_stop
 import carlhauser_server.Configuration.database_conf as database_conf
-
-import carlhauser_server.Configuration.webservice_conf as webservice_conf
 import carlhauser_server.Configuration.distance_engine_conf as distance_engine_conf
-
 import carlhauser_server.Configuration.feature_extractor_conf as feature_extractor_conf
-
-import carlhauser_server.Singletons.worker_start_stop as worker_start_stop
+import carlhauser_server.Configuration.webservice_conf as webservice_conf
+import carlhauser_server.Singletons.database_start_stop as database_start_stop
 import carlhauser_server.Singletons.singleton as template_singleton
+import carlhauser_server.Singletons.worker_start_stop as worker_start_stop
 from carlhauser_server.Singletons.worker_start_stop import WorkerTypes as workertype
-
- 
+# ==================== ------ PERSONAL LIBRARIES ------- ====================
+from common.environment_variable import get_homedir, make_big_line
 
 # ==================== ------ PREPARATION ------- ====================
 # load the logging configuration
 logconfig_path = (get_homedir() / pathlib.Path("carlhauser_server", "logging.ini")).resolve()
- 
 
 
 # ==================== ------ LAUNCHER ------- ====================
@@ -38,6 +30,7 @@ class Instance_Handler(metaclass=template_singleton.Singleton):
     """
     Handle a server instance
     """
+
     def __init__(self):
         self.logger = logging.getLogger(__name__)
 
@@ -288,6 +281,9 @@ if __name__ == '__main__':
         launcher.launch()
         time.sleep(1)
 
+        print(make_big_line())
+        print("Server is running and ready to accept queries (if no error shown upper than this line).")
+
         do_stop = False
         while not do_stop:
             print("Press any key to stop ... ")
@@ -297,7 +293,13 @@ if __name__ == '__main__':
             if value == "yes":
                 do_stop = True
 
+        print("Server is asked to stop, please wait until complete shutdown of the server by itself.")
+        print(make_big_line())
+
         launcher.stop()
+
+        print(make_big_line())
+        print("Server is stopped, correctly (if no error shown upper than this line).")
 
     except KeyboardInterrupt:
         print('Interruption detected')

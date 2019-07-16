@@ -353,13 +353,13 @@ class Database_Worker:
         if not fetched_id:
             # Nothing to do
             time.sleep(0.1)
+        else :
+            try:
+                self.process_fetched_data(fetched_id, fetched_dict)
 
-        try:
-            self.process_fetched_data(fetched_id, fetched_dict)
-
-        except Exception as e:
-            self.logger.error(f"Error in database worker (DB adder, db Request or FeatureExtractor or ... ) : {e}")
-            self.logger.error(traceback.print_tb(e.__traceback__))
+            except Exception as e:
+                self.logger.error(f"Error in database worker (DB adder, db Request or FeatureExtractor or ... ) : {e}")
+                self.logger.error(traceback.print_tb(e.__traceback__))
 
     def fetch_from_queue(self) -> (str, Dict):
         return self.get_from_queue(self.cache_db_no_decode, self.input_queue, pickle=True)

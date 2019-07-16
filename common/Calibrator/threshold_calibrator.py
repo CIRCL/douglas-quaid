@@ -251,7 +251,7 @@ class Calibrator:
 
         # Call the graph evaluator on this pair result_list + gt_graph
         self.logger.debug(f"Extracting performance list ")
-        perf_eval = graph_quality_evaluator.GraphQualityEvaluator()
+        perf_eval = graph_quality_evaluator.similarity_graph_quality_evaluator()
         perfs_list = perf_eval.get_perf_list(list_results, gt_graph)  # ==> List of scores
         self.logger.debug(f"Fetched performance list : {perfs_list} ")
 

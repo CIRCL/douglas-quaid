@@ -10,8 +10,7 @@ import carlhauser_server.Configuration.feature_extractor_conf as feature_extract
 import carlhauser_server.DatabaseAccessor.database_common as database_common
 import carlhauser_server.DistanceEngine.scoring_datastrutures as score_datastruct
 from carlhauser_server.Helpers import arg_parser
-from common.environment_variable import QueueNames
-from common.environment_variable import load_server_logging_conf_file
+from common.environment_variable import load_server_logging_conf_file, make_small_line, QueueNames
 
 load_server_logging_conf_file()
 
@@ -56,7 +55,8 @@ class Database_Requester(database_common.Database_Common):
         self.set_request_result(self.cache_db_no_decode, fetched_id, results)
 
         self.logger.info(f"Request done. Results written.")
-
+        print(make_small_line())
+        print("Requester Worker ready to accept more queries.")
 
 # Launcher for this worker. Launch this file to launch a worker
 if __name__ == '__main__':

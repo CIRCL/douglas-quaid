@@ -138,10 +138,10 @@ class Distance_Hash:
         :return: A decision : YES, MAYBE or NO
         """
 
-        if dist <= algo_conf.get('threshold_maybe'):
+        if dist <= algo_conf.get('threshold_yes_to_maybe'):
             # It's a YES ! :)
             return sd.DecisionTypes.YES
-        elif dist <= algo_conf.get('threshold_no'):
+        elif dist <= algo_conf.get('threshold_maybe_to_no'):
             # It's a MAYBE :/
             return sd.DecisionTypes.MAYBE
         else:

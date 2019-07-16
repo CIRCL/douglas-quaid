@@ -105,15 +105,15 @@ class FlaskAppWrapper(object):
         self.add_endpoint(endpoint=tmp_ep_name, endpoint_name=tmp_ep_name, handler=self.ping)
 
         # Add action endpoints
-        tmp_ep_name = "/" + EndPoints.ADD_PICTURE,
+        tmp_ep_name = "/" + EndPoints.ADD_PICTURE
         self.add_endpoint(endpoint=tmp_ep_name, endpoint_name=tmp_ep_name, handler=self.add_picture)
-        tmp_ep_name = "/" + EndPoints.REQUEST_PICTURE,
+        tmp_ep_name = "/" + EndPoints.REQUEST_PICTURE
         self.add_endpoint(endpoint=tmp_ep_name, endpoint_name=tmp_ep_name, handler=self.request_similar_picture)
-        tmp_ep_name = "/" + EndPoints.WAIT_FOR_REQUEST,
+        tmp_ep_name = "/" + EndPoints.WAIT_FOR_REQUEST
         self.add_endpoint(endpoint=tmp_ep_name, endpoint_name=tmp_ep_name, handler=self.is_ready)
-        tmp_ep_name = "/" + EndPoints.GET_REQUEST_RESULT,
+        tmp_ep_name = "/" + EndPoints.GET_REQUEST_RESULT
         self.add_endpoint(endpoint=tmp_ep_name, endpoint_name=tmp_ep_name, handler=self.get_results)
-        tmp_ep_name = "/" + EndPoints.REQUEST_DB,
+        tmp_ep_name = "/" + EndPoints.REQUEST_DB
         self.add_endpoint(endpoint=tmp_ep_name, endpoint_name=tmp_ep_name, handler=self.export_db_as_graphe)
 
     def add_endpoint(self, endpoint=None, endpoint_name=None, handler=None):
@@ -326,12 +326,13 @@ class FlaskAppWrapper(object):
                 # Request export of the database and save it as a json graph
                 self.db_utils = db_utils.DBUtilities(db_access_decode=self.database_worker.storage_db_decode, db_access_no_decode=self.database_worker.storage_db_no_decode)
                 graph = self.db_utils.get_storage_graph()
+                graph_dict = graph.export_as_dict()
 
                 # Save to file
-                json_import_export.save_json(graph.export_as_dict(), get_homedir() / "export_folder" / "db_graphe.json")
+                json_import_export.save_json(graph_dict, get_homedir() / "export_folder" / "db_graphe.json")
 
                 result_json["Status"] = "Success"
-                result_json["db"] = graph
+                result_json["db"] = graph_dict
             except Exception as e:
                 self.logger.error(f"Error during GET handling {e}")
                 result_json["Status"] = "Failure"
@@ -412,7 +413,7 @@ class FlaskAppWrapper(object):
                                           dict_to_store={"img": f_bmp})
 
         result_json["Status"] = "Success"
-        result_json["request_id"] = tmp_uuid
+        result_json["id"] = tmp_uuid
 
         return result_json
 

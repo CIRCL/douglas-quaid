@@ -9,8 +9,7 @@ import carlhauser_server.Configuration.distance_engine_conf as distance_engine_c
 import carlhauser_server.Configuration.feature_extractor_conf as feature_extractor_conf
 import carlhauser_server.DatabaseAccessor.database_common as database_common
 from carlhauser_server.Helpers import arg_parser
-from common.environment_variable import QueueNames
-from common.environment_variable import load_server_logging_conf_file
+from common.environment_variable import load_server_logging_conf_file, make_small_line, QueueNames
 
 load_server_logging_conf_file()
 
@@ -69,6 +68,8 @@ class Database_Adder(database_common.Database_Common):
         # TODO
         self.db_utils.add_to_review(fetched_id)
         self.logger.info(f"Adding done.")
+        print(make_small_line())
+        print("Adder Worker ready to accept more queries.")
 
     def reevaluate_representative_picture_order(self, cluster_id, fetched_id=None):
         """

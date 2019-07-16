@@ -43,7 +43,7 @@ def convert_to_bmp(file_value: io.BufferedReader):
         return contents
 
 
-'''
+''' Can be deleted. Just reminder to prevent searching again to create the same function later.
 def write_to_file(file_value, file_path: pathlib.Path):
     """
     Write a picture to a file
