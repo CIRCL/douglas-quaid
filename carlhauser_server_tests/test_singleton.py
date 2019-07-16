@@ -3,7 +3,7 @@
 import logging
 import unittest
 
-import carlhauser_server.Singletons.template_singleton as template_singleton
+import carlhauser_server.Singletons.singleton as template_singleton
 
 
 class testSingleton(unittest.TestCase):

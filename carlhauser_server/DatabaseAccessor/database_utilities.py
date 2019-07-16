@@ -2,23 +2,20 @@
 # -*- coding: utf-8 -*-
 
 import logging
-# ==================== ------ STD LIBRARIES ------- ====================
-import os
 import pathlib
-import sys
 import uuid
 from typing import List
 
 import redis
 
-# ==================== ------ PERSONAL LIBRARIES ------- ====================
 from common.Graph.cluster import Cluster
 from common.Graph.edge import Edge
 from common.Graph.graph_datastructure import GraphDataStruct
 from common.Graph.metadata import Metadata, Source
 from common.Graph.node import Node
+from common.environment_variable import load_server_logging_conf_file
 
-sys.path.append(os.path.abspath(os.path.pardir))
+load_server_logging_conf_file()
 
 
 class DBUtilities:

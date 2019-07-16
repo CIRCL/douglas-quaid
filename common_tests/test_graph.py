@@ -1,19 +1,15 @@
 # -*- coding: utf-8 -*-
 
 import logging
-import os
-import sys
-
-sys.path.append(os.path.abspath(os.path.pardir))
-import unittest
 import pprint
+import unittest
 
-from common.Graph.graph_datastructure import GraphDataStruct
 import common.Graph.graph_datastructure as graph_datastructure
 from common.Graph.cluster import Cluster
 from common.Graph.edge import Edge
-from common.Graph.node import Node
+from common.Graph.graph_datastructure import GraphDataStruct
 from common.Graph.metadata import Metadata, Source
+from common.Graph.node import Node
 
 
 class test_template(unittest.TestCase):

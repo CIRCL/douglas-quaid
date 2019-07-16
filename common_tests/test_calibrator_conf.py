@@ -1,17 +1,10 @@
 # -*- coding: utf-8 -*-
 
 import logging
-import os
-import sys
-import pprint
-
-sys.path.append(os.path.abspath(os.path.pardir))
-from common.environment_variable import get_homedir
-from common.Calibrator.calibrator_conf import Default_calibrator_conf
-from carlhauser_server.Configuration.algo_conf import Algo_conf
-from common.ImportExport.json_import_export import Custom_JSON_Encoder
-
 import unittest
+
+from carlhauser_server.Configuration.algo_conf import Algo_conf
+from common.Calibrator.calibrator_conf import Default_calibrator_conf
 
 
 class test_calibrator_conf(unittest.TestCase):

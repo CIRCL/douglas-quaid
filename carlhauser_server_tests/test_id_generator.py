@@ -5,7 +5,7 @@ import logging
 import pathlib
 
 from common.environment_variable import get_homedir
-import carlhauser_server.Helpers.id_generator as id_generator
+import carlhauser_server.API.in_memory_files_ops as id_generator
 
 
 class TestIDGenerator(unittest.TestCase):

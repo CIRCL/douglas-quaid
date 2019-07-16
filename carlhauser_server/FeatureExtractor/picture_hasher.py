@@ -2,20 +2,17 @@
 # -*- coding: utf-8 -*-
 
 
-# ==================== ------ STD LIBRARIES ------- ====================
-
 import io
 import logging
-import os
-import sys
 import tlsh
+
 import PIL.Image as Image
 import imagehash
 
-# ==================== ------ PERSONAL LIBRARIES ------- ====================
-
 import carlhauser_server.Configuration.feature_extractor_conf as feature_extractor_conf
-sys.path.append(os.path.abspath(os.path.pardir))
+from common.environment_variable import load_server_logging_conf_file
+
+load_server_logging_conf_file()
 
 
 class Picture_Hasher:

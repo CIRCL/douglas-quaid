@@ -2,12 +2,9 @@
 # -*- coding: utf-8 -*-
 
 
-# ==================== ------ STD LIBRARIES ------- ====================
-
 import argparse
 import datetime
 import logging
-import os
 import pprint
 import sys
 import time
@@ -18,16 +15,15 @@ import objsize
 import redis
 
 import carlhauser_server.Configuration.database_conf as database_conf
-import common.ImportExport.pickle_import_export as pickle_import_export
 import carlhauser_server.Singletons.database_start_stop as database_start_stop
+import common.ImportExport.pickle_import_export as pickle_import_export
 from carlhauser_server.Helpers import arg_parser
 from common.ImportExport.json_import_export import Custom_JSON_Encoder
 from common.environment_variable import QueueNames
 from common.environment_variable import get_homedir
+from common.environment_variable import load_server_logging_conf_file
 
-# ==================== ------ PERSONAL LIBRARIES ------- ====================
-
-sys.path.append(os.path.abspath(os.path.pardir))
+load_server_logging_conf_file()
 
 
 class Database_Worker:

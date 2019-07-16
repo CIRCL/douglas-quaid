@@ -2,11 +2,7 @@
 # -*- coding: utf-8 -*-
 
 
-# ==================== ------ STD LIBRARIES ------- ====================
-
 import logging
-import os
-import sys
 import traceback
 from typing import Dict, List
 
@@ -18,10 +14,6 @@ import carlhauser_server.Configuration.feature_extractor_conf as feature_extract
 import carlhauser_server.DistanceEngine.scoring_datastrutures as sd
 from carlhauser_server.Configuration.algo_conf import Algo_conf
 from common.CustomException import AlgoFeatureNotPresentError
-
-# ==================== ------ PERSONAL LIBRARIES ------- ====================
-
-sys.path.append(os.path.abspath(os.path.pardir))
 
 
 class Distance_ORB:

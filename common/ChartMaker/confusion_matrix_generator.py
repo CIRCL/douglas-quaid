@@ -1,27 +1,18 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-# ==================== ------ STD LIBRARIES ------- ====================
-import os
-import pathlib
-import sys
-from typing import List
 import logging.config
+import pathlib
+from typing import List
+
 import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 
-# ==================== ------ PERSONAL LIBRARIES ------- ====================
-sys.path.append(os.path.abspath(os.path.pardir))
-from common.environment_variable import get_homedir
 from common.Graph.cluster import Cluster
-from common.PerformanceDatastructs.clustermatch_datastruct import ClusterMatch
+from common.environment_variable import load_server_logging_conf_file
 
-
-# ==================== ------ PREPARATION ------- ====================
-# load the logging configuration
-logconfig_path = (get_homedir() / pathlib.Path("carlhauser_client", "logging.ini")).resolve()
-logging.config.fileConfig(str(logconfig_path))
+load_server_logging_conf_file()
 
 
 class ConfusionMatrixGenerator:
@@ -118,6 +109,7 @@ class ConfusionMatrixGenerator:
                          is plotted. If not provided, use current axes or
                          create a new one.
             cbar_kw    : A dictionary with arguments to
+                         :param ax:
                          :meth:`matplotlib.Figure.colorbar`.
             cbarlabel  : The label for the colorbar
         All other arguments are directly passed on to the imshow call.

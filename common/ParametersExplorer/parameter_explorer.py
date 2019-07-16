@@ -1,30 +1,19 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-# ==================== ------ STD LIBRARIES ------- ====================
-
 import logging.config
-import os
-import pathlib
 import sys
 import time
 import traceback
 
-# ==================== ------ PERSONAL LIBRARIES ------- ====================
-
-from common.environment_variable import get_homedir
-import carlhauser_server.instance_handler as instance_handler
-
 import carlhauser_client.EvaluationTools.StorageGraphExtractor.storage_quality_evaluator as evaluator
-import common.PerformanceDatastructs.perf_datastruct as perf_datastruct
+import carlhauser_server.instance_handler as instance_handler
 import common.ChartMaker.two_dimensions_plot as two_dimensions_plot
+import common.PerformanceDatastructs.perf_datastruct as perf_datastruct
+from common.environment_variable import get_homedir
+from common.environment_variable import load_server_logging_conf_file
 
-sys.path.append(os.path.abspath(os.path.pardir))
-
-# ==================== ------ PREPARATION ------- ====================
-# load the logging configuration
-logconfig_path = (get_homedir() / pathlib.Path("carlhauser_client", "logging.ini")).resolve()
-logging.config.fileConfig(str(logconfig_path))
+load_server_logging_conf_file()
 
 
 # ==================== ------ LAUNCHER ------- ====================
@@ -32,6 +21,7 @@ class ParameterExplorer:
     '''
     Extract parameters and quality of the storage graph. TODO : Should be reviewed and modified.
     '''
+
     def __init__(self):
         self.logger = logging.getLogger(__name__)
 
@@ -52,7 +42,7 @@ class ParameterExplorer:
         # ========= GOAL =========
         perfs = []
 
-        iterations_limit = 50 # Or nb of iteration if complete exploration
+        iterations_limit = 50  # Or nb of iteration if complete exploration
 
         max_threshold = 1
         min_threshold = 0

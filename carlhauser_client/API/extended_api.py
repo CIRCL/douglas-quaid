@@ -1,19 +1,16 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-# ==================== ------ STD LIBRARIES ------- ====================
-import os
 import pathlib
-import sys
 import time
 from typing import Dict, List
 
-# ==================== ------ PERSONAL LIBRARIES ------- ====================
+import carlhauser_client.Helpers.dict_utilities as dict_utilities
 from carlhauser_client.API.simple_api import Simple_API
 from common.Graph.graph_datastructure import GraphDataStruct
-import carlhauser_client.Helpers.dict_utilities as dict_utilities
+from common.environment_variable import load_client_logging_conf_file
 
-sys.path.append(os.path.abspath(os.path.pardir))
+load_client_logging_conf_file()
 
 
 # ==================== ------ LAUNCHER ------- ====================

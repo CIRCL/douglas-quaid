@@ -1,17 +1,9 @@
 # -*- coding: utf-8 -*-
 
 import logging
-import os
-import sys
-
-sys.path.append(os.path.abspath(os.path.pardir))
-import common.TestInstanceLauncher.one_db_instance_launcher as test_database_handler
-import common.TestInstanceLauncher.one_db_conf as test_database_only_conf
-from common.environment_variable import get_homedir
 
 import pathlib
 import unittest
-import time
 
 
 class test_tests_database_launcher(unittest.TestCase):

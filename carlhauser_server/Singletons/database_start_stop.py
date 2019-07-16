@@ -1,24 +1,16 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-
-# ==================== ------ STD LIBRARIES ------- ====================
-
 import logging
-import os
-import sys
 
 import carlhauser_server.Configuration.database_conf as database_conf
 import carlhauser_server.Helpers.socket as socket
 from carlhauser_server.Singletons.singleton import Singleton
 from common.environment_variable import get_homedir
+from common.environment_variable import load_server_logging_conf_file
 
-# ==================== ------ PERSONAL LIBRARIES ------- ====================
+load_server_logging_conf_file()
 
-sys.path.append(os.path.abspath(os.path.pardir))
-
-
-# ==================== ------ PATHS ------- ====================
 
 class Database_StartStop(object, metaclass=Singleton):
     """

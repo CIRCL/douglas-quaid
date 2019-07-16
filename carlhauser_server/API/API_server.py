@@ -7,30 +7,26 @@
 
 import argparse
 import logging
-import os
-import sys
 import time
 import uuid
 from typing import Dict
 
-# ==================== ------ STD LIBRARIES ------- ====================
 import flask
 import werkzeug.datastructures as datastructures
 
+import carlhauser_server.API.in_memory_files_ops as id_generator
 import carlhauser_server.Configuration.database_conf as database_conf
 import carlhauser_server.Configuration.webservice_conf as webservice_conf
 import carlhauser_server.DatabaseAccessor.database_utilities as db_utils
 import carlhauser_server.DatabaseAccessor.database_worker as database_worker
-import carlhauser_server.API.in_memory_files_ops as id_generator
 import common.ImportExport.json_import_export as json_import_export
 import common.ImportExport.picture_import_export as picture_import_export
 from carlhauser_server.Helpers import arg_parser
 from common.environment_variable import QueueNames, EndPoints
 from common.environment_variable import get_homedir
+from common.environment_variable import load_server_logging_conf_file
 
-# ==================== ------ PERSONAL LIBRARIES ------- ====================
-
-sys.path.append(os.path.abspath(os.path.pardir))
+load_server_logging_conf_file()
 
 
 # ==================== ------ SERVER Flask API definition ------- ====================

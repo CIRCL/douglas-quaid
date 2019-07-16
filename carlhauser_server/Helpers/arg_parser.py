@@ -1,22 +1,20 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-# ==================== ------ STD LIBRARIES ------- ====================
 import argparse
-import os
+import logging
 import pathlib
-import sys
 
-# ==================== ------ PERSONAL LIBRARIES ------- ====================
 import carlhauser_server.Configuration.database_conf as database_conf
 import carlhauser_server.Configuration.distance_engine_conf as distance_engine_conf
 import carlhauser_server.Configuration.feature_extractor_conf as feature_extractor_conf
 import carlhauser_server.Configuration.webservice_conf as webservice_conf
 import common.ImportExport.json_import_export as json_import_export
-from common.environment_variable import dir_path
 from common.environment_variable import JSON_parsable_Dict
+from common.environment_variable import dir_path
+from common.environment_variable import load_server_logging_conf_file
 
-sys.path.append(os.path.abspath(os.path.pardir))
+load_server_logging_conf_file()
 
 
 class ConfArgs(JSON_parsable_Dict):
@@ -96,16 +94,40 @@ def parse_conf_files(args) -> (database_conf.Default_database_conf,
     :return: db_conf, dist_conf, feature_conf, webservice_conf
     """
 
+    logger = logging.getLogger()
     tmp_db_conf, tmp_dist_conf, tmp_fe_conf, tmp_ws_conf = None, None, None, None
 
     # Load the provided configuration file and create back the Configuration Object
-    if args.db_conf:
-        tmp_db_conf = database_conf.parse_from_dict(json_import_export.load_json(pathlib.Path(args.db_conf)))
-    if args.dist_conf:
-        tmp_dist_conf = distance_engine_conf.parse_from_dict(json_import_export.load_json(pathlib.Path(args.dist_conf)))
-    if args.fe_conf:
-        tmp_fe_conf = feature_extractor_conf.parse_from_dict(json_import_export.load_json(pathlib.Path(args.fe_conf)))
-    if args.ws_conf:
-        tmp_ws_conf = webservice_conf.parse_from_dict(json_import_export.load_json(pathlib.Path(args.ws_conf)))
+    try:
+        conf_arg = getattr(args, ConfArgs.DB_CONF_NAME)
+        if conf_arg:
+            tmp_db_conf = database_conf.parse_from_dict(json_import_export.load_json(pathlib.Path(conf_arg)))
+    except AttributeError as e:
+        logger.debug(f"No DB CONF argument : {e}")
+        pass
+
+    try:
+        conf_arg = getattr(args, ConfArgs.DIST_CONF_NAME)
+        if conf_arg:
+            tmp_dist_conf = distance_engine_conf.parse_from_dict(json_import_export.load_json(pathlib.Path(conf_arg)))
+    except AttributeError as e:
+        logger.debug(f"No DIST CONF argument : {e}")
+        pass
+
+    try:
+        conf_arg = getattr(args, ConfArgs.FE_CONF_NAME)
+        if conf_arg:
+            tmp_fe_conf = feature_extractor_conf.parse_from_dict(json_import_export.load_json(pathlib.Path(conf_arg)))
+    except AttributeError as e:
+        logger.debug(f"No FE CONF argument : {e}")
+        pass
+
+    try:
+        conf_arg = getattr(args, ConfArgs.WS_CONF_NAME)
+        if conf_arg:
+            tmp_ws_conf = webservice_conf.parse_from_dict(json_import_export.load_json(pathlib.Path(conf_arg)))
+    except AttributeError as e:
+        logger.debug(f"No WS CONF argument : {e}")
+        pass
 
     return tmp_db_conf, tmp_dist_conf, tmp_fe_conf, tmp_ws_conf

@@ -2,10 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import logging.config
-# ==================== ------ STD LIBRARIES ------- ====================
-import os
 import pathlib
-import sys
 from pprint import pformat
 from typing import List, Dict
 
@@ -17,15 +14,9 @@ from common.ChartMaker.confusion_matrix_generator import ConfusionMatrixGenerato
 from common.Graph.cluster import Cluster
 from common.PerformanceDatastructs.clustermatch_datastruct import ClusterMatch
 from common.environment_variable import get_homedir
+from common.environment_variable import load_client_logging_conf_file
 
-# ==================== ------ PERSONAL LIBRARIES ------- ====================
-
-sys.path.append(os.path.abspath(os.path.pardir))
-
-# ==================== ------ PREPARATION ------- ====================
-# load the logging configuration
-logconfig_path = (get_homedir() / pathlib.Path("carlhauser_client", "logging.ini")).resolve()
-logging.config.fileConfig(str(logconfig_path))
+load_client_logging_conf_file()
 
 
 # ==================== ------ LAUNCHER ------- ====================
@@ -47,7 +38,7 @@ class InternalClusteringQualityEvaluator:
         # ========= MANUAL EVALUATION =========
 
         # Load ground truth file
-        gt_graph = graph_datastructure.load_visjs_to_graphe(visjs_json_path)
+        gt_graph = graph_datastructure.load_visjs_to_graph(visjs_json_path)
 
         # ========= AUTO EVALUATION =========
         # Send pictures to DB and get id mapping

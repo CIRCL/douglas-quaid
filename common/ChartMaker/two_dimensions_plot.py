@@ -2,26 +2,16 @@
 # -*- coding: utf-8 -*-
 
 import logging.config
-# ==================== ------ STD LIBRARIES ------- ====================
-import os
 import pathlib
-import sys
 from typing import List
 
 import matplotlib.pyplot as plt
 
-
-# ==================== ------ PERSONAL LIBRARIES ------- ====================
-sys.path.append(os.path.abspath(os.path.pardir))
-from common.environment_variable import get_homedir
-from common.PerformanceDatastructs.perf_datastruct import Perf
-# from common.PerformanceDatastructs.thresholds_datastruct import Thresholds
 import common.Calibrator.calibrator_conf as calibrator_conf
+from common.PerformanceDatastructs.perf_datastruct import Perf
+from common.environment_variable import load_server_logging_conf_file
 
-# ==================== ------ PREPARATION ------- ====================
-# load the logging configuration
-logconfig_path = (get_homedir() / pathlib.Path("carlhauser_client", "logging.ini")).resolve()
-logging.config.fileConfig(str(logconfig_path))
+load_server_logging_conf_file()
 
 
 class TwoDimensionsPlot:
@@ -30,7 +20,7 @@ class TwoDimensionsPlot:
 
     # ========================= EXTERNAL USAGE =========================
 
-    def print_graph(self, perf_list: List[Perf], output_path: pathlib.Path, file_name : str = "overview.png"):
+    def print_graph(self, perf_list: List[Perf], output_path: pathlib.Path, file_name: str = "overview.png"):
         # Print a graph with the TPR,TNR,FPR,FNR ... on one unique chart
 
         output_file = output_path / file_name
@@ -41,7 +31,8 @@ class TwoDimensionsPlot:
         self.add_meta(legend)
         self.save_fig(output_path=output_file)
 
-    def print_graph_with_thresholds(self, perf_list: List[Perf], thresholds_handler: calibrator_conf.Default_calibrator_conf, output_path: pathlib.Path, file_name : str = "overview_with_thresholds.png"):
+    def print_graph_with_thresholds(self, perf_list: List[Perf], thresholds_handler: calibrator_conf.Default_calibrator_conf, output_path: pathlib.Path,
+                                    file_name: str = "overview_with_thresholds.png"):
         # Print a graph with the TPR,TNR,FPR,FNR ... with thresholds provided on one unique chart
 
         output_file = output_path / file_name
@@ -81,9 +72,10 @@ class TwoDimensionsPlot:
         legend = ('Accuracy', 'True Positive Rate', 'True Negative Rate', 'False Negative rate', 'False Positive rate', 'F1')
         return legend
 
-    def add_meta(self, legend):
+    @staticmethod
+    def add_meta(legend):
 
-        plt.legend(legend , loc='upper right')
+        plt.legend(legend, loc='upper right')
         plt.xlabel("Threshold values [0-1]")
         plt.ylabel("Indicator value [0-1]")
         plt.title("Performance measure depending on threshold for cluster creation")
@@ -98,26 +90,26 @@ class TwoDimensionsPlot:
         # Labels
         labels = []
 
-        if thresholds_handler.thre_upper_at_least_xpercent_TPR is not None :
+        if thresholds_handler.thre_upper_at_least_xpercent_TPR is not None:
             xcoords.append(thresholds_handler.thre_upper_at_least_xpercent_TPR)
             colors.append('b')
             labels.append('TPR/Maybe to No ' + str(thresholds_handler.thre_upper_at_least_xpercent_TPR))
-        if thresholds_handler.thre_upper_at_most_xpercent_FNR is not None :
+        if thresholds_handler.thre_upper_at_most_xpercent_FNR is not None:
             xcoords.append(thresholds_handler.thre_upper_at_most_xpercent_FNR)
             colors.append('g')
-            labels.append('FNR/Maybe to No '+ str(thresholds_handler.thre_upper_at_most_xpercent_FNR))
-        if thresholds_handler.maximum_F1 is not None :
+            labels.append('FNR/Maybe to No ' + str(thresholds_handler.thre_upper_at_most_xpercent_FNR))
+        if thresholds_handler.maximum_F1 is not None:
             xcoords.append(thresholds_handler.maximum_F1)
             colors.append('y')
             labels.append('F1')
-        if thresholds_handler.thre_below_at_least_xpercent_TNR is not None :
+        if thresholds_handler.thre_below_at_least_xpercent_TNR is not None:
             xcoords.append(thresholds_handler.thre_below_at_least_xpercent_TNR)
             colors.append('r')
-            labels.append('TNR/Yes to Maybe '+ str(thresholds_handler.thre_below_at_least_xpercent_TNR))
-        if thresholds_handler.thre_below_at_most_xpercent_FPR is not None :
+            labels.append('TNR/Yes to Maybe ' + str(thresholds_handler.thre_below_at_least_xpercent_TNR))
+        if thresholds_handler.thre_below_at_most_xpercent_FPR is not None:
             xcoords.append(thresholds_handler.thre_below_at_most_xpercent_FPR)
             colors.append('m')
-            labels.append('FPR/Yes to Maybe '+ str(thresholds_handler.thre_below_at_most_xpercent_FPR))
+            labels.append('FPR/Yes to Maybe ' + str(thresholds_handler.thre_below_at_most_xpercent_FPR))
 
         for xc, l, c in zip(xcoords, labels, colors):
             plt.axvline(x=xc, label=l, linestyle='dashed', c=c)

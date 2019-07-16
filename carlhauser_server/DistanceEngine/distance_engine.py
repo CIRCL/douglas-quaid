@@ -1,14 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-# ==================== ------ STD LIBRARIES ------- ====================
 
 import logging
-import os
-import sys
 from typing import List, Dict
 
-# ==================== ------ PERSONAL LIBRARIES ------- ====================
 import carlhauser_server.Configuration.database_conf as database_conf
 import carlhauser_server.Configuration.distance_engine_conf as distance_engine_conf
 import carlhauser_server.Configuration.feature_extractor_conf as feature_extractor_conf
@@ -18,8 +14,9 @@ import carlhauser_server.DistanceEngine.distance_orb as distance_orb
 import carlhauser_server.DistanceEngine.merging_engine as merging_engine
 import carlhauser_server.DistanceEngine.scoring_datastrutures as scoring_datastrutures
 from common.CustomException import AlgoFeatureNotPresentError
+from common.environment_variable import load_server_logging_conf_file
 
-sys.path.append(os.path.abspath(os.path.pardir))
+load_server_logging_conf_file()
 
 
 class Distance_Engine:

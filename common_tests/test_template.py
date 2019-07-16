@@ -1,10 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import logging
-import os
-import sys
 
-sys.path.append(os.path.abspath(os.path.pardir))
 import pathlib
 import unittest
 

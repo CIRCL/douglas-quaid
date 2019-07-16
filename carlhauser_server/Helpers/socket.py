@@ -2,20 +2,17 @@
 # -*- coding: utf-8 -*-
 
 
-# ==================== ------ STD LIBRARIES ------- ====================
 import logging
-import os
 import pathlib
-import sys
 import subprocess
-import redis
 import time
 
-# ==================== ------ PERSONAL LIBRARIES ------- ====================
-sys.path.append(os.path.abspath(os.path.pardir))
+import redis
 
+from common.environment_variable import load_server_logging_conf_file
 
-# ==================== ------ PATHS ------- ====================
+load_server_logging_conf_file()
+
 
 class Socket:
     """
@@ -122,9 +119,9 @@ class Socket:
         :return: nothing
         """
         redis_access = self.get_access()
-        try :
+        try:
             redis_access.delete("halt")
-        except Exception as e :
+        except Exception as e:
             self.logger.error(f"Can't remove stop signal to worker via {self.socket_path.name}, as database is not accessible : {e}")
 
     def stop_workers(self):
@@ -133,9 +130,9 @@ class Socket:
         :return: nothing
         """
         redis_access = self.get_access()
-        try :
+        try:
             redis_access.set("halt", "true")
-        except Exception as e :
+        except Exception as e:
             self.logger.error(f"Can't send stop signal to worker via {self.socket_path.name}, as database is not accessible : {e}")
 
     def run_script(self, script_path: pathlib.Path):

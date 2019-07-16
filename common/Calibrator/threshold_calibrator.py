@@ -20,6 +20,9 @@ from carlhauser_client.API.extended_api import Extended_API
 from carlhauser_client.EvaluationTools.SimilarityGraphExtractor.similarity_graph_extractor import GraphExtractor
 from carlhauser_server.Configuration import feature_extractor_conf
 from carlhauser_server.Configuration.algo_conf import Algo_conf
+from common.environment_variable import load_server_logging_conf_file
+
+load_server_logging_conf_file()
 
 
 class Calibrator:

@@ -2,22 +2,14 @@
 # -*- coding: utf-8 -*-
 
 import logging.config
-# ==================== ------ STD LIBRARIES ------- ====================
-import os
 import pathlib
-import sys
 
-# ==================== ------ PERSONAL LIBRARIES ------- ====================
-
-from common.environment_variable import get_homedir
-from carlhauser_client.API.simple_api import Simple_API
 from carlhauser_client.API.extended_api import Extended_API
-sys.path.append(os.path.abspath(os.path.pardir))
+from carlhauser_client.API.simple_api import Simple_API
+from common.environment_variable import get_homedir
+from common.environment_variable import load_client_logging_conf_file
 
-# ==================== ------ PREPARATION ------- ====================
-# load the logging configuration
-logconfig_path = (get_homedir() / pathlib.Path("carlhauser_client", "logging.ini")).resolve()
-logging.config.fileConfig(str(logconfig_path))
+load_client_logging_conf_file()
 
 
 # ==================== ------ LAUNCHER ------- ====================

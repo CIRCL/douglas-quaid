@@ -5,10 +5,11 @@ import argparse
 # ==================== ------ STD LIBRARIES ------- ====================
 import os
 import pathlib
-import sys
+import logging
+import logging.config
 
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
-sys.path.append(os.path.abspath(os.path.pardir))
+ 
 
 
 # ============================ HOME DIR GETTER ============================
@@ -19,6 +20,16 @@ def get_homedir() -> pathlib.Path:
         raise Exception(f"CARLHAUSER_HOME is missing. Run the following command (assuming you run the code from the cloned repository):\nexport CARLHAUSER_HOME='{guessed_home}'")
     return pathlib.Path(os.environ['CARLHAUSER_HOME'])
 
+def load_client_logging_conf_file():
+    # load the logging configuration
+    logconfig_path = (get_homedir() / pathlib.Path("carlhauser_client", "logging.ini")).resolve()
+    logging.config.fileConfig(str(logconfig_path))
+# FORMATTER = logging.Formatter('%(asctime)s - + %(relativeCreated)d - %(name)s - %(levelname)s - %(message)s')
+
+def load_server_logging_conf_file():
+    # load the logging configuration
+    logconfig_path = (get_homedir() / pathlib.Path("carlhauser_server", "logging.ini")).resolve()
+    logging.config.fileConfig(str(logconfig_path))
 
 # ============================ STATIC UTILITIES ============================
 

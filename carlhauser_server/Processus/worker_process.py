@@ -3,11 +3,8 @@
 
 import datetime
 import logging
-# ==================== ------ STD LIBRARIES ------- ====================
-import os
 import pathlib
 import subprocess
-import sys
 import time
 
 import carlhauser_server.Configuration.database_conf as database_conf
@@ -17,13 +14,10 @@ import carlhauser_server.Configuration.webservice_conf as webservice_conf
 import common.ImportExport.json_import_export as json_import_export
 from carlhauser_server.Helpers.arg_parser import ConfArgs
 from common.environment_variable import get_homedir
+from common.environment_variable import load_server_logging_conf_file
 
-# ==================== ------ PERSONAL LIBRARIES ------- ====================
+load_server_logging_conf_file()
 
-sys.path.append(os.path.abspath(os.path.pardir))
-
-
-# ==================== ------ PATHS ------- ====================
 
 # Small class to handle processus
 class WorkerProcessus:

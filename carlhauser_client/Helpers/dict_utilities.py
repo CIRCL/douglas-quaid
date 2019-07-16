@@ -1,14 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-# ==================== ------ STD LIBRARIES ------- ====================
-import os
-import sys
 from typing import Dict, List
 
-# ==================== ------ PERSONAL LIBRARIES ------- ====================
+from common.environment_variable import load_client_logging_conf_file
 
-sys.path.append(os.path.abspath(os.path.pardir))
+load_client_logging_conf_file()
 
 
 def copy_id_to_image(dict_to_modify: Dict) -> Dict:

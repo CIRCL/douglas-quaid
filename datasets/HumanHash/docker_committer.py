@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import argparse
+import datetime
+import time
+from collections import deque
+
 # See : https://github.com/docker/docker-py
 import docker
-import argparse
-import pathlib
-from collections import deque
-import time
-import datetime
+
 
 ### LAAAAUNCH WITH ROOT ACCESS !! or with user in docker group ####
 

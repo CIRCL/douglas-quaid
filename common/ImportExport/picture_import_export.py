@@ -2,15 +2,12 @@
 # -*- coding: utf-8 -*-
 
 
-# ==================== ------ STD LIBRARIES ------- ====================
-
 import logging
-import os
 import pathlib
-import sys
 
-# ==================== ------ PERSONAL LIBRARIES ------- ====================
-sys.path.append(os.path.abspath(os.path.pardir))
+from common.environment_variable import load_server_logging_conf_file
+
+load_server_logging_conf_file()
 
 
 def save_picture(obj, file_path: pathlib.Path):

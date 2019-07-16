@@ -1,11 +1,6 @@
-# ==================== ------ STD LIBRARIES ------- ====================
-import os
 import pathlib
-import sys
 from collections import namedtuple
 
-# ==================== ------ PERSONAL LIBRARIES ------- ====================
-sys.path.append(os.path.abspath(os.path.pardir))
 from common.environment_variable import JSON_parsable_Dict
 
 

@@ -1,17 +1,14 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-# ==================== ------ STD LIBRARIES ------- ====================
 import hashlib
 import io
-import os
-import pathlib
-import sys
 
 from PIL import Image
 
-# ==================== ------ PERSONAL LIBRARIES ------- ====================
-sys.path.append(os.path.abspath(os.path.pardir))
+from common.environment_variable import load_server_logging_conf_file
+
+load_server_logging_conf_file()
 
 
 def get_SHA1(file_value: io.BufferedReader):
@@ -59,4 +56,3 @@ def write_to_file(file_value, file_path: pathlib.Path):
     newfile.write(file_value)
     newfile.close()
 '''
-

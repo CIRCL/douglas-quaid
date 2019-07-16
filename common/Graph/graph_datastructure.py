@@ -1,22 +1,16 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-
-# ==================== ------ STD LIBRARIES ------- ====================
 import logging
-import os
 import pathlib
-import sys
 from typing import List, Dict
 
-# ==================== ------ PERSONAL LIBRARIES ------- ====================
-
-from common.Graph import cluster, edge, metadata, node
 import common.ImportExport.json_import_export as json_import_export
+from common.Graph import cluster, edge, metadata, node
 from common.PerformanceDatastructs.clustermatch_datastruct import ClusterMatch
+from common.environment_variable import load_server_logging_conf_file
 
-sys.path.append(os.path.abspath(os.path.pardir))
-FORMATTER = logging.Formatter('%(asctime)s - + %(relativeCreated)d - %(name)s - %(levelname)s - %(message)s')
+load_server_logging_conf_file()
 
 
 class GraphDataStruct:
@@ -213,7 +207,8 @@ class GraphDataStruct:
         (useful if we have no image, and id are actual path)
         :return: Nothing (+ change the internal state)
         """
-        [tmp_node.copy_ids_to_image() for tmp_node in self.nodes.values()]
+        for tmp_node in self.nodes.values():
+            tmp_node.copy_ids_to_image()
 
     def export_as_dict(self) -> Dict:
         """
@@ -230,7 +225,7 @@ class GraphDataStruct:
         return tmp_dict
 
     @staticmethod
-    def load_from_dict(tmp_input : Dict):
+    def load_from_dict(tmp_input: Dict):
         """
         Load/ Import a graph from a dict
         :param tmp_input: A Dict version of the graph to import

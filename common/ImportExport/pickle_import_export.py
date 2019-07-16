@@ -2,25 +2,23 @@
 # -*- coding: utf-8 -*-
 
 
-# ==================== ------ STD LIBRARIES ------- ====================
 import _pickle as cPickle
 import copyreg
-import os
 import pickle
-import sys
 
 import cv2
 
-# ==================== ------ PERSONAL LIBRARIES ------- ====================
 import carlhauser_server.Singletons.singleton as template_singleton
+from common.environment_variable import load_server_logging_conf_file
 
-sys.path.append(os.path.abspath(os.path.pardir))
+load_server_logging_conf_file()
 
 
 class Pickler(metaclass=template_singleton.Singleton):
     """
     Very specific file to overwrite method to pickle some specific object types.
     """
+
     def __init__(self):
         self.patch_Keypoint_pickiling()
 

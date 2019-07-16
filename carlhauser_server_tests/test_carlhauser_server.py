@@ -5,10 +5,9 @@ import unittest
 import redis
 
 import carlhauser_server.DatabaseAccessor.database_worker as database_worker
-import common.TestInstanceLauncher.test_instance_launcher as test_database_handler
-import common.TestInstanceLauncher.test_database_conf as test_database_only_conf
-
-
+import common.TestInstanceLauncher.one_db_conf as test_database_only_conf
+import common.TestInstanceLauncher.one_db_instance_launcher as test_database_handler
+from common.environment_variable import QueueNames
 class testCarlHauserServer(unittest.TestCase):
     """Basic test cases."""
 
@@ -26,9 +25,8 @@ class testCarlHauserServer(unittest.TestCase):
 
     def tearDown(self):
         # Launch shutdown AND FLUSH script
-        print("[TESTS] STOPPING DATABASE AS TEST : NOTHING WILL BE REMOVED ON STORAGE OR CACHE DATABASES [TESTS]")
+        print("\n[TESTS] STOPPING DATABASE AS TEST : NOTHING WILL BE REMOVED ON STORAGE OR CACHE DATABASES [TESTS]")
         self.test_db_handler.tearDown()
-
 
     def test_db_worker_add_queue(self):
         # Construct a worker and get a link to redis db

@@ -1,16 +1,18 @@
 # -*- coding: utf-8 -*-
 import logging
-import pathlib
 import pprint
-import time
+
 import carlhauser_server.Configuration.database_conf as database_conf
 import carlhauser_server.Configuration.distance_engine_conf as distance_engine_conf
 import carlhauser_server.Configuration.feature_extractor_conf as feature_extractor_conf
 import carlhauser_server.Configuration.webservice_conf as webservice_conf
 import carlhauser_server.Singletons.database_start_stop as database_start_stop
 import carlhauser_server.instance_handler as core
-from common.environment_variable import get_homedir
 from common.ImportExport.json_import_export import Custom_JSON_Encoder
+from common.environment_variable import get_homedir
+from common.environment_variable import load_server_logging_conf_file
+
+load_server_logging_conf_file()
 
 class TestInstanceLauncher:
     """ Create a running instance of douglas-quaid, all linked on a unique test database

@@ -1,19 +1,16 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-# ==================== ------ STD LIBRARIES ------- ====================
 
 import logging
-import os
-import sys
 
 import cv2
 import numpy as np
 
-# ==================== ------ PERSONAL LIBRARIES ------- ====================
 import carlhauser_server.Configuration.feature_extractor_conf as feature_extractor_conf
+from common.environment_variable import load_server_logging_conf_file
 
-sys.path.append(os.path.abspath(os.path.pardir))
+load_server_logging_conf_file()
 
 
 class Picture_Orber:

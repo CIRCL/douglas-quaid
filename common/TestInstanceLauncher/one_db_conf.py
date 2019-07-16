@@ -1,11 +1,13 @@
 # ==================== ------ STD LIBRARIES ------- ====================
-import os
 import pathlib
-import sys
+
+import carlhauser_server.Configuration.database_conf as database_conf
+from common.environment_variable import load_server_logging_conf_file
+
+load_server_logging_conf_file()
+
 
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
-sys.path.append(os.path.abspath(os.path.pardir))
-import carlhauser_server.Configuration.database_conf as database_conf
 
 
 class TestInstance_database_conf(database_conf.Default_database_conf):

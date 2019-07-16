@@ -1,18 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-# ==================== ------ STD LIBRARIES ------- ====================
-import logging
-import os
-import sys
 from typing import Dict
 
-# ==================== ------ PERSONAL LIBRARIES ------- ====================
 from common.Graph import node
+from common.environment_variable import load_server_logging_conf_file
 
-sys.path.append(os.path.abspath(os.path.pardir))
-FORMATTER = logging.Formatter('%(asctime)s - + %(relativeCreated)d - %(name)s - %(levelname)s - %(message)s')
-
+load_server_logging_conf_file()
 
 
 class Cluster(node.Node):
@@ -61,17 +55,17 @@ class Cluster(node.Node):
 
     def export_as_dict(self):
         tmp_json = super().export_as_dict()
-        tmp_json["members"] = sorted(list(self.members)) # Sorted to keep order, mainly for test purposes
+        tmp_json["members"] = sorted(list(self.members))  # Sorted to keep order, mainly for test purposes
         tmp_json["group"] = self.group
 
         return tmp_json
 
     @staticmethod
-    def create_from_parent(parent : node.Node):
+    def create_from_parent(parent: node.Node):
         return Cluster(label=parent.label, id=parent.id, image=parent.image)
 
     @staticmethod
-    def load_from_dict(tmp_input : Dict):
+    def load_from_dict(tmp_input: Dict):
         """
         Load/ Import a Cluster object from a dict
         :param tmp_input: A Dict version of the Cluster to import
@@ -97,4 +91,3 @@ class Cluster(node.Node):
 
     def get_str(self):
         return ''.join(map(str, [super().get_str(), ' members=', list(self.members), ' group=', self.group]))
-

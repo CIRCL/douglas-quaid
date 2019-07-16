@@ -1,16 +1,12 @@
 # -*- coding: utf-8 -*-
 
 import logging
-import os
-import sys
-import unittest
 import pathlib
+import unittest
 from shutil import rmtree
 
 from common.DataTurksAlgos.pictures_exporter import PicturesExporter
 from common.ImportExport.json_import_export import load_json
-
-sys.path.append(os.path.abspath(os.path.pardir))
 
 
 class test_template(unittest.TestCase):

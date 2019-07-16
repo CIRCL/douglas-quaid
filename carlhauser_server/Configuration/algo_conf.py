@@ -1,9 +1,3 @@
-# ==================== ------ STD LIBRARIES ------- ====================
-import os
-import sys
-
-# ==================== ------ PERSONAL LIBRARIES ------- ====================
-sys.path.append(os.path.abspath(os.path.pardir))
 from common.environment_variable import JSON_parsable_Dict
 
 

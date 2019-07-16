@@ -1,14 +1,11 @@
-# ==================== ------ STD LIBRARIES ------- ====================
-
-import os
-import sys
-from collections import namedtuple
 import logging
+from collections import namedtuple
 
-# ==================== ------ PERSONAL LIBRARIES ------- ====================
-sys.path.append(os.path.abspath(os.path.pardir))
-from common.environment_variable import JSON_parsable_Dict
 from carlhauser_server.Configuration.algo_conf import Algo_conf
+from common.environment_variable import JSON_parsable_Dict
+from common.environment_variable import load_server_logging_conf_file
+
+load_server_logging_conf_file()
 
 
 class Pair_rate_threshold:
@@ -81,11 +78,11 @@ class Default_calibrator_conf(JSON_parsable_Dict):
         pair_FNR = Pair_rate_threshold(rate=self.Acceptable_false_negative_rate,
                                        threshold=self.thre_upper_at_most_xpercent_FNR)
         pair_TNR = Pair_rate_threshold(rate=self.Minimum_true_negative_rate,
-                                        threshold=self.thre_below_at_least_xpercent_TNR)
-        pair_FPR =Pair_rate_threshold(rate=self.Acceptable_false_positive_rate,
-                                        threshold=self.thre_below_at_most_xpercent_FPR)
-        pair_TPR =Pair_rate_threshold(rate=self.Minimum_true_positive_rate,
-                                        threshold=self.thre_upper_at_least_xpercent_TPR)
+                                       threshold=self.thre_below_at_least_xpercent_TNR)
+        pair_FPR = Pair_rate_threshold(rate=self.Acceptable_false_positive_rate,
+                                       threshold=self.thre_below_at_most_xpercent_FPR)
+        pair_TPR = Pair_rate_threshold(rate=self.Minimum_true_positive_rate,
+                                       threshold=self.thre_upper_at_least_xpercent_TPR)
 
         if case_FNR_TNR:
             return pair_TNR, pair_FNR
@@ -105,7 +102,7 @@ class Default_calibrator_conf(JSON_parsable_Dict):
 
         pair_1, pair_2 = self.return_good_pair()
 
-        if pair_1.threshold > pair_2.threshold :
+        if pair_1.threshold > pair_2.threshold:
             self.logger.critical("Yes_to_Maybe threshold is upper than Maybe_to_no threshold : No MAYBE area !")
 
         input_Algo_Conf.threshold_yes_to_maybe = pair_1.threshold

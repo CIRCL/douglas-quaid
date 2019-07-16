@@ -25,12 +25,12 @@ import carlhauser_server.Singletons.worker_start_stop as worker_start_stop
 import carlhauser_server.Singletons.singleton as template_singleton
 from carlhauser_server.Singletons.worker_start_stop import WorkerTypes as workertype
 
-sys.path.append(os.path.abspath(os.path.pardir))
+ 
 
 # ==================== ------ PREPARATION ------- ====================
 # load the logging configuration
 logconfig_path = (get_homedir() / pathlib.Path("carlhauser_server", "logging.ini")).resolve()
-logging.config.fileConfig(str(logconfig_path))
+ 
 
 
 # ==================== ------ LAUNCHER ------- ====================

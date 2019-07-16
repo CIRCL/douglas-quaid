@@ -1,29 +1,21 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-# ==================== ------ STD LIBRARIES ------- ====================
 
 import logging.config
-import os
 import pathlib
-import sys
 from typing import List, Dict
 
-# ==================== ------ PERSONAL LIBRARIES ------- ====================
-
+import carlhauser_client.Helpers.dict_utilities as dict_utilities
 import common.ImportExport.json_import_export as json_import_export
 import common.PerformanceDatastructs.perf_datastruct as perf_datastruct
 import common.PerformanceDatastructs.stats_datastruct as stats_datastruct
-import carlhauser_client.Helpers.dict_utilities as dict_utilities
 from carlhauser_client.API.extended_api import Extended_API
 from common.Graph.graph_datastructure import GraphDataStruct
 from common.environment_variable import get_homedir
+from common.environment_variable import load_client_logging_conf_file
 
-sys.path.append(os.path.abspath(os.path.pardir))
-# ==================== ------ PREPARATION ------- ====================
-# load the logging configuration
-logconfig_path = (get_homedir() / pathlib.Path("carlhauser_client", "logging.ini")).resolve()
-logging.config.fileConfig(str(logconfig_path))
+load_client_logging_conf_file()
 
 
 # ==================== ------ LAUNCHER ------- ====================
@@ -42,7 +34,7 @@ class GraphQualityEvaluator:
     # =================== Optimizer for one value ===================
     def get_perf_list(self, list_results: List,
                       gt_graph: GraphDataStruct,
-                      output_folder :pathlib.Path = None) -> List[perf_datastruct.Perf]:
+                      output_folder: pathlib.Path = None) -> List[perf_datastruct.Perf]:
         '''
         Extract a list of performance datastructure from a list of results (list_results)
         compared to a ground truth file (gt_graph). Can store provided list and ground truth results if a (output_folder) is given.
@@ -59,13 +51,13 @@ class GraphQualityEvaluator:
         self.logger.debug(gt_graph.export_as_dict())
 
         # TODO : Remove output folder ?
-        if output_folder is not None :
+        if output_folder is not None:
             # Saving ground truth graph
             json_import_export.save_json(list_results, get_homedir() / "requests_result.json")
 
             # Saving list results
             json_import_export.save_json(gt_graph.export_as_dict(), get_homedir() / "gt_graph.json")
-        else :
+        else:
             self.logger.debug("List results and ground truth graph can't be saved : no output_folder specified.")
 
         # Init a void performance list
@@ -73,7 +65,6 @@ class GraphQualityEvaluator:
 
         # For each evaluation points
         for i in range(self.pts_nb):
-
             # Computing the new threshold
             curr_threshold = i * ((self.max_threshold - self.min_threshold) / self.pts_nb)
             self.logger.info(f"Current threshold computation : {curr_threshold}")
@@ -91,7 +82,7 @@ class GraphQualityEvaluator:
         return perfs_list
 
     @staticmethod
-    def is_correct(result : Dict):
+    def is_correct(result: Dict):
         '''
         Checks if a request result is valid to be evaluated.
         Check if it has enough matches, if correctly formatted ...

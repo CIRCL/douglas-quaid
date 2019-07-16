@@ -3,15 +3,12 @@
 
 import json
 import logging
-# ==================== ------ STD LIBRARIES ------- ====================
-import os
 import pathlib
-import sys
 
-# ==================== ------ PERSONAL LIBRARIES ------- ====================
 import common.environment_variable
+from common.environment_variable import load_server_logging_conf_file
 
-sys.path.append(os.path.abspath(os.path.pardir))
+load_server_logging_conf_file()
 
 
 class Custom_JSON_Encoder(json.JSONEncoder):

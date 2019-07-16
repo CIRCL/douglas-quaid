@@ -2,27 +2,19 @@
 # -*- coding: utf-8 -*-
 
 import logging.config
-# ==================== ------ STD LIBRARIES ------- ====================
-import os
 import pathlib
-import sys
-
-# ==================== ------ PERSONAL LIBRARIES ------- ====================
-sys.path.append(os.path.abspath(os.path.pardir))
 
 import common.ImportExport.json_import_export as json_import_export
-from common.environment_variable import get_homedir
 from carlhauser_client.API.extended_api import Extended_API
+from carlhauser_client.Helpers.dict_utilities import get_clear_matches
+from common.Graph.edge import Edge
 from common.Graph.graph_datastructure import GraphDataStruct
 from common.Graph.metadata import Metadata, Source
-from common.Graph.edge import Edge
 from common.Graph.node import Node
-from carlhauser_client.Helpers.dict_utilities import get_clear_matches
+from common.environment_variable import get_homedir
+from common.environment_variable import load_client_logging_conf_file
 
-# ==================== ------ PREPARATION ------- ====================
-# load the logging configuration
-logconfig_path = (get_homedir() / pathlib.Path("carlhauser_client", "logging.ini")).resolve()
-logging.config.fileConfig(str(logconfig_path))
+load_client_logging_conf_file()
 
 
 # ==================== ------ LAUNCHER ------- ====================

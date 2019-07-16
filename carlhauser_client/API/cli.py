@@ -1,26 +1,18 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-# ==================== ------ STD LIBRARIES ------- ====================
 import argparse
-import logging.config
-import os
 import pathlib
-import sys
 from typing import Dict
 
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
-from common.environment_variable import get_homedir
 from carlhauser_client.API.extended_api import Extended_API
-from common.ImportExport.json_import_export import save_json, load_json
 from carlhauser_client.Helpers.dict_utilities import apply_revert_mapping
+from common.ImportExport.json_import_export import save_json, load_json
+from common.environment_variable import load_client_logging_conf_file
 
-sys.path.append(os.path.abspath(os.path.pardir))
+load_client_logging_conf_file()
 
-# ==================== ------ PREPARATION ------- ====================
-# load the logging configuration
-logconfig_path = (get_homedir() / pathlib.Path("carlhauser_client", "logging.ini")).resolve()
-logging.config.fileConfig(str(logconfig_path))
 
 # ==================== ------ LAUNCHER ------- ====================
 

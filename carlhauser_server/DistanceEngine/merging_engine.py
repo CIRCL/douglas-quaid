@@ -2,19 +2,15 @@
 # -*- coding: utf-8 -*-
 
 import logging
-# ==================== ------ STD LIBRARIES ------- ====================
-import os
-import sys
 from typing import Dict, List
 
 import carlhauser_server.Configuration.database_conf as database_conf
 import carlhauser_server.Configuration.distance_engine_conf as distance_engine_conf
 import carlhauser_server.Configuration.feature_extractor_conf as feature_extractor_conf
 import carlhauser_server.DistanceEngine.scoring_datastrutures as sd
+from common.environment_variable import load_server_logging_conf_file
 
-# ==================== ------ PERSONAL LIBRARIES ------- ====================
-
-sys.path.append(os.path.abspath(os.path.pardir))
+load_server_logging_conf_file()
 
 
 class Merging_Engine:

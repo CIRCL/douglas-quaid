@@ -1,15 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-# ==================== ------ STD LIBRARIES ------- ====================
-import logging
-import os
-import sys
 from typing import Dict
-# ==================== ------ PERSONAL LIBRARIES ------- ====================
-
-sys.path.append(os.path.abspath(os.path.pardir))
-FORMATTER = logging.Formatter('%(asctime)s - + %(relativeCreated)d - %(name)s - %(levelname)s - %(message)s')
+from common.environment_variable import load_server_logging_conf_file
+load_server_logging_conf_file()
 
 
 class Node_Meta:
@@ -57,13 +51,13 @@ class Node:
         tmp_json["image"] = self.image
         tmp_json["shape"] = self.shape
 
-        if self.metadata is not None :
+        if self.metadata is not None:
             tmp_json["metadata"] = self.metadata.export_as_json()
 
         return tmp_json
 
     @staticmethod
-    def load_from_dict(tmp_input : Dict):
+    def load_from_dict(tmp_input: Dict):
         """
         Load/ Import a Node object from a dict
         :param tmp_input: A Dict version of the Node to import
@@ -97,4 +91,3 @@ class Node:
 
     def get_str(self):
         return ''.join(map(str, [' label=', self.label, ' id=', self.id, ' image=', self.image]))
-

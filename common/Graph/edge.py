@@ -1,15 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-# ==================== ------ STD LIBRARIES ------- ====================
-import logging
-import os
-import sys
 from typing import Dict
-# ==================== ------ PERSONAL LIBRARIES ------- ====================
 
-sys.path.append(os.path.abspath(os.path.pardir))
-FORMATTER = logging.Formatter('%(asctime)s - + %(relativeCreated)d - %(name)s - %(levelname)s - %(message)s')
+from common.environment_variable import load_server_logging_conf_file
+
+load_server_logging_conf_file()
 
 
 class Edge:
@@ -54,7 +50,7 @@ class Edge:
         return tmp_json
 
     @staticmethod
-    def load_from_dict(tmp_input : Dict):
+    def load_from_dict(tmp_input: Dict):
         """
         Load/ Import a Edge object from a dict
         :param tmp_input: A Dict version of the Edge to import

@@ -2,18 +2,16 @@
 # -*- coding: utf-8 -*-
 
 import logging
-# ==================== ------ STD LIBRARIES ------- ====================
-import os
 import pathlib
-import sys
 import time
 from typing import Dict
 
 import requests
 
-# ==================== ------ PERSONAL LIBRARIES ------- ====================
-sys.path.append(os.path.abspath(os.path.pardir))
 from common.environment_variable import get_homedir, resolve_path, EndPoints
+from common.environment_variable import load_client_logging_conf_file
+
+load_client_logging_conf_file()
 
 
 # ==================== ------ SERVER Flask API CALLER ------- ====================

@@ -1,14 +1,9 @@
-# ==================== ------ STD LIBRARIES ------- ====================
-import os
-import sys
 from collections import namedtuple
 from enum import Enum, auto
 from typing import List
 
-# ==================== ------ PERSONAL LIBRARIES ------- ====================
-sys.path.append(os.path.abspath(os.path.pardir))
-from common.environment_variable import JSON_parsable_Enum, JSON_parsable_Dict
 from carlhauser_server.Configuration.algo_conf import Algo_conf
+from common.environment_variable import JSON_parsable_Enum, JSON_parsable_Dict
 
 
 class Distance_MergingMethod(JSON_parsable_Enum, Enum):
@@ -24,7 +19,6 @@ class Decision_MergingMethod(JSON_parsable_Enum, Enum):
     MAJORITY = auto()  # The most prevalent decision
     WEIGHTED_MAJORITY = auto()  # The most prevalent decision, with weights
     PYRAMID = auto()  # The most prevalent decision, if unsure, then look at lower ranked
-
 
 
 # Used to export easily configuration to files, for logging

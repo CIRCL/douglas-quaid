@@ -1,25 +1,14 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import logging.config
-# ==================== ------ STD LIBRARIES ------- ====================
-import os
-import pathlib
-import sys
 from typing import Dict
 from typing import List
 
 import common.PerformanceDatastructs.stats_datastruct as scores
 from common.PerformanceDatastructs.clustermatch_datastruct import ClusterMatch
-# ==================== ------ PERSONAL LIBRARIES ------- ====================
-from common.environment_variable import get_homedir
+from common.environment_variable import load_client_logging_conf_file
 
-sys.path.append(os.path.abspath(os.path.pardir))
-
-# ==================== ------ PREPARATION ------- ====================
-# load the logging configuration
-logconfig_path = (get_homedir() / pathlib.Path("carlhauser_client", "logging.ini")).resolve()
-logging.config.fileConfig(str(logconfig_path))
+load_client_logging_conf_file()
 
 
 class ClusterMatchingQualityEvaluator:

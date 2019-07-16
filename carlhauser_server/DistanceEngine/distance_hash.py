@@ -2,10 +2,7 @@
 # -*- coding: utf-8 -*-
 
 
-# ==================== ------ STD LIBRARIES ------- ====================
 import logging
-import os
-import sys
 import tlsh
 import traceback
 from typing import Dict
@@ -15,10 +12,9 @@ import carlhauser_server.Configuration.distance_engine_conf as distance_engine_c
 import carlhauser_server.Configuration.feature_extractor_conf as feature_extractor_conf
 import carlhauser_server.DistanceEngine.scoring_datastrutures as sd
 from carlhauser_server.Configuration.algo_conf import Algo_conf
+from common.environment_variable import load_server_logging_conf_file
 
-# ==================== ------ PERSONAL LIBRARIES ------- ====================
-
-sys.path.append(os.path.abspath(os.path.pardir))
+load_server_logging_conf_file()
 
 
 class Distance_Hash:

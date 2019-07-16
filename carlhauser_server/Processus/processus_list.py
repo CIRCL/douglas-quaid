@@ -1,22 +1,16 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-
-# ==================== ------ STD LIBRARIES ------- ====================
 import logging
-import os
 import subprocess
-import sys
 import time
 from typing import List
 
-# ==================== ------ PERSONAL LIBRARIES ------- ====================
 import carlhauser_server.Processus.worker_process as worker_processus
+from common.environment_variable import load_server_logging_conf_file
 
-sys.path.append(os.path.abspath(os.path.pardir))
+load_server_logging_conf_file()
 
-
-# ==================== ------ PATHS ------- ====================
 
 class ProcessesList:
     """
@@ -24,8 +18,8 @@ class ProcessesList:
     """
 
     def __init__(self, list_name: str, processus_list: List[worker_processus.WorkerProcessus]):
-        self.list_name : str = list_name
-        self.processus_list : List[worker_processus.WorkerProcessus] = processus_list
+        self.list_name: str = list_name
+        self.processus_list: List[worker_processus.WorkerProcessus] = processus_list
         self.logger = logging.getLogger(__name__)
 
     def append(self, process: worker_processus.WorkerProcessus):

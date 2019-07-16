@@ -1,22 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import logging.config
-# ==================== ------ STD LIBRARIES ------- ====================
-import os
-import pathlib
-import sys
 from typing import List, Set
 
-# ==================== ------ PERSONAL LIBRARIES ------- ====================
-from common.environment_variable import get_homedir, JSON_parsable_Dict
+from common.environment_variable import JSON_parsable_Dict
+from common.environment_variable import load_server_logging_conf_file
 
-sys.path.append(os.path.abspath(os.path.pardir))
-
-# ==================== ------ PREPARATION ------- ====================
-# load the logging configuration
-logconfig_path = (get_homedir() / pathlib.Path("carlhauser_client", "logging.ini")).resolve()
-logging.config.fileConfig(str(logconfig_path))
+load_server_logging_conf_file()
 
 
 # ==================== ------ LAUNCHER ------- ====================

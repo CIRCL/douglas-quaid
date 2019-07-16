@@ -1,14 +1,18 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import argparse
 import logging
 import pathlib
-import time
-from typing import List, Dict
-import argparse
-import common.ImportExport.json_import_export as json_io
-from shutil import copyfile
 from pprint import pformat
+from shutil import copyfile
+from typing import List, Dict
+
+import common.ImportExport.json_import_export as json_io
+from common.environment_variable import load_server_logging_conf_file
+
+load_server_logging_conf_file()
+
 
 def dir_path(path):
     if pathlib.Path(path).exists():
@@ -90,12 +94,12 @@ class PicturesExporter:
             # self.logger.debug(f"Current element : \n{pformat(element)}")
 
             # Do delete = we jump
-            try :
+            try:
                 annotations = element["annotation"]
                 labels = annotations["labels"]
-            except Exception as e :
+            except Exception as e:
                 self.logger.error(f"Error when labels fetching from {pformat(element)} : {e}")
-                no_label+=1
+                no_label += 1
                 continue
 
             if "to_delete" in labels:
@@ -113,7 +117,7 @@ class PicturesExporter:
             pack_id = nb_of_element // self.packet_size
 
             # Save labels in a corner for later export
-            if pack_id + 1 != len(self.dict_to_export) :
+            if pack_id + 1 != len(self.dict_to_export):
                 # We don't have enough dictionnary, we add one
                 self.dict_to_export.append({})
 
@@ -126,13 +130,13 @@ class PicturesExporter:
             curr_saving_path.mkdir(exist_ok=True)
 
             # We copy the file
-            if self.pic_to_path.get(tmp_path.name, None) is not None :
+            if self.pic_to_path.get(tmp_path.name, None) is not None:
                 src = str(self.pic_to_path[tmp_path.name])
                 dst = str(curr_saving_path / tmp_path.name)
                 self.logger.info(f"Picture {src} copied to {dst}")
                 copyfile(src, dst)
                 copied += 1
-            else :
+            else:
                 not_found += 1
                 self.logger.critical(f"Picture not found as file on the disk ! {tmp_path.name}")
 
@@ -143,8 +147,9 @@ class PicturesExporter:
         self.logger.info(f"Pictures copied = {copied}")
 
     def export_dicts(self):
-        for i, curr_dict in enumerate(self.dict_to_export) :
-            json_io.save_json(curr_dict, self.dst_folder / ("labels_"+str(i)+".json"))
+        for i, curr_dict in enumerate(self.dict_to_export):
+            json_io.save_json(curr_dict, self.dst_folder / ("labels_" + str(i) + ".json"))
+
 
 '''
   {

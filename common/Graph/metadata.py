@@ -2,18 +2,12 @@
 # -*- coding: utf-8 -*-
 
 
-# ==================== ------ STD LIBRARIES ------- ====================
-
-import logging
-import os
-import sys
 from enum import Enum, auto
 from typing import Dict
 
-# ==================== ------ PERSONAL LIBRARIES ------- ====================
+from common.environment_variable import load_server_logging_conf_file
 
-sys.path.append(os.path.abspath(os.path.pardir))
-FORMATTER = logging.Formatter('%(asctime)s - + %(relativeCreated)d - %(name)s - %(levelname)s - %(message)s')
+load_server_logging_conf_file()
 
 
 class Source(Enum):

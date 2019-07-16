@@ -2,10 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import logging
-# ==================== ------ STD LIBRARIES ------- ====================
-import os
 import pathlib
-import sys
 import time
 from enum import Enum, auto
 from typing import List
@@ -18,13 +15,10 @@ import carlhauser_server.Processus.processus_list as processus_list
 import carlhauser_server.Processus.worker_process as worker_processus
 from carlhauser_server.Singletons.singleton import Singleton
 from common.environment_variable import get_homedir, JSON_parsable_Enum
+from common.environment_variable import load_server_logging_conf_file
 
-# ==================== ------ PERSONAL LIBRARIES ------- ====================
+load_server_logging_conf_file()
 
-sys.path.append(os.path.abspath(os.path.pardir))
-
-
-# ==================== ------ PATHS ------- ====================
 
 class WorkerTypes(JSON_parsable_Enum, Enum):
     ADDER = auto()
@@ -211,4 +205,3 @@ class Worker_StartStop(object, metaclass=Singleton):
         for curr_workers_list in list(self.mapping.values()):
             curr_workers_list.kill_all_processus()
             curr_workers_list.flush()
-
