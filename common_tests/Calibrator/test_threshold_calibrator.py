@@ -6,7 +6,7 @@ import unittest
 
 import common.PerformanceDatastructs.perf_datastruct as perf_datastruct
 import common.PerformanceDatastructs.stats_datastruct as stats_datastruct
-from carlhauser_client.EvaluationTools.SimilarityGraphExtractor.similarity_graph_quality_evaluator import GraphQualityEvaluator
+from carlhauser_client.EvaluationTools.SimilarityGraphExtractor.similarity_graph_quality_evaluator import similarity_graph_quality_evaluator
 from common.ChartMaker.two_dimensions_plot import TwoDimensionsPlot
 from common.Graph.cluster import Cluster
 from common.Graph.edge import Edge
@@ -23,7 +23,7 @@ class TestPerformanceEvaluator(unittest.TestCase):
         self.logger = logging.getLogger()
         # self.conf = .Default_configuration()
         self.output_folder = get_homedir() / "carlhauser_client_tests" / "graph_quality"
-        self.quality_evaluator = GraphQualityEvaluator()
+        self.quality_evaluator = similarity_graph_quality_evaluator()
         self.quality_evaluator.TOLERANCE = 0.1  # We tolerate a 10% False Negative Rate / A 90% True positive rate "only"
         self.plotmaker = TwoDimensionsPlot()
 
@@ -236,7 +236,7 @@ class TestPerformanceEvaluator(unittest.TestCase):
 
     def test_compute_score_for_one_threshold(self):
         # Graph example. Please check documentation for more information
-        quality_evaluator = GraphQualityEvaluator()
+        quality_evaluator = similarity_graph_quality_evaluator()
 
         requests_results = [
             # 1 to 2 and 3
