@@ -42,7 +42,7 @@ class test_calibrator(unittest.TestCase):
                                                                       ground_truth_file=self.micro_dataset_gt_path,
                                                                       output_folder=self.micro_dataset_output_path)
         for algo in list_algos:
-            self.assertGreater(algo.threshold_yes_to_maybe, algo.threshold_maybe_to_no)
+            self.assertTrue(algo.threshold_yes_to_maybe <= algo.threshold_maybe_to_no)
 
     def test_feature_conf_generator(self):
         self.logger.debug("Launching calibration... (tests)")

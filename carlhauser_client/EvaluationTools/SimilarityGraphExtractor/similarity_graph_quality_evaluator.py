@@ -4,6 +4,7 @@
 
 import logging.config
 import pathlib
+from pprint import pformat
 from typing import List, Dict
 
 import carlhauser_client.Helpers.dict_utilities as dict_utilities
@@ -46,9 +47,9 @@ class similarity_graph_quality_evaluator:
 
         # DEBUG purposes / Display arguments
         self.logger.debug("Received requests results :")
-        self.logger.debug(list_results)
+        self.logger.debug(pformat(list_results))
         self.logger.debug("Received ground truth graph :")
-        self.logger.debug(gt_graph.export_as_dict())
+        self.logger.debug(pformat(gt_graph.export_as_dict()))
 
         # TODO : Remove output folder ?
         if output_folder is not None:
@@ -142,7 +143,7 @@ class similarity_graph_quality_evaluator:
 
                     if curr_matched_node.get("distance") < dist_threshold:
                         # Even if it's request_id, it the current name of the file.
-                        if gt_graph.are_ids_in_same_cluster(curr_result.get("request_id"), curr_matched_node.get("image_id")):
+                        if gt_graph.are_names_in_same_cluster(curr_result.get("request_id"), curr_matched_node.get("image_id")):
                             tmp_score.TP += 1
                             tmp_score.P += 1
 
@@ -153,7 +154,7 @@ class similarity_graph_quality_evaluator:
                     if curr_matched_node.get("distance") > dist_threshold:
 
                         # Even if it's request_id, it the current name of the file.
-                        if gt_graph.are_ids_in_same_cluster(curr_result.get("request_id"), curr_matched_node.get("image_id")):
+                        if gt_graph.are_names_in_same_cluster(curr_result.get("request_id"), curr_matched_node.get("image_id")):
                             tmp_score.FN += 1
                             tmp_score.P += 1
 

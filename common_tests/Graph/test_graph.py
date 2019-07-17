@@ -10,6 +10,7 @@ from common.Graph.edge import Edge
 from common.Graph.graph_datastructure import GraphDataStruct
 from common.Graph.metadata import Metadata, Source
 from common.Graph.node import Node
+from common.PerformanceDatastructs.clustermatch_datastruct import ClusterMatch
 
 
 class test_template(unittest.TestCase):
@@ -276,9 +277,10 @@ class test_template(unittest.TestCase):
                 tmp_graph_vis.add_node(Node(label="picture name +" + pic_id, id=pic_id, image=pic_image))
                 tmp_graph_vis.add_edge(Edge(_from=cluster_id, _to=pic_id))
 
-        cluster_mapping = [[Cluster("", 0, ""), Cluster("", 0, "")],
-                           [Cluster("", 1, ""), Cluster("", 2, "")],
-                           [Cluster("", 2, ""), Cluster("", 1, "")]]
+        cluster_mapping = [ClusterMatch(Cluster("", 0, ""), Cluster("", 0, "")),
+                           ClusterMatch(Cluster("", 1, ""), Cluster("", 2, "")),
+                           ClusterMatch(Cluster("", 2, ""), Cluster("", 1, ""))]
+
 
         print("Exported db dict : ")
         val = tmp_graph.export_as_dict()

@@ -4,6 +4,7 @@
 import logging
 import pathlib
 from typing import List, Dict
+from pprint import pformat
 
 import common.ImportExport.json_import_export as json_import_export
 from common.Graph import cluster, edge, metadata, node
@@ -128,7 +129,7 @@ class GraphDataStruct:
                     break  # Second id found ! = Stop
 
         if id_1 is None or id_2 is None:
-            raise Exception(f"Image Name not found in graph structure ! {name_1} => {id_1} or {name_2} =>{id_2}")
+            raise Exception(f"Image Name not found in graph structure ! {name_1} => {id_1} or {name_2} =>{id_2}. Are you sure the database was empty before launch ?")
 
         return self.are_ids_in_same_cluster(id_1, id_2)
 
@@ -141,6 +142,12 @@ class GraphDataStruct:
         :param filename_to_id: a mapping from name to ids
         :return: a mapping from old id to new ids (Ex : {2:1} in previus example) + change state of the graph
         """
+
+        self.logger.debug("Replacing id from mapping for the graph datastructure.")
+        self.logger.debug("Current graph datastructure : ")
+        self.logger.debug(pformat(self.export_as_dict()))
+        self.logger.debug("Used mapping : ")
+        self.logger.debug(pformat(filename_to_id))
 
         mapping_old_id_new_id = {}
 

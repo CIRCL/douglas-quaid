@@ -99,15 +99,15 @@ class Extended_API(Simple_API):
                 self.logger.debug(f"Found picture to be send : {image_path}.")
 
                 # Upload the image to db
-                res = function(image_path)
+                res = function(image_path) # Return picture id ! only !
 
-                if res[0]:
+                if res:
                     # The upload had been successful
-                    self.logger.info(f"Mapping from {image_path.name} to {res[1]}")
-                    mapping_filename_to_id[image_path.name] = res[1]
+                    self.logger.info(f"Mapping from {image_path.name} to {res}")
+                    mapping_filename_to_id[image_path.name] = res
                     nb_pics_sent += 1
                 else:
-                    self.logger.error(f"Error during upload of {image_path.name} : {res[1]}")
+                    self.logger.error(f"Error during upload of {image_path.name} : {res}")
 
         return mapping_filename_to_id, nb_pics_sent
 

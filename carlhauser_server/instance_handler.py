@@ -63,7 +63,7 @@ class Instance_Handler(metaclass=template_singleton.Singleton):
         self.worker_startstop.wait_for_worker_startup()
         self.check_worker()
 
-        print(make_big_line())
+        print("\n" + make_big_line())
         print("Server is running and ready to accept queries (if no error shown upper than this line).")
 
     def stop(self):
@@ -73,7 +73,7 @@ class Instance_Handler(metaclass=template_singleton.Singleton):
         """
 
         print("Server is asked to stop, please wait until complete shutdown of the server by itself.")
-        print(make_big_line())
+        print("\n" + make_big_line())
 
         # Shutdown Flask worker
         self.stop_webservice()
@@ -88,7 +88,7 @@ class Instance_Handler(metaclass=template_singleton.Singleton):
         self.stop_database(wait=True)  # Wait for stop
         self.flush_workers()
 
-        print(make_big_line())
+        print("\n" + make_big_line())
         print("Server is stopped, correctly (if no error shown upper than this line).")
 
 
