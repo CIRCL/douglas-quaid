@@ -68,7 +68,7 @@ class similarity_graph_quality_evaluator:
         perfs_list: List[perf_datastruct.Perf] = []
 
         # For each evaluation points
-        for i in range(self.cal_conf.NB_TO_CHECK):
+        for i in range(self.cal_conf.PTS_NB):
             # Computing the new threshold
             curr_threshold = i * ((self.cal_conf.MAX_THRESHOLD - self.cal_conf.MIN_THRESHOLD) / self.cal_conf.PTS_NB)
             self.logger.info(f"Current threshold computation : {curr_threshold}")

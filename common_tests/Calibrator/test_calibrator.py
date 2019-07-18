@@ -36,6 +36,10 @@ class test_calibrator(unittest.TestCase):
 
         new_calibrator_conf.Minimum_true_negative_rate = 0.9
         new_calibrator_conf.Minimum_true_positive_rate = 0.9
+        new_calibrator_conf.PTS_NB: int = 100
+        new_calibrator_conf.MIN_THRESHOLD: float = 0
+        new_calibrator_conf.MAX_THRESHOLD: float = 1
+        new_calibrator_conf.NB_TO_CHECK: int = 3
 
         self.calibrator_instance.set_calibrator_conf(tmp_calibrator_conf=new_calibrator_conf)
         list_algos = self.calibrator_instance.calibrate_douglas_quaid(folder_of_pictures=self.micro_dataset_input_path,
