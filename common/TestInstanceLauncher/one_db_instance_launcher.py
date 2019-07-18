@@ -14,6 +14,7 @@ from common.environment_variable import load_server_logging_conf_file
 
 load_server_logging_conf_file()
 
+
 class TestInstanceLauncher:
     """ Create a running instance of douglas-quaid, all linked on a unique test database
         Modify the behavior of the core launcher handler, to use only one database. """
@@ -22,16 +23,16 @@ class TestInstanceLauncher:
         self.logger = logging.getLogger()
 
         # TMP and modified version of handlers that will overwrite core-launcher's ones.
-        self.db_handler : database_start_stop.Database_StartStop = None
+        self.db_handler: database_start_stop.Database_StartStop = None
         # self.worker_handler : = None
 
         # Configurations files
-        self.db_conf : database_conf.Default_database_conf = None
-        self.dist_conf :distance_engine_conf.Default_distance_engine_conf = None
-        self.fe_conf : feature_extractor_conf.Default_feature_extractor_conf = None
-        self.ws_conf : webservice_conf.Default_webservice_conf = None
+        self.db_conf: database_conf.Default_database_conf = None
+        self.dist_conf: distance_engine_conf.Default_distance_engine_conf = None
+        self.fe_conf: feature_extractor_conf.Default_feature_extractor_conf = None
+        self.ws_conf: webservice_conf.Default_webservice_conf = None
 
-        self.core_launcher : core.Instance_Handler = None
+        self.core_launcher: core.Instance_Handler = None
 
     # ============================== LAUNCHER ACTIONS ==============================
     def create_full_instance(self, db_conf: database_conf.Default_database_conf = None,
@@ -49,7 +50,7 @@ class TestInstanceLauncher:
 
         self.set_configurations(db_conf, dist_conf, fe_conf, ws_conf)
         self.create_modified_db_handler()
-        self.create_core_launcher()
+        self.core_launcher = self.create_core_launcher()
         self.core_launcher.launch(with_database=False)
 
         # TODO: Flush database ? To be sure not to have artifacts ?
@@ -171,4 +172,3 @@ class TestInstanceLauncher:
         self.core_launcher.db_startstop = self.db_handler
 
         return self.core_launcher
-

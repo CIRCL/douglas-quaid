@@ -31,6 +31,16 @@ class Default_calibrator_conf(JSON_parsable_Dict):
         self.thre_below_at_most_xpercent_FPR: float = None
         self.maximum_F1: float = None
 
+        # ==== Calibrator parameters # No obvious need to change them ====
+        # Nb of points in the [0-1] interval that will be evaluated
+        self.PTS_NB: int = 50
+        # Minimum threshold where the evaluation will take place. If higher tha 0, no threshold could have a lesser threshold. NOT A GOOD WAY TO ENFORCE IT ;)
+        self.MIN_THRESHOLD: float = 0
+        # Maximum threshold where the evaluation will take place. If lower than 1, no threshold could have a higher threshold. NOT A GOOD WAY TO ENFORCE IT ;)
+        self.MAX_THRESHOLD: float = 1
+        # Number of first match to check to get the scores and overview. This means that the 3 first matches will be taken into account (distance only for now) to check for FP,TP ...
+        self.NB_TO_CHECK: int = 3
+
     @staticmethod
     def get_default_instance():
         new_instance = Default_calibrator_conf()

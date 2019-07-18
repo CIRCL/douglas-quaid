@@ -34,7 +34,7 @@ class test_calibrator(unittest.TestCase):
         self.logger.debug("Launching calibration... (tests)")
         new_calibrator_conf = calibrator_conf.Default_calibrator_conf()
 
-        new_calibrator_conf.Minimum_true_negative_rate = 0.1
+        new_calibrator_conf.Minimum_true_negative_rate = 0.9
         new_calibrator_conf.Minimum_true_positive_rate = 0.9
 
         self.calibrator_instance.set_calibrator_conf(tmp_calibrator_conf=new_calibrator_conf)

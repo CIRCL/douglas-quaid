@@ -15,22 +15,25 @@ from carlhauser_client.API.extended_api import Extended_API
 from common.Graph.graph_datastructure import GraphDataStruct
 from common.environment_variable import get_homedir
 from common.environment_variable import load_client_logging_conf_file
+import common.Calibrator.calibrator_conf as calibrator_conf
 
 load_client_logging_conf_file()
 
 
 # ==================== ------ LAUNCHER ------- ====================
 class similarity_graph_quality_evaluator:
-    def __init__(self):
+    def __init__(self, cal_conf: calibrator_conf.Default_calibrator_conf):
         self.logger = logging.getLogger(__name__)
         self.ext_api = Extended_API.get_api()
+        self.cal_conf = cal_conf
 
+        '''
         self.pts_nb: int = 50
         self.min_threshold: float = 0
         self.max_threshold: float = 1
 
         self.NB_TO_CHECK: int = 3  # Number of first match to check to get the scores and overview
-        self.TOLERANCE: float = 0.1  # [0-1] acceptable drop of True Positive and increase of False Negative
+        '''
 
     # =================== Optimizer for one value ===================
     def get_perf_list(self, list_results: List,
@@ -65,9 +68,9 @@ class similarity_graph_quality_evaluator:
         perfs_list: List[perf_datastruct.Perf] = []
 
         # For each evaluation points
-        for i in range(self.pts_nb):
+        for i in range(self.cal_conf.NB_TO_CHECK):
             # Computing the new threshold
-            curr_threshold = i * ((self.max_threshold - self.min_threshold) / self.pts_nb)
+            curr_threshold = i * ((self.cal_conf.MAX_THRESHOLD - self.cal_conf.MIN_THRESHOLD) / self.cal_conf.PTS_NB)
             self.logger.info(f"Current threshold computation : {curr_threshold}")
 
             # Compute score for this threshold
@@ -130,7 +133,7 @@ class similarity_graph_quality_evaluator:
                 matches_list = dict_utilities.get_clear_matches(curr_result)
 
                 # For all N first matches of the current picture (or below if less matches)
-                nb_matches_to_process = min(self.NB_TO_CHECK, len(matches_list))
+                nb_matches_to_process = min(self.cal_conf.NB_TO_CHECK, len(matches_list))
 
                 for i in range(0, nb_matches_to_process):
                     # fetch the match to process

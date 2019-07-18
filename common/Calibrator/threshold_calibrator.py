@@ -73,6 +73,12 @@ class Calibrator:
         # Save algorithm evaluator results
         json_import_export.save_json(calibrated_algos, output_folder / "calibrated_algo.json")
 
+        # Translate list of algorithms to correct configuration file for carl-hauser
+        configuration_file = feature_extractor_conf.calibrated_algos_to_conf_file(calibrated_algos)
+
+        # Save algorithm evaluator results
+        json_import_export.save_json(configuration_file, output_folder / "calibrated_db_conf.json")
+
         return calibrated_algos
 
     def check_inputs(self, folder_of_pictures: pathlib.Path,
@@ -293,7 +299,7 @@ class Calibrator:
 
         # Call the graph evaluator on this pair result_list + gt_graph
         self.logger.debug(f"Extracting performance list ")
-        perf_eval = graph_quality_evaluator.similarity_graph_quality_evaluator()
+        perf_eval = graph_quality_evaluator.similarity_graph_quality_evaluator(cal_conf)
         perfs_list = perf_eval.get_perf_list(list_results, gt_graph)  # ==> List of scores
         self.logger.debug(f"Fetched performance list : {pformat(perfs_list)} ")
 
@@ -593,6 +599,7 @@ class Calibrator:
             max_value = getattr(perfs_list[0].score, attribute)
             threshold = perfs_list[0].threshold
 
+            # Check if graph is decreasing
             if len(perfs_list) > 1:
                 first_val = getattr(perfs_list[0].score, attribute)
                 last_val = getattr(perfs_list[len(perfs_list) - 1].score, attribute)

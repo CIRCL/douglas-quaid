@@ -257,7 +257,7 @@ class Database_Worker:
 
         return False
 
-    def is_queue_empty(self, storage: redis.Redis, list_name: str) -> bool:
+    def is_queue_empty(self, storage: redis.Redis, list_name: QueueNames) -> bool:
         """
         Check if the specified Queue in the specified storage is empty
         :param storage: the storage in which the queue exist
