@@ -112,8 +112,7 @@ class test_template(unittest.TestCase):
     def test_absolute_truth_and_meaning(self):
         self.assertTrue(True)
 
-    def test_graph_export(self):
-
+    def generate_basic_graph(self) -> GraphDataStruct:
         # Create a graphe structure
         tmp_meta = Metadata(Source.DBDUMP)
         tmp_graph = GraphDataStruct(tmp_meta)
@@ -128,6 +127,54 @@ class test_template(unittest.TestCase):
                 tmp_graph.add_node(Node(label="picture name +" + pic_id, id=pic_id, image=""))
                 tmp_graph.add_edge(Edge(_from=cluster_id, _to=pic_id))
 
+        return tmp_graph
+
+    def generate_basic_graph_with_mapping(self,  VISJS=False) -> (GraphDataStruct, dict):
+        mapping = {}
+
+        # Create a graphe structure
+        if  VISJS :
+            tmp_meta = Metadata(Source.VISJS)
+        else :
+            tmp_meta = Metadata(Source.DBDUMP)
+        tmp_graph = GraphDataStruct(tmp_meta)
+
+        # For each cluster, fetch all pictures and store it
+        for cluster_id in range(0, 2):
+            tmp_graph.add_cluster(Cluster(label="", id=cluster_id, image=""))
+
+            for id in range(0, 3):
+                pic_id = str(cluster_id) + "_" + str(id) + "OLD"
+                pic_image = str(cluster_id) + "_" + str(id) + "IMAGE"
+
+                # Prepare mapping
+                mapping[pic_image] = str(cluster_id) + "_" + str(id) + "NEW"
+
+                # Label = picture score, here
+                tmp_graph.add_node(Node(label="picture name +" + pic_id, id=pic_id, image=pic_image))
+                tmp_graph.add_edge(Edge(_from=cluster_id, _to=pic_id))
+
+        return tmp_graph, mapping
+
+    def test_graph_export(self):
+
+        '''
+        # Create a graphe structure
+        tmp_meta = Metadata(Source.DBDUMP)
+        tmp_graph = GraphDataStruct(tmp_meta)
+
+        # For each cluster, fetch all pictures and store it
+        for cluster_id in range(0, 2):
+            tmp_graph.add_cluster(Cluster(label="", id=cluster_id, image=""))
+
+            for id in range(0, 3):
+                pic_id = str(cluster_id) + "_" + str(id)
+                # Label = picture score, here
+                tmp_graph.add_node(Node(label="picture name +" + pic_id, id=pic_id, image=""))
+                tmp_graph.add_edge(Edge(_from=cluster_id, _to=pic_id))
+        '''
+
+        tmp_graph = self.generate_basic_graph()
         print("Exported dict : ")
         val = tmp_graph.export_as_dict()
         pprint.pprint(val)
@@ -136,6 +183,7 @@ class test_template(unittest.TestCase):
 
     def test_graph_import_export_consistency(self):
 
+        '''
         # Create a graphe structure
         tmp_meta = Metadata(Source.DBDUMP)
         tmp_graph = GraphDataStruct(tmp_meta)
@@ -149,6 +197,9 @@ class test_template(unittest.TestCase):
                 # Label = picture score, here
                 tmp_graph.add_node(Node(label="picture name +" + pic_id, id=pic_id, image=""))
                 tmp_graph.add_edge(Edge(_from=cluster_id, _to=pic_id))
+        '''
+
+        tmp_graph = self.generate_basic_graph()
 
         print("Exported dict : ")
         val = tmp_graph.export_as_dict()
@@ -164,6 +215,8 @@ class test_template(unittest.TestCase):
         self.assertDictEqual(val, new_val)
 
     def test_graph_image_to_id_mapping_conversion(self):
+
+        '''
 
         mapping = {}
 
@@ -185,6 +238,8 @@ class test_template(unittest.TestCase):
                 # Label = picture score, here
                 tmp_graph.add_node(Node(label="picture name +" + pic_id, id=pic_id, image=pic_image))
                 tmp_graph.add_edge(Edge(_from=cluster_id, _to=pic_id))
+        '''
+        tmp_graph, mapping = self.generate_basic_graph_with_mapping()
 
         print("Exported dict : ")
         val = tmp_graph.export_as_dict()
@@ -202,7 +257,7 @@ class test_template(unittest.TestCase):
         self.assertDictEqual(val, self.mappedexpected)
 
     def test_get_clusters_list(self):
-
+        '''
         # Create a graphe structure
         tmp_meta = Metadata(Source.DBDUMP)
         tmp_graph = GraphDataStruct(tmp_meta)
@@ -218,6 +273,9 @@ class test_template(unittest.TestCase):
                 # Label = picture score, here
                 tmp_graph.add_node(Node(label="picture name +" + pic_id, id=pic_id, image=pic_image))
                 tmp_graph.add_edge(Edge(_from=cluster_id, _to=pic_id))
+        '''
+
+        tmp_graph, _ = self.generate_basic_graph_with_mapping()
 
         print("Exported dict : ")
         val = tmp_graph.export_as_dict()
@@ -245,6 +303,7 @@ class test_template(unittest.TestCase):
 
     def test_merge_graphs(self):
 
+        '''
         # Create a graphe structure
         tmp_meta = Metadata(Source.DBDUMP)
         tmp_graph = GraphDataStruct(tmp_meta)
@@ -260,7 +319,11 @@ class test_template(unittest.TestCase):
                 # Label = picture score, here
                 tmp_graph.add_node(Node(label="picture name +" + pic_id, id=pic_id, image=pic_image))
                 tmp_graph.add_edge(Edge(_from=cluster_id, _to=pic_id))
+        '''
+        tmp_graph, _ = self.generate_basic_graph_with_mapping()
 
+        tmp_graph_vis, _ = self.generate_basic_graph_with_mapping(VISJS=True)
+        '''
         # Create a graphe structure
         tmp_meta = Metadata(Source.VISJS)
         tmp_graph_vis = GraphDataStruct(tmp_meta)
@@ -276,7 +339,7 @@ class test_template(unittest.TestCase):
                 # Label = picture score, here
                 tmp_graph_vis.add_node(Node(label="picture name +" + pic_id, id=pic_id, image=pic_image))
                 tmp_graph_vis.add_edge(Edge(_from=cluster_id, _to=pic_id))
-
+        '''
         cluster_mapping = [ClusterMatch(Cluster("", 0, ""), Cluster("", 0, "")),
                            ClusterMatch(Cluster("", 1, ""), Cluster("", 2, "")),
                            ClusterMatch(Cluster("", 2, ""), Cluster("", 1, ""))]
