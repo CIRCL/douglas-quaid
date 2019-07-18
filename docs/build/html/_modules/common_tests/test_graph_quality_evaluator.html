@@ -1,0 +1,473 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>common_tests.test_graph_quality_evaluator &#8212; Douglas-Quaid 0.0.4 documentation</title>
+    <link rel="stylesheet" href="../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for common_tests.test_graph_quality_evaluator</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">pprint</span>
+<span class="kn">import</span> <span class="nn">unittest</span>
+
+<span class="kn">import</span> <span class="nn">common.PerformanceDatastructs.perf_datastruct</span> <span class="k">as</span> <span class="nn">perf_datastruct</span>
+<span class="kn">import</span> <span class="nn">common.PerformanceDatastructs.stats_datastruct</span> <span class="k">as</span> <span class="nn">stats_datastruct</span>
+<span class="kn">from</span> <span class="nn">carlhauser_client.EvaluationTools.SimilarityGraphExtractor.similarity_graph_quality_evaluator</span> <span class="k">import</span> <span class="n">GraphQualityEvaluator</span>
+<span class="kn">from</span> <span class="nn">common.ChartMaker.two_dimensions_plot</span> <span class="k">import</span> <span class="n">TwoDimensionsPlot</span>
+<span class="kn">from</span> <span class="nn">common.Graph.cluster</span> <span class="k">import</span> <span class="n">Cluster</span>
+<span class="kn">from</span> <span class="nn">common.Graph.edge</span> <span class="k">import</span> <span class="n">Edge</span>
+<span class="kn">from</span> <span class="nn">common.Graph.graph_datastructure</span> <span class="k">import</span> <span class="n">GraphDataStruct</span>
+<span class="kn">from</span> <span class="nn">common.Graph.metadata</span> <span class="k">import</span> <span class="n">Metadata</span><span class="p">,</span> <span class="n">Source</span>
+<span class="kn">from</span> <span class="nn">common.Graph.node</span> <span class="k">import</span> <span class="n">Node</span>
+<span class="kn">from</span> <span class="nn">common.environment_variable</span> <span class="k">import</span> <span class="n">get_homedir</span>
+
+
+<div class="viewcode-block" id="TestPerformanceEvaluator"><a class="viewcode-back" href="../../common_tests.html#common_tests.test_graph_quality_evaluator.TestPerformanceEvaluator">[docs]</a><span class="k">class</span> <span class="nc">TestPerformanceEvaluator</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Basic test cases.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="TestPerformanceEvaluator.setUp"><a class="viewcode-back" href="../../common_tests.html#common_tests.test_graph_quality_evaluator.TestPerformanceEvaluator.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span>
+        <span class="c1"># self.conf = .Default_configuration()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_folder</span> <span class="o">=</span> <span class="n">get_homedir</span><span class="p">()</span> <span class="o">/</span> <span class="s2">&quot;carlhauser_client_tests&quot;</span> <span class="o">/</span> <span class="s2">&quot;graph_quality&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">quality_evaluator</span> <span class="o">=</span> <span class="n">GraphQualityEvaluator</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">quality_evaluator</span><span class="o">.</span><span class="n">TOLERANCE</span> <span class="o">=</span> <span class="mf">0.1</span>  <span class="c1"># We tolerate a 10% False Negative Rate / A 90% True positive rate &quot;only&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">plotmaker</span> <span class="o">=</span> <span class="n">TwoDimensionsPlot</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="TestPerformanceEvaluator.test_absolute_truth_and_meaning"><a class="viewcode-back" href="../../common_tests.html#common_tests.test_graph_quality_evaluator.TestPerformanceEvaluator.test_absolute_truth_and_meaning">[docs]</a>    <span class="k">def</span> <span class="nf">test_absolute_truth_and_meaning</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestPerformanceEvaluator.get_increasing_graph"><a class="viewcode-back" href="../../common_tests.html#common_tests.test_graph_quality_evaluator.TestPerformanceEvaluator.get_increasing_graph">[docs]</a>    <span class="k">def</span> <span class="nf">get_increasing_graph</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">perf_list</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="n">MAX_VAL</span> <span class="o">=</span> <span class="mi">20</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">MAX_VAL</span><span class="p">):</span>
+            <span class="n">t</span> <span class="o">=</span> <span class="n">i</span> <span class="o">/</span> <span class="n">MAX_VAL</span>
+            <span class="n">tmp_score</span> <span class="o">=</span> <span class="n">stats_datastruct</span><span class="o">.</span><span class="n">Stats_datastruct</span><span class="p">()</span>
+            <span class="n">tmp_score</span><span class="o">.</span><span class="n">TPR</span> <span class="o">=</span> <span class="p">(</span><span class="n">i</span> <span class="o">/</span> <span class="n">MAX_VAL</span><span class="p">)</span>
+            <span class="n">perf_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">perf_datastruct</span><span class="o">.</span><span class="n">Perf</span><span class="p">(</span><span class="n">score</span><span class="o">=</span><span class="n">tmp_score</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="n">t</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">perf_list</span></div>
+
+<div class="viewcode-block" id="TestPerformanceEvaluator.get_decreasing_graph"><a class="viewcode-back" href="../../common_tests.html#common_tests.test_graph_quality_evaluator.TestPerformanceEvaluator.get_decreasing_graph">[docs]</a>    <span class="k">def</span> <span class="nf">get_decreasing_graph</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">perf_list</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="n">MAX_VAL</span> <span class="o">=</span> <span class="mi">20</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">MAX_VAL</span><span class="p">):</span>
+            <span class="n">t</span> <span class="o">=</span> <span class="n">i</span> <span class="o">/</span> <span class="n">MAX_VAL</span>
+            <span class="n">tmp_score</span> <span class="o">=</span> <span class="n">stats_datastruct</span><span class="o">.</span><span class="n">Stats_datastruct</span><span class="p">()</span>
+            <span class="n">tmp_score</span><span class="o">.</span><span class="n">TPR</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="p">(</span><span class="n">i</span> <span class="o">/</span> <span class="n">MAX_VAL</span><span class="p">)</span>
+            <span class="n">perf_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">perf_datastruct</span><span class="o">.</span><span class="n">Perf</span><span class="p">(</span><span class="n">score</span><span class="o">=</span><span class="n">tmp_score</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="n">t</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">perf_list</span></div>
+
+<div class="viewcode-block" id="TestPerformanceEvaluator.get_real_graph"><a class="viewcode-back" href="../../common_tests.html#common_tests.test_graph_quality_evaluator.TestPerformanceEvaluator.get_real_graph">[docs]</a>    <span class="k">def</span> <span class="nf">get_real_graph</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">perf_list</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="n">MAX_VAL</span> <span class="o">=</span> <span class="mi">20</span>
+        <span class="n">last_F1</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">MAX_VAL</span><span class="p">):</span>
+            <span class="n">t</span> <span class="o">=</span> <span class="n">i</span> <span class="o">/</span> <span class="n">MAX_VAL</span>
+            <span class="n">tmp_score</span> <span class="o">=</span> <span class="n">stats_datastruct</span><span class="o">.</span><span class="n">Stats_datastruct</span><span class="p">()</span>
+
+            <span class="n">delta</span> <span class="o">=</span> <span class="mf">0.05</span>
+            <span class="n">tmp_score</span><span class="o">.</span><span class="n">TPR</span> <span class="o">=</span> <span class="p">(</span><span class="n">i</span> <span class="o">/</span> <span class="n">MAX_VAL</span><span class="p">)</span>  <span class="c1"># Increasing</span>
+            <span class="n">tmp_score</span><span class="o">.</span><span class="n">FPR</span> <span class="o">=</span> <span class="p">(</span><span class="n">i</span> <span class="o">/</span> <span class="n">MAX_VAL</span><span class="p">)</span> <span class="o">+</span> <span class="n">delta</span>  <span class="c1"># Increasing</span>
+            <span class="n">tmp_score</span><span class="o">.</span><span class="n">TNR</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="p">(</span><span class="n">i</span> <span class="o">/</span> <span class="n">MAX_VAL</span><span class="p">)</span>  <span class="c1"># Decreasing</span>
+            <span class="n">tmp_score</span><span class="o">.</span><span class="n">FNR</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="p">(</span><span class="n">i</span> <span class="o">/</span> <span class="n">MAX_VAL</span><span class="p">)</span> <span class="o">-</span> <span class="n">delta</span>  <span class="c1"># Decreasing</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">MAX_VAL</span> <span class="o">/</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="n">tmp_score</span><span class="o">.</span><span class="n">F1</span> <span class="o">=</span> <span class="p">(</span><span class="n">i</span> <span class="o">/</span> <span class="n">MAX_VAL</span><span class="p">)</span>  <span class="c1"># Increasing until some point</span>
+                <span class="n">last_F1</span> <span class="o">=</span> <span class="n">tmp_score</span><span class="o">.</span><span class="n">F1</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">tmp_score</span><span class="o">.</span><span class="n">F1</span> <span class="o">=</span> <span class="n">last_F1</span>
+
+            <span class="n">perf_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">perf_datastruct</span><span class="o">.</span><span class="n">Perf</span><span class="p">(</span><span class="n">score</span><span class="o">=</span><span class="n">tmp_score</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="n">t</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">perf_list</span></div>
+
+<div class="viewcode-block" id="TestPerformanceEvaluator.test_get_max_max_increasing"><a class="viewcode-back" href="../../common_tests.html#common_tests.test_graph_quality_evaluator.TestPerformanceEvaluator.test_get_max_max_increasing">[docs]</a>    <span class="k">def</span> <span class="nf">test_get_max_max_increasing</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">perf_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_increasing_graph</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">([</span><span class="n">p</span><span class="o">.</span><span class="n">score</span><span class="o">.</span><span class="n">TPR</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">perf_list</span><span class="p">])</span>
+        <span class="n">thre</span><span class="p">,</span> <span class="n">val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">quality_evaluator</span><span class="o">.</span><span class="n">get_optimal_for_optimized_attribute</span><span class="p">(</span><span class="n">perfs_list</span><span class="o">=</span><span class="n">perf_list</span><span class="p">,</span>
+                                                                               <span class="n">attribute</span><span class="o">=</span><span class="s2">&quot;TPR&quot;</span><span class="p">,</span>
+                                                                               <span class="n">maximize_attribute</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                                                               <span class="n">maximize_threshold</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                                                               <span class="n">is_increasing</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Found value </span><span class="si">{thre}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">plotmaker</span><span class="o">.</span><span class="n">print_graph_with_thresholds</span><span class="p">(</span><span class="n">perf_list</span><span class="p">,</span> <span class="n">thresholds_handler</span><span class="o">=</span><span class="n">Thresholds</span><span class="p">(</span><span class="n">thre</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+                                                   <span class="n">output_path</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">output_folder</span><span class="p">,</span>
+                                                   <span class="n">file_name</span><span class="o">=</span><span class="s2">&quot;max_max_inc.png&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertAlmostEqual</span><span class="p">(</span><span class="n">thre</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">delta</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestPerformanceEvaluator.test_get_max_min_increasing"><a class="viewcode-back" href="../../common_tests.html#common_tests.test_graph_quality_evaluator.TestPerformanceEvaluator.test_get_max_min_increasing">[docs]</a>    <span class="k">def</span> <span class="nf">test_get_max_min_increasing</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">perf_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_increasing_graph</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">([</span><span class="n">p</span><span class="o">.</span><span class="n">score</span><span class="o">.</span><span class="n">TPR</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">perf_list</span><span class="p">])</span>
+        <span class="n">thre</span><span class="p">,</span> <span class="n">val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">quality_evaluator</span><span class="o">.</span><span class="n">get_optimal_for_optimized_attribute</span><span class="p">(</span><span class="n">perfs_list</span><span class="o">=</span><span class="n">perf_list</span><span class="p">,</span>
+                                                                               <span class="n">attribute</span><span class="o">=</span><span class="s2">&quot;TPR&quot;</span><span class="p">,</span>
+                                                                               <span class="n">maximize_attribute</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                                                               <span class="n">maximize_threshold</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                                                                               <span class="n">is_increasing</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Found value </span><span class="si">{thre}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">plotmaker</span><span class="o">.</span><span class="n">print_graph_with_thresholds</span><span class="p">(</span><span class="n">perf_list</span><span class="p">,</span> <span class="n">thresholds_handler</span><span class="o">=</span><span class="n">Thresholds</span><span class="p">(</span><span class="n">thre</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+                                                   <span class="n">output_path</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">output_folder</span><span class="p">,</span>
+                                                   <span class="n">file_name</span><span class="o">=</span><span class="s2">&quot;max_min_inc.png&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertAlmostEqual</span><span class="p">(</span><span class="n">thre</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">,</span> <span class="n">delta</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestPerformanceEvaluator.test_get_min_max_increasing"><a class="viewcode-back" href="../../common_tests.html#common_tests.test_graph_quality_evaluator.TestPerformanceEvaluator.test_get_min_max_increasing">[docs]</a>    <span class="k">def</span> <span class="nf">test_get_min_max_increasing</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">perf_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_increasing_graph</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">([</span><span class="n">p</span><span class="o">.</span><span class="n">score</span><span class="o">.</span><span class="n">TPR</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">perf_list</span><span class="p">])</span>
+        <span class="n">thre</span><span class="p">,</span> <span class="n">val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">quality_evaluator</span><span class="o">.</span><span class="n">get_optimal_for_optimized_attribute</span><span class="p">(</span><span class="n">perfs_list</span><span class="o">=</span><span class="n">perf_list</span><span class="p">,</span>
+                                                                               <span class="n">attribute</span><span class="o">=</span><span class="s2">&quot;TPR&quot;</span><span class="p">,</span>
+                                                                               <span class="n">maximize_attribute</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                                                                               <span class="n">maximize_threshold</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                                                               <span class="n">is_increasing</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Found value </span><span class="si">{thre}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">plotmaker</span><span class="o">.</span><span class="n">print_graph_with_thresholds</span><span class="p">(</span><span class="n">perf_list</span><span class="p">,</span> <span class="n">thresholds_handler</span><span class="o">=</span><span class="n">Thresholds</span><span class="p">(</span><span class="n">thre</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+                                                   <span class="n">output_path</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">output_folder</span><span class="p">,</span>
+                                                   <span class="n">file_name</span><span class="o">=</span><span class="s2">&quot;min_max_inc.png&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertAlmostEqual</span><span class="p">(</span><span class="n">thre</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="n">delta</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestPerformanceEvaluator.test_get_min_min_increasing"><a class="viewcode-back" href="../../common_tests.html#common_tests.test_graph_quality_evaluator.TestPerformanceEvaluator.test_get_min_min_increasing">[docs]</a>    <span class="k">def</span> <span class="nf">test_get_min_min_increasing</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">perf_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_increasing_graph</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">([</span><span class="n">p</span><span class="o">.</span><span class="n">score</span><span class="o">.</span><span class="n">TPR</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">perf_list</span><span class="p">])</span>
+        <span class="n">thre</span><span class="p">,</span> <span class="n">val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">quality_evaluator</span><span class="o">.</span><span class="n">get_optimal_for_optimized_attribute</span><span class="p">(</span><span class="n">perfs_list</span><span class="o">=</span><span class="n">perf_list</span><span class="p">,</span>
+                                                                               <span class="n">attribute</span><span class="o">=</span><span class="s2">&quot;TPR&quot;</span><span class="p">,</span>
+                                                                               <span class="n">maximize_attribute</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                                                                               <span class="n">maximize_threshold</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                                                                               <span class="n">is_increasing</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Found value </span><span class="si">{thre}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">plotmaker</span><span class="o">.</span><span class="n">print_graph_with_thresholds</span><span class="p">(</span><span class="n">perf_list</span><span class="p">,</span> <span class="n">thresholds_handler</span><span class="o">=</span><span class="n">Thresholds</span><span class="p">(</span><span class="n">thre</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+                                                   <span class="n">output_path</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">output_folder</span><span class="p">,</span>
+                                                   <span class="n">file_name</span><span class="o">=</span><span class="s2">&quot;min_min_inc.png&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertAlmostEqual</span><span class="p">(</span><span class="n">thre</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">delta</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestPerformanceEvaluator.test_get_max_max_decreasing"><a class="viewcode-back" href="../../common_tests.html#common_tests.test_graph_quality_evaluator.TestPerformanceEvaluator.test_get_max_max_decreasing">[docs]</a>    <span class="k">def</span> <span class="nf">test_get_max_max_decreasing</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">perf_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_decreasing_graph</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">([</span><span class="n">p</span><span class="o">.</span><span class="n">score</span><span class="o">.</span><span class="n">TPR</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">perf_list</span><span class="p">])</span>
+        <span class="n">thre</span><span class="p">,</span> <span class="n">val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">quality_evaluator</span><span class="o">.</span><span class="n">get_optimal_for_optimized_attribute</span><span class="p">(</span><span class="n">perfs_list</span><span class="o">=</span><span class="n">perf_list</span><span class="p">,</span>
+                                                                               <span class="n">attribute</span><span class="o">=</span><span class="s2">&quot;TPR&quot;</span><span class="p">,</span>
+                                                                               <span class="n">maximize_attribute</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                                                                               <span class="n">maximize_threshold</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                                                                               <span class="n">is_increasing</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Found value </span><span class="si">{thre}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">plotmaker</span><span class="o">.</span><span class="n">print_graph_with_thresholds</span><span class="p">(</span><span class="n">perf_list</span><span class="p">,</span> <span class="n">thresholds_handler</span><span class="o">=</span><span class="n">Thresholds</span><span class="p">(</span><span class="n">thre</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+                                                   <span class="n">output_path</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">output_folder</span><span class="p">,</span>
+                                                   <span class="n">file_name</span><span class="o">=</span><span class="s2">&quot;max_max_dec.png&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertAlmostEqual</span><span class="p">(</span><span class="n">thre</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">delta</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestPerformanceEvaluator.test_get_max_min_decreasing"><a class="viewcode-back" href="../../common_tests.html#common_tests.test_graph_quality_evaluator.TestPerformanceEvaluator.test_get_max_min_decreasing">[docs]</a>    <span class="k">def</span> <span class="nf">test_get_max_min_decreasing</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">perf_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_decreasing_graph</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">([</span><span class="n">p</span><span class="o">.</span><span class="n">score</span><span class="o">.</span><span class="n">TPR</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">perf_list</span><span class="p">])</span>
+        <span class="n">thre</span><span class="p">,</span> <span class="n">val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">quality_evaluator</span><span class="o">.</span><span class="n">get_optimal_for_optimized_attribute</span><span class="p">(</span><span class="n">perfs_list</span><span class="o">=</span><span class="n">perf_list</span><span class="p">,</span>
+                                                                               <span class="n">attribute</span><span class="o">=</span><span class="s2">&quot;TPR&quot;</span><span class="p">,</span>
+                                                                               <span class="n">maximize_attribute</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                                                                               <span class="n">maximize_threshold</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                                                               <span class="n">is_increasing</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Found value </span><span class="si">{thre}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">plotmaker</span><span class="o">.</span><span class="n">print_graph_with_thresholds</span><span class="p">(</span><span class="n">perf_list</span><span class="p">,</span> <span class="n">thresholds_handler</span><span class="o">=</span><span class="n">Thresholds</span><span class="p">(</span><span class="n">thre</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+                                                   <span class="n">output_path</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">output_folder</span><span class="p">,</span>
+                                                   <span class="n">file_name</span><span class="o">=</span><span class="s2">&quot;max_min_dex.png&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertAlmostEqual</span><span class="p">(</span><span class="n">thre</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="n">delta</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestPerformanceEvaluator.test_get_min_max_decreasing"><a class="viewcode-back" href="../../common_tests.html#common_tests.test_graph_quality_evaluator.TestPerformanceEvaluator.test_get_min_max_decreasing">[docs]</a>    <span class="k">def</span> <span class="nf">test_get_min_max_decreasing</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">perf_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_decreasing_graph</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">([</span><span class="n">p</span><span class="o">.</span><span class="n">score</span><span class="o">.</span><span class="n">TPR</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">perf_list</span><span class="p">])</span>
+        <span class="n">thre</span><span class="p">,</span> <span class="n">val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">quality_evaluator</span><span class="o">.</span><span class="n">get_optimal_for_optimized_attribute</span><span class="p">(</span><span class="n">perfs_list</span><span class="o">=</span><span class="n">perf_list</span><span class="p">,</span>
+                                                                               <span class="n">attribute</span><span class="o">=</span><span class="s2">&quot;TPR&quot;</span><span class="p">,</span>
+                                                                               <span class="n">maximize_attribute</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                                                               <span class="n">maximize_threshold</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                                                                               <span class="n">is_increasing</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Found value </span><span class="si">{thre}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">plotmaker</span><span class="o">.</span><span class="n">print_graph_with_thresholds</span><span class="p">(</span><span class="n">perf_list</span><span class="p">,</span> <span class="n">thresholds_handler</span><span class="o">=</span><span class="n">Thresholds</span><span class="p">(</span><span class="n">thre</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+                                                   <span class="n">output_path</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">output_folder</span><span class="p">,</span>
+                                                   <span class="n">file_name</span><span class="o">=</span><span class="s2">&quot;min_max_dec.png&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertAlmostEqual</span><span class="p">(</span><span class="n">thre</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">,</span> <span class="n">delta</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestPerformanceEvaluator.test_get_min_min_decreasing"><a class="viewcode-back" href="../../common_tests.html#common_tests.test_graph_quality_evaluator.TestPerformanceEvaluator.test_get_min_min_decreasing">[docs]</a>    <span class="k">def</span> <span class="nf">test_get_min_min_decreasing</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">perf_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_decreasing_graph</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">([</span><span class="n">p</span><span class="o">.</span><span class="n">score</span><span class="o">.</span><span class="n">TPR</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">perf_list</span><span class="p">])</span>
+        <span class="n">thre</span><span class="p">,</span> <span class="n">val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">quality_evaluator</span><span class="o">.</span><span class="n">get_optimal_for_optimized_attribute</span><span class="p">(</span><span class="n">perfs_list</span><span class="o">=</span><span class="n">perf_list</span><span class="p">,</span>
+                                                                               <span class="n">attribute</span><span class="o">=</span><span class="s2">&quot;TPR&quot;</span><span class="p">,</span>
+                                                                               <span class="n">maximize_attribute</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                                                               <span class="n">maximize_threshold</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                                                               <span class="n">is_increasing</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Found value </span><span class="si">{thre}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">plotmaker</span><span class="o">.</span><span class="n">print_graph_with_thresholds</span><span class="p">(</span><span class="n">perf_list</span><span class="p">,</span> <span class="n">thresholds_handler</span><span class="o">=</span><span class="n">Thresholds</span><span class="p">(</span><span class="n">thre</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+                                                   <span class="n">output_path</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">output_folder</span><span class="p">,</span>
+                                                   <span class="n">file_name</span><span class="o">=</span><span class="s2">&quot;min_min_dec.png&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertAlmostEqual</span><span class="p">(</span><span class="n">thre</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">delta</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestPerformanceEvaluator.test_real_graph"><a class="viewcode-back" href="../../common_tests.html#common_tests.test_graph_quality_evaluator.TestPerformanceEvaluator.test_real_graph">[docs]</a>    <span class="k">def</span> <span class="nf">test_real_graph</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">perf_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_real_graph</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">([</span><span class="n">p</span><span class="o">.</span><span class="n">score</span><span class="o">.</span><span class="n">TPR</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">perf_list</span><span class="p">])</span>
+        <span class="nb">print</span><span class="p">([</span><span class="n">p</span><span class="o">.</span><span class="n">score</span><span class="o">.</span><span class="n">TNR</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">perf_list</span><span class="p">])</span>
+        <span class="nb">print</span><span class="p">([</span><span class="n">p</span><span class="o">.</span><span class="n">score</span><span class="o">.</span><span class="n">FPR</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">perf_list</span><span class="p">])</span>
+        <span class="nb">print</span><span class="p">([</span><span class="n">p</span><span class="o">.</span><span class="n">score</span><span class="o">.</span><span class="n">FNR</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">perf_list</span><span class="p">])</span>
+
+        <span class="n">percent</span> <span class="o">=</span> <span class="mf">0.1</span>
+
+        <span class="n">thre_max_TPR</span><span class="p">,</span> <span class="n">val_TPR</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">quality_evaluator</span><span class="o">.</span><span class="n">get_threshold_where_upper_are_more_than_xpercent_TP</span><span class="p">(</span><span class="n">perfs_list</span><span class="o">=</span><span class="n">perf_list</span><span class="p">,</span> <span class="n">percent</span><span class="o">=</span><span class="n">percent</span><span class="p">)</span>
+        <span class="n">thre_max_FNR</span><span class="p">,</span> <span class="n">val_FNR</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">quality_evaluator</span><span class="o">.</span><span class="n">get_threshold_where_upper_are_less_than_xpercent_FN</span><span class="p">(</span><span class="n">perfs_list</span><span class="o">=</span><span class="n">perf_list</span><span class="p">,</span> <span class="n">percent</span><span class="o">=</span><span class="n">percent</span><span class="p">)</span>
+        <span class="n">thre_max_TNR</span><span class="p">,</span> <span class="n">val_TNR</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">quality_evaluator</span><span class="o">.</span><span class="n">get_threshold_where_below_are_more_than_xpercent_TN</span><span class="p">(</span><span class="n">perfs_list</span><span class="o">=</span><span class="n">perf_list</span><span class="p">,</span> <span class="n">percent</span><span class="o">=</span><span class="n">percent</span><span class="p">)</span>
+        <span class="n">thre_max_FPR</span><span class="p">,</span> <span class="n">val_FPR</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">quality_evaluator</span><span class="o">.</span><span class="n">get_threshold_where_below_are_less_than_xpercent_FP</span><span class="p">(</span><span class="n">perfs_list</span><span class="o">=</span><span class="n">perf_list</span><span class="p">,</span> <span class="n">percent</span><span class="o">=</span><span class="n">percent</span><span class="p">)</span>
+        <span class="n">thre_max_F1</span><span class="p">,</span> <span class="n">val_F1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">quality_evaluator</span><span class="o">.</span><span class="n">get_max_threshold_for_max_F1</span><span class="p">(</span><span class="n">perfs_list</span><span class="o">=</span><span class="n">perf_list</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Found value TPR : </span><span class="si">{thre_max_TPR}</span><span class="s2"> for </span><span class="si">{val_TPR}</span><span class="s2"> / upper there is more than 90% true positive&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Found value TNR : </span><span class="si">{thre_max_TNR}</span><span class="s2"> for </span><span class="si">{val_TNR}</span><span class="s2"> / below there is more than 90% true negative&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Found value FNR : </span><span class="si">{thre_max_FNR}</span><span class="s2"> for </span><span class="si">{val_FNR}</span><span class="s2"> / upper there is less than 10</span><span class="si">% f</span><span class="s2">alse negative&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Found value FPR : </span><span class="si">{thre_max_FPR}</span><span class="s2"> for </span><span class="si">{val_FPR}</span><span class="s2"> / below there is less than 10</span><span class="si">% f</span><span class="s2">alse positive&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Found value F1 :  </span><span class="si">{thre_max_F1}</span><span class="s2"> for </span><span class="si">{val_F1}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="n">thresholds</span> <span class="o">=</span> <span class="n">Thresholds</span><span class="p">(</span><span class="n">max_TPR</span><span class="o">=</span><span class="n">thre_max_TPR</span><span class="p">,</span>
+                                <span class="n">max_FNR</span><span class="o">=</span><span class="n">thre_max_FNR</span><span class="p">,</span>
+                                <span class="n">max_FPR</span><span class="o">=</span><span class="n">thre_max_FPR</span><span class="p">,</span>
+                                <span class="n">max_TNR</span><span class="o">=</span><span class="n">thre_max_TNR</span><span class="p">,</span>
+                                <span class="n">mean</span><span class="o">=</span><span class="n">thre_max_F1</span><span class="p">)</span>
+        <span class="n">thresholds</span><span class="o">.</span><span class="n">percent</span> <span class="o">=</span> <span class="n">percent</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">plotmaker</span><span class="o">.</span><span class="n">print_graph_with_thresholds</span><span class="p">(</span><span class="n">perf_list</span><span class="p">,</span> <span class="n">thresholds_handler</span><span class="o">=</span><span class="n">thresholds</span><span class="p">,</span>
+                                                   <span class="n">output_path</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">output_folder</span><span class="p">,</span>
+                                                   <span class="n">file_name</span><span class="o">=</span><span class="s2">&quot;real_graph.png&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertAlmostEqual</span><span class="p">(</span><span class="n">thre_max_TPR</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">,</span> <span class="n">delta</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertAlmostEqual</span><span class="p">(</span><span class="n">thre_max_TNR</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="n">delta</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertAlmostEqual</span><span class="p">(</span><span class="n">thre_max_FNR</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">,</span> <span class="n">delta</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertAlmostEqual</span><span class="p">(</span><span class="n">thre_max_FPR</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="n">delta</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span> <span class="c1"># Would have been 0.2 without delta</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertAlmostEqual</span><span class="p">(</span><span class="n">thre_max_F1</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="n">delta</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestPerformanceEvaluator.test_compute_score_for_one_threshold"><a class="viewcode-back" href="../../common_tests.html#common_tests.test_graph_quality_evaluator.TestPerformanceEvaluator.test_compute_score_for_one_threshold">[docs]</a>    <span class="k">def</span> <span class="nf">test_compute_score_for_one_threshold</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Graph example. Please check documentation for more information</span>
+        <span class="n">quality_evaluator</span> <span class="o">=</span> <span class="n">GraphQualityEvaluator</span><span class="p">()</span>
+
+        <span class="n">requests_results</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="c1"># 1 to 2 and 3</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;list_pictures&quot;</span><span class="p">:</span> <span class="p">[</span>
+                    <span class="p">{</span>
+                        <span class="s2">&quot;cluster_id&quot;</span><span class="p">:</span> <span class="s2">&quot;XXX&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;decision&quot;</span><span class="p">:</span> <span class="s2">&quot;YES&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;distance&quot;</span><span class="p">:</span> <span class="mf">0.1</span><span class="p">,</span>
+                        <span class="s2">&quot;image_id&quot;</span><span class="p">:</span> <span class="s2">&quot;2&quot;</span>
+                    <span class="p">},</span>
+                    <span class="p">{</span>
+                        <span class="s2">&quot;cluster_id&quot;</span><span class="p">:</span> <span class="s2">&quot;XXX&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;decision&quot;</span><span class="p">:</span> <span class="s2">&quot;YES&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;distance&quot;</span><span class="p">:</span> <span class="mf">0.6</span><span class="p">,</span>
+                        <span class="s2">&quot;image_id&quot;</span><span class="p">:</span> <span class="s2">&quot;3&quot;</span>
+                    <span class="p">}</span>
+                <span class="p">],</span>
+                <span class="s2">&quot;request_id&quot;</span><span class="p">:</span> <span class="s2">&quot;1&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;matches_found&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;request_time&quot;</span><span class="p">:</span> <span class="mi">0</span>
+            <span class="p">},</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;list_pictures&quot;</span><span class="p">:</span> <span class="p">[</span>
+                    <span class="p">{</span>
+                        <span class="s2">&quot;cluster_id&quot;</span><span class="p">:</span> <span class="s2">&quot;XXX&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;decision&quot;</span><span class="p">:</span> <span class="s2">&quot;YES&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;distance&quot;</span><span class="p">:</span> <span class="mf">0.3</span><span class="p">,</span>
+                        <span class="s2">&quot;image_id&quot;</span><span class="p">:</span> <span class="s2">&quot;6&quot;</span>
+                    <span class="p">}</span>
+                <span class="p">],</span>
+                <span class="s2">&quot;request_id&quot;</span><span class="p">:</span> <span class="s2">&quot;2&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;matches_found&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;request_time&quot;</span><span class="p">:</span> <span class="mi">0</span>
+            <span class="p">},</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;list_pictures&quot;</span><span class="p">:</span> <span class="p">[</span>
+                    <span class="p">{</span>
+                        <span class="s2">&quot;cluster_id&quot;</span><span class="p">:</span> <span class="s2">&quot;XXX&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;decision&quot;</span><span class="p">:</span> <span class="s2">&quot;YES&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;distance&quot;</span><span class="p">:</span> <span class="mf">0.2</span><span class="p">,</span>
+                        <span class="s2">&quot;image_id&quot;</span><span class="p">:</span> <span class="s2">&quot;1&quot;</span>
+                    <span class="p">}</span>
+                <span class="p">],</span>
+                <span class="s2">&quot;request_id&quot;</span><span class="p">:</span> <span class="s2">&quot;3&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;matches_found&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;request_time&quot;</span><span class="p">:</span> <span class="mi">0</span>
+            <span class="p">},</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;list_pictures&quot;</span><span class="p">:</span> <span class="p">[</span>
+                    <span class="p">{</span>
+                        <span class="s2">&quot;cluster_id&quot;</span><span class="p">:</span> <span class="s2">&quot;XXX&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;decision&quot;</span><span class="p">:</span> <span class="s2">&quot;YES&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;distance&quot;</span><span class="p">:</span> <span class="mf">0.4</span><span class="p">,</span>
+                        <span class="s2">&quot;image_id&quot;</span><span class="p">:</span> <span class="s2">&quot;2&quot;</span>
+                    <span class="p">}</span>
+                <span class="p">],</span>
+                <span class="s2">&quot;request_id&quot;</span><span class="p">:</span> <span class="s2">&quot;4&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;matches_found&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;request_time&quot;</span><span class="p">:</span> <span class="mi">0</span>
+            <span class="p">},</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;list_pictures&quot;</span><span class="p">:</span> <span class="p">[</span>
+                    <span class="p">{</span>
+                        <span class="s2">&quot;cluster_id&quot;</span><span class="p">:</span> <span class="s2">&quot;XXX&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;decision&quot;</span><span class="p">:</span> <span class="s2">&quot;YES&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;distance&quot;</span><span class="p">:</span> <span class="mf">0.6</span><span class="p">,</span>
+                        <span class="s2">&quot;image_id&quot;</span><span class="p">:</span> <span class="s2">&quot;4&quot;</span>
+                    <span class="p">}</span>
+                <span class="p">],</span>
+                <span class="s2">&quot;request_id&quot;</span><span class="p">:</span> <span class="s2">&quot;5&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;matches_found&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;request_time&quot;</span><span class="p">:</span> <span class="mi">0</span>
+            <span class="p">},</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;list_pictures&quot;</span><span class="p">:</span> <span class="p">[</span>
+                    <span class="p">{</span>
+                        <span class="s2">&quot;cluster_id&quot;</span><span class="p">:</span> <span class="s2">&quot;XXX&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;decision&quot;</span><span class="p">:</span> <span class="s2">&quot;YES&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;distance&quot;</span><span class="p">:</span> <span class="mf">0.7</span><span class="p">,</span>
+                        <span class="s2">&quot;image_id&quot;</span><span class="p">:</span> <span class="s2">&quot;2&quot;</span>
+                    <span class="p">}</span>
+                <span class="p">],</span>
+                <span class="s2">&quot;request_id&quot;</span><span class="p">:</span> <span class="s2">&quot;6&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;matches_found&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;request_time&quot;</span><span class="p">:</span> <span class="mi">0</span>
+            <span class="p">}</span>
+        <span class="p">]</span>
+
+        <span class="c1"># Create the reference graph</span>
+        <span class="n">graph_data_struct</span> <span class="o">=</span> <span class="n">GraphDataStruct</span><span class="p">(</span><span class="n">Metadata</span><span class="p">(</span><span class="n">Source</span><span class="o">.</span><span class="n">DBDUMP</span><span class="p">))</span>
+        <span class="n">graph_data_struct</span><span class="o">.</span><span class="n">add_cluster</span><span class="p">(</span><span class="n">Cluster</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="n">image</span><span class="o">=</span><span class="s2">&quot;A&quot;</span><span class="p">))</span>
+        <span class="n">graph_data_struct</span><span class="o">.</span><span class="n">add_cluster</span><span class="p">(</span><span class="n">Cluster</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;B&quot;</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;B&quot;</span><span class="p">,</span> <span class="n">image</span><span class="o">=</span><span class="s2">&quot;B&quot;</span><span class="p">))</span>
+        <span class="n">graph_data_struct</span><span class="o">.</span><span class="n">add_cluster</span><span class="p">(</span><span class="n">Cluster</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">,</span> <span class="n">image</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">))</span>
+        <span class="n">graph_data_struct</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="n">Node</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;1&quot;</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;1&quot;</span><span class="p">,</span> <span class="n">image</span><span class="o">=</span><span class="s2">&quot;1&quot;</span><span class="p">))</span>
+        <span class="n">graph_data_struct</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="n">Node</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;2&quot;</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;2&quot;</span><span class="p">,</span> <span class="n">image</span><span class="o">=</span><span class="s2">&quot;2&quot;</span><span class="p">))</span>
+        <span class="n">graph_data_struct</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="n">Node</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;3&quot;</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;3&quot;</span><span class="p">,</span> <span class="n">image</span><span class="o">=</span><span class="s2">&quot;3&quot;</span><span class="p">))</span>
+        <span class="n">graph_data_struct</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="n">Node</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;4&quot;</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;4&quot;</span><span class="p">,</span> <span class="n">image</span><span class="o">=</span><span class="s2">&quot;4&quot;</span><span class="p">))</span>
+        <span class="n">graph_data_struct</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="n">Node</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;5&quot;</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;5&quot;</span><span class="p">,</span> <span class="n">image</span><span class="o">=</span><span class="s2">&quot;5&quot;</span><span class="p">))</span>
+        <span class="n">graph_data_struct</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="n">Node</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;6&quot;</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;6&quot;</span><span class="p">,</span> <span class="n">image</span><span class="o">=</span><span class="s2">&quot;6&quot;</span><span class="p">))</span>
+        <span class="n">graph_data_struct</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">Edge</span><span class="p">(</span><span class="n">_from</span><span class="o">=</span><span class="s2">&quot;1&quot;</span><span class="p">,</span> <span class="n">_to</span><span class="o">=</span><span class="s2">&quot;A&quot;</span><span class="p">))</span>
+        <span class="n">graph_data_struct</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">Edge</span><span class="p">(</span><span class="n">_from</span><span class="o">=</span><span class="s2">&quot;2&quot;</span><span class="p">,</span> <span class="n">_to</span><span class="o">=</span><span class="s2">&quot;A&quot;</span><span class="p">))</span>
+        <span class="n">graph_data_struct</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">Edge</span><span class="p">(</span><span class="n">_from</span><span class="o">=</span><span class="s2">&quot;3&quot;</span><span class="p">,</span> <span class="n">_to</span><span class="o">=</span><span class="s2">&quot;A&quot;</span><span class="p">))</span>
+        <span class="n">graph_data_struct</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">Edge</span><span class="p">(</span><span class="n">_from</span><span class="o">=</span><span class="s2">&quot;4&quot;</span><span class="p">,</span> <span class="n">_to</span><span class="o">=</span><span class="s2">&quot;B&quot;</span><span class="p">))</span>
+        <span class="n">graph_data_struct</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">Edge</span><span class="p">(</span><span class="n">_from</span><span class="o">=</span><span class="s2">&quot;5&quot;</span><span class="p">,</span> <span class="n">_to</span><span class="o">=</span><span class="s2">&quot;B&quot;</span><span class="p">))</span>
+        <span class="n">graph_data_struct</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">Edge</span><span class="p">(</span><span class="n">_from</span><span class="o">=</span><span class="s2">&quot;6&quot;</span><span class="p">,</span> <span class="n">_to</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">))</span>
+
+        <span class="n">pprint</span><span class="o">.</span><span class="n">pprint</span><span class="p">(</span><span class="n">requests_results</span><span class="p">)</span>
+        <span class="n">pprint</span><span class="o">.</span><span class="n">pprint</span><span class="p">(</span><span class="n">graph_data_struct</span><span class="o">.</span><span class="n">export_as_dict</span><span class="p">())</span>
+
+        <span class="n">quality_evaluator</span><span class="o">.</span><span class="n">NB_TO_CHECK</span> <span class="o">=</span> <span class="mi">1</span>
+
+        <span class="n">dist_threshold</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">stats_datastruct</span> <span class="o">=</span> <span class="n">quality_evaluator</span><span class="o">.</span><span class="n">compute_score_for_one_threshold</span><span class="p">(</span><span class="n">requests_results</span><span class="p">,</span> <span class="n">graph_data_struct</span><span class="p">,</span> <span class="n">dist_threshold</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">stats_datastruct</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">stats_datastruct</span><span class="o">.</span><span class="n">P</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">stats_datastruct</span><span class="o">.</span><span class="n">N</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertAlmostEqual</span><span class="p">(</span><span class="n">stats_datastruct</span><span class="o">.</span><span class="n">TPR</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">delta</span><span class="o">=</span><span class="mf">0.05</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertAlmostEqual</span><span class="p">(</span><span class="n">stats_datastruct</span><span class="o">.</span><span class="n">TNR</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">delta</span><span class="o">=</span><span class="mf">0.05</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertAlmostEqual</span><span class="p">(</span><span class="n">stats_datastruct</span><span class="o">.</span><span class="n">FPR</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">delta</span><span class="o">=</span><span class="mf">0.05</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertAlmostEqual</span><span class="p">(</span><span class="n">stats_datastruct</span><span class="o">.</span><span class="n">FNR</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">delta</span><span class="o">=</span><span class="mf">0.05</span><span class="p">)</span>
+
+        <span class="n">dist_threshold</span> <span class="o">=</span> <span class="mf">0.5</span>
+        <span class="n">stats_datastruct</span> <span class="o">=</span> <span class="n">quality_evaluator</span><span class="o">.</span><span class="n">compute_score_for_one_threshold</span><span class="p">(</span><span class="n">requests_results</span><span class="p">,</span> <span class="n">graph_data_struct</span><span class="p">,</span> <span class="n">dist_threshold</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">stats_datastruct</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">stats_datastruct</span><span class="o">.</span><span class="n">P</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">stats_datastruct</span><span class="o">.</span><span class="n">N</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertAlmostEqual</span><span class="p">(</span><span class="n">stats_datastruct</span><span class="o">.</span><span class="n">TPR</span><span class="p">,</span> <span class="mf">0.66</span><span class="p">,</span> <span class="n">delta</span><span class="o">=</span><span class="mf">0.05</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertAlmostEqual</span><span class="p">(</span><span class="n">stats_datastruct</span><span class="o">.</span><span class="n">TNR</span><span class="p">,</span> <span class="mf">0.33</span><span class="p">,</span> <span class="n">delta</span><span class="o">=</span><span class="mf">0.05</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertAlmostEqual</span><span class="p">(</span><span class="n">stats_datastruct</span><span class="o">.</span><span class="n">FPR</span><span class="p">,</span> <span class="mf">0.66</span><span class="p">,</span> <span class="n">delta</span><span class="o">=</span><span class="mf">0.05</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertAlmostEqual</span><span class="p">(</span><span class="n">stats_datastruct</span><span class="o">.</span><span class="n">FNR</span><span class="p">,</span> <span class="mf">0.33</span><span class="p">,</span> <span class="n">delta</span><span class="o">=</span><span class="mf">0.05</span><span class="p">)</span>
+
+        <span class="n">dist_threshold</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">stats_datastruct</span> <span class="o">=</span> <span class="n">quality_evaluator</span><span class="o">.</span><span class="n">compute_score_for_one_threshold</span><span class="p">(</span><span class="n">requests_results</span><span class="p">,</span> <span class="n">graph_data_struct</span><span class="p">,</span> <span class="n">dist_threshold</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">stats_datastruct</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">stats_datastruct</span><span class="o">.</span><span class="n">P</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">stats_datastruct</span><span class="o">.</span><span class="n">N</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertAlmostEqual</span><span class="p">(</span><span class="n">stats_datastruct</span><span class="o">.</span><span class="n">TPR</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">delta</span><span class="o">=</span><span class="mf">0.05</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertAlmostEqual</span><span class="p">(</span><span class="n">stats_datastruct</span><span class="o">.</span><span class="n">TNR</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">delta</span><span class="o">=</span><span class="mf">0.05</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertAlmostEqual</span><span class="p">(</span><span class="n">stats_datastruct</span><span class="o">.</span><span class="n">FPR</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">delta</span><span class="o">=</span><span class="mf">0.05</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertAlmostEqual</span><span class="p">(</span><span class="n">stats_datastruct</span><span class="o">.</span><span class="n">FNR</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">delta</span><span class="o">=</span><span class="mf">0.05</span><span class="p">)</span>
+
+        <span class="n">quality_evaluator</span><span class="o">.</span><span class="n">NB_TO_CHECK</span> <span class="o">=</span> <span class="mi">3</span>
+
+        <span class="n">dist_threshold</span> <span class="o">=</span> <span class="mf">0.5</span>
+        <span class="n">stats_datastruct</span> <span class="o">=</span> <span class="n">quality_evaluator</span><span class="o">.</span><span class="n">compute_score_for_one_threshold</span><span class="p">(</span><span class="n">requests_results</span><span class="p">,</span> <span class="n">graph_data_struct</span><span class="p">,</span> <span class="n">dist_threshold</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">stats_datastruct</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">stats_datastruct</span><span class="o">.</span><span class="n">P</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">stats_datastruct</span><span class="o">.</span><span class="n">N</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertAlmostEqual</span><span class="p">(</span><span class="n">stats_datastruct</span><span class="o">.</span><span class="n">TPR</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="n">delta</span><span class="o">=</span><span class="mf">0.05</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertAlmostEqual</span><span class="p">(</span><span class="n">stats_datastruct</span><span class="o">.</span><span class="n">TNR</span><span class="p">,</span> <span class="mf">0.33</span><span class="p">,</span> <span class="n">delta</span><span class="o">=</span><span class="mf">0.05</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertAlmostEqual</span><span class="p">(</span><span class="n">stats_datastruct</span><span class="o">.</span><span class="n">FPR</span><span class="p">,</span> <span class="mf">0.66</span><span class="p">,</span> <span class="n">delta</span><span class="o">=</span><span class="mf">0.05</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertAlmostEqual</span><span class="p">(</span><span class="n">stats_datastruct</span><span class="o">.</span><span class="n">FNR</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="n">delta</span><span class="o">=</span><span class="mf">0.05</span><span class="p">)</span></div></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">unittest</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, Vincent FALCONIERI.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.2.
+    </div>
+  </body>
+</html>

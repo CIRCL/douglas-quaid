@@ -1,16 +1,18 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from codenamize import codenamize
 # PLEASE BE AWARE THIS IMPORT IS NOT IN THE PIPENV.
 # THIS IS NOT A DEPENDENCY AS IT IS NOT REQUIRED STRICTLY TO RUN THE LIBRARY.
 # PLEASE INSTALL BY YOURSELF IF YOU NEED TO RUN THIS SCRIPT !
 # Please see : https://pypi.org/project/codenamize/ and https://github.com/jjmontesl/codenamize
 import argparse
+import hashlib
 import pathlib
 import pprint
-import hashlib
 import shutil
+
+from codenamize import codenamize
+
 '''
 COLLISIONS CALCULATIONS
 3 adj (max 4 chars) = 962286000 combinations
@@ -31,7 +33,7 @@ class Humanizer:
     def __init__(self):
         self.already_generated = set({})
 
-    def rename_all_files(self, path: pathlib.Path, output_path:pathlib.Path):
+    def rename_all_files(self, path: pathlib.Path, output_path: pathlib.Path):
         p = path.resolve().glob('**/*')
         files = [x for x in p if x.is_file()]
 
@@ -72,7 +74,7 @@ class Humanizer:
         self.sanity_check(output_path, tmp_leng)
 
     @staticmethod
-    def sanity_check(output_path:pathlib.Path, previous_files_length: int):
+    def sanity_check(output_path: pathlib.Path, previous_files_length: int):
         print(f"Sanity check ... .")
         p_sanity = output_path.resolve().glob('**/*')
         files_sanity = [x for x in p_sanity if x.is_file()]

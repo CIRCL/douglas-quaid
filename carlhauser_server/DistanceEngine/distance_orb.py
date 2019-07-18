@@ -1,16 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+
 import logging
-import os
-# ==================== ------ STD LIBRARIES ------- ====================
-import sys
 import traceback
 from typing import Dict, List
 
 import cv2
-
-# ==================== ------ PERSONAL LIBRARIES ------- ====================
 
 import carlhauser_server.Configuration.database_conf as database_conf
 import carlhauser_server.Configuration.distance_engine_conf as distance_engine_conf
@@ -18,9 +14,7 @@ import carlhauser_server.Configuration.feature_extractor_conf as feature_extract
 import carlhauser_server.DistanceEngine.scoring_datastrutures as sd
 from carlhauser_server.Configuration.algo_conf import Algo_conf
 from common.CustomException import AlgoFeatureNotPresentError
-sys.path.append(os.path.abspath(os.path.pardir))
-
-
+from carlhauser_server.DistanceEngine.distance_hash import Distance_Hash as dist_hash
 
 class Distance_ORB:
     def __init__(self, db_conf: database_conf.Default_database_conf, dist_conf: distance_engine_conf.Default_distance_engine_conf, fe_conf: feature_extractor_conf.Default_feature_extractor_conf):
@@ -36,11 +30,18 @@ class Distance_ORB:
         self.orb_matcher = cv2.BFMatcher(cv2.NORM_HAMMING, crossCheck=dist_conf.CROSSCHECK)
 
     def orb_distance(self, pic_package_from: Dict, pic_package_to: Dict) -> Dict[str, sd.AlgoMatch]:
+        """
+        Distance between two provided pictures (dicts) with ORB methods
+        :param pic_package_from: first picture dict
+        :param pic_package_to: second picture dict
+        :return: A dictionary of algo name to the match detail (distance, decision ..)
+        """
+
         answer = {}
         self.logger.info("Orb distance computation ... ")
 
         # Sanity check :
-        if pic_package_from.get("ORB_DESCRIPTORS",None) is None or pic_package_to.get("ORB_DESCRIPTORS",None) is None:
+        if pic_package_from.get("ORB_DESCRIPTORS", None) is None or pic_package_to.get("ORB_DESCRIPTORS", None) is None:
             self.logger.warning(f"ORB descriptors are NOT presents in the results.")
             raise AlgoFeatureNotPresentError("None ORB descriptors in orb distance.")
 
@@ -49,13 +50,6 @@ class Distance_ORB:
             if self.fe_conf.ORB.get("is_enabled", False):
                 answer = self.add_results(self.fe_conf.ORB, pic_package_from, pic_package_to, answer)
 
-                '''
-                # Compute matches
-                matches = self.orb_matcher.match(pic_package_from["ORB_DESCRIPTORS"], pic_package_to["ORB_DESCRIPTORS"])
-
-                answer["ORB_DISTANCE"] = self.max_dist(matches, self.threeshold_distance_filter(matches))
-                '''
-
         except Exception as e:
             self.logger.error(traceback.print_tb(e.__traceback__))
             self.logger.error("Error during orb distance calculation : " + str(e))
@@ -63,8 +57,16 @@ class Distance_ORB:
         return answer
 
     def add_results(self, algo_conf: Algo_conf, pic_package_from: Dict, pic_package_to: Dict, answer: Dict) -> Dict:
-        # Add results to answer dict, depending on the algorithm name we want to compute
-        # Ex : Input {} -> Output {"ORB":{"name":"ORB", "distance":0.3,"decision":YES}}
+        """
+        Add results to answer dict, depending on the algorithm name we want to compute
+        Ex : Input {} -> Output {"ORB":{"name":"ORB", "distance":0.3,"decision":YES}}
+        :param algo_conf: An algorithm configuration (to specify which algorithm to launch)
+        :param pic_package_from: first picture dict
+        :param pic_package_to: second picture dict
+        :param answer: Current dict of algo_name to algo match (will be updated and returned)
+        :return: a dict of algo_name to algo match
+        """
+
         algo_name = algo_conf.get('algo_name')
 
         tmp_dist = self.compute_orb_distance(pic_package_from["ORB_DESCRIPTORS"], pic_package_to["ORB_DESCRIPTORS"])
@@ -78,6 +80,12 @@ class Distance_ORB:
     # ==================== ------ CORE COMPUTATION FOR ORB ------- ====================
 
     def compute_orb_distance(self, descriptors_1, descriptors_2) -> float:
+        """
+        Compute hash difference for ORB
+        :param descriptors_1: first descriptors
+        :param descriptors_2: second descriptors
+        :return: distance between descriptors
+        """
 
         if descriptors_1 is None and descriptors_2 is None:
             # Both pictures don't have descriptors : the same !
@@ -99,6 +107,12 @@ class Distance_ORB:
 
     @staticmethod
     def threeshold_distance_filter(matches: List) -> List:
+        """
+        Keep only "good" matches. Filter on distance, hardcoded at 64 (known as best ratio TP/FP)
+        :param matches: A list of matches TODO : Define type
+        :return: A list of good matches only (< threshold distance)
+        """
+
         dist_th = 64
         good = []
 
@@ -110,6 +124,13 @@ class Distance_ORB:
 
     @staticmethod
     def max_dist(all_matches: List, good_matches: List) -> float:
+        """
+        Compute the distance from the list of all matches and the list of good matches.
+        :param all_matches: A list of matches TODO : Define type
+        :param good_matches:  A list of good matches only (< threshold distance) TODO : Define type
+        :return: the computed distance
+        """
+
         # TODO : To review. Is max usefull here ?
         return 1 - len(good_matches) / (max(len(all_matches), len(good_matches)))
 
@@ -117,14 +138,12 @@ class Distance_ORB:
 
     @staticmethod
     def compute_decision_from_distance(algo_conf: Algo_conf, dist: float) -> sd.DecisionTypes:
-        # From a distance between orb distance, gives a decision : is it a match or not ? Or maybe ?
+        """
+        From a distance between orb distance, gives a decision : is it a match or not ? Or maybe ?
+        # TODO : Evolve to more complex calculation if needed for ORB !
+        :param algo_conf: An algorithm configuration (to specify which algorithm to launch)
+        :param dist: a distance between two pictures
+        :return: a decision (YES,MAYBE,NO)
+        """
 
-        if dist <= algo_conf.get('threshold_maybe'):
-            # It's a YES ! :)
-            return sd.DecisionTypes.YES
-        elif dist <= algo_conf.get('threshold_no'):
-            # It's a MAYBE :/
-            return sd.DecisionTypes.MAYBE
-        else:
-            # It's a NO :(
-            return sd.DecisionTypes.NO
+        return dist_hash.compute_decision_from_distance(algo_conf, dist)

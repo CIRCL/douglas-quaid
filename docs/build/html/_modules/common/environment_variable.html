@@ -1,0 +1,164 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>common.environment_variable &#8212; Douglas-Quaid 0.0.4 documentation</title>
+    <link rel="stylesheet" href="../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for common.environment_variable</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">import</span> <span class="nn">argparse</span>
+<span class="c1"># ==================== ------ STD LIBRARIES ------- ====================</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">pathlib</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">logging.config</span>
+
+<span class="c1"># ==================== ------ PERSONAL LIBRARIES ------- ====================</span>
+ 
+
+
+<span class="c1"># ============================ HOME DIR GETTER ============================</span>
+
+<div class="viewcode-block" id="get_homedir"><a class="viewcode-back" href="../../common.html#common.environment_variable.get_homedir">[docs]</a><span class="k">def</span> <span class="nf">get_homedir</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">:</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;CARLHAUSER_HOME&#39;</span><span class="p">):</span>
+        <span class="n">guessed_home</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">parent</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;CARLHAUSER_HOME is missing. Run the following command (assuming you run the code from the cloned repository):</span><span class="se">\n</span><span class="s2">export CARLHAUSER_HOME=&#39;</span><span class="si">{guessed_home}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;CARLHAUSER_HOME&#39;</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="load_client_logging_conf_file"><a class="viewcode-back" href="../../common.html#common.environment_variable.load_client_logging_conf_file">[docs]</a><span class="k">def</span> <span class="nf">load_client_logging_conf_file</span><span class="p">():</span>
+    <span class="c1"># load the logging configuration</span>
+    <span class="n">logconfig_path</span> <span class="o">=</span> <span class="p">(</span><span class="n">get_homedir</span><span class="p">()</span> <span class="o">/</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;carlhauser_client&quot;</span><span class="p">,</span> <span class="s2">&quot;logging.ini&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">fileConfig</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">logconfig_path</span><span class="p">))</span></div>
+<span class="c1"># FORMATTER = logging.Formatter(&#39;%(asctime)s - + %(relativeCreated)d - %(name)s - %(levelname)s - %(message)s&#39;)</span>
+
+<div class="viewcode-block" id="load_server_logging_conf_file"><a class="viewcode-back" href="../../common.html#common.environment_variable.load_server_logging_conf_file">[docs]</a><span class="k">def</span> <span class="nf">load_server_logging_conf_file</span><span class="p">():</span>
+    <span class="c1"># load the logging configuration</span>
+    <span class="n">logconfig_path</span> <span class="o">=</span> <span class="p">(</span><span class="n">get_homedir</span><span class="p">()</span> <span class="o">/</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;carlhauser_server&quot;</span><span class="p">,</span> <span class="s2">&quot;logging.ini&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">fileConfig</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">logconfig_path</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="make_big_line"><a class="viewcode-back" href="../../common.html#common.environment_variable.make_big_line">[docs]</a><span class="k">def</span> <span class="nf">make_big_line</span><span class="p">():</span>
+    <span class="k">return</span> <span class="s2">&quot;=======================================================================================&quot;</span></div>
+
+<div class="viewcode-block" id="make_small_line"><a class="viewcode-back" href="../../common.html#common.environment_variable.make_small_line">[docs]</a><span class="k">def</span> <span class="nf">make_small_line</span><span class="p">():</span>
+    <span class="k">return</span> <span class="s2">&quot;---------------------------------------------------------------------------------------&quot;</span></div>
+
+
+<span class="c1"># ============================ STATIC UTILITIES ============================</span>
+
+<div class="viewcode-block" id="dir_path"><a class="viewcode-back" href="../../common.html#common.environment_variable.dir_path">[docs]</a><span class="k">def</span> <span class="nf">dir_path</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+        <span class="k">return</span> <span class="n">path</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentTypeError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;readable_dir:</span><span class="si">{path}</span><span class="s2"> is not a valid path&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="resolve_path"><a class="viewcode-back" href="../../common.html#common.environment_variable.resolve_path">[docs]</a><span class="k">def</span> <span class="nf">resolve_path</span><span class="p">(</span><span class="n">file_path</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">:</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    If the provided path is not absolute, resolve it. Otherwise, do nothing</span>
+<span class="sd">    :param file_path: the filepath to resolve</span>
+<span class="sd">    :return: the absolute path</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="c1"># Solve the file path</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">file_path</span><span class="o">.</span><span class="n">is_absolute</span><span class="p">():</span>
+        <span class="n">file_path</span> <span class="o">=</span> <span class="n">file_path</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">file_path</span></div>
+
+
+<span class="c1"># ============================ STATIC VALUES ============================</span>
+
+<div class="viewcode-block" id="JSON_parsable_Dict"><a class="viewcode-back" href="../../common.html#common.environment_variable.JSON_parsable_Dict">[docs]</a><span class="k">class</span> <span class="nc">JSON_parsable_Dict</span><span class="p">:</span>
+    <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="JSON_parsable_Enum"><a class="viewcode-back" href="../../common.html#common.environment_variable.JSON_parsable_Enum">[docs]</a><span class="k">class</span> <span class="nc">JSON_parsable_Enum</span><span class="p">:</span>
+    <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="QueueNames"><a class="viewcode-back" href="../../common.html#common.environment_variable.QueueNames">[docs]</a><span class="k">class</span> <span class="nc">QueueNames</span><span class="p">(</span><span class="n">JSON_parsable_Dict</span><span class="p">):</span>
+    <span class="n">FEATURE_TO_ADD</span> <span class="o">=</span> <span class="s2">&quot;feature_to_add&quot;</span>
+    <span class="n">FEATURE_TO_REQUEST</span> <span class="o">=</span> <span class="s2">&quot;feature_to_request&quot;</span>
+    <span class="n">DB_TO_ADD</span> <span class="o">=</span> <span class="s2">&quot;db_to_add&quot;</span>
+    <span class="n">DB_TO_REQUEST</span> <span class="o">=</span> <span class="s2">&quot;db_to_request&quot;</span></div>
+
+
+<div class="viewcode-block" id="EndPoints"><a class="viewcode-back" href="../../common.html#common.environment_variable.EndPoints">[docs]</a><span class="k">class</span> <span class="nc">EndPoints</span><span class="p">(</span><span class="n">JSON_parsable_Dict</span><span class="p">):</span>
+    <span class="c1"># PING = &quot;ping&quot;</span>
+    <span class="n">ADD_PICTURE</span> <span class="o">=</span> <span class="s2">&quot;add_picture&quot;</span>
+    <span class="n">WAIT_FOR_ADD</span> <span class="o">=</span> <span class="s2">&quot;wait_for_add&quot;</span>
+    <span class="n">REQUEST_PICTURE</span> <span class="o">=</span> <span class="s2">&quot;request_similar_picture&quot;</span>  <span class="c1"># &quot;request_picture&quot;</span>
+    <span class="n">WAIT_FOR_REQUEST</span> <span class="o">=</span> <span class="s2">&quot;is_ready&quot;</span>  <span class="c1"># &quot;wait_for_request&quot;</span>
+    <span class="n">GET_REQUEST_RESULT</span> <span class="o">=</span> <span class="s2">&quot;get_results&quot;</span>
+    <span class="n">REQUEST_DB</span> <span class="o">=</span> <span class="s2">&quot;export_db&quot;</span></div>
+
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, Vincent FALCONIERI.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.2.
+    </div>
+  </body>
+</html>

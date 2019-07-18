@@ -2,26 +2,24 @@
 # -*- coding: utf-8 -*-
 
 import logging
-# ==================== ------ STD LIBRARIES ------- ====================
-import os
 import subprocess
-import sys
 import time
 from typing import List
 
-# ==================== ------ PERSONAL LIBRARIES ------- ====================
-import carlhauser_server.Processus.worker_processus as worker_processus
+import carlhauser_server.Processus.worker_process as worker_processus
+from common.environment_variable import load_server_logging_conf_file
 
-sys.path.append(os.path.abspath(os.path.pardir))
+load_server_logging_conf_file()
 
-# ==================== ------ PATHS ------- ====================
 
-class ProcessusList:
-    # Handle a list of processus of one type
+class ProcessesList:
+    """
+    Handle a list of process of one type
+    """
 
     def __init__(self, list_name: str, processus_list: List[worker_processus.WorkerProcessus]):
-        self.list_name = list_name
-        self.processus_list = processus_list
+        self.list_name: str = list_name
+        self.processus_list: List[worker_processus.WorkerProcessus] = processus_list
         self.logger = logging.getLogger(__name__)
 
     def append(self, process: worker_processus.WorkerProcessus):
@@ -29,14 +27,30 @@ class ProcessusList:
         self.processus_list.append(process)
 
     def flush(self):
+        """
+        Flush the list of processes
+        :return: Nothing. Change internal state of the object.
+        """
         self.processus_list.clear()
 
     def flush_not_running(self):
-        # TODO
-        pass
+        """
+        Remove all the proccesses that are not detected as curently running.
+        :return: Nothing. Change internal state of the object.
+        """
 
-    def kill_all_processus(self, grace_time=2):
-        # Try to kill all workers of the given list, waiting <grace_time> for each processus to finish (2 sec per default)
+        running = set(self.get_running_processus())
+        running_only = [p for p in self.processus_list if p in running]
+
+        self.processus_list = running_only
+
+    def kill_all_processus(self, grace_time=2) -> bool:
+        """
+        Try to kill all workers of the given list, waiting <grace_time>
+        for each processus to finish (2 sec per default)
+        :param grace_time: Waiting time for a process before hard kill
+        :return: True if successfully stopped, False otherwise
+        """
 
         for proc in self.processus_list:
             self.logger.info(f"Trying to stop {proc.process}")
@@ -52,11 +66,17 @@ class ProcessusList:
                     try:
                         proc.process.kill()
                         self.logger.info(f"Processus exited with {proc.process.returncode}")
+                        return True
                     except subprocess.TimeoutExpired:
                         self.logger.info(f"Processus {proc.process} is still alive .. Don't know how to stop it.")
+                        return False
 
-    def get_running_processus(self):
-        # Provide a sublist of the list of processus, which are currently running
+    def get_running_processus(self) -> List[worker_processus.WorkerProcessus]:
+        """
+        Provide a sublist of the list of processus, which are currently running
+        :return: a list of running workers
+        """
+
         running_workers = []
 
         for worker in self.processus_list:
@@ -66,8 +86,11 @@ class ProcessusList:
 
         return running_workers
 
-    def is_there_alive_workers(self):
-        # Check if workers are alive, and return True if all worker are down
+    def is_there_alive_workers(self) -> bool:
+        """
+        Check if workers are alive, and return True if all worker are down
+        :return: True if at least one worker is alive, False otherwise
+        """
 
         all_have_stopped = True
         self.logger.info(f"{len(self.processus_list)} worker(s) are presents in {self.list_name}.")
@@ -82,8 +105,12 @@ class ProcessusList:
         return all_have_stopped
 
     def wait_until_all_stopped(self, timeout: int = 60) -> bool:
-        # Wait until all the workers are stopped (= terminated)
-        # Put timeout -1 if you don't want to function to timeout
+        """
+        Wait until all the workers are stopped (= terminated)
+        Put timeout -1 if you don't want to function to timeout
+        :param timeout: maximum waiting time for all proccesses to stop
+        :return: True if all have stopped, False otherwise
+        """
 
         all_have_stopped = True
 

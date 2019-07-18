@@ -1,0 +1,163 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>carlhauser_client.Helpers package &#8212; Douglas-Quaid 0.0.4 documentation</title>
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="carlhauser-client-helpers-package">
+<h1>carlhauser_client.Helpers package<a class="headerlink" href="#carlhauser-client-helpers-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-carlhauser_client.Helpers.dict_utilities">
+<span id="carlhauser-client-helpers-dict-utilities-module"></span><h2>carlhauser_client.Helpers.dict_utilities module<a class="headerlink" href="#module-carlhauser_client.Helpers.dict_utilities" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="carlhauser_client.Helpers.dict_utilities.apply_mapping">
+<code class="sig-prename descclassname">carlhauser_client.Helpers.dict_utilities.</code><code class="sig-name descname">apply_mapping</code><span class="sig-paren">(</span><em class="sig-param">dict_to_modify: Dict</em>, <em class="sig-param">mapping: Dict</em><span class="sig-paren">)</span> &#x2192; Dict<a class="reference internal" href="_modules/carlhauser_client/Helpers/dict_utilities.html#apply_mapping"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_client.Helpers.dict_utilities.apply_mapping" title="Permalink to this definition">¶</a></dt>
+<dd><p>Modify all occurences in dict_to_modify of keys-values in mapping, by their value
+Ex : {“toto”:”tata”}, {“tata”:”new”} ==&gt; {“toto”:”new”}
+:param dict_to_modify: The original dict
+:param mapping: dict of (values to be replaces) -&gt; (new values)
+:return: the modified dict</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="carlhauser_client.Helpers.dict_utilities.apply_revert_mapping">
+<code class="sig-prename descclassname">carlhauser_client.Helpers.dict_utilities.</code><code class="sig-name descname">apply_revert_mapping</code><span class="sig-paren">(</span><em class="sig-param">dict_to_modify</em>, <em class="sig-param">mapping_to_revert: Dict</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_client/Helpers/dict_utilities.html#apply_revert_mapping"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_client.Helpers.dict_utilities.apply_revert_mapping" title="Permalink to this definition">¶</a></dt>
+<dd><p>Revert the value/keys of a dictionnary and apply it to all
+occurences in dict_to_modify of keys-values in mapping, by their value
+Ex : {“toto”:”tata”}, {“new”:”tata”} ==&gt; {“toto”:”new”}
+:param dict_to_modify: The original dict
+:param mapping_to_revert: mapping from name to name, to be reverted before application
+:return: Original dict modified with applied reversed dict</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="carlhauser_client.Helpers.dict_utilities.copy_id_to_image">
+<code class="sig-prename descclassname">carlhauser_client.Helpers.dict_utilities.</code><code class="sig-name descname">copy_id_to_image</code><span class="sig-paren">(</span><em class="sig-param">dict_to_modify: Dict</em><span class="sig-paren">)</span> &#x2192; Dict<a class="reference internal" href="_modules/carlhauser_client/Helpers/dict_utilities.html#copy_id_to_image"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_client.Helpers.dict_utilities.copy_id_to_image" title="Permalink to this definition">¶</a></dt>
+<dd><p>From a dict of pictures/graphe json,
+copy ids of cluster and pictures to their ‘picture’ attribute
+Useful to have a visjs-classificator readable graph
+:param dict_to_modify: original dictionnary of pictures/clusters/edges ..
+:return: modified and readable by visjs-classificator graph</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="carlhauser_client.Helpers.dict_utilities.get_clear_matches">
+<code class="sig-prename descclassname">carlhauser_client.Helpers.dict_utilities.</code><code class="sig-name descname">get_clear_matches</code><span class="sig-paren">(</span><em class="sig-param">request</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_client/Helpers/dict_utilities.html#get_clear_matches"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_client.Helpers.dict_utilities.get_clear_matches" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extract a clean list of matches from a request : remove the picture itself from the matches
+:param request: result of a request, a dict
+:return: a clean list of matches (wihtout the picture itself)</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="carlhauser_client.Helpers.dict_utilities.revert_mapping">
+<code class="sig-prename descclassname">carlhauser_client.Helpers.dict_utilities.</code><code class="sig-name descname">revert_mapping</code><span class="sig-paren">(</span><em class="sig-param">mapping: Dict</em><span class="sig-paren">)</span> &#x2192; Dict<a class="reference internal" href="_modules/carlhauser_client/Helpers/dict_utilities.html#revert_mapping"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_client.Helpers.dict_utilities.revert_mapping" title="Permalink to this definition">¶</a></dt>
+<dd><p>Revert the value/keys of a dictionnary.
+Ex : transform X-&gt;Y to Y-&gt;X for all values of a dict
+:param mapping: X -&gt; Y dict
+:return: The reversed dict</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="carlhauser_client.Helpers.dict_utilities.update_values_dict">
+<code class="sig-prename descclassname">carlhauser_client.Helpers.dict_utilities.</code><code class="sig-name descname">update_values_dict</code><span class="sig-paren">(</span><em class="sig-param">original_dict: Dict</em>, <em class="sig-param">future_dict: Dict</em>, <em class="sig-param">new_mapping: Dict</em><span class="sig-paren">)</span> &#x2192; Dict<a class="reference internal" href="_modules/carlhauser_client/Helpers/dict_utilities.html#update_values_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_client.Helpers.dict_utilities.update_values_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Recursively updates values of a nested dict by performing recursive calls
+Replace in &lt;original_dict&gt; all keys elements present in &lt;new_mapping&gt; by their value in &lt;new_mapping&gt;
+Ex : {“toto”:”tata”}, {“tata”:”new”} ==&gt; {“toto”:”new”}
+:param original_dict: The original dict
+:param future_dict: The dict were the result will be stored (needed, because recursive calls)
+:param new_mapping: dict of (values to be replaces) -&gt; (new values)
+:return: the modified dict</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-carlhauser_client.Helpers">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-carlhauser_client.Helpers" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">carlhauser_client.Helpers package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-carlhauser_client.Helpers.dict_utilities">carlhauser_client.Helpers.dict_utilities module</a></li>
+<li><a class="reference internal" href="#module-carlhauser_client.Helpers">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/carlhauser_client.Helpers.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, Vincent FALCONIERI.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.2.
+    </div>
+  </body>
+</html>

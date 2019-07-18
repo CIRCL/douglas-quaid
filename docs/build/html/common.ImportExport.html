@@ -1,0 +1,182 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>common.ImportExport package &#8212; Douglas-Quaid 0.0.4 documentation</title>
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="common-importexport-package">
+<h1>common.ImportExport package<a class="headerlink" href="#common-importexport-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-common.ImportExport.json_import_export">
+<span id="common-importexport-json-import-export-module"></span><h2>common.ImportExport.json_import_export module<a class="headerlink" href="#module-common.ImportExport.json_import_export" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="common.ImportExport.json_import_export.Custom_JSON_Encoder">
+<em class="property">class </em><code class="sig-prename descclassname">common.ImportExport.json_import_export.</code><code class="sig-name descname">Custom_JSON_Encoder</code><span class="sig-paren">(</span><em class="sig-param">*</em>, <em class="sig-param">skipkeys=False</em>, <em class="sig-param">ensure_ascii=True</em>, <em class="sig-param">check_circular=True</em>, <em class="sig-param">allow_nan=True</em>, <em class="sig-param">sort_keys=False</em>, <em class="sig-param">indent=None</em>, <em class="sig-param">separators=None</em>, <em class="sig-param">default=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/common/ImportExport/json_import_export.html#Custom_JSON_Encoder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#common.ImportExport.json_import_export.Custom_JSON_Encoder" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">json.encoder.JSONEncoder</span></code></p>
+<p>Custom JSON Encoder to store Enum and custom configuration objects (for example) of the framework</p>
+<dl class="method">
+<dt id="common.ImportExport.json_import_export.Custom_JSON_Encoder.default">
+<code class="sig-name descname">default</code><span class="sig-paren">(</span><em class="sig-param">o</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/common/ImportExport/json_import_export.html#Custom_JSON_Encoder.default"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#common.ImportExport.json_import_export.Custom_JSON_Encoder.default" title="Permalink to this definition">¶</a></dt>
+<dd><p>How to handle an object to encode
+:param o: the object to encode
+:return: the object encoded as json</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="common.ImportExport.json_import_export.load_json">
+<code class="sig-prename descclassname">common.ImportExport.json_import_export.</code><code class="sig-name descname">load_json</code><span class="sig-paren">(</span><em class="sig-param">file_path: pathlib.Path</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/common/ImportExport/json_import_export.html#load_json"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#common.ImportExport.json_import_export.load_json" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loading an object/data from json.
+:param file_path: The path to the json to load
+:return: The data extracted</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="common.ImportExport.json_import_export.save_json">
+<code class="sig-prename descclassname">common.ImportExport.json_import_export.</code><code class="sig-name descname">save_json</code><span class="sig-paren">(</span><em class="sig-param">obj</em>, <em class="sig-param">file_path: pathlib.Path</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/common/ImportExport/json_import_export.html#save_json"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#common.ImportExport.json_import_export.save_json" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save an object as JSON
+:param obj: the object to save
+:param file_path: the path to which the object should be saved
+:return: Nothing</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-common.ImportExport.pickle_import_export">
+<span id="common-importexport-pickle-import-export-module"></span><h2>common.ImportExport.pickle_import_export module<a class="headerlink" href="#module-common.ImportExport.pickle_import_export" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="common.ImportExport.pickle_import_export.Pickler">
+<em class="property">class </em><code class="sig-prename descclassname">common.ImportExport.pickle_import_export.</code><code class="sig-name descname">Pickler</code><a class="reference internal" href="_modules/common/ImportExport/pickle_import_export.html#Pickler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#common.ImportExport.pickle_import_export.Pickler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Very specific file to overwrite method to pickle some specific object types.</p>
+<dl class="method">
+<dt id="common.ImportExport.pickle_import_export.Pickler.get_object_from_pickle">
+<em class="property">static </em><code class="sig-name descname">get_object_from_pickle</code><span class="sig-paren">(</span><em class="sig-param">pickle_obj</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/common/ImportExport/pickle_import_export.html#Pickler.get_object_from_pickle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#common.ImportExport.pickle_import_export.Pickler.get_object_from_pickle" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="common.ImportExport.pickle_import_export.Pickler.get_pickle_from_object">
+<em class="property">static </em><code class="sig-name descname">get_pickle_from_object</code><span class="sig-paren">(</span><em class="sig-param">obj</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/common/ImportExport/pickle_import_export.html#Pickler.get_pickle_from_object"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#common.ImportExport.pickle_import_export.Pickler.get_pickle_from_object" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="common.ImportExport.pickle_import_export.Pickler.patch_Keypoint_pickiling">
+<em class="property">static </em><code class="sig-name descname">patch_Keypoint_pickiling</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/common/ImportExport/pickle_import_export.html#Pickler.patch_Keypoint_pickiling"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#common.ImportExport.pickle_import_export.Pickler.patch_Keypoint_pickiling" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-common.ImportExport.picture_import_export">
+<span id="common-importexport-picture-import-export-module"></span><h2>common.ImportExport.picture_import_export module<a class="headerlink" href="#module-common.ImportExport.picture_import_export" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="common.ImportExport.picture_import_export.load_picture">
+<code class="sig-prename descclassname">common.ImportExport.picture_import_export.</code><code class="sig-name descname">load_picture</code><span class="sig-paren">(</span><em class="sig-param">file_path: pathlib.Path</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/common/ImportExport/picture_import_export.html#load_picture"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#common.ImportExport.picture_import_export.load_picture" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a bytes representation of a picture
+:param file_path: the path of the picture to load
+:return: The loaded picture</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="common.ImportExport.picture_import_export.save_picture">
+<code class="sig-prename descclassname">common.ImportExport.picture_import_export.</code><code class="sig-name descname">save_picture</code><span class="sig-paren">(</span><em class="sig-param">obj</em>, <em class="sig-param">file_path: pathlib.Path</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/common/ImportExport/picture_import_export.html#save_picture"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#common.ImportExport.picture_import_export.save_picture" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save a bytes representation of a picture to a file
+:param obj: Object to save (is a picture)
+:param file_path: path to which the object should be saved
+:return: Nothing</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-common.ImportExport">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-common.ImportExport" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">common.ImportExport package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-common.ImportExport.json_import_export">common.ImportExport.json_import_export module</a></li>
+<li><a class="reference internal" href="#module-common.ImportExport.pickle_import_export">common.ImportExport.pickle_import_export module</a></li>
+<li><a class="reference internal" href="#module-common.ImportExport.picture_import_export">common.ImportExport.picture_import_export module</a></li>
+<li><a class="reference internal" href="#module-common.ImportExport">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/common.ImportExport.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, Vincent FALCONIERI.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.2.
+    </div>
+  </body>
+</html>

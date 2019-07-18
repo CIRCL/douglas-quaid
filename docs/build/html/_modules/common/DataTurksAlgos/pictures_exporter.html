@@ -1,0 +1,299 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>common.DataTurksAlgos.pictures_exporter &#8212; Douglas-Quaid 0.0.4 documentation</title>
+    <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for common.DataTurksAlgos.pictures_exporter</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">pathlib</span>
+<span class="kn">from</span> <span class="nn">pprint</span> <span class="k">import</span> <span class="n">pformat</span>
+<span class="kn">from</span> <span class="nn">shutil</span> <span class="k">import</span> <span class="n">copyfile</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span>
+
+<span class="kn">import</span> <span class="nn">common.ImportExport.json_import_export</span> <span class="k">as</span> <span class="nn">json_io</span>
+<span class="kn">from</span> <span class="nn">common.environment_variable</span> <span class="k">import</span> <span class="n">load_server_logging_conf_file</span>
+
+<span class="n">load_server_logging_conf_file</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="dir_path"><a class="viewcode-back" href="../../../common.DataTurksAlgos.html#common.DataTurksAlgos.pictures_exporter.dir_path">[docs]</a><span class="k">def</span> <span class="nf">dir_path</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+        <span class="k">return</span> <span class="n">path</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentTypeError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;readable_dir:</span><span class="si">{path}</span><span class="s2"> is not a valid path&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="PicturesExporter"><a class="viewcode-back" href="../../../common.DataTurksAlgos.html#common.DataTurksAlgos.pictures_exporter.PicturesExporter">[docs]</a><span class="k">class</span> <span class="nc">PicturesExporter</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dataturks</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dataturks_json</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">src_folder</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dst_folder</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">already_copied</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">packet_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># Internal</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pic_to_path</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pic_already_to_path</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dict_to_export</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="p">[{}]</span>
+
+<div class="viewcode-block" id="PicturesExporter.launch_copy"><a class="viewcode-back" href="../../../common.DataTurksAlgos.html#common.DataTurksAlgos.pictures_exporter.PicturesExporter.launch_copy">[docs]</a>    <span class="k">def</span> <span class="nf">launch_copy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">load_dataturks_json</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">load_pictures_to_copy</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">load_pictures_to_not_copy</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">iterate_over_dataturks_json</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">export_dicts</span><span class="p">()</span></div>
+
+    <span class="c1"># ===================== UTILITIES =====================</span>
+
+<div class="viewcode-block" id="PicturesExporter.load_dataturks_json"><a class="viewcode-back" href="../../../common.DataTurksAlgos.html#common.DataTurksAlgos.pictures_exporter.PicturesExporter.load_dataturks_json">[docs]</a>    <span class="k">def</span> <span class="nf">load_dataturks_json</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dataturks_json</span> <span class="o">=</span> <span class="n">json_io</span><span class="o">.</span><span class="n">load_json</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dataturks</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="PicturesExporter.load_files"><a class="viewcode-back" href="../../../common.DataTurksAlgos.html#common.DataTurksAlgos.pictures_exporter.PicturesExporter.load_files">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">load_files</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">]:</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s1">&#39;**/*&#39;</span><span class="p">)</span>
+        <span class="n">files</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">p</span> <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">is_file</span><span class="p">()]</span>
+
+        <span class="n">files</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>  <span class="c1"># To prevent System&#39;s way of sorting paths.</span>
+        <span class="c1"># Therefore, we are sure about the order of treatment on any machine (determinism)</span>
+
+        <span class="k">return</span> <span class="n">files</span></div>
+
+<div class="viewcode-block" id="PicturesExporter.list_to_dict"><a class="viewcode-back" href="../../../common.DataTurksAlgos.html#common.DataTurksAlgos.pictures_exporter.PicturesExporter.list_to_dict">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">list_to_dict</span><span class="p">(</span><span class="n">files_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">]:</span>
+        <span class="n">tmp_dict</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">files_list</span><span class="p">:</span>
+            <span class="n">tmp_dict</span><span class="p">[</span><span class="n">f</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">f</span>
+
+        <span class="k">return</span> <span class="n">tmp_dict</span></div>
+
+<div class="viewcode-block" id="PicturesExporter.load_pictures_to_copy"><a class="viewcode-back" href="../../../common.DataTurksAlgos.html#common.DataTurksAlgos.pictures_exporter.PicturesExporter.load_pictures_to_copy">[docs]</a>    <span class="k">def</span> <span class="nf">load_pictures_to_copy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">file_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_files</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">src_folder</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pic_to_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">list_to_dict</span><span class="p">(</span><span class="n">file_list</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="PicturesExporter.load_pictures_to_not_copy"><a class="viewcode-back" href="../../../common.DataTurksAlgos.html#common.DataTurksAlgos.pictures_exporter.PicturesExporter.load_pictures_to_not_copy">[docs]</a>    <span class="k">def</span> <span class="nf">load_pictures_to_not_copy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">file_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_files</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dst_folder</span><span class="p">)</span>
+        <span class="n">already_copied_files</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_files</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">already_copied</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">pic_already_to_path</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">list_to_dict</span><span class="p">(</span><span class="n">file_list</span><span class="p">),</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">list_to_dict</span><span class="p">(</span><span class="n">already_copied_files</span><span class="p">)}</span></div>
+
+<div class="viewcode-block" id="PicturesExporter.iterate_over_dataturks_json"><a class="viewcode-back" href="../../../common.DataTurksAlgos.html#common.DataTurksAlgos.pictures_exporter.PicturesExporter.iterate_over_dataturks_json">[docs]</a>    <span class="k">def</span> <span class="nf">iterate_over_dataturks_json</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="n">nb_of_element</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">deleted</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">not_found</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">entry_number</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">no_label</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">copied</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">basename</span> <span class="o">=</span> <span class="s2">&quot;folder_&quot;</span>
+
+        <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataturks_json</span><span class="p">:</span>
+            <span class="n">entry_number</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="c1"># self.logger.debug(f&quot;Current element : \n{pformat(element)}&quot;)</span>
+
+            <span class="c1"># Do delete = we jump</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">annotations</span> <span class="o">=</span> <span class="n">element</span><span class="p">[</span><span class="s2">&quot;annotation&quot;</span><span class="p">]</span>
+                <span class="n">labels</span> <span class="o">=</span> <span class="n">annotations</span><span class="p">[</span><span class="s2">&quot;labels&quot;</span><span class="p">]</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Error when labels fetching from {pformat(element)} : </span><span class="si">{e}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">no_label</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">continue</span>
+
+            <span class="k">if</span> <span class="s2">&quot;to_delete&quot;</span> <span class="ow">in</span> <span class="n">labels</span><span class="p">:</span>
+                <span class="n">deleted</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;To Delete picture detected {pformat(element)} not copied !&quot;</span><span class="p">)</span>
+                <span class="k">continue</span>
+
+            <span class="n">tmp_path</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">element</span><span class="p">[</span><span class="s2">&quot;content&quot;</span><span class="p">])</span>
+
+            <span class="c1"># Path already copied previously = we jump</span>
+            <span class="k">if</span> <span class="n">tmp_path</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pic_already_to_path</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="c1"># File seems good.</span>
+            <span class="n">pack_id</span> <span class="o">=</span> <span class="n">nb_of_element</span> <span class="o">//</span> <span class="bp">self</span><span class="o">.</span><span class="n">packet_size</span>
+
+            <span class="c1"># Save labels in a corner for later export</span>
+            <span class="k">if</span> <span class="n">pack_id</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dict_to_export</span><span class="p">):</span>
+                <span class="c1"># We don&#39;t have enough dictionnary, we add one</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">dict_to_export</span><span class="o">.</span><span class="n">append</span><span class="p">({})</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">dict_to_export</span><span class="p">[</span><span class="n">pack_id</span><span class="p">][</span><span class="n">tmp_path</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">labels</span>
+
+            <span class="c1"># Generate new path where to be saved</span>
+            <span class="n">curr_folder_name</span> <span class="o">=</span> <span class="n">basename</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">pack_id</span><span class="p">)</span>
+            <span class="n">nb_of_element</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">curr_saving_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dst_folder</span> <span class="o">/</span> <span class="n">curr_folder_name</span>
+            <span class="n">curr_saving_path</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+            <span class="c1"># We copy the file</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pic_to_path</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">tmp_path</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">src</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pic_to_path</span><span class="p">[</span><span class="n">tmp_path</span><span class="o">.</span><span class="n">name</span><span class="p">])</span>
+                <span class="n">dst</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">curr_saving_path</span> <span class="o">/</span> <span class="n">tmp_path</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Picture </span><span class="si">{src}</span><span class="s2"> copied to </span><span class="si">{dst}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">copyfile</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">)</span>
+                <span class="n">copied</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">not_found</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Picture not found as file on the disk ! </span><span class="si">{tmp_path.name}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Pictures deleted = </span><span class="si">{deleted}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Pictures not found = </span><span class="si">{not_found}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Pictures in total in original file = </span><span class="si">{entry_number}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Pictures without label = </span><span class="si">{no_label}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Pictures copied = </span><span class="si">{copied}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="PicturesExporter.export_dicts"><a class="viewcode-back" href="../../../common.DataTurksAlgos.html#common.DataTurksAlgos.pictures_exporter.PicturesExporter.export_dicts">[docs]</a>    <span class="k">def</span> <span class="nf">export_dicts</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">curr_dict</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dict_to_export</span><span class="p">):</span>
+            <span class="n">json_io</span><span class="o">.</span><span class="n">save_json</span><span class="p">(</span><span class="n">curr_dict</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dst_folder</span> <span class="o">/</span> <span class="p">(</span><span class="s2">&quot;labels_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;.json&quot;</span><span class="p">))</span></div></div>
+
+
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">  {</span>
+<span class="sd">    &quot;content&quot;: &quot;http://149.13.33.83:80/img/97/abrupt-ratty-normal-stupid.png&quot;,</span>
+<span class="sd">    &quot;annotation&quot;: {</span>
+<span class="sd">      &quot;labels&quot;: [</span>
+<span class="sd">        &quot;dark-web:topic=\&quot;legitimate\&quot;&quot;,</span>
+<span class="sd">        &quot;dark-web:motivation=\&quot;education-training\&quot;&quot;</span>
+<span class="sd">      ],</span>
+<span class="sd">      &quot;note&quot;: &quot;&quot;</span>
+<span class="sd">    },</span>
+<span class="sd">    &quot;extras&quot;: null,</span>
+<span class="sd">    &quot;metadata&quot;: {</span>
+<span class="sd">      &quot;first_done_at&quot;: 1560523602000,</span>
+<span class="sd">      &quot;last_updated_at&quot;: 1560523602000,</span>
+<span class="sd">      &quot;sec_taken&quot;: 0,</span>
+<span class="sd">      &quot;last_updated_by&quot;: &quot;zettacircl@protonmail.com&quot;,</span>
+<span class="sd">      &quot;status&quot;: &quot;done&quot;,</span>
+<span class="sd">      &quot;evaluation&quot;: &quot;NONE&quot;</span>
+<span class="sd">    }</span>
+<span class="sd">  },</span>
+<span class="sd">  {</span>
+<span class="sd">    &quot;content&quot;: &quot;http://149.13.33.83:80/img/dc/striped-lively-opposite-strike.png&quot;,</span>
+<span class="sd">    &quot;annotation&quot;: {</span>
+<span class="sd">      &quot;labels&quot;: [</span>
+<span class="sd">        &quot;dark-web:topic=\&quot;drugs-narcotics\&quot;&quot;,</span>
+<span class="sd">        &quot;dark-web:topic=\&quot;search-engine-index\&quot;&quot;,</span>
+<span class="sd">        &quot;to_delete&quot;</span>
+<span class="sd">      ],</span>
+<span class="sd">      &quot;note&quot;: &quot;&quot;</span>
+<span class="sd">    },</span>
+<span class="sd">    &quot;extras&quot;: null,</span>
+<span class="sd">    &quot;metadata&quot;: {</span>
+<span class="sd">      &quot;first_done_at&quot;: 1561467239000,</span>
+<span class="sd">      &quot;last_updated_at&quot;: 1561467239000,</span>
+<span class="sd">      &quot;sec_taken&quot;: 0,</span>
+<span class="sd">      &quot;last_updated_by&quot;: &quot;zettacircl@protonmail.com&quot;,</span>
+<span class="sd">      &quot;status&quot;: &quot;done&quot;,</span>
+<span class="sd">      &quot;evaluation&quot;: &quot;NONE&quot;</span>
+<span class="sd">    }</span>
+<span class="sd">  },</span>
+<span class="sd">&#39;&#39;&#39;</span>
+
+<span class="c1"># Launcher for this worker. Launch this file to launch a worker</span>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="c1"># Use :</span>
+    <span class="c1"># First time : python3 ./pictures_exporter.py -s ./../SOURCE -d ./../DEST -p 4000</span>
+    <span class="c1"># Next time : python3 ./pictures_exporter.py -s ./../SOURCE -d ./../DEST -p 4000 -p ./../ALREADY_DONE</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s1">&#39;Export pictures from dataturks json to a new folder&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-i&quot;</span><span class="p">,</span> <span class="s1">&#39;--dataturks_json&#39;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;dataturks&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">dir_path</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Json exported from dataturks&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-s&quot;</span><span class="p">,</span> <span class="s1">&#39;--source_folder&#39;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;src&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">dir_path</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Source folder where all pictures are&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-d&quot;</span><span class="p">,</span> <span class="s1">&#39;--destination_folder&#39;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;dest&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">dir_path</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Destination folder where all pictures will be copied&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-a&quot;</span><span class="p">,</span> <span class="s1">&#39;--already_copied_folder&#39;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;already&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">dir_path</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Folder where pictures were already copied, and we want to jump them&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-p&quot;</span><span class="p">,</span> <span class="s1">&#39;--packet_size&#39;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;packet&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Number of picture to put in the packet&#39;</span><span class="p">)</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+
+    <span class="c1"># Load the provided configuration file and create back the Configuration Object</span>
+    <span class="n">dt_exporter</span> <span class="o">=</span> <span class="n">PicturesExporter</span><span class="p">()</span>
+
+    <span class="n">dt_exporter</span><span class="o">.</span><span class="n">dataturks</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">dataturks</span><span class="p">)</span>
+    <span class="n">dt_exporter</span><span class="o">.</span><span class="n">src_folder</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">src</span><span class="p">)</span>
+    <span class="n">dt_exporter</span><span class="o">.</span><span class="n">dst_folder</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">dest</span><span class="p">)</span>
+    <span class="n">dt_exporter</span><span class="o">.</span><span class="n">already_copied</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">already</span><span class="p">)</span> <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">already</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
+    <span class="n">dt_exporter</span><span class="o">.</span><span class="n">packet_size</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">packet</span>
+
+    <span class="n">dt_exporter</span><span class="o">.</span><span class="n">launch_copy</span><span class="p">()</span>
+
+<span class="c1"># export PYTHONPATH=&quot;${PYTHONPATH}:/home/vincent/douglas-quaid/&quot;</span>
+<span class="c1"># export CARLHAUSER_HOME=&quot;/home/vincent/douglas-quaid&quot;</span>
+<span class="c1"># python3 ./pictures_exporter.py -s ./../../../AIL_dataset_checked/ -d ./../../../PACKS/ -i ./../../../AIL4000.json -p 4000</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, Vincent FALCONIERI.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.2.
+    </div>
+  </body>
+</html>

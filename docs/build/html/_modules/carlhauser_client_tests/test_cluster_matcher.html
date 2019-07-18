@@ -1,0 +1,225 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>carlhauser_client_tests.test_cluster_matcher &#8212; Douglas-Quaid 0.0.4 documentation</title>
+    <link rel="stylesheet" href="../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for carlhauser_client_tests.test_cluster_matcher</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">pathlib</span>
+<span class="kn">import</span> <span class="nn">unittest</span>
+<span class="kn">from</span> <span class="nn">pprint</span> <span class="k">import</span> <span class="n">pformat</span>
+
+<span class="kn">import</span> <span class="nn">carlhauser_client.EvaluationTools.StorageGraphExtractor.storage_quality_evaluator</span> <span class="k">as</span> <span class="nn">storage_quality_evaluator</span>
+<span class="kn">from</span> <span class="nn">common.Graph.cluster</span> <span class="k">import</span> <span class="n">Cluster</span>
+<span class="kn">from</span> <span class="nn">common.environment_variable</span> <span class="k">import</span> <span class="n">get_homedir</span>
+
+
+<div class="viewcode-block" id="TestClusterMatcher"><a class="viewcode-back" href="../../carlhauser_client_tests.html#carlhauser_client_tests.test_cluster_matcher.TestClusterMatcher">[docs]</a><span class="k">class</span> <span class="nc">TestClusterMatcher</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Basic test cases.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="TestClusterMatcher.setUp"><a class="viewcode-back" href="../../carlhauser_client_tests.html#carlhauser_client_tests.test_cluster_matcher.TestClusterMatcher.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span>
+        <span class="c1"># self.conf = .Default_configuration()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_file_path</span> <span class="o">=</span> <span class="n">get_homedir</span><span class="p">()</span> <span class="o">/</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;carlhauser_client_tests/test_Helpers/id_generator&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cluster_matcher</span> <span class="o">=</span> <span class="n">storage_quality_evaluator</span><span class="o">.</span><span class="n">InternalClusteringQualityEvaluator</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="TestClusterMatcher.test_absolute_truth_and_meaning"><a class="viewcode-back" href="../../carlhauser_client_tests.html#carlhauser_client_tests.test_cluster_matcher.TestClusterMatcher.test_absolute_truth_and_meaning">[docs]</a>    <span class="k">def</span> <span class="nf">test_absolute_truth_and_meaning</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestClusterMatcher.test_match_clusters_simple"><a class="viewcode-back" href="../../carlhauser_client_tests.html#carlhauser_client_tests.test_cluster_matcher.TestClusterMatcher.test_match_clusters_simple">[docs]</a>    <span class="k">def</span> <span class="nf">test_match_clusters_simple</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">setA</span> <span class="o">=</span> <span class="n">Cluster</span><span class="p">(</span><span class="s2">&quot;big&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="n">setA</span><span class="o">.</span><span class="n">add_member_id</span><span class="p">(</span><span class="s1">&#39;Python&#39;</span><span class="p">)</span>
+        <span class="n">setA</span><span class="o">.</span><span class="n">add_member_id</span><span class="p">(</span><span class="s1">&#39;R&#39;</span><span class="p">)</span>
+        <span class="n">setA</span><span class="o">.</span><span class="n">add_member_id</span><span class="p">(</span><span class="s1">&#39;SQL&#39;</span><span class="p">)</span>
+        <span class="n">setA</span><span class="o">.</span><span class="n">add_member_id</span><span class="p">(</span><span class="s1">&#39;Git&#39;</span><span class="p">)</span>
+        <span class="n">setA</span><span class="o">.</span><span class="n">add_member_id</span><span class="p">(</span><span class="s1">&#39;Tableau&#39;</span><span class="p">)</span>
+        <span class="n">setA</span><span class="o">.</span><span class="n">add_member_id</span><span class="p">(</span><span class="s1">&#39;SAS&#39;</span><span class="p">)</span>
+        <span class="n">setB</span> <span class="o">=</span> <span class="n">Cluster</span><span class="p">(</span><span class="s2">&quot;names&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="n">setB</span><span class="o">.</span><span class="n">add_member_id</span><span class="p">(</span><span class="s1">&#39;toto&#39;</span><span class="p">)</span>
+        <span class="n">setB</span><span class="o">.</span><span class="n">add_member_id</span><span class="p">(</span><span class="s1">&#39;tata&#39;</span><span class="p">)</span>
+        <span class="n">setB</span><span class="o">.</span><span class="n">add_member_id</span><span class="p">(</span><span class="s1">&#39;ronron&#39;</span><span class="p">)</span>
+        <span class="n">setB</span><span class="o">.</span><span class="n">add_member_id</span><span class="p">(</span><span class="s1">&#39;gigi&#39;</span><span class="p">)</span>
+        <span class="n">setB</span><span class="o">.</span><span class="n">add_member_id</span><span class="p">(</span><span class="s1">&#39;lala&#39;</span><span class="p">)</span>
+        <span class="n">setB</span><span class="o">.</span><span class="n">add_member_id</span><span class="p">(</span><span class="s1">&#39;vava&#39;</span><span class="p">)</span>
+
+        <span class="n">set1</span> <span class="o">=</span> <span class="n">Cluster</span><span class="p">(</span><span class="s2">&quot;similibig&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="n">set1</span><span class="o">.</span><span class="n">add_member_id</span><span class="p">(</span><span class="s1">&#39;Python&#39;</span><span class="p">)</span>
+        <span class="n">set1</span><span class="o">.</span><span class="n">add_member_id</span><span class="p">(</span><span class="s1">&#39;R&#39;</span><span class="p">)</span>
+        <span class="n">set1</span><span class="o">.</span><span class="n">add_member_id</span><span class="p">(</span><span class="s1">&#39;Git&#39;</span><span class="p">)</span>
+        <span class="n">set1</span><span class="o">.</span><span class="n">add_member_id</span><span class="p">(</span><span class="s1">&#39;Tableau&#39;</span><span class="p">)</span>
+        <span class="n">set1</span><span class="o">.</span><span class="n">add_member_id</span><span class="p">(</span><span class="s1">&#39;SAS&#39;</span><span class="p">)</span>
+        <span class="n">set2</span> <span class="o">=</span> <span class="n">Cluster</span><span class="p">(</span><span class="s2">&quot;similinames&quot;</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="n">set2</span><span class="o">.</span><span class="n">add_member_id</span><span class="p">(</span><span class="s1">&#39;toto&#39;</span><span class="p">)</span>
+        <span class="n">set2</span><span class="o">.</span><span class="n">add_member_id</span><span class="p">(</span><span class="s1">&#39;tata&#39;</span><span class="p">)</span>
+        <span class="n">set2</span><span class="o">.</span><span class="n">add_member_id</span><span class="p">(</span><span class="s1">&#39;vava&#39;</span><span class="p">)</span>
+
+        <span class="n">matching</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cluster_matcher</span><span class="o">.</span><span class="n">match_clusters</span><span class="p">([</span><span class="n">setA</span><span class="p">,</span> <span class="n">setB</span><span class="p">],</span> <span class="p">[</span><span class="n">set1</span><span class="p">,</span> <span class="n">set2</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">matching</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">cluster_1</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">matching</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">cluster_2</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">matching</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">cluster_1</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">matching</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">cluster_2</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">pformat</span><span class="p">(</span><span class="n">matching</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="TestClusterMatcher.test_match_clusters_median"><a class="viewcode-back" href="../../carlhauser_client_tests.html#carlhauser_client_tests.test_cluster_matcher.TestClusterMatcher.test_match_clusters_median">[docs]</a>    <span class="k">def</span> <span class="nf">test_match_clusters_median</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">setA</span> <span class="o">=</span> <span class="n">Cluster</span><span class="p">(</span><span class="s2">&quot;big&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="n">setA</span><span class="o">.</span><span class="n">add_member_id</span><span class="p">(</span><span class="s1">&#39;Python&#39;</span><span class="p">)</span>
+        <span class="n">setA</span><span class="o">.</span><span class="n">add_member_id</span><span class="p">(</span><span class="s1">&#39;R&#39;</span><span class="p">)</span>
+        <span class="n">setA</span><span class="o">.</span><span class="n">add_member_id</span><span class="p">(</span><span class="s1">&#39;SQL&#39;</span><span class="p">)</span>
+        <span class="n">setA</span><span class="o">.</span><span class="n">add_member_id</span><span class="p">(</span><span class="s1">&#39;Git&#39;</span><span class="p">)</span>
+        <span class="n">setA</span><span class="o">.</span><span class="n">add_member_id</span><span class="p">(</span><span class="s1">&#39;Tableau&#39;</span><span class="p">)</span>
+        <span class="n">setA</span><span class="o">.</span><span class="n">add_member_id</span><span class="p">(</span><span class="s1">&#39;SAS&#39;</span><span class="p">)</span>
+        <span class="n">setB</span> <span class="o">=</span> <span class="n">Cluster</span><span class="p">(</span><span class="s2">&quot;names&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="n">setB</span><span class="o">.</span><span class="n">add_member_id</span><span class="p">(</span><span class="s1">&#39;toto&#39;</span><span class="p">)</span>
+        <span class="n">setB</span><span class="o">.</span><span class="n">add_member_id</span><span class="p">(</span><span class="s1">&#39;tata&#39;</span><span class="p">)</span>
+        <span class="n">setB</span><span class="o">.</span><span class="n">add_member_id</span><span class="p">(</span><span class="s1">&#39;ronron&#39;</span><span class="p">)</span>
+        <span class="n">setB</span><span class="o">.</span><span class="n">add_member_id</span><span class="p">(</span><span class="s1">&#39;gigi&#39;</span><span class="p">)</span>
+        <span class="n">setB</span><span class="o">.</span><span class="n">add_member_id</span><span class="p">(</span><span class="s1">&#39;lala&#39;</span><span class="p">)</span>
+        <span class="n">setB</span><span class="o">.</span><span class="n">add_member_id</span><span class="p">(</span><span class="s1">&#39;vava&#39;</span><span class="p">)</span>
+        <span class="n">setC</span> <span class="o">=</span> <span class="n">Cluster</span><span class="p">(</span><span class="s2">&quot;anim&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="n">setC</span><span class="o">.</span><span class="n">add_member_id</span><span class="p">(</span><span class="s1">&#39;kalo&#39;</span><span class="p">)</span>
+        <span class="n">setC</span><span class="o">.</span><span class="n">add_member_id</span><span class="p">(</span><span class="s1">&#39;loka&#39;</span><span class="p">)</span>
+        <span class="n">setC</span><span class="o">.</span><span class="n">add_member_id</span><span class="p">(</span><span class="s1">&#39;lolo&#39;</span><span class="p">)</span>
+        <span class="n">setC</span><span class="o">.</span><span class="n">add_member_id</span><span class="p">(</span><span class="s1">&#39;kaka&#39;</span><span class="p">)</span>
+        <span class="n">setD</span> <span class="o">=</span> <span class="n">Cluster</span><span class="p">(</span><span class="s2">&quot;let&quot;</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="n">setD</span><span class="o">.</span><span class="n">add_member_id</span><span class="p">(</span><span class="s1">&#39;bb&#39;</span><span class="p">)</span>
+        <span class="n">setD</span><span class="o">.</span><span class="n">add_member_id</span><span class="p">(</span><span class="s1">&#39;cc&#39;</span><span class="p">)</span>
+        <span class="n">setD</span><span class="o">.</span><span class="n">add_member_id</span><span class="p">(</span><span class="s1">&#39;aa&#39;</span><span class="p">)</span>
+
+        <span class="n">set1</span> <span class="o">=</span> <span class="n">Cluster</span><span class="p">(</span><span class="s2">&quot;big&quot;</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="n">set1</span><span class="o">.</span><span class="n">add_member_id</span><span class="p">(</span><span class="s1">&#39;Python&#39;</span><span class="p">)</span>
+        <span class="n">set1</span><span class="o">.</span><span class="n">add_member_id</span><span class="p">(</span><span class="s1">&#39;R&#39;</span><span class="p">)</span>
+        <span class="n">set1</span><span class="o">.</span><span class="n">add_member_id</span><span class="p">(</span><span class="s1">&#39;Git&#39;</span><span class="p">)</span>
+        <span class="n">set1</span><span class="o">.</span><span class="n">add_member_id</span><span class="p">(</span><span class="s1">&#39;Tableau&#39;</span><span class="p">)</span>
+        <span class="n">set1</span><span class="o">.</span><span class="n">add_member_id</span><span class="p">(</span><span class="s1">&#39;SAS&#39;</span><span class="p">)</span>
+        <span class="n">set2</span> <span class="o">=</span> <span class="n">Cluster</span><span class="p">(</span><span class="s2">&quot;names&quot;</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="n">set2</span><span class="o">.</span><span class="n">add_member_id</span><span class="p">(</span><span class="s1">&#39;toto&#39;</span><span class="p">)</span>
+        <span class="n">set2</span><span class="o">.</span><span class="n">add_member_id</span><span class="p">(</span><span class="s1">&#39;tata&#39;</span><span class="p">)</span>
+        <span class="n">set2</span><span class="o">.</span><span class="n">add_member_id</span><span class="p">(</span><span class="s1">&#39;vava&#39;</span><span class="p">)</span>
+        <span class="n">set3</span> <span class="o">=</span> <span class="n">Cluster</span><span class="p">(</span><span class="s2">&quot;anim&quot;</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="n">set3</span><span class="o">.</span><span class="n">add_member_id</span><span class="p">(</span><span class="s1">&#39;kalo&#39;</span><span class="p">)</span>
+        <span class="n">set3</span><span class="o">.</span><span class="n">add_member_id</span><span class="p">(</span><span class="s1">&#39;lolo&#39;</span><span class="p">)</span>
+        <span class="n">set4</span> <span class="o">=</span> <span class="n">Cluster</span><span class="p">(</span><span class="s2">&quot;let&quot;</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="n">set4</span><span class="o">.</span><span class="n">add_member_id</span><span class="p">(</span><span class="s1">&#39;bb&#39;</span><span class="p">)</span>
+
+        <span class="n">matching</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cluster_matcher</span><span class="o">.</span><span class="n">match_clusters</span><span class="p">([</span><span class="n">setA</span><span class="p">,</span> <span class="n">setB</span><span class="p">,</span> <span class="n">setC</span><span class="p">,</span> <span class="n">setD</span><span class="p">],</span> <span class="p">[</span><span class="n">set1</span><span class="p">,</span> <span class="n">set2</span><span class="p">,</span> <span class="n">set3</span><span class="p">,</span> <span class="n">set4</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">matching</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">cluster_1</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="n">matching</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">cluster_2</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">matching</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">cluster_1</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="n">matching</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">cluster_2</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">matching</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">cluster_1</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="n">matching</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">cluster_2</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">matching</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">cluster_1</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="n">matching</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">cluster_2</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">pformat</span><span class="p">(</span><span class="n">matching</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="TestClusterMatcher.test_match_clusters_null"><a class="viewcode-back" href="../../carlhauser_client_tests.html#carlhauser_client_tests.test_cluster_matcher.TestClusterMatcher.test_match_clusters_null">[docs]</a>    <span class="k">def</span> <span class="nf">test_match_clusters_null</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">setA</span> <span class="o">=</span> <span class="n">Cluster</span><span class="p">(</span><span class="s2">&quot;big&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="n">setA</span><span class="o">.</span><span class="n">add_member_id</span><span class="p">(</span><span class="s1">&#39;Python&#39;</span><span class="p">)</span>
+        <span class="n">setA</span><span class="o">.</span><span class="n">add_member_id</span><span class="p">(</span><span class="s1">&#39;R&#39;</span><span class="p">)</span>
+        <span class="n">setB</span> <span class="o">=</span> <span class="n">Cluster</span><span class="p">(</span><span class="s2">&quot;null&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="n">setB</span><span class="o">.</span><span class="n">add_member_id</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+
+        <span class="n">set1</span> <span class="o">=</span> <span class="n">Cluster</span><span class="p">(</span><span class="s2">&quot;big&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="n">set1</span><span class="o">.</span><span class="n">add_member_id</span><span class="p">(</span><span class="s1">&#39;Python&#39;</span><span class="p">)</span>
+        <span class="n">set2</span> <span class="o">=</span> <span class="n">Cluster</span><span class="p">(</span><span class="s2">&quot;short&quot;</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="n">set2</span><span class="o">.</span><span class="n">add_member_id</span><span class="p">(</span><span class="s1">&#39;R&#39;</span><span class="p">)</span>
+
+        <span class="n">matching</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cluster_matcher</span><span class="o">.</span><span class="n">match_clusters</span><span class="p">([</span><span class="n">setA</span><span class="p">,</span> <span class="n">setB</span><span class="p">],</span> <span class="p">[</span><span class="n">set1</span><span class="p">,</span> <span class="n">set2</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">matching</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">cluster_1</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">matching</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">cluster_2</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">matching</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">cluster_1</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">matching</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">cluster_2</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">pformat</span><span class="p">(</span><span class="n">matching</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="TestClusterMatcher.test_set_storage"><a class="viewcode-back" href="../../carlhauser_client_tests.html#carlhauser_client_tests.test_cluster_matcher.TestClusterMatcher.test_set_storage">[docs]</a>    <span class="k">def</span> <span class="nf">test_set_storage</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Proof that sets are checked on their &quot;content&quot; and not their memory adress</span>
+        <span class="n">setA</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Python&#39;</span><span class="p">,</span> <span class="s1">&#39;R&#39;</span><span class="p">}</span>
+        <span class="n">setB</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;&quot;</span><span class="p">}</span>
+
+        <span class="n">set1</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Python&#39;</span><span class="p">,</span> <span class="s1">&#39;R&#39;</span><span class="p">}</span>
+        <span class="n">set2</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;R&#39;</span><span class="p">}</span>
+
+        <span class="n">list_sets</span> <span class="o">=</span> <span class="p">[</span><span class="n">setA</span><span class="p">,</span> <span class="n">setB</span><span class="p">,</span> <span class="n">set1</span><span class="p">,</span> <span class="n">set2</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">list_sets</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="n">setA</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;found ! &quot;</span><span class="p">)</span></div></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">unittest</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, Vincent FALCONIERI.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.2.
+    </div>
+  </body>
+</html>

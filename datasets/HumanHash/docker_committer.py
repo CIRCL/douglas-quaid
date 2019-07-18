@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import argparse
+import datetime
+import time
+from collections import deque
+
 # See : https://github.com/docker/docker-py
 import docker
-import argparse
-import pathlib
-from collections import deque
-import time
-import datetime
+
 
 ### LAAAAUNCH WITH ROOT ACCESS !! or with user in docker group ####
 
@@ -23,8 +24,7 @@ class DockerCommmiter:
         print("List of runing container :", self.client.containers.list())
         print("List of images :", self.client.images.list())
 
-        while True :
-
+        while True:
             # Commit the docker
             self.commit_docker(docker_name)
             # Remove the old ones
@@ -33,8 +33,7 @@ class DockerCommmiter:
             # wait for next scheduled save time
             time.sleep(nb_secs)
 
-
-    def commit_docker(self, docker_name ) -> str:
+    def commit_docker(self, docker_name) -> str:
         commit_name = self.get_commit_name()
 
         print(f"Commiting : {commit_name}")
@@ -53,13 +52,14 @@ class DockerCommmiter:
 
     def remove_too_old_images(self):
 
-        if len(self.deque_saves) > self.saves_limit :
+        if len(self.deque_saves) > self.saves_limit:
             commit_name_to_remove = self.deque_saves.popleft()
             print(f"Too many saves. Removing save : {commit_name_to_remove}")
 
             self.client.images.remove(commit_name_to_remove)
-        else :
+        else:
             print(f"Save limit not reached for now, only {len(self.deque_saves)} saves")
+
 
 '''
 >>> client.images.remove(t.id)

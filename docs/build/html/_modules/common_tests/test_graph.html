@@ -1,0 +1,441 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>common_tests.test_graph &#8212; Douglas-Quaid 0.0.4 documentation</title>
+    <link rel="stylesheet" href="../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for common_tests.test_graph</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">pardir</span><span class="p">))</span>
+<span class="kn">import</span> <span class="nn">unittest</span>
+<span class="kn">import</span> <span class="nn">pprint</span>
+
+<span class="kn">from</span> <span class="nn">common.Graph.graph_datastructure</span> <span class="k">import</span> <span class="n">GraphDataStruct</span>
+<span class="kn">import</span> <span class="nn">common.Graph.graph_datastructure</span> <span class="k">as</span> <span class="nn">graph_datastructure</span>
+<span class="kn">from</span> <span class="nn">common.Graph.cluster</span> <span class="k">import</span> <span class="n">Cluster</span>
+<span class="kn">from</span> <span class="nn">common.Graph.edge</span> <span class="k">import</span> <span class="n">Edge</span>
+<span class="kn">from</span> <span class="nn">common.Graph.node</span> <span class="k">import</span> <span class="n">Node</span>
+<span class="kn">from</span> <span class="nn">common.Graph.metadata</span> <span class="k">import</span> <span class="n">Metadata</span><span class="p">,</span> <span class="n">Source</span>
+
+
+<div class="viewcode-block" id="test_template"><a class="viewcode-back" href="../../common_tests.html#common_tests.test_graph.test_template">[docs]</a><span class="k">class</span> <span class="nc">test_template</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Basic test cases.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="test_template.setUp"><a class="viewcode-back" href="../../common_tests.html#common_tests.test_graph.test_template.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">maxDiff</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span>
+        <span class="c1"># self.conf = configuration.Default_configuration()</span>
+        <span class="c1"># self.test_file_path = pathlib.Path.cwd() / pathlib.Path(&quot;tests/test_files&quot;)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">expected_json</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;clusters&#39;</span><span class="p">:</span> <span class="p">[{</span><span class="s1">&#39;group&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                                            <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                                            <span class="s1">&#39;image&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                                            <span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                                            <span class="s1">&#39;members&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;0_0&#39;</span><span class="p">,</span> <span class="s1">&#39;0_1&#39;</span><span class="p">,</span> <span class="s1">&#39;0_2&#39;</span><span class="p">],</span>
+                                            <span class="s1">&#39;shape&#39;</span><span class="p">:</span> <span class="s1">&#39;image&#39;</span><span class="p">},</span>
+                                           <span class="p">{</span><span class="s1">&#39;group&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                                            <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+                                            <span class="s1">&#39;image&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                                            <span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                                            <span class="s1">&#39;members&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;1_0&#39;</span><span class="p">,</span> <span class="s1">&#39;1_1&#39;</span><span class="p">,</span> <span class="s1">&#39;1_2&#39;</span><span class="p">],</span>
+                                            <span class="s1">&#39;shape&#39;</span><span class="p">:</span> <span class="s1">&#39;image&#39;</span><span class="p">}],</span>
+                              <span class="s1">&#39;edges&#39;</span><span class="p">:</span> <span class="p">[{</span><span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="s1">&#39;gray&#39;</span><span class="p">,</span> <span class="s1">&#39;from&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;to&#39;</span><span class="p">:</span> <span class="s1">&#39;0_0&#39;</span><span class="p">},</span>
+                                        <span class="p">{</span><span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="s1">&#39;gray&#39;</span><span class="p">,</span> <span class="s1">&#39;from&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;to&#39;</span><span class="p">:</span> <span class="s1">&#39;0_1&#39;</span><span class="p">},</span>
+                                        <span class="p">{</span><span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="s1">&#39;gray&#39;</span><span class="p">,</span> <span class="s1">&#39;from&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;to&#39;</span><span class="p">:</span> <span class="s1">&#39;0_2&#39;</span><span class="p">},</span>
+                                        <span class="p">{</span><span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="s1">&#39;gray&#39;</span><span class="p">,</span> <span class="s1">&#39;from&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;to&#39;</span><span class="p">:</span> <span class="s1">&#39;1_0&#39;</span><span class="p">},</span>
+                                        <span class="p">{</span><span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="s1">&#39;gray&#39;</span><span class="p">,</span> <span class="s1">&#39;from&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;to&#39;</span><span class="p">:</span> <span class="s1">&#39;1_1&#39;</span><span class="p">},</span>
+                                        <span class="p">{</span><span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="s1">&#39;gray&#39;</span><span class="p">,</span> <span class="s1">&#39;from&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;to&#39;</span><span class="p">:</span> <span class="s1">&#39;1_2&#39;</span><span class="p">}],</span>
+                              <span class="s1">&#39;meta&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;source&#39;</span><span class="p">:</span> <span class="s1">&#39;DBDUMP&#39;</span><span class="p">},</span>
+                              <span class="s1">&#39;nodes&#39;</span><span class="p">:</span> <span class="p">[{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="s1">&#39;0_0&#39;</span><span class="p">,</span>
+                                         <span class="s1">&#39;image&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                                         <span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="s1">&#39;picture name +0_0&#39;</span><span class="p">,</span>
+                                         <span class="s1">&#39;shape&#39;</span><span class="p">:</span> <span class="s1">&#39;image&#39;</span><span class="p">},</span>
+                                        <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="s1">&#39;0_1&#39;</span><span class="p">,</span>
+                                         <span class="s1">&#39;image&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                                         <span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="s1">&#39;picture name +0_1&#39;</span><span class="p">,</span>
+                                         <span class="s1">&#39;shape&#39;</span><span class="p">:</span> <span class="s1">&#39;image&#39;</span><span class="p">},</span>
+                                        <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="s1">&#39;0_2&#39;</span><span class="p">,</span>
+                                         <span class="s1">&#39;image&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                                         <span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="s1">&#39;picture name +0_2&#39;</span><span class="p">,</span>
+                                         <span class="s1">&#39;shape&#39;</span><span class="p">:</span> <span class="s1">&#39;image&#39;</span><span class="p">},</span>
+                                        <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="s1">&#39;1_0&#39;</span><span class="p">,</span>
+                                         <span class="s1">&#39;image&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                                         <span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="s1">&#39;picture name +1_0&#39;</span><span class="p">,</span>
+                                         <span class="s1">&#39;shape&#39;</span><span class="p">:</span> <span class="s1">&#39;image&#39;</span><span class="p">},</span>
+                                        <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="s1">&#39;1_1&#39;</span><span class="p">,</span>
+                                         <span class="s1">&#39;image&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                                         <span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="s1">&#39;picture name +1_1&#39;</span><span class="p">,</span>
+                                         <span class="s1">&#39;shape&#39;</span><span class="p">:</span> <span class="s1">&#39;image&#39;</span><span class="p">},</span>
+                                        <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="s1">&#39;1_2&#39;</span><span class="p">,</span>
+                                         <span class="s1">&#39;image&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                                         <span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="s1">&#39;picture name +1_2&#39;</span><span class="p">,</span>
+                                         <span class="s1">&#39;shape&#39;</span><span class="p">:</span> <span class="s1">&#39;image&#39;</span><span class="p">}]}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">mappedexpected</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;clusters&#39;</span><span class="p">:</span> <span class="p">[{</span><span class="s1">&#39;group&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                                             <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                                             <span class="s1">&#39;image&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                                             <span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                                             <span class="s1">&#39;members&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;0_0NEW&#39;</span><span class="p">,</span> <span class="s1">&#39;0_1NEW&#39;</span><span class="p">,</span> <span class="s1">&#39;0_2NEW&#39;</span><span class="p">],</span>
+                                             <span class="s1">&#39;shape&#39;</span><span class="p">:</span> <span class="s1">&#39;image&#39;</span><span class="p">},</span>
+                                            <span class="p">{</span><span class="s1">&#39;group&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                                             <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+                                             <span class="s1">&#39;image&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                                             <span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                                             <span class="s1">&#39;members&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;1_0NEW&#39;</span><span class="p">,</span> <span class="s1">&#39;1_1NEW&#39;</span><span class="p">,</span> <span class="s1">&#39;1_2NEW&#39;</span><span class="p">],</span>
+                                             <span class="s1">&#39;shape&#39;</span><span class="p">:</span> <span class="s1">&#39;image&#39;</span><span class="p">}],</span>
+                               <span class="s1">&#39;edges&#39;</span><span class="p">:</span> <span class="p">[{</span><span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="s1">&#39;gray&#39;</span><span class="p">,</span> <span class="s1">&#39;from&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;to&#39;</span><span class="p">:</span> <span class="s1">&#39;0_0NEW&#39;</span><span class="p">},</span>
+                                         <span class="p">{</span><span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="s1">&#39;gray&#39;</span><span class="p">,</span> <span class="s1">&#39;from&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;to&#39;</span><span class="p">:</span> <span class="s1">&#39;0_1NEW&#39;</span><span class="p">},</span>
+                                         <span class="p">{</span><span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="s1">&#39;gray&#39;</span><span class="p">,</span> <span class="s1">&#39;from&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;to&#39;</span><span class="p">:</span> <span class="s1">&#39;0_2NEW&#39;</span><span class="p">},</span>
+                                         <span class="p">{</span><span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="s1">&#39;gray&#39;</span><span class="p">,</span> <span class="s1">&#39;from&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;to&#39;</span><span class="p">:</span> <span class="s1">&#39;1_0NEW&#39;</span><span class="p">},</span>
+                                         <span class="p">{</span><span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="s1">&#39;gray&#39;</span><span class="p">,</span> <span class="s1">&#39;from&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;to&#39;</span><span class="p">:</span> <span class="s1">&#39;1_1NEW&#39;</span><span class="p">},</span>
+                                         <span class="p">{</span><span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="s1">&#39;gray&#39;</span><span class="p">,</span> <span class="s1">&#39;from&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;to&#39;</span><span class="p">:</span> <span class="s1">&#39;1_2NEW&#39;</span><span class="p">}],</span>
+                               <span class="s1">&#39;meta&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;source&#39;</span><span class="p">:</span> <span class="s1">&#39;DBDUMP&#39;</span><span class="p">},</span>
+                               <span class="s1">&#39;nodes&#39;</span><span class="p">:</span> <span class="p">[{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="s1">&#39;0_0NEW&#39;</span><span class="p">,</span>
+                                          <span class="s1">&#39;image&#39;</span><span class="p">:</span> <span class="s1">&#39;0_0IMAGE&#39;</span><span class="p">,</span>
+                                          <span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="s1">&#39;picture name +0_0OLD&#39;</span><span class="p">,</span>
+                                          <span class="s1">&#39;shape&#39;</span><span class="p">:</span> <span class="s1">&#39;image&#39;</span><span class="p">},</span>
+                                         <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="s1">&#39;0_1NEW&#39;</span><span class="p">,</span>
+                                          <span class="s1">&#39;image&#39;</span><span class="p">:</span> <span class="s1">&#39;0_1IMAGE&#39;</span><span class="p">,</span>
+                                          <span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="s1">&#39;picture name +0_1OLD&#39;</span><span class="p">,</span>
+                                          <span class="s1">&#39;shape&#39;</span><span class="p">:</span> <span class="s1">&#39;image&#39;</span><span class="p">},</span>
+                                         <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="s1">&#39;0_2NEW&#39;</span><span class="p">,</span>
+                                          <span class="s1">&#39;image&#39;</span><span class="p">:</span> <span class="s1">&#39;0_2IMAGE&#39;</span><span class="p">,</span>
+                                          <span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="s1">&#39;picture name +0_2OLD&#39;</span><span class="p">,</span>
+                                          <span class="s1">&#39;shape&#39;</span><span class="p">:</span> <span class="s1">&#39;image&#39;</span><span class="p">},</span>
+                                         <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="s1">&#39;1_0NEW&#39;</span><span class="p">,</span>
+                                          <span class="s1">&#39;image&#39;</span><span class="p">:</span> <span class="s1">&#39;1_0IMAGE&#39;</span><span class="p">,</span>
+                                          <span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="s1">&#39;picture name +1_0OLD&#39;</span><span class="p">,</span>
+                                          <span class="s1">&#39;shape&#39;</span><span class="p">:</span> <span class="s1">&#39;image&#39;</span><span class="p">},</span>
+                                         <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="s1">&#39;1_1NEW&#39;</span><span class="p">,</span>
+                                          <span class="s1">&#39;image&#39;</span><span class="p">:</span> <span class="s1">&#39;1_1IMAGE&#39;</span><span class="p">,</span>
+                                          <span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="s1">&#39;picture name +1_1OLD&#39;</span><span class="p">,</span>
+                                          <span class="s1">&#39;shape&#39;</span><span class="p">:</span> <span class="s1">&#39;image&#39;</span><span class="p">},</span>
+                                         <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="s1">&#39;1_2NEW&#39;</span><span class="p">,</span>
+                                          <span class="s1">&#39;image&#39;</span><span class="p">:</span> <span class="s1">&#39;1_2IMAGE&#39;</span><span class="p">,</span>
+                                          <span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="s1">&#39;picture name +1_2OLD&#39;</span><span class="p">,</span>
+                                          <span class="s1">&#39;shape&#39;</span><span class="p">:</span> <span class="s1">&#39;image&#39;</span><span class="p">}]}</span></div>
+
+<div class="viewcode-block" id="test_template.test_absolute_truth_and_meaning"><a class="viewcode-back" href="../../common_tests.html#common_tests.test_graph.test_template.test_absolute_truth_and_meaning">[docs]</a>    <span class="k">def</span> <span class="nf">test_absolute_truth_and_meaning</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="test_template.test_graph_export"><a class="viewcode-back" href="../../common_tests.html#common_tests.test_graph.test_template.test_graph_export">[docs]</a>    <span class="k">def</span> <span class="nf">test_graph_export</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="c1"># Create a graphe structure</span>
+        <span class="n">tmp_meta</span> <span class="o">=</span> <span class="n">Metadata</span><span class="p">(</span><span class="n">Source</span><span class="o">.</span><span class="n">DBDUMP</span><span class="p">)</span>
+        <span class="n">tmp_graph</span> <span class="o">=</span> <span class="n">GraphDataStruct</span><span class="p">(</span><span class="n">tmp_meta</span><span class="p">)</span>
+
+        <span class="c1"># For each cluster, fetch all pictures and store it</span>
+        <span class="k">for</span> <span class="n">cluster_id</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span>
+            <span class="n">tmp_graph</span><span class="o">.</span><span class="n">add_cluster</span><span class="p">(</span><span class="n">Cluster</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="n">cluster_id</span><span class="p">,</span> <span class="n">image</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">))</span>
+
+            <span class="k">for</span> <span class="nb">id</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">):</span>
+                <span class="n">pic_id</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">cluster_id</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
+                <span class="c1"># Label = picture score, here</span>
+                <span class="n">tmp_graph</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="n">Node</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;picture name +&quot;</span> <span class="o">+</span> <span class="n">pic_id</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="n">pic_id</span><span class="p">,</span> <span class="n">image</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">))</span>
+                <span class="n">tmp_graph</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">Edge</span><span class="p">(</span><span class="n">_from</span><span class="o">=</span><span class="n">cluster_id</span><span class="p">,</span> <span class="n">_to</span><span class="o">=</span><span class="n">pic_id</span><span class="p">))</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Exported dict : &quot;</span><span class="p">)</span>
+        <span class="n">val</span> <span class="o">=</span> <span class="n">tmp_graph</span><span class="o">.</span><span class="n">export_as_dict</span><span class="p">()</span>
+        <span class="n">pprint</span><span class="o">.</span><span class="n">pprint</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertDictEqual</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">expected_json</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="test_template.test_graph_import_export_consistency"><a class="viewcode-back" href="../../common_tests.html#common_tests.test_graph.test_template.test_graph_import_export_consistency">[docs]</a>    <span class="k">def</span> <span class="nf">test_graph_import_export_consistency</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="c1"># Create a graphe structure</span>
+        <span class="n">tmp_meta</span> <span class="o">=</span> <span class="n">Metadata</span><span class="p">(</span><span class="n">Source</span><span class="o">.</span><span class="n">DBDUMP</span><span class="p">)</span>
+        <span class="n">tmp_graph</span> <span class="o">=</span> <span class="n">GraphDataStruct</span><span class="p">(</span><span class="n">tmp_meta</span><span class="p">)</span>
+
+        <span class="c1"># For each cluster, fetch all pictures and store it</span>
+        <span class="k">for</span> <span class="n">cluster_id</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span>
+            <span class="n">tmp_graph</span><span class="o">.</span><span class="n">add_cluster</span><span class="p">(</span><span class="n">Cluster</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="n">cluster_id</span><span class="p">,</span> <span class="n">image</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">))</span>
+
+            <span class="k">for</span> <span class="nb">id</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">):</span>
+                <span class="n">pic_id</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">cluster_id</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
+                <span class="c1"># Label = picture score, here</span>
+                <span class="n">tmp_graph</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="n">Node</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;picture name +&quot;</span> <span class="o">+</span> <span class="n">pic_id</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="n">pic_id</span><span class="p">,</span> <span class="n">image</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">))</span>
+                <span class="n">tmp_graph</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">Edge</span><span class="p">(</span><span class="n">_from</span><span class="o">=</span><span class="n">cluster_id</span><span class="p">,</span> <span class="n">_to</span><span class="o">=</span><span class="n">pic_id</span><span class="p">))</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Exported dict : &quot;</span><span class="p">)</span>
+        <span class="n">val</span> <span class="o">=</span> <span class="n">tmp_graph</span><span class="o">.</span><span class="n">export_as_dict</span><span class="p">()</span>
+        <span class="n">pprint</span><span class="o">.</span><span class="n">pprint</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Import graphe : &quot;</span><span class="p">)</span>
+        <span class="n">new_graph</span> <span class="o">=</span> <span class="n">GraphDataStruct</span><span class="o">.</span><span class="n">load_from_dict</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+        <span class="n">pprint</span><span class="o">.</span><span class="n">pprint</span><span class="p">(</span><span class="n">new_graph</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Exported dict (after import): &quot;</span><span class="p">)</span>
+        <span class="n">new_val</span> <span class="o">=</span> <span class="n">new_graph</span><span class="o">.</span><span class="n">export_as_dict</span><span class="p">()</span>
+        <span class="n">pprint</span><span class="o">.</span><span class="n">pprint</span><span class="p">(</span><span class="n">new_val</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertDictEqual</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">expected_json</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertDictEqual</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">new_val</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="test_template.test_graph_image_to_id_mapping_conversion"><a class="viewcode-back" href="../../common_tests.html#common_tests.test_graph.test_template.test_graph_image_to_id_mapping_conversion">[docs]</a>    <span class="k">def</span> <span class="nf">test_graph_image_to_id_mapping_conversion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="n">mapping</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="c1"># Create a graphe structure</span>
+        <span class="n">tmp_meta</span> <span class="o">=</span> <span class="n">Metadata</span><span class="p">(</span><span class="n">Source</span><span class="o">.</span><span class="n">DBDUMP</span><span class="p">)</span>
+        <span class="n">tmp_graph</span> <span class="o">=</span> <span class="n">GraphDataStruct</span><span class="p">(</span><span class="n">tmp_meta</span><span class="p">)</span>
+
+        <span class="c1"># For each cluster, fetch all pictures and store it</span>
+        <span class="k">for</span> <span class="n">cluster_id</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span>
+            <span class="n">tmp_graph</span><span class="o">.</span><span class="n">add_cluster</span><span class="p">(</span><span class="n">Cluster</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="n">cluster_id</span><span class="p">,</span> <span class="n">image</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">))</span>
+
+            <span class="k">for</span> <span class="nb">id</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">):</span>
+                <span class="n">pic_id</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">cluster_id</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;OLD&quot;</span>
+                <span class="n">pic_image</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">cluster_id</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;IMAGE&quot;</span>
+
+                <span class="c1"># Prepare mapping</span>
+                <span class="n">mapping</span><span class="p">[</span><span class="n">pic_image</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">cluster_id</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;NEW&quot;</span>
+
+                <span class="c1"># Label = picture score, here</span>
+                <span class="n">tmp_graph</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="n">Node</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;picture name +&quot;</span> <span class="o">+</span> <span class="n">pic_id</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="n">pic_id</span><span class="p">,</span> <span class="n">image</span><span class="o">=</span><span class="n">pic_image</span><span class="p">))</span>
+                <span class="n">tmp_graph</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">Edge</span><span class="p">(</span><span class="n">_from</span><span class="o">=</span><span class="n">cluster_id</span><span class="p">,</span> <span class="n">_to</span><span class="o">=</span><span class="n">pic_id</span><span class="p">))</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Exported dict : &quot;</span><span class="p">)</span>
+        <span class="n">val</span> <span class="o">=</span> <span class="n">tmp_graph</span><span class="o">.</span><span class="n">export_as_dict</span><span class="p">()</span>
+        <span class="n">pprint</span><span class="o">.</span><span class="n">pprint</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Mapping: &quot;</span><span class="p">)</span>
+        <span class="n">pprint</span><span class="o">.</span><span class="n">pprint</span><span class="p">(</span><span class="n">mapping</span><span class="p">)</span>
+
+        <span class="n">tmp_graph</span><span class="o">.</span><span class="n">replace_id_from_mapping</span><span class="p">(</span><span class="n">mapping</span><span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Mapped: &quot;</span><span class="p">)</span>
+        <span class="n">val</span> <span class="o">=</span> <span class="n">tmp_graph</span><span class="o">.</span><span class="n">export_as_dict</span><span class="p">()</span>
+        <span class="n">pprint</span><span class="o">.</span><span class="n">pprint</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertDictEqual</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mappedexpected</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="test_template.test_get_clusters_list"><a class="viewcode-back" href="../../common_tests.html#common_tests.test_graph.test_template.test_get_clusters_list">[docs]</a>    <span class="k">def</span> <span class="nf">test_get_clusters_list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="c1"># Create a graphe structure</span>
+        <span class="n">tmp_meta</span> <span class="o">=</span> <span class="n">Metadata</span><span class="p">(</span><span class="n">Source</span><span class="o">.</span><span class="n">DBDUMP</span><span class="p">)</span>
+        <span class="n">tmp_graph</span> <span class="o">=</span> <span class="n">GraphDataStruct</span><span class="p">(</span><span class="n">tmp_meta</span><span class="p">)</span>
+
+        <span class="c1"># For each cluster, fetch all pictures and store it</span>
+        <span class="k">for</span> <span class="n">cluster_id</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span>
+            <span class="n">tmp_graph</span><span class="o">.</span><span class="n">add_cluster</span><span class="p">(</span><span class="n">Cluster</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="n">cluster_id</span><span class="p">,</span> <span class="n">image</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">))</span>
+
+            <span class="k">for</span> <span class="nb">id</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">):</span>
+                <span class="n">pic_id</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">cluster_id</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;OLD&quot;</span>
+                <span class="n">pic_image</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">cluster_id</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;IMAGE&quot;</span>
+
+                <span class="c1"># Label = picture score, here</span>
+                <span class="n">tmp_graph</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="n">Node</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;picture name +&quot;</span> <span class="o">+</span> <span class="n">pic_id</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="n">pic_id</span><span class="p">,</span> <span class="n">image</span><span class="o">=</span><span class="n">pic_image</span><span class="p">))</span>
+                <span class="n">tmp_graph</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">Edge</span><span class="p">(</span><span class="n">_from</span><span class="o">=</span><span class="n">cluster_id</span><span class="p">,</span> <span class="n">_to</span><span class="o">=</span><span class="n">pic_id</span><span class="p">))</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Exported dict : &quot;</span><span class="p">)</span>
+        <span class="n">val</span> <span class="o">=</span> <span class="n">tmp_graph</span><span class="o">.</span><span class="n">export_as_dict</span><span class="p">()</span>
+        <span class="n">pprint</span><span class="o">.</span><span class="n">pprint</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+
+        <span class="n">cluster_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span><span class="o">.</span><span class="n">export_as_dict</span><span class="p">()</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">tmp_graph</span><span class="o">.</span><span class="n">get_clusters</span><span class="p">()]</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Cluster list : &quot;</span><span class="p">)</span>
+        <span class="n">pprint</span><span class="o">.</span><span class="n">pprint</span><span class="p">(</span><span class="n">cluster_list</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertListEqual</span><span class="p">(</span><span class="n">cluster_list</span><span class="p">,</span> <span class="p">[{</span><span class="s1">&#39;group&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                                             <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                                             <span class="s1">&#39;image&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                                             <span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                                             <span class="s1">&#39;members&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;0_0OLD&#39;</span><span class="p">,</span> <span class="s1">&#39;0_1OLD&#39;</span><span class="p">,</span> <span class="s1">&#39;0_2OLD&#39;</span><span class="p">],</span>
+                                             <span class="s1">&#39;shape&#39;</span><span class="p">:</span> <span class="s1">&#39;image&#39;</span>
+                                             <span class="p">},</span>
+                                            <span class="p">{</span><span class="s1">&#39;group&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                                             <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+                                             <span class="s1">&#39;image&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                                             <span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                                             <span class="s1">&#39;members&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;1_0OLD&#39;</span><span class="p">,</span> <span class="s1">&#39;1_1OLD&#39;</span><span class="p">,</span> <span class="s1">&#39;1_2OLD&#39;</span><span class="p">],</span>
+                                             <span class="s1">&#39;shape&#39;</span><span class="p">:</span> <span class="s1">&#39;image&#39;</span><span class="p">}</span>
+                                            <span class="p">]</span>
+                             <span class="p">)</span></div>
+
+<div class="viewcode-block" id="test_template.test_merge_graphs"><a class="viewcode-back" href="../../common_tests.html#common_tests.test_graph.test_template.test_merge_graphs">[docs]</a>    <span class="k">def</span> <span class="nf">test_merge_graphs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="c1"># Create a graphe structure</span>
+        <span class="n">tmp_meta</span> <span class="o">=</span> <span class="n">Metadata</span><span class="p">(</span><span class="n">Source</span><span class="o">.</span><span class="n">DBDUMP</span><span class="p">)</span>
+        <span class="n">tmp_graph</span> <span class="o">=</span> <span class="n">GraphDataStruct</span><span class="p">(</span><span class="n">tmp_meta</span><span class="p">)</span>
+
+        <span class="c1"># For each cluster, fetch all pictures and store it</span>
+        <span class="k">for</span> <span class="n">cluster_id</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span>
+            <span class="n">tmp_graph</span><span class="o">.</span><span class="n">add_cluster</span><span class="p">(</span><span class="n">Cluster</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="n">cluster_id</span><span class="p">,</span> <span class="n">image</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">))</span>
+
+            <span class="k">for</span> <span class="nb">id</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">):</span>
+                <span class="n">pic_id</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">cluster_id</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;OLD&quot;</span>
+                <span class="n">pic_image</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">cluster_id</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;IMAGE&quot;</span>
+
+                <span class="c1"># Label = picture score, here</span>
+                <span class="n">tmp_graph</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="n">Node</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;picture name +&quot;</span> <span class="o">+</span> <span class="n">pic_id</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="n">pic_id</span><span class="p">,</span> <span class="n">image</span><span class="o">=</span><span class="n">pic_image</span><span class="p">))</span>
+                <span class="n">tmp_graph</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">Edge</span><span class="p">(</span><span class="n">_from</span><span class="o">=</span><span class="n">cluster_id</span><span class="p">,</span> <span class="n">_to</span><span class="o">=</span><span class="n">pic_id</span><span class="p">))</span>
+
+        <span class="c1"># Create a graphe structure</span>
+        <span class="n">tmp_meta</span> <span class="o">=</span> <span class="n">Metadata</span><span class="p">(</span><span class="n">Source</span><span class="o">.</span><span class="n">VISJS</span><span class="p">)</span>
+        <span class="n">tmp_graph_vis</span> <span class="o">=</span> <span class="n">GraphDataStruct</span><span class="p">(</span><span class="n">tmp_meta</span><span class="p">)</span>
+
+        <span class="c1"># For each cluster, fetch all pictures and store it</span>
+        <span class="k">for</span> <span class="n">cluster_id</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span>
+            <span class="n">tmp_graph_vis</span><span class="o">.</span><span class="n">add_cluster</span><span class="p">(</span><span class="n">Cluster</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="n">cluster_id</span><span class="p">,</span> <span class="n">image</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">))</span>
+
+            <span class="k">for</span> <span class="nb">id</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">):</span>
+                <span class="n">pic_id</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">cluster_id</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;OLD&quot;</span>
+                <span class="n">pic_image</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">cluster_id</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;IMAGE&quot;</span>
+
+                <span class="c1"># Label = picture score, here</span>
+                <span class="n">tmp_graph_vis</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="n">Node</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;picture name +&quot;</span> <span class="o">+</span> <span class="n">pic_id</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="n">pic_id</span><span class="p">,</span> <span class="n">image</span><span class="o">=</span><span class="n">pic_image</span><span class="p">))</span>
+                <span class="n">tmp_graph_vis</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">Edge</span><span class="p">(</span><span class="n">_from</span><span class="o">=</span><span class="n">cluster_id</span><span class="p">,</span> <span class="n">_to</span><span class="o">=</span><span class="n">pic_id</span><span class="p">))</span>
+
+        <span class="n">cluster_mapping</span> <span class="o">=</span> <span class="p">[[</span><span class="n">Cluster</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">),</span> <span class="n">Cluster</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)],</span>
+                           <span class="p">[</span><span class="n">Cluster</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">),</span> <span class="n">Cluster</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)],</span>
+                           <span class="p">[</span><span class="n">Cluster</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">),</span> <span class="n">Cluster</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)]]</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Exported db dict : &quot;</span><span class="p">)</span>
+        <span class="n">val</span> <span class="o">=</span> <span class="n">tmp_graph</span><span class="o">.</span><span class="n">export_as_dict</span><span class="p">()</span>
+        <span class="n">pprint</span><span class="o">.</span><span class="n">pprint</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Exported tmp_graph_vis : &quot;</span><span class="p">)</span>
+        <span class="n">val</span> <span class="o">=</span> <span class="n">tmp_graph_vis</span><span class="o">.</span><span class="n">export_as_dict</span><span class="p">()</span>
+        <span class="n">pprint</span><span class="o">.</span><span class="n">pprint</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;New graph : &quot;</span><span class="p">)</span>
+        <span class="n">new_graph</span> <span class="o">=</span> <span class="n">graph_datastructure</span><span class="o">.</span><span class="n">merge_graphs</span><span class="p">(</span><span class="n">tmp_graph_vis</span><span class="p">,</span> <span class="n">tmp_graph</span><span class="p">,</span> <span class="n">cluster_mapping</span><span class="p">)</span>
+        <span class="n">pprint</span><span class="o">.</span><span class="n">pprint</span><span class="p">(</span><span class="n">new_graph</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertDictEqual</span><span class="p">(</span><span class="n">new_graph</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;clusters&#39;</span><span class="p">:</span> <span class="p">[{</span><span class="s1">&#39;group&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                                                       <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                                                       <span class="s1">&#39;image&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                                                       <span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                                                       <span class="s1">&#39;members&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;0_0OLD&#39;</span><span class="p">,</span> <span class="s1">&#39;0_1OLD&#39;</span><span class="p">,</span> <span class="s1">&#39;0_2OLD&#39;</span><span class="p">],</span>
+                                                       <span class="s1">&#39;shape&#39;</span><span class="p">:</span> <span class="s1">&#39;image&#39;</span><span class="p">},</span>
+                                                      <span class="p">{</span><span class="s1">&#39;group&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                                                       <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+                                                       <span class="s1">&#39;image&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                                                       <span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                                                       <span class="s1">&#39;members&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;1_0OLD&#39;</span><span class="p">,</span> <span class="s1">&#39;1_1OLD&#39;</span><span class="p">,</span> <span class="s1">&#39;1_2OLD&#39;</span><span class="p">],</span>
+                                                       <span class="s1">&#39;shape&#39;</span><span class="p">:</span> <span class="s1">&#39;image&#39;</span><span class="p">}],</span>
+                                         <span class="s1">&#39;edges&#39;</span><span class="p">:</span> <span class="p">[{</span><span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="s1">&#39;green&#39;</span><span class="p">},</span> <span class="s1">&#39;from&#39;</span><span class="p">:</span> <span class="s1">&#39;0_0OLD&#39;</span><span class="p">,</span> <span class="s1">&#39;to&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">},</span>
+                                                   <span class="p">{</span><span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="s1">&#39;green&#39;</span><span class="p">},</span> <span class="s1">&#39;from&#39;</span><span class="p">:</span> <span class="s1">&#39;0_1OLD&#39;</span><span class="p">,</span> <span class="s1">&#39;to&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">},</span>
+                                                   <span class="p">{</span><span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="s1">&#39;green&#39;</span><span class="p">},</span> <span class="s1">&#39;from&#39;</span><span class="p">:</span> <span class="s1">&#39;0_2OLD&#39;</span><span class="p">,</span> <span class="s1">&#39;to&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">},</span>
+                                                   <span class="p">{</span><span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="s1">&#39;orange&#39;</span><span class="p">},</span> <span class="s1">&#39;from&#39;</span><span class="p">:</span> <span class="s1">&#39;1_0OLD&#39;</span><span class="p">,</span> <span class="s1">&#39;to&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span>
+                                                   <span class="p">{</span><span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="s1">&#39;red&#39;</span><span class="p">},</span> <span class="s1">&#39;from&#39;</span><span class="p">:</span> <span class="s1">&#39;1_0OLD&#39;</span><span class="p">,</span> <span class="s1">&#39;to&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">},</span>
+                                                   <span class="p">{</span><span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="s1">&#39;orange&#39;</span><span class="p">},</span> <span class="s1">&#39;from&#39;</span><span class="p">:</span> <span class="s1">&#39;1_1OLD&#39;</span><span class="p">,</span> <span class="s1">&#39;to&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span>
+                                                   <span class="p">{</span><span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="s1">&#39;red&#39;</span><span class="p">},</span> <span class="s1">&#39;from&#39;</span><span class="p">:</span> <span class="s1">&#39;1_1OLD&#39;</span><span class="p">,</span> <span class="s1">&#39;to&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">},</span>
+                                                   <span class="p">{</span><span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="s1">&#39;orange&#39;</span><span class="p">},</span> <span class="s1">&#39;from&#39;</span><span class="p">:</span> <span class="s1">&#39;1_2OLD&#39;</span><span class="p">,</span> <span class="s1">&#39;to&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span>
+                                                   <span class="p">{</span><span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="s1">&#39;red&#39;</span><span class="p">},</span> <span class="s1">&#39;from&#39;</span><span class="p">:</span> <span class="s1">&#39;1_2OLD&#39;</span><span class="p">,</span> <span class="s1">&#39;to&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">}],</span>
+                                         <span class="s1">&#39;meta_1&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;source&#39;</span><span class="p">:</span> <span class="s1">&#39;VISJS&#39;</span><span class="p">},</span>
+                                         <span class="s1">&#39;meta_2&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;source&#39;</span><span class="p">:</span> <span class="s1">&#39;DBDUMP&#39;</span><span class="p">},</span>
+                                         <span class="s1">&#39;nodes&#39;</span><span class="p">:</span> <span class="p">[{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="s1">&#39;0_0OLD&#39;</span><span class="p">,</span>
+                                                    <span class="s1">&#39;image&#39;</span><span class="p">:</span> <span class="s1">&#39;0_0IMAGE&#39;</span><span class="p">,</span>
+                                                    <span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="s1">&#39;picture name +0_0OLD&#39;</span><span class="p">,</span>
+                                                    <span class="s1">&#39;shape&#39;</span><span class="p">:</span> <span class="s1">&#39;image&#39;</span><span class="p">},</span>
+                                                   <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="s1">&#39;0_1OLD&#39;</span><span class="p">,</span>
+                                                    <span class="s1">&#39;image&#39;</span><span class="p">:</span> <span class="s1">&#39;0_1IMAGE&#39;</span><span class="p">,</span>
+                                                    <span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="s1">&#39;picture name +0_1OLD&#39;</span><span class="p">,</span>
+                                                    <span class="s1">&#39;shape&#39;</span><span class="p">:</span> <span class="s1">&#39;image&#39;</span><span class="p">},</span>
+                                                   <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="s1">&#39;0_2OLD&#39;</span><span class="p">,</span>
+                                                    <span class="s1">&#39;image&#39;</span><span class="p">:</span> <span class="s1">&#39;0_2IMAGE&#39;</span><span class="p">,</span>
+                                                    <span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="s1">&#39;picture name +0_2OLD&#39;</span><span class="p">,</span>
+                                                    <span class="s1">&#39;shape&#39;</span><span class="p">:</span> <span class="s1">&#39;image&#39;</span><span class="p">},</span>
+                                                   <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="s1">&#39;1_0OLD&#39;</span><span class="p">,</span>
+                                                    <span class="s1">&#39;image&#39;</span><span class="p">:</span> <span class="s1">&#39;1_0IMAGE&#39;</span><span class="p">,</span>
+                                                    <span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="s1">&#39;picture name +1_0OLD&#39;</span><span class="p">,</span>
+                                                    <span class="s1">&#39;shape&#39;</span><span class="p">:</span> <span class="s1">&#39;image&#39;</span><span class="p">},</span>
+                                                   <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="s1">&#39;1_1OLD&#39;</span><span class="p">,</span>
+                                                    <span class="s1">&#39;image&#39;</span><span class="p">:</span> <span class="s1">&#39;1_1IMAGE&#39;</span><span class="p">,</span>
+                                                    <span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="s1">&#39;picture name +1_1OLD&#39;</span><span class="p">,</span>
+                                                    <span class="s1">&#39;shape&#39;</span><span class="p">:</span> <span class="s1">&#39;image&#39;</span><span class="p">},</span>
+                                                   <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="s1">&#39;1_2OLD&#39;</span><span class="p">,</span>
+                                                    <span class="s1">&#39;image&#39;</span><span class="p">:</span> <span class="s1">&#39;1_2IMAGE&#39;</span><span class="p">,</span>
+                                                    <span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="s1">&#39;picture name +1_2OLD&#39;</span><span class="p">,</span>
+                                                    <span class="s1">&#39;shape&#39;</span><span class="p">:</span> <span class="s1">&#39;image&#39;</span><span class="p">}]})</span></div>
+
+<div class="viewcode-block" id="test_template.test_edges_with_colors"><a class="viewcode-back" href="../../common_tests.html#common_tests.test_graph.test_template.test_edges_with_colors">[docs]</a>    <span class="k">def</span> <span class="nf">test_edges_with_colors</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="n">vis_js_edges</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;1&quot;</span><span class="p">:</span> <span class="s2">&quot;cluster1&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;2&quot;</span><span class="p">:</span> <span class="s2">&quot;cluster2&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;3&quot;</span><span class="p">:</span> <span class="s2">&quot;cluster3&quot;</span><span class="p">}</span>
+
+        <span class="n">db_edges</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;1&quot;</span><span class="p">:</span> <span class="s2">&quot;cluster1&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;2&quot;</span><span class="p">:</span> <span class="s2">&quot;cluster3&quot;</span><span class="p">}</span>
+
+        <span class="n">edge_list</span> <span class="o">=</span> <span class="n">graph_datastructure</span><span class="o">.</span><span class="n">merge_edges_with_colors</span><span class="p">(</span><span class="n">vis_js_edges</span><span class="p">,</span> <span class="n">db_edges</span><span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Exported edge_list : &quot;</span><span class="p">)</span>
+        <span class="n">pprint</span><span class="o">.</span><span class="n">pprint</span><span class="p">(</span><span class="n">edge_list</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">edge_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">color</span><span class="p">,</span> <span class="s2">&quot;green&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">edge_list</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">color</span><span class="p">,</span> <span class="s2">&quot;red&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">edge_list</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">color</span><span class="p">,</span> <span class="s2">&quot;orange&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">edge_list</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">color</span><span class="p">,</span> <span class="s2">&quot;black&quot;</span><span class="p">)</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, Vincent FALCONIERI.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.2.
+    </div>
+  </body>
+</html>

@@ -2,29 +2,38 @@
 # -*- coding: utf-8 -*-
 
 import argparse
-# ==================== ------ STD LIBRARIES ------- ====================
-import os
-import pathlib
-import sys
-from typing import List
+from typing import List, Dict
 
-# ==================== ------ PERSONAL LIBRARIES ------- ====================
-from common.environment_variable import dir_path
-import common.ImportExport.json_import_export as json_import_export
 import carlhauser_server.Configuration.database_conf as database_conf
-import carlhauser_server.Configuration.feature_extractor_conf as feature_extractor_conf
 import carlhauser_server.Configuration.distance_engine_conf as distance_engine_conf
+import carlhauser_server.Configuration.feature_extractor_conf as feature_extractor_conf
 import carlhauser_server.DatabaseAccessor.database_common as database_common
-sys.path.append(os.path.abspath(os.path.pardir))
+from carlhauser_server.Helpers import arg_parser
+from common.environment_variable import load_server_logging_conf_file, make_small_line, QueueNames
+
+load_server_logging_conf_file()
+
 
 class Database_Adder(database_common.Database_Common):
-    # Heritate from the database accessor, and so has already built in access to cache, storage ..
+    """
+    Heritate from the database common, and so has already built in access to cache, storage ..
+    """
 
-    def __init__(self, db_conf: database_conf, dist_conf: distance_engine_conf, fe_conf: feature_extractor_conf):
+    def __init__(self, tmp_db_conf: database_conf.Default_database_conf,
+                 tmp_dist_conf: distance_engine_conf.Default_distance_engine_conf,
+                 tmp_fe_conf: feature_extractor_conf.Default_feature_extractor_conf):
         # STD attributes
-        super().__init__(db_conf, dist_conf, fe_conf)
+        super().__init__(tmp_db_conf, tmp_dist_conf, tmp_fe_conf)
 
     def process_fetched_data(self, fetched_id, fetched_dict):
+        """
+        Method to overwrite to specify the worker. Called each time something is fetched from queue.
+        Add picture to storage, evaluate near-similar pictures, choose a good cluster and add the picture to this cluster.
+        TODO : Add the picture to review and process the recalculation of representative pictures
+        :param fetched_id: id to process
+        :param fetched_dict: data to process
+        :return: Nothing (or to be defined)
+        """
 
         self.logger.info(f"DB Adder worker processing {fetched_id}")
         self.logger.info(f"Fetched dict {fetched_dict}")
@@ -45,22 +54,31 @@ class Database_Adder(database_common.Database_Common):
             self.db_utils.add_picture_to_cluster(fetched_id, cluster_id)
 
             # Re-evaluate representative picture(s) of cluster
-            self.reevaluate_representative_picture_order(cluster_id, fetched_id=fetched_id)  # TODO : To defer ? No : it's not a request. No returned value. BUT TO COMPLETE !
+            self.reevaluate_representative_picture_order(cluster_id, fetched_id=fetched_id)
             self.logger.info(f"Picture added in existing cluster : {cluster_id}")
 
         else:
             self.logger.info(f"Match not good enough, with any cluster")
             # Add picture to it's own cluster
-            cluster_id = self.db_utils.add_picture_to_new_cluster(fetched_id, score=0)  # First picture is "alone" and so central
+            # First picture is "alone" and so central (score=0)
+            cluster_id = self.db_utils.add_picture_to_new_cluster(fetched_id, score=0)
             self.logger.info(f"Picture added in its own new cluster : {cluster_id}")
 
         # Add to a queue, to be reviewed later, when more pictures will be added
-        self.db_utils.add_to_review(fetched_id)  # TODO
+        # TODO
+        self.db_utils.add_to_review(fetched_id)
         self.logger.info(f"Adding done.")
+        print(make_small_line())
+        print("Adder Worker ready to accept more queries.")
 
     def reevaluate_representative_picture_order(self, cluster_id, fetched_id=None):
-        # Re-evaluate the representative picture of the cluster <cluster_id>,
-        # knowing or not, that the last added and non evaluated picture of the cluster is <fetched_id>
+        """
+        Re-evaluate the representative picture of the cluster <cluster_id>,
+        knowing or not, that the last added and non evaluated picture of the cluster is <fetched_id>
+        :param cluster_id: the id of the cluster to reevaluate
+        :param fetched_id: optional, can speed up the process if we know the last picture which was added
+        :return: Nothing
+        """
 
         if fetched_id is None:
             # We don't know which picture was the last one added. Perform full re-evaluation
@@ -99,13 +117,19 @@ class Database_Adder(database_common.Database_Common):
                 self.db_utils.update_picture_score_of_cluster(cluster_id, curr_pic, score + delta_centrality)
 
         # TODO : Somewhat already done before. May be able to memoize the computed values ?
-        return
 
-    def compute_centrality(self, pictures_list_id: List, picture_dict) -> float:
-        # Returns centrality of a picture within a list of other pictures.
+    def compute_centrality(self, pictures_list_id: List, picture_dict: Dict) -> float:
+        """
+        Returns centrality of a picture within a list of other pictures.
+        :param pictures_list_id: list of pictures id in which the centrality is measured
+        :param picture_dict: the picture (dict) which centrality is computed
+        :return: the centrality of the picture dict
+        """
+        #
 
         self.logger.debug(picture_dict)
         curr_sum = 0
+
         # For each picture, compute its distance to other picture, summing it temporary
         for curr_target_pic in pictures_list_id:
             curr_target_pic_dict = self.get_dict_from_key(self.storage_db_no_decode, curr_target_pic, pickle=True)
@@ -121,17 +145,15 @@ class Database_Adder(database_common.Database_Common):
 # Launcher for this worker. Launch this file to launch a worker
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Launch a worker for a specific task : adding picture to database')
-    parser.add_argument("-dbc", '--configuration_file', dest="db_conf", type=dir_path, help='DB_configuration_file stored as json. Path')
-    parser.add_argument("-distc", '--distance_configuration_file', dest="dist_conf", type=dir_path, help='DIST_configuration_file stored as json. Path')
-    parser.add_argument("-fec", '--feature_configuration_file', dest="fe_conf", type=dir_path, help='Feature_configuration_file stored as json. Path')
+    parser = arg_parser.add_arg_db_conf(parser)
+    parser = arg_parser.add_arg_dist_conf(parser)
+    parser = arg_parser.add_arg_fe_conf(parser)
+
     args = parser.parse_args()
 
-    # Load the provided configuration file and create back the Configuration Object
-    db_conf = database_conf.parse_from_dict(json_import_export.load_json(pathlib.Path(args.db_conf)))
-    dist_conf = distance_engine_conf.parse_from_dict(json_import_export.load_json(pathlib.Path(args.dist_conf)))
-    fe_conf = feature_extractor_conf.parse_from_dict(json_import_export.load_json(pathlib.Path(args.fe_conf)))
+    db_conf, dist_conf, fe_conf, _ = arg_parser.parse_conf_files(args)
 
     # Create the Database Accessor and run it
     db_accessor = Database_Adder(db_conf, dist_conf, fe_conf)
-    db_accessor.input_queue = "db_to_add"
+    db_accessor.input_queue = QueueNames.DB_TO_ADD
     db_accessor.run(sleep_in_sec=db_conf.ADDER_WAIT_SEC)

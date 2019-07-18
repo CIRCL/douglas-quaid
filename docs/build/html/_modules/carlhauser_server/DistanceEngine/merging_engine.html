@@ -1,0 +1,372 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>carlhauser_server.DistanceEngine.merging_engine &#8212; Douglas-Quaid 0.0.4 documentation</title>
+    <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for carlhauser_server.DistanceEngine.merging_engine</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span>
+
+<span class="kn">import</span> <span class="nn">carlhauser_server.Configuration.database_conf</span> <span class="k">as</span> <span class="nn">database_conf</span>
+<span class="kn">import</span> <span class="nn">carlhauser_server.Configuration.distance_engine_conf</span> <span class="k">as</span> <span class="nn">distance_engine_conf</span>
+<span class="kn">import</span> <span class="nn">carlhauser_server.Configuration.feature_extractor_conf</span> <span class="k">as</span> <span class="nn">feature_extractor_conf</span>
+<span class="kn">import</span> <span class="nn">carlhauser_server.DistanceEngine.scoring_datastrutures</span> <span class="k">as</span> <span class="nn">sd</span>
+<span class="kn">from</span> <span class="nn">common.environment_variable</span> <span class="k">import</span> <span class="n">load_server_logging_conf_file</span>
+
+<span class="n">load_server_logging_conf_file</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="Merging_Engine"><a class="viewcode-back" href="../../../carlhauser_server.DistanceEngine.html#carlhauser_server.DistanceEngine.merging_engine.Merging_Engine">[docs]</a><span class="k">class</span> <span class="nc">Merging_Engine</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">db_conf</span><span class="p">:</span> <span class="n">database_conf</span><span class="o">.</span><span class="n">Default_database_conf</span><span class="p">,</span> <span class="n">dist_conf</span><span class="p">:</span> <span class="n">distance_engine_conf</span><span class="o">.</span><span class="n">Default_distance_engine_conf</span><span class="p">,</span> <span class="n">fe_conf</span><span class="p">:</span> <span class="n">feature_extractor_conf</span><span class="o">.</span><span class="n">Default_feature_extractor_conf</span><span class="p">):</span>
+        <span class="c1"># STD attributes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Creation of a Distance ORB Engine&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Save configuration</span>
+        <span class="c1"># self.db_conf = db_conf  # TODO : REMOVE = NOT USEFUL FOR NOW !</span>
+        <span class="c1"># self.dist_conf = dist_conf  # TODO : REMOVE = NOT USEFUL FOR NOW !</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fe_conf</span> <span class="o">=</span> <span class="n">fe_conf</span>
+
+        <span class="c1"># Transform text into Enum back.</span>
+        <span class="c1"># TODO : Properly handle enum passed by file. Maybe https://stackoverflow.com/questions/22562425/attributeerror-cant-set-attribute-in-python ?</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">distance_merging_method</span> <span class="o">=</span> <span class="n">feature_extractor_conf</span><span class="o">.</span><span class="n">Distance_MergingMethod</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">fe_conf</span><span class="o">.</span><span class="n">DISTANCE_MERGING_METHOD</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">decision_merging_method</span> <span class="o">=</span> <span class="n">feature_extractor_conf</span><span class="o">.</span><span class="n">Decision_MergingMethod</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">fe_conf</span><span class="o">.</span><span class="n">DECISION_MERGING_METHOD</span><span class="p">]</span>
+
+    <span class="c1"># ==================== ------ PICTURE-PICTURE DISTANCE ------- ====================</span>
+
+<div class="viewcode-block" id="Merging_Engine.merge_algos_distance"><a class="viewcode-back" href="../../../carlhauser_server.DistanceEngine.html#carlhauser_server.DistanceEngine.merging_engine.Merging_Engine.merge_algos_distance">[docs]</a>    <span class="k">def</span> <span class="nf">merge_algos_distance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">matches_package</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">sd</span><span class="o">.</span><span class="n">AlgoMatch</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Merge distances from many algorithms outputs</span>
+<span class="sd">        :param matches_package: A dictionary from algorithm name to matches values (distance, decision ..)</span>
+<span class="sd">        :return: a unique distance</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Received algorithms distance to merge </span><span class="si">{matches_package}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Depending on the merging method, choose the good function</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">distance_merging_method</span> <span class="o">==</span> <span class="n">feature_extractor_conf</span><span class="o">.</span><span class="n">Distance_MergingMethod</span><span class="o">.</span><span class="n">MAX</span><span class="p">:</span>
+            <span class="n">score</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_max_dict</span><span class="p">(</span><span class="n">matches_package</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">distance_merging_method</span> <span class="o">==</span> <span class="n">feature_extractor_conf</span><span class="o">.</span><span class="n">Distance_MergingMethod</span><span class="o">.</span><span class="n">MIN</span><span class="p">:</span>
+            <span class="n">score</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_min_dict</span><span class="p">(</span><span class="n">matches_package</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">distance_merging_method</span> <span class="o">==</span> <span class="n">feature_extractor_conf</span><span class="o">.</span><span class="n">Distance_MergingMethod</span><span class="o">.</span><span class="n">MEAN</span><span class="p">:</span>
+            <span class="n">score</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_mean_dict</span><span class="p">(</span><span class="n">matches_package</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">distance_merging_method</span> <span class="o">==</span> <span class="n">feature_extractor_conf</span><span class="o">.</span><span class="n">Distance_MergingMethod</span><span class="o">.</span><span class="n">WEIGHTED_MEAN</span><span class="p">:</span>
+            <span class="n">score</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_weighted_mean_dict</span><span class="p">(</span><span class="n">matches_package</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">distance_merging_method</span> <span class="o">==</span> <span class="n">feature_extractor_conf</span><span class="o">.</span><span class="n">Distance_MergingMethod</span><span class="o">.</span><span class="n">HARMONIC_MEAN</span><span class="p">:</span>
+            <span class="n">score</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_harmonic_mean_dict</span><span class="p">(</span><span class="n">matches_package</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Unrecognized merging method to merge algorithm output into one value. Please review configuration file.&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">score</span></div>
+
+<div class="viewcode-block" id="Merging_Engine.merge_algos_decision"><a class="viewcode-back" href="../../../carlhauser_server.DistanceEngine.html#carlhauser_server.DistanceEngine.merging_engine.Merging_Engine.merge_algos_decision">[docs]</a>    <span class="k">def</span> <span class="nf">merge_algos_decision</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">matches_package</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">sd</span><span class="o">.</span><span class="n">AlgoMatch</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">sd</span><span class="o">.</span><span class="n">DecisionTypes</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Merge decisions from many algorithms outputs</span>
+<span class="sd">        :param matches_package: A dictionary from algorithm name to matches values (distance, decision ..)</span>
+<span class="sd">        :return: a unique decision</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Received algorithms distance to merge </span><span class="si">{matches_package}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Depending on the merging method, choose the good function</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">decision_merging_method</span> <span class="o">==</span> <span class="n">feature_extractor_conf</span><span class="o">.</span><span class="n">Decision_MergingMethod</span><span class="o">.</span><span class="n">PARETO</span><span class="p">:</span>
+            <span class="n">decision</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_pareto_decision</span><span class="p">(</span><span class="n">matches_package</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">decision_merging_method</span> <span class="o">==</span> <span class="n">feature_extractor_conf</span><span class="o">.</span><span class="n">Decision_MergingMethod</span><span class="o">.</span><span class="n">MAJORITY</span><span class="p">:</span>
+            <span class="n">decision</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_majority_decision</span><span class="p">(</span><span class="n">matches_package</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">decision_merging_method</span> <span class="o">==</span> <span class="n">feature_extractor_conf</span><span class="o">.</span><span class="n">Decision_MergingMethod</span><span class="o">.</span><span class="n">WEIGHTED_MAJORITY</span><span class="p">:</span>
+            <span class="n">decision</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_weighted_majority_decision</span><span class="p">(</span><span class="n">matches_package</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">decision_merging_method</span> <span class="o">==</span> <span class="n">feature_extractor_conf</span><span class="o">.</span><span class="n">Decision_MergingMethod</span><span class="o">.</span><span class="n">PYRAMID</span><span class="p">:</span>
+            <span class="n">decision</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_pyramid_decision</span><span class="p">(</span><span class="n">matches_package</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Unrecognized merging method to merge algorithm output into one value. Please review configuration file.&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">decision</span></div>
+
+    <span class="c1"># ==================== ------ PICTURE-CLUSTER DISTANCE ------- ====================</span>
+    <span class="c1"># WARNING : Even it these function looks like they could be removed. They&#39;re not :</span>
+    <span class="c1"># They are used to compute the distance between one picture and a lot of other picture.</span>
+    <span class="c1"># The merge is a 1-to-n distances merging. Not a 1-to-1 merging !</span>
+    <span class="c1"># Not detailed in a lot of version, because this is only for performances ..</span>
+
+<div class="viewcode-block" id="Merging_Engine.merge_max_pictures_distance"><a class="viewcode-back" href="../../../carlhauser_server.DistanceEngine.html#carlhauser_server.DistanceEngine.merging_engine.Merging_Engine.merge_max_pictures_distance">[docs]</a>    <span class="k">def</span> <span class="nf">merge_max_pictures_distance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">distance_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get a max out of distance list</span>
+<span class="sd">        # TODO : To remove ?</span>
+<span class="sd">        :param distance_list: a list of distance</span>
+<span class="sd">        :return: one only distance</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Received picture-cluster&#39;s picture distance to merge </span><span class="si">{distance_list}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">distance_list</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="n">distance_list</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;A Cluster is empty but exists. Structural behavior error detected.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Empty cluster, but exists.&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Merging_Engine.merge_pictures_decisions"><a class="viewcode-back" href="../../../carlhauser_server.DistanceEngine.html#carlhauser_server.DistanceEngine.merging_engine.Merging_Engine.merge_pictures_decisions">[docs]</a>    <span class="k">def</span> <span class="nf">merge_pictures_decisions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">decision_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">sd</span><span class="o">.</span><span class="n">DecisionTypes</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">sd</span><span class="o">.</span><span class="n">DecisionTypes</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the most prevalent decision</span>
+<span class="sd">        :param decision_list: a list of decision</span>
+<span class="sd">        :return: one only decision</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Received picture-cluster&#39;s picture decision to merge </span><span class="si">{decision_list}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">decision_list</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="c1"># Construct a dict : YES=0, MAYBE=0, NO=0</span>
+            <span class="n">tmp_decisions</span> <span class="o">=</span> <span class="p">{</span><span class="n">decision</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">decision</span> <span class="ow">in</span> <span class="n">decision_list</span><span class="p">}</span>
+            <span class="c1"># Iterate to count decision</span>
+            <span class="k">for</span> <span class="n">curr_decision</span> <span class="ow">in</span> <span class="n">decision_list</span><span class="p">:</span>
+                <span class="n">tmp_decisions</span><span class="p">[</span><span class="n">curr_decision</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_prevalent_decision</span><span class="p">(</span><span class="n">tmp_decisions</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;A Cluster is empty but exists. Structural behavior error detected.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Empty cluster, but exists.&quot;</span><span class="p">)</span></div>
+
+    <span class="c1"># ==================== ------ CLUSTER-CLUSTER DISTANCE ------- ====================</span>
+
+    <span class="c1"># ==================== ------ COMMON (DISTANCE) ------- ====================</span>
+<div class="viewcode-block" id="Merging_Engine.get_max_dict"><a class="viewcode-back" href="../../../carlhauser_server.DistanceEngine.html#carlhauser_server.DistanceEngine.merging_engine.Merging_Engine.get_max_dict">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_max_dict</span><span class="p">(</span><span class="n">matches_package</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">sd</span><span class="o">.</span><span class="n">AlgoMatch</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">max</span><span class="p">([</span><span class="n">algomatch</span><span class="o">.</span><span class="n">distance</span> <span class="k">for</span> <span class="n">algomatch</span> <span class="ow">in</span> <span class="n">matches_package</span><span class="o">.</span><span class="n">values</span><span class="p">()])</span></div>
+
+<div class="viewcode-block" id="Merging_Engine.get_min_dict"><a class="viewcode-back" href="../../../carlhauser_server.DistanceEngine.html#carlhauser_server.DistanceEngine.merging_engine.Merging_Engine.get_min_dict">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_min_dict</span><span class="p">(</span><span class="n">matches_package</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">sd</span><span class="o">.</span><span class="n">AlgoMatch</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">min</span><span class="p">([</span><span class="n">algomatch</span><span class="o">.</span><span class="n">distance</span> <span class="k">for</span> <span class="n">algomatch</span> <span class="ow">in</span> <span class="n">matches_package</span><span class="o">.</span><span class="n">values</span><span class="p">()])</span></div>
+
+<div class="viewcode-block" id="Merging_Engine.get_mean_dict"><a class="viewcode-back" href="../../../carlhauser_server.DistanceEngine.html#carlhauser_server.DistanceEngine.merging_engine.Merging_Engine.get_mean_dict">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_mean_dict</span><span class="p">(</span><span class="n">matches_package</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">sd</span><span class="o">.</span><span class="n">AlgoMatch</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">sum</span><span class="p">([</span><span class="n">algomatch</span><span class="o">.</span><span class="n">distance</span> <span class="k">for</span> <span class="n">algomatch</span> <span class="ow">in</span> <span class="n">matches_package</span><span class="o">.</span><span class="n">values</span><span class="p">()])</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">matches_package</span><span class="o">.</span><span class="n">values</span><span class="p">())</span></div>
+
+<div class="viewcode-block" id="Merging_Engine.get_weighted_mean_dict"><a class="viewcode-back" href="../../../carlhauser_server.DistanceEngine.html#carlhauser_server.DistanceEngine.merging_engine.Merging_Engine.get_weighted_mean_dict">[docs]</a>    <span class="k">def</span> <span class="nf">get_weighted_mean_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">matches_package</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">sd</span><span class="o">.</span><span class="n">AlgoMatch</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the weighted per algorithm type mean of distances</span>
+<span class="sd">        :param matches_package: A dictionary from algorithm name to matches values (distance, decision ..)</span>
+<span class="sd">        :return: the computed distance</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">sum_score</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">sum_weight</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Algo list </span><span class="si">{self.fe_conf.list_algos}</span><span class="s2">.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Full config </span><span class="si">{self.fe_conf}</span><span class="s2">.&quot;</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">curr_algo</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">fe_conf</span><span class="o">.</span><span class="n">list_algos</span><span class="p">:</span>
+            <span class="c1"># self.logger.debug(f&quot;Current algo {curr_algo}.&quot;)</span>
+
+            <span class="c1"># We have a value for a computed algorithm</span>
+            <span class="n">curr_score</span> <span class="o">=</span> <span class="n">matches_package</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">curr_algo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;algo_name&quot;</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">curr_score</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="c1"># We add the score of this algorithm</span>
+                <span class="n">sum_score</span> <span class="o">+=</span> <span class="n">curr_score</span><span class="o">.</span><span class="n">distance</span> <span class="o">*</span> <span class="n">curr_algo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;distance_weight&quot;</span><span class="p">)</span>
+                <span class="c1"># We add the weight of this algorithm</span>
+                <span class="n">sum_weight</span> <span class="o">+=</span> <span class="n">curr_algo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;distance_weight&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">sum_weight</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">sum_score</span> <span class="o">/</span> <span class="n">sum_weight</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Impossible to compute a weighted mean during algorithms outputs merging : </span><span class="se">\n</span><span class="s2">&quot;</span>
+                            <span class="s2">&quot;Did you put a not-null weight for activated algorithm ? Did you activated at least one algorithm ?&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Merging_Engine.get_harmonic_mean_dict"><a class="viewcode-back" href="../../../carlhauser_server.DistanceEngine.html#carlhauser_server.DistanceEngine.merging_engine.Merging_Engine.get_harmonic_mean_dict">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_harmonic_mean_dict</span><span class="p">(</span><span class="n">matches_package</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">sd</span><span class="o">.</span><span class="n">AlgoMatch</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="c1"># TODO !</span>
+        <span class="k">return</span> <span class="mi">0</span></div>
+
+    <span class="c1"># TODO : 90% MAX ?</span>
+
+    <span class="c1"># ==================== ------ COMMON (DECISION) ------- ====================</span>
+<div class="viewcode-block" id="Merging_Engine.get_pareto_decision"><a class="viewcode-back" href="../../../carlhauser_server.DistanceEngine.html#carlhauser_server.DistanceEngine.merging_engine.Merging_Engine.get_pareto_decision">[docs]</a>    <span class="k">def</span> <span class="nf">get_pareto_decision</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">matches_package</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">sd</span><span class="o">.</span><span class="n">AlgoMatch</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">sd</span><span class="o">.</span><span class="n">DecisionTypes</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Output a decision if more than 80% of the decision are the same.</span>
+<span class="sd">        :param matches_package: A dictionary from algorithm name to matches values (distance, decision ..)</span>
+<span class="sd">        :return: the computed decision</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">tmp_decisions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_nb_decisions</span><span class="p">(</span><span class="n">matches_package</span><span class="p">)</span>
+        <span class="n">nb_decisions</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">tmp_decisions</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+
+        <span class="c1"># If a decision is more than 80% of all decision, return it.</span>
+        <span class="k">for</span> <span class="n">curr_decision</span> <span class="ow">in</span> <span class="n">sd</span><span class="o">.</span><span class="n">DecisionTypes</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">tmp_decisions</span><span class="p">[</span><span class="n">curr_decision</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mf">0.8</span> <span class="o">*</span> <span class="n">nb_decisions</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">curr_decision</span>
+        <span class="c1"># else, return maybe</span>
+        <span class="k">return</span> <span class="n">sd</span><span class="o">.</span><span class="n">DecisionTypes</span><span class="o">.</span><span class="n">MAYBE</span></div>
+
+<div class="viewcode-block" id="Merging_Engine.get_majority_decision"><a class="viewcode-back" href="../../../carlhauser_server.DistanceEngine.html#carlhauser_server.DistanceEngine.merging_engine.Merging_Engine.get_majority_decision">[docs]</a>    <span class="k">def</span> <span class="nf">get_majority_decision</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">matches_package</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">sd</span><span class="o">.</span><span class="n">AlgoMatch</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">sd</span><span class="o">.</span><span class="n">DecisionTypes</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Output the most prevalent decision type</span>
+<span class="sd">        :param matches_package: A dictionary from algorithm name to matches values (distance, decision ..)</span>
+<span class="sd">        :return: the computed decision</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">tmp_decisions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_nb_decisions</span><span class="p">(</span><span class="n">matches_package</span><span class="p">)</span>
+        <span class="c1"># Fancy way to get the max of the dict, and parse it back as DecisionType</span>
+        <span class="c1"># return sd.DecisionTypes[max(tmp_decisions, key=lambda key: tmp_decisions[key])]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_prevalent_decision</span><span class="p">(</span><span class="n">tmp_decisions</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Merging_Engine.get_weighted_majority_decision"><a class="viewcode-back" href="../../../carlhauser_server.DistanceEngine.html#carlhauser_server.DistanceEngine.merging_engine.Merging_Engine.get_weighted_majority_decision">[docs]</a>    <span class="k">def</span> <span class="nf">get_weighted_majority_decision</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">matches_package</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">sd</span><span class="o">.</span><span class="n">AlgoMatch</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">sd</span><span class="o">.</span><span class="n">DecisionTypes</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Output the most prevalent decision type, weighted by algorithm type</span>
+<span class="sd">        :param matches_package: A dictionary from algorithm name to matches values (distance, decision ..)</span>
+<span class="sd">        :return: the computed decision</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">tmp_decisions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_nb_decisions</span><span class="p">(</span><span class="n">matches_package</span><span class="p">,</span> <span class="n">weighted</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="c1"># Fancy way to get the max of the dict, and parse it back as DecisionType</span>
+        <span class="c1"># return sd.DecisionTypes[max(tmp_decisions, key=lambda key: tmp_decisions[key])]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_prevalent_decision</span><span class="p">(</span><span class="n">tmp_decisions</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Merging_Engine.get_prevalent_decision"><a class="viewcode-back" href="../../../carlhauser_server.DistanceEngine.html#carlhauser_server.DistanceEngine.merging_engine.Merging_Engine.get_prevalent_decision">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_prevalent_decision</span><span class="p">(</span><span class="n">decision_counter</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">sd</span><span class="o">.</span><span class="n">DecisionTypes</span><span class="p">,</span> <span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">sd</span><span class="o">.</span><span class="n">DecisionTypes</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Utility function to get the most prevalent decision out of a list of decision</span>
+<span class="sd">        :param decision_counter: a dict which map decision types to number of occurences.</span>
+<span class="sd">        :return: the most prevalent decision (most numerous)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">sd</span><span class="o">.</span><span class="n">DecisionTypes</span><span class="p">[</span><span class="nb">max</span><span class="p">(</span><span class="n">decision_counter</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">key</span><span class="p">:</span> <span class="n">decision_counter</span><span class="p">[</span><span class="n">key</span><span class="p">])]</span></div>
+
+<div class="viewcode-block" id="Merging_Engine.get_pyramid_decision"><a class="viewcode-back" href="../../../carlhauser_server.DistanceEngine.html#carlhauser_server.DistanceEngine.merging_engine.Merging_Engine.get_pyramid_decision">[docs]</a>    <span class="k">def</span> <span class="nf">get_pyramid_decision</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">matches_package</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">sd</span><span class="o">.</span><span class="n">AlgoMatch</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">sd</span><span class="o">.</span><span class="n">DecisionTypes</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Output only one decision out of a list of decision. Start by most truthworthy algorithms.</span>
+<span class="sd">        If unsure, go down in the algorithm trust hierarchy, until one algorithm is sure of its decision.</span>
+<span class="sd">        :param matches_package: A dictionary from algorithm name to matches values (distance, decision ..)</span>
+<span class="sd">        :return: the computed decision</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">weight_to_algo</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">algo_list</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># Get algo computed among all available algorithms</span>
+        <span class="k">for</span> <span class="n">curr_algo</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">fe_conf</span><span class="o">.</span><span class="n">list_algos</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">matches_package</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">curr_algo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;algo_name&quot;</span><span class="p">))</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">algo_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">curr_algo</span><span class="p">)</span>
+
+        <span class="c1"># Create lists in dict as &lt;weights =&gt; []&gt;</span>
+        <span class="k">for</span> <span class="n">curr_algo</span> <span class="ow">in</span> <span class="n">algo_list</span><span class="p">:</span>
+            <span class="n">weight_to_algo</span><span class="p">[</span><span class="n">curr_algo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;decision_weight&quot;</span><span class="p">)]</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># Create dict &lt;weights =&gt; [algo1, algo2, ..]&gt;</span>
+        <span class="k">for</span> <span class="n">curr_algo</span> <span class="ow">in</span> <span class="n">algo_list</span><span class="p">:</span>
+            <span class="n">weight_to_algo</span><span class="p">[</span><span class="n">curr_algo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;decision_weight&quot;</span><span class="p">)]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">curr_algo</span><span class="p">)</span>
+
+        <span class="c1"># We begin with &quot;higher weight&quot; algorithms and go on</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">weight_to_algo</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+            <span class="c1"># We get the list of algorithm at this &quot;weight level&quot;</span>
+            <span class="n">tmp_list_algo</span> <span class="o">=</span> <span class="n">weight_to_algo</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+
+            <span class="c1"># We group all matches results, related to these algorithms</span>
+            <span class="n">tmp_list_matches</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">algo</span> <span class="ow">in</span> <span class="n">tmp_list_algo</span><span class="p">:</span>
+                <span class="n">tmp_list_matches</span><span class="p">[</span><span class="n">algo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;algo_name&quot;</span><span class="p">)]</span> <span class="o">=</span> <span class="n">matches_package</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">algo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;algo_name&quot;</span><span class="p">))</span>
+
+            <span class="c1"># We take a decision up to all algorithms at this weight level</span>
+            <span class="n">decision</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_majority_decision</span><span class="p">(</span><span class="n">tmp_list_matches</span><span class="p">)</span>
+
+            <span class="c1"># If the decision is YES or NO, we stop here</span>
+            <span class="k">if</span> <span class="n">decision</span> <span class="o">!=</span> <span class="n">sd</span><span class="o">.</span><span class="n">DecisionTypes</span><span class="o">.</span><span class="n">MAYBE</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">decision</span>
+            <span class="c1"># Else, we continue for the &quot;next lower level of algorithms&quot; in next iteration</span>
+
+        <span class="c1"># If we went through all algorithms, and none were giving the same &quot;result&quot;. We send back &quot;MAYBE&quot;</span>
+        <span class="k">return</span> <span class="n">sd</span><span class="o">.</span><span class="n">DecisionTypes</span><span class="o">.</span><span class="n">MAYBE</span></div>
+
+<div class="viewcode-block" id="Merging_Engine.get_nb_decisions"><a class="viewcode-back" href="../../../carlhauser_server.DistanceEngine.html#carlhauser_server.DistanceEngine.merging_engine.Merging_Engine.get_nb_decisions">[docs]</a>    <span class="k">def</span> <span class="nf">get_nb_decisions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">matches_package</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">sd</span><span class="o">.</span><span class="n">AlgoMatch</span><span class="p">],</span> <span class="n">weighted</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Utility function to compute the number of decision out of a list of decision. Can be weighted or not.</span>
+<span class="sd">        :param matches_package: A dictionary from algorithm name to matches values (distance, decision ..)</span>
+<span class="sd">        :param weighted: boolean to enable/disable the weight per algorithm type</span>
+<span class="sd">        :return: a dict which map decision to number of occurrences of this decision</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Create a dict : YES=0, MAYBE=0, NO=0</span>
+        <span class="n">tmp_decisions</span> <span class="o">=</span> <span class="p">{</span><span class="n">decision</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">decision</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">sd</span><span class="o">.</span><span class="n">DecisionTypes</span><span class="p">)}</span>
+
+        <span class="k">for</span> <span class="n">curr_algo</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">fe_conf</span><span class="o">.</span><span class="n">list_algos</span><span class="p">:</span>
+            <span class="c1"># self.logger.debug(f&quot;Current algo {curr_algo}.&quot;)</span>
+
+            <span class="c1"># We have a value for a computed algorithm</span>
+            <span class="n">curr_score</span> <span class="o">=</span> <span class="n">matches_package</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">curr_algo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;algo_name&quot;</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">curr_score</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="c1"># We add the score of this algorithm (it&#39;s weight)</span>
+                <span class="k">if</span> <span class="n">weighted</span><span class="p">:</span>
+                    <span class="n">tmp_decisions</span><span class="p">[</span><span class="n">curr_score</span><span class="o">.</span><span class="n">decision</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">+=</span> <span class="n">curr_algo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;decision_weight&quot;</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">tmp_decisions</span><span class="p">[</span><span class="n">curr_score</span><span class="o">.</span><span class="n">decision</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="k">return</span> <span class="n">tmp_decisions</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, Vincent FALCONIERI.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.2.
+    </div>
+  </body>
+</html>

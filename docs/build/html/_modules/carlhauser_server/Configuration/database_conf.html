@@ -1,0 +1,155 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>carlhauser_server.Configuration.database_conf &#8212; Douglas-Quaid 0.0.4 documentation</title>
+    <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for carlhauser_server.Configuration.database_conf</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">pathlib</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">namedtuple</span>
+
+<span class="kn">from</span> <span class="nn">common.environment_variable</span> <span class="k">import</span> <span class="n">JSON_parsable_Dict</span>
+
+
+<div class="viewcode-block" id="Default_database_conf"><a class="viewcode-back" href="../../../carlhauser_server.Configuration.html#carlhauser_server.Configuration.database_conf.Default_database_conf">[docs]</a><span class="k">class</span> <span class="nc">Default_database_conf</span><span class="p">(</span><span class="n">JSON_parsable_Dict</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Please note that CERT and KEY files must be in carl-hauser/carlhauser_server (where the flask server is)</span>
+
+        <span class="c1"># ============================== SCRIPTS ==============================</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">DB_SCRIPTS_PATH</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="s1">&#39;carlhauser_server&#39;</span><span class="p">,</span> <span class="s1">&#39;Data&#39;</span><span class="p">,</span> <span class="s1">&#39;database_scripts&#39;</span><span class="p">)</span>
+        <span class="c1"># Cache, storage and test scripts directories</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">DB_SCRIPTS_PATH_CACHE</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="s1">&#39;carlhauser_server&#39;</span><span class="p">,</span> <span class="s1">&#39;Data&#39;</span><span class="p">,</span> <span class="s1">&#39;database_scripts&#39;</span><span class="p">,</span> <span class="s1">&#39;cache&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">DB_SCRIPTS_PATH_STORAGE</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="s1">&#39;carlhauser_server&#39;</span><span class="p">,</span> <span class="s1">&#39;Data&#39;</span><span class="p">,</span> <span class="s1">&#39;database_scripts&#39;</span><span class="p">,</span> <span class="s1">&#39;storage&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">DB_SCRIPTS_PATH_TEST</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="s1">&#39;carlhauser_server&#39;</span><span class="p">,</span> <span class="s1">&#39;Data&#39;</span><span class="p">,</span> <span class="s1">&#39;database_scripts&#39;</span><span class="p">,</span> <span class="s1">&#39;test&#39;</span><span class="p">)</span>
+
+        <span class="c1"># ============================== SOCKETS ==============================</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">DB_SOCKETS_PATH</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="s1">&#39;carlhauser_server&#39;</span><span class="p">,</span> <span class="s1">&#39;Data&#39;</span><span class="p">,</span> <span class="s1">&#39;database_sockets&#39;</span><span class="p">)</span>
+        <span class="c1"># Cache, storage and test scripts directories</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">DB_SOCKETS_PATH_CACHE</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="s1">&#39;carlhauser_server&#39;</span><span class="p">,</span> <span class="s1">&#39;Data&#39;</span><span class="p">,</span> <span class="s1">&#39;database_sockets&#39;</span><span class="p">,</span> <span class="s1">&#39;cache.sock&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">DB_SOCKETS_PATH_STORAGE</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="s1">&#39;carlhauser_server&#39;</span><span class="p">,</span> <span class="s1">&#39;Data&#39;</span><span class="p">,</span> <span class="s1">&#39;database_sockets&#39;</span><span class="p">,</span> <span class="s1">&#39;storage.sock&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">DB_SOCKETS_PATH_TEST</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="s1">&#39;carlhauser_server&#39;</span><span class="p">,</span> <span class="s1">&#39;Data&#39;</span><span class="p">,</span> <span class="s1">&#39;database_sockets&#39;</span><span class="p">,</span> <span class="s1">&#39;test.sock&#39;</span><span class="p">)</span>
+
+        <span class="c1"># ============================== DB ==============================</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">DB_DATA_PATH</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="s1">&#39;carlhauser_server&#39;</span><span class="p">,</span> <span class="s1">&#39;Data&#39;</span><span class="p">,</span> <span class="s1">&#39;database_data&#39;</span><span class="p">)</span>
+
+        <span class="c1"># ============================== DB PARAMETERS ==============================</span>
+        <span class="c1"># Expiration time after which a add_request, computation_request, ... is removed (satisfied or not)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">REQUEST_EXPIRATION</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">86400</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ANSWER_EXPIRATION</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">86400</span>
+
+        <span class="c1"># ============================== WORKERS PARAMETERS ==============================</span>
+        <span class="c1"># NB of worker on launch</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ADDER_WORKER_NB</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ADDER_WAIT_SEC</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span>
+
+        <span class="c1"># NB of worker on launch</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">REQUESTER_WORKER_NB</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">REQUESTER_WAIT_SEC</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span>
+
+        <span class="c1"># ============================== TEST and EVALUATION PURPOSES ==============================</span>
+        <span class="c1"># Nothing will be writen on storage or cache databases. Made for automatic evaluation, etc.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ONLY_TEST_DB</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="parse_from_dict"><a class="viewcode-back" href="../../../carlhauser_server.Configuration.html#carlhauser_server.Configuration.database_conf.parse_from_dict">[docs]</a><span class="k">def</span> <span class="nf">parse_from_dict</span><span class="p">(</span><span class="n">conf</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s2">&quot;Default_database_conf&quot;</span><span class="p">,</span> <span class="n">conf</span><span class="o">.</span><span class="n">keys</span><span class="p">())(</span><span class="o">*</span><span class="n">conf</span><span class="o">.</span><span class="n">values</span><span class="p">())</span></div>
+
+
+<span class="c1"># ==================== To string ====================</span>
+
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    # Overwrite to print the content of the cluster instead of the cluster memory address</span>
+<span class="sd">    def __repr__(self):</span>
+<span class="sd">        return self.get_str()</span>
+
+<span class="sd">    def __str__(self):</span>
+<span class="sd">        return self.get_str()</span>
+
+<span class="sd">    def get_str(self):</span>
+<span class="sd">        return &#39;&#39;.join(map(str, [&#39; \nDB_SCRIPTS_PATH=&#39;, self.DB_SCRIPTS_PATH,</span>
+<span class="sd">                                 &#39; \nDB_SCRIPTS_PATH_CACHE=&#39;, self.DB_SCRIPTS_PATH_CACHE,</span>
+<span class="sd">                                 &#39; \nDB_SCRIPTS_PATH_STORAGE=&#39;, self.DB_SCRIPTS_PATH_STORAGE,</span>
+<span class="sd">                                 &#39; \nDB_SCRIPTS_PATH_TEST=&#39;, self.DB_SCRIPTS_PATH_TEST,</span>
+<span class="sd">                                 &#39; \nDB_SOCKETS_PATH=&#39;, self.DB_SOCKETS_PATH,</span>
+<span class="sd">                                 &#39; \nDB_SOCKETS_PATH_CACHE=&#39;, self.DB_SOCKETS_PATH_CACHE,</span>
+<span class="sd">                                 &#39; \nDB_SOCKETS_PATH_STORAGE=&#39;, self.DB_SOCKETS_PATH_STORAGE,</span>
+<span class="sd">                                 &#39; \nDB_SOCKETS_PATH_TEST=&#39;, self.DB_SOCKETS_PATH_TEST,</span>
+<span class="sd">                                 &#39; \nDB_DATA_PATH=&#39;, self.DB_DATA_PATH,</span>
+<span class="sd">                                 &#39; \nREQUEST_EXPIRATION=&#39;, self.REQUEST_EXPIRATION,</span>
+<span class="sd">                                 &#39; \nANSWER_EXPIRATION=&#39;, self.ANSWER_EXPIRATION,</span>
+<span class="sd">                                 &#39; \nADDER_WORKER_NB=&#39;, self.ADDER_WORKER_NB,</span>
+<span class="sd">                                 &#39; \nADDER_WAIT_SEC=&#39;, self.ADDER_WAIT_SEC,</span>
+<span class="sd">                                 &#39; \nREQUESTER_WORKER_NB=&#39;, self.REQUESTER_WORKER_NB,</span>
+<span class="sd">                                 &#39; \nREQUESTER_WAIT_SEC=&#39;, self.REQUESTER_WAIT_SEC]))</span>
+
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, Vincent FALCONIERI.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.2.
+    </div>
+  </body>
+</html>

@@ -2,32 +2,26 @@
 # -*- coding: utf-8 -*-
 
 import logging.config
-# ==================== ------ STD LIBRARIES ------- ====================
-import os
-import pathlib
 import sys
 import time
 import traceback
 
-# ==================== ------ PERSONAL LIBRARIES ------- ====================
-sys.path.append(os.path.abspath(os.path.pardir))
-from common.environment_variable import get_homedir
-import carlhauser_server.instance_handler as core
-
-import carlhauser_client.EvaluationTools.Internal_clustering_Quality_Evaluator.internal_clustering_quality_evaluator as evaluator
-import common.PerformanceDatastructs.stats_datastruct as scores
-import common.PerformanceDatastructs.perf_datastruct as perf_datastruct
+import carlhauser_client.EvaluationTools.StorageGraphExtractor.storage_quality_evaluator as evaluator
+import carlhauser_server.instance_handler as instance_handler
 import common.ChartMaker.two_dimensions_plot as two_dimensions_plot
-# from . import helpers
+import common.PerformanceDatastructs.perf_datastruct as perf_datastruct
+from common.environment_variable import get_homedir
+from common.environment_variable import load_server_logging_conf_file
 
-# ==================== ------ PREPARATION ------- ====================
-# load the logging configuration
-logconfig_path = (get_homedir() / pathlib.Path("carlhauser_client", "logging.ini")).resolve()
-logging.config.fileConfig(str(logconfig_path))
+load_server_logging_conf_file()
 
 
 # ==================== ------ LAUNCHER ------- ====================
 class ParameterExplorer:
+    '''
+    Extract parameters and quality of the storage graph. TODO : Should be reviewed and modified.
+    '''
+
     def __init__(self):
         self.logger = logging.getLogger(__name__)
 
@@ -48,7 +42,7 @@ class ParameterExplorer:
         # ========= GOAL =========
         perfs = []
 
-        iterations_limit = 50  # 50  # Or nb of iteration if complete exploration
+        iterations_limit = 50  # Or nb of iteration if complete exploration
 
         max_threshold = 1
         min_threshold = 0
@@ -61,29 +55,13 @@ class ParameterExplorer:
             curr_threshold = i * ((max_threshold - min_threshold) / iterations_limit)
             self.logger.info(f"Current threshold computation : {curr_threshold}")
 
-            # Choose a configuration
-            # Put configuration in place
+            # If the instance already exist, delete it
             if self.server_launcher is not None:
                 del self.server_launcher
-            self.server_launcher = core.Instance_Handler()
-            self.server_launcher.di_conf.MAX_DIST_FOR_NEW_CLUSTER = curr_threshold
 
-            ''' 
-            # TODO : Go in the "right" direction. 
-            # while the score is changing
-            while(curr_round_score > last_round_score and i < iterations_limit):
-    
-                # Good direction, continue
-                if curr_round_score > last_round_score :
-    
-    
-                    continue
-                # Bad direction, go "back"
-                else :
-                    continue
-    
-                i+=1
-            '''
+            # Put configuration in place
+            self.server_launcher = instance_handler.Instance_Handler()
+            self.server_launcher.di_conf.MAX_DIST_FOR_NEW_CLUSTER = curr_threshold
 
             # Create output folder for this configuration
             tmp_output = output_folder / ''.join([str(curr_threshold), "_threshold"])
@@ -97,7 +75,7 @@ class ParameterExplorer:
 
             # Launch client tester
             self.client_launcher = evaluator.InternalClusteringQualityEvaluator()
-            perf_overview = self.client_launcher.launch(image_folder, gt, tmp_output)
+            perf_overview = self.client_launcher.get_storage_graph(image_folder, gt, tmp_output)
             self.logger.warning(f"Perf overview added : {perf_overview}")
 
             perfs.append(perf_datastruct.Perf(perf_overview, curr_threshold))
@@ -114,16 +92,17 @@ class ParameterExplorer:
 
             # Wait for shutdown (wait for workers to shutdown, usually longer than db)
             while not self.server_launcher.check_worker():
-                time.sleep(1) # Enough ?
+                time.sleep(1)  # Enough ?
                 self.logger.warning("Waiting for workers to stop .. ")
 
             # Remove all workers
             self.server_launcher.flush_workers()
             time.sleep(2)
-        
+
         # Print plot
         TwoD_plot = two_dimensions_plot.TwoDimensionsPlot()
         TwoD_plot.print_graph(perfs, output_folder)
+
 
 if __name__ == '__main__':
     param_explorer = ParameterExplorer()

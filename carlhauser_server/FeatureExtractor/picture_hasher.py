@@ -1,20 +1,18 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+
 import io
 import logging
-# ==================== ------ STD LIBRARIES ------- ====================
-import os
-import sys
 import tlsh
 
 import PIL.Image as Image
 import imagehash
 
-# ==================== ------ PERSONAL LIBRARIES ------- ====================
-
 import carlhauser_server.Configuration.feature_extractor_conf as feature_extractor_conf
-sys.path.append(os.path.abspath(os.path.pardir))
+from common.environment_variable import load_server_logging_conf_file
+
+load_server_logging_conf_file()
 
 
 class Picture_Hasher:
@@ -25,6 +23,11 @@ class Picture_Hasher:
         self.logger.info("Creation of a Picture Hasher")
 
     def hash_picture(self, curr_picture):
+        """
+        Hash a picture and returns the hash value
+        :param curr_picture: the picture to hash
+        :return: the hashed version of the picture
+        """
         answer = {}
         self.logger.info("Hashing picture ... ")
 
@@ -63,10 +66,15 @@ class Picture_Hasher:
 
         return answer
 
-    def check_null_hash(self, hash):
+    def check_null_hash(self, tmp_hash):
+        """
+        Check if the provided hash is none, if so, provide a "null version" of the hash.
+        :param tmp_hash: the hash to check
+        :return: a "null" version of the hash if "None", the hash itself without modification otherwise.
+        """
         # Check if the hash provided is null/None/empty. If yes, provide a default hash
         self.logger.debug("Checking hash ... ")
 
-        if not hash:
+        if not tmp_hash:
             return '0000000000000000000000000000000000000000000000000000000000000000000000'
-        return hash
+        return tmp_hash

@@ -1,16 +1,15 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-# ==================== ------ STD LIBRARIES ------- ====================
-import sys, os
-import pathlib
-import logging
 import json
+import logging
+import pathlib
 
-# ==================== ------ PERSONAL LIBRARIES ------- ====================
-import carlhauser_server.Configuration.template_conf as template_conf
+import common.environment_variable
+from common.environment_variable import load_server_logging_conf_file
 
-sys.path.append(os.path.abspath(os.path.pardir))
+load_server_logging_conf_file()
+
 
 class Custom_JSON_Encoder(json.JSONEncoder):
     """
@@ -18,18 +17,29 @@ class Custom_JSON_Encoder(json.JSONEncoder):
     """
 
     def default(self, o):
+        """
+        How to handle an object to encode
+        :param o: the object to encode
+        :return: the object encoded as json
+        """
         if isinstance(o, pathlib.Path):
             return str(o)
-        if isinstance(o, template_conf.JSON_parsable_Enum):
+        if isinstance(o, common.environment_variable.JSON_parsable_Enum):
             # If this is an object flagger as String equivalent, parse it as a String
             return str(o)
-        if isinstance(o, template_conf.JSON_parsable_Dict):
+        if isinstance(o, common.environment_variable.JSON_parsable_Dict):
             # If this is an object flagged as dict equivalent, parse it as a dict.
             return o.__dict__
         return json.JSONEncoder.default(self, o)
 
 
 def save_json(obj, file_path: pathlib.Path):
+    """
+    Save an object as JSON
+    :param obj: the object to save
+    :param file_path: the path to which the object should be saved
+    :return: Nothing
+    """
     # TODO : To fix json_data = ast.literal_eval(json_data) ?
     #  See : https://stackoverflow.com/questions/25707558/json-valueerror-expecting-property-name-line-1-column-2-char-1
     logger = logging.getLogger()
@@ -44,6 +54,11 @@ def save_json(obj, file_path: pathlib.Path):
 
 
 def load_json(file_path: pathlib.Path):
+    """
+    Loading an object/data from json.
+    :param file_path: The path to the json to load
+    :return: The data extracted
+    """
     logger = logging.getLogger()
     # !! : json.load() is for loading a file. json.loads() works with strings.
     # json.loads will load a json string into a python dict, json.dumps will dump a python dict to a json string,

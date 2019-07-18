@@ -1,0 +1,215 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>carlhauser_server.Processus.worker_processus &#8212; Douglas-Quaid 0.0.4 documentation</title>
+    <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for carlhauser_server.Processus.worker_processus</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="c1"># ==================== ------ STD LIBRARIES ------- ====================</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">subprocess</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">pathlib</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="c1"># ==================== ------ PERSONAL LIBRARIES ------- ====================</span>
+
+<span class="kn">from</span> <span class="nn">common.environment_variable</span> <span class="k">import</span> <span class="n">get_homedir</span>
+<span class="kn">import</span> <span class="nn">carlhauser_server.Configuration.database_conf</span> <span class="k">as</span> <span class="nn">database_conf</span>
+<span class="kn">import</span> <span class="nn">carlhauser_server.Configuration.distance_engine_conf</span> <span class="k">as</span> <span class="nn">distance_engine_conf</span>
+<span class="kn">import</span> <span class="nn">carlhauser_server.Configuration.feature_extractor_conf</span> <span class="k">as</span> <span class="nn">feature_extractor_conf</span>
+<span class="kn">import</span> <span class="nn">carlhauser_server.Configuration.webservice_conf</span> <span class="k">as</span> <span class="nn">webservice_conf</span>
+
+<span class="kn">import</span> <span class="nn">common.ImportExport.json_import_export</span> <span class="k">as</span> <span class="nn">json_import_export</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">pardir</span><span class="p">))</span>
+
+
+<span class="c1"># ==================== ------ PATHS ------- ====================</span>
+
+<span class="c1"># Small class to handle processus</span>
+<div class="viewcode-block" id="WorkerProcessus"><a class="viewcode-back" href="../../../carlhauser_server.Processus.html#carlhauser_server.Processus.worker_processus.WorkerProcessus">[docs]</a><span class="k">class</span> <span class="nc">WorkerProcessus</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">worker_path</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">worker_path</span> <span class="o">=</span> <span class="n">worker_path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">process</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># processus: subprocess.Popen</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<div class="viewcode-block" id="WorkerProcessus.launch"><a class="viewcode-back" href="../../../carlhauser_server.Processus.html#carlhauser_server.Processus.worker_processus.WorkerProcessus.launch">[docs]</a>    <span class="k">def</span> <span class="nf">launch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">db_conf</span><span class="p">:</span> <span class="n">database_conf</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">dist_conf</span><span class="p">:</span> <span class="n">distance_engine_conf</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">fe_conf</span><span class="p">:</span> <span class="n">feature_extractor_conf</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">ws_conf</span><span class="p">:</span> <span class="n">webservice_conf</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="c1"># Construct an argument list to be &#39;popen&#39; as a new process</span>
+        <span class="n">arg_list</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">worker_path</span><span class="p">)]</span>
+
+        <span class="c1"># Save current configuration in files</span>
+        <span class="c1"># Using self.worker_path.parent</span>
+        <span class="k">if</span> <span class="n">db_conf</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">tmp_db_conf_path</span> <span class="o">=</span>  <span class="n">get_homedir</span><span class="p">()</span> <span class="o">/</span> <span class="s2">&quot;tmp_db_conf.json&quot;</span>
+            <span class="n">json_import_export</span><span class="o">.</span><span class="n">save_json</span><span class="p">(</span><span class="n">db_conf</span><span class="p">,</span> <span class="n">file_path</span><span class="o">=</span><span class="n">tmp_db_conf_path</span><span class="p">)</span>
+            <span class="n">arg_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;-dbc&#39;</span><span class="p">)</span>
+            <span class="n">arg_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">tmp_db_conf_path</span><span class="o">.</span><span class="n">resolve</span><span class="p">()))</span>
+
+        <span class="k">if</span> <span class="n">dist_conf</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">tmp_dist_conf_path</span> <span class="o">=</span> <span class="n">get_homedir</span><span class="p">()</span> <span class="o">/</span> <span class="s2">&quot;tmp_dist_conf.json&quot;</span>
+            <span class="n">json_import_export</span><span class="o">.</span><span class="n">save_json</span><span class="p">(</span><span class="n">dist_conf</span><span class="p">,</span> <span class="n">file_path</span><span class="o">=</span><span class="n">tmp_dist_conf_path</span><span class="p">)</span>
+            <span class="n">arg_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;-distc&#39;</span><span class="p">)</span>
+            <span class="n">arg_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">tmp_dist_conf_path</span><span class="o">.</span><span class="n">resolve</span><span class="p">()))</span>
+
+        <span class="k">if</span> <span class="n">fe_conf</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">tmp_fe_conf_path</span> <span class="o">=</span> <span class="n">get_homedir</span><span class="p">()</span> <span class="o">/</span> <span class="s2">&quot;tmp_fe_conf.json&quot;</span>
+            <span class="n">json_import_export</span><span class="o">.</span><span class="n">save_json</span><span class="p">(</span><span class="n">fe_conf</span><span class="p">,</span> <span class="n">file_path</span><span class="o">=</span><span class="n">tmp_fe_conf_path</span><span class="p">)</span>
+            <span class="n">arg_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;-fec&#39;</span><span class="p">)</span>
+            <span class="n">arg_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">tmp_fe_conf_path</span><span class="o">.</span><span class="n">resolve</span><span class="p">()))</span>
+
+        <span class="k">if</span> <span class="n">ws_conf</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">tmp_ws_conf_path</span> <span class="o">=</span> <span class="n">get_homedir</span><span class="p">()</span> <span class="o">/</span> <span class="s2">&quot;tmp_ws_conf.json&quot;</span>
+            <span class="n">json_import_export</span><span class="o">.</span><span class="n">save_json</span><span class="p">(</span><span class="n">ws_conf</span><span class="p">,</span> <span class="n">file_path</span><span class="o">=</span><span class="n">tmp_ws_conf_path</span><span class="p">)</span>
+            <span class="n">arg_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;-wsc&#39;</span><span class="p">)</span>
+            <span class="n">arg_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">tmp_ws_conf_path</span><span class="o">.</span><span class="n">resolve</span><span class="p">()))</span>
+
+        <span class="k">if</span> <span class="n">mode</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">arg_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;-m&#39;</span><span class="p">)</span>
+            <span class="n">arg_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mode</span><span class="p">)</span>
+
+        <span class="c1"># Save starting time</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+
+        <span class="c1"># Launch worker</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;launching process as : </span><span class="si">{arg_list}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">process</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">(</span><span class="n">arg_list</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="WorkerProcessus.shutdown"><a class="viewcode-back" href="../../../carlhauser_server.Processus.html#carlhauser_server.Processus.worker_processus.WorkerProcessus.shutdown">[docs]</a>    <span class="k">def</span> <span class="nf">shutdown</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">grace_time</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Trying to stop (terminate) </span><span class="si">{self.process}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">process</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.2</span><span class="p">)</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">process</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="n">grace_time</span><span class="p">)</span>
+            <span class="k">except</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">TimeoutExpired</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Processus </span><span class="si">{self.process}</span><span class="s2"> did not terminate in time. Trying to kill it.&quot;</span><span class="p">)</span>
+            <span class="k">finally</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">process</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Processus exited with </span><span class="si">{self.process.returncode}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">except</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">TimeoutExpired</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Processus </span><span class="si">{self.process}</span><span class="s2"> is still alive .. Don&#39;t know how to stop it.&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="WorkerProcessus.is_running"><a class="viewcode-back" href="../../../carlhauser_server.Processus.html#carlhauser_server.Processus.worker_processus.WorkerProcessus.is_running">[docs]</a>    <span class="k">def</span> <span class="nf">is_running</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Check if current processus is running</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">process</span><span class="o">.</span><span class="n">poll</span><span class="p">()</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="WorkerProcessus.check_status"><a class="viewcode-back" href="../../../carlhauser_server.Processus.html#carlhauser_server.Processus.worker_processus.WorkerProcessus.check_status">[docs]</a>    <span class="k">def</span> <span class="nf">check_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">id_to_display</span><span class="p">):</span>
+        <span class="c1"># Display and check status</span>
+        <span class="n">curr_str</span> <span class="o">=</span> <span class="n">f</span><span class="s2">&quot;==&gt; Worker </span><span class="si">{id_to_display}</span><span class="s2"> : Launched on </span><span class="si">{self}</span><span class="s2">&quot;</span>
+
+        <span class="n">is_running</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_running</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">is_running</span><span class="p">:</span>
+            <span class="n">curr_str</span> <span class="o">+=</span> <span class="s2">&quot; status : running ...&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">curr_str</span> <span class="o">+=</span> <span class="s2">&quot; status : terminated or ended ...&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">curr_str</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">is_running</span></div>
+
+<div class="viewcode-block" id="WorkerProcessus.wait_until_stopped"><a class="viewcode-back" href="../../../carlhauser_server.Processus.html#carlhauser_server.Processus.worker_processus.WorkerProcessus.wait_until_stopped">[docs]</a>    <span class="k">def</span> <span class="nf">wait_until_stopped</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">60</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="c1"># Wait until the worker is stopped (= terminated)</span>
+        <span class="c1"># Put timeout -1 if you don&#39;t want to function to timeout</span>
+
+        <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_running</span><span class="p">():</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">timeout</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span> <span class="ow">and</span> <span class="nb">abs</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">timeout</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Waiting for worker to stop has timeout-ed.&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Worker stopped after {round(abs(time.time() - start),3)}s.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+    <span class="c1"># ==================== To string ====================</span>
+
+    <span class="c1"># Overwrite to print the content of the cluster instead of the cluster memory address</span>
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_str</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_str</span><span class="p">()</span>
+
+<div class="viewcode-block" id="WorkerProcessus.get_str"><a class="viewcode-back" href="../../../carlhauser_server.Processus.html#carlhauser_server.Processus.worker_processus.WorkerProcessus.get_str">[docs]</a>    <span class="k">def</span> <span class="nf">get_str</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39; processus=&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">process</span><span class="p">,</span> <span class="s1">&#39; worker_path=&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">worker_path</span><span class="p">),</span> <span class="s1">&#39; start_time=&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span><span class="p">]))</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, Vincent FALCONIERI.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.2.
+    </div>
+  </body>
+</html>

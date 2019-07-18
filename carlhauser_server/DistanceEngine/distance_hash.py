@@ -1,22 +1,20 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+
 import logging
-import os
-# ==================== ------ STD LIBRARIES ------- ====================
-import sys
 import tlsh
 import traceback
 from typing import Dict
-# ==================== ------ PERSONAL LIBRARIES ------- ====================
 
 import carlhauser_server.Configuration.database_conf as database_conf
 import carlhauser_server.Configuration.distance_engine_conf as distance_engine_conf
 import carlhauser_server.Configuration.feature_extractor_conf as feature_extractor_conf
 import carlhauser_server.DistanceEngine.scoring_datastrutures as sd
-
-sys.path.append(os.path.abspath(os.path.pardir))
 from carlhauser_server.Configuration.algo_conf import Algo_conf
+from common.environment_variable import load_server_logging_conf_file
+
+load_server_logging_conf_file()
 
 
 class Distance_Hash:
@@ -32,67 +30,38 @@ class Distance_Hash:
 
     # ==================== ------ INTER ALGO DISTANCE ------- ====================
 
-    def hash_distance(self, pic_package_from, pic_package_to) -> Dict[str, sd.AlgoMatch]:
+    def hash_distance(self, pic_package_from: Dict, pic_package_to: Dict) -> Dict[str, sd.AlgoMatch]:
+        """
+        Distance between two provided pictures (dicts) with fuzzy hashing methods
+        :param pic_package_from: first picture dict
+        :param pic_package_to: second picture dict
+        :return: A dictionary of algo name to the match detail (distance, decision ..)
+        """
         answer = {}
         self.logger.info("Hash distance computation ... ")
+        self.logger.debug("Hash distance computation ... ")
 
         try:
             if self.fe_conf.A_HASH.get("is_enabled", False):
                 answer = self.add_results(self.fe_conf.A_HASH, pic_package_from, pic_package_to, answer)
-                '''
-                self.logger.debug("A-HASH ... ")
-                tmp_dist = self.compute_hash_distance(pic_package_from["A_HASH"], pic_package_to["A_HASH"])
-                answer["A_HASH"] = sd.AlgoMatch(name="A_HASH",
-                                                distance=tmp_dist,
-                                                decision=)
-                '''
 
             if self.fe_conf.P_HASH.get("is_enabled", False):
                 answer = self.add_results(self.fe_conf.P_HASH, pic_package_from, pic_package_to, answer)
-                '''
-                self.logger.debug("P_HASH ... ")
-                answer["P_HASH"] = self.compute_hash_distance(pic_package_from["P_HASH"], pic_package_to["P_HASH"])
-                '''
 
             if self.fe_conf.P_HASH_SIMPLE.get("is_enabled", False):
                 answer = self.add_results(self.fe_conf.P_HASH_SIMPLE, pic_package_from, pic_package_to, answer)
 
-                '''
-                self.logger.debug("P_HASH_SIMPLE ... ")
-                answer["P_HASH_SIMPLE"] = self.compute_hash_distance(pic_package_from["P_HASH_SIMPLE"], pic_package_to["P_HASH_SIMPLE"])
-                '''
-
             if self.fe_conf.D_HASH.get("is_enabled", False):
                 answer = self.add_results(self.fe_conf.D_HASH, pic_package_from, pic_package_to, answer)
-
-                '''
-                self.logger.debug("D_HASH ... ")
-                answer["D_HASH"] = self.compute_hash_distance(pic_package_from["D_HASH"], pic_package_to["D_HASH"])
-                '''
 
             if self.fe_conf.D_HASH_VERTICAL.get("is_enabled", False):
                 answer = self.add_results(self.fe_conf.D_HASH_VERTICAL, pic_package_from, pic_package_to, answer)
 
-                '''
-                self.logger.debug("D_HASH_VERTICAL ... ")
-                answer["D_HASH_VERTICAL"] = self.compute_hash_distance(pic_package_from["D_HASH_VERTICAL"], pic_package_to["D_HASH_VERTICAL"])
-                '''
-
             if self.fe_conf.W_HASH.get("is_enabled", False):
                 answer = self.add_results(self.fe_conf.W_HASH, pic_package_from, pic_package_to, answer)
 
-                '''
-                self.logger.debug("W_HASH ... ")
-                answer["W_HASH"] = self.compute_hash_distance(pic_package_from["W_HASH"], pic_package_to["W_HASH"])      
-                '''
-
             if self.fe_conf.TLSH.get("is_enabled", False):
                 answer = self.add_results(self.fe_conf.TLSH, pic_package_from, pic_package_to, answer)
-
-                '''
-                self.logger.debug("TLSH ... ")
-                answer["TLSH"] = self.compute_tlsh_distance(pic_package_from["TLSH"], pic_package_to["TLSH"])
-                '''
 
         except Exception as e:
             self.logger.error(traceback.print_tb(e.__traceback__))
@@ -100,16 +69,24 @@ class Distance_Hash:
 
         return answer
 
-    def add_results(self, algo_conf: Algo_conf, pic_package_from, pic_package_to, answer: Dict) -> Dict:
-        # Add results to answer dict, depending on the algorithm name we want to compute
-        # Ex : Input {} -> Output {"P-HASH":{"name":"P-HASH", "distance":0.3,"decision":YES}}
+    def add_results(self, algo_conf: Algo_conf, pic_package_from: Dict, pic_package_to: Dict, answer: Dict) -> Dict[str, sd.AlgoMatch]:
+        """
+        Add results to answer dict, depending on the algorithm name we want to compute
+        Ex : Input {} -> Output {"P-HASH":{"name":"P-HASH", "distance":0.3,"decision":YES}}
+        :param algo_conf: An algorithm configuration (to specify which algorithm to launch)
+        :param pic_package_from: first picture dict
+        :param pic_package_to: second picture dict
+        :param answer: Current dict of algo_name to algo match (will be updated and returned)
+        :return: a dict of algo_name to algo match
+        """
+
         algo_name = algo_conf.get('algo_name', None)
         self.logger.debug(f"Algo name detected : {algo_name}")
 
         if pic_package_from.get(algo_name, None) is None or pic_package_to.get(algo_name, None) is None:
             self.logger.warning(f"Algo hashes values are NOT presents in the results.")
             input()
-        else :
+        else:
             self.logger.debug(f"Algo hashes values are presents in the results.")
 
             if algo_name != "TLSH":
@@ -131,23 +108,40 @@ class Distance_Hash:
 
     @staticmethod
     def compute_hash_distance(hash1, hash2) -> float:
+        """
+        Compute hash difference for A-HASH, P-HASH, etc.
+        :param hash1: first hash
+        :param hash2: second hash
+        :return: distance between hashes
+        """
         # TODO : Check if the size is accessible. Probably not.
         return abs(hash1 - hash2) / (hash1.hash.size * 4)
 
     @staticmethod
     def compute_tlsh_distance(hash1, hash2) -> float:
+        """
+        Compute hash difference for TLSH only
+        :param hash1: first hash
+        :param hash2: second hash
+        :return: distance between hashes
+        """
         return tlsh.diff(hash1, hash2) / (len(hash1) * 16)  # 70 hexa character
 
     # ==================== ------ DECISIONS ------- ====================
 
     @staticmethod
     def compute_decision_from_distance(algo_conf: Algo_conf, dist: float) -> sd.DecisionTypes:
-        # From a distance between hashes, gives a decision : is it a match or not ? Or maybe ?
+        """
+        From a distance between hashes, gives a decision : is it a match or not ? Or maybe ?
+        :param algo_conf: An algorithm configuration (to specify which algorithm to launch)
+        :param dist: distance between hashes
+        :return: A decision : YES, MAYBE or NO
+        """
 
-        if dist <= algo_conf.get('threshold_maybe'):
+        if dist <= algo_conf.get('threshold_yes_to_maybe'):
             # It's a YES ! :)
             return sd.DecisionTypes.YES
-        elif dist <= algo_conf.get('threshold_no'):
+        elif dist <= algo_conf.get('threshold_maybe_to_no'):
             # It's a MAYBE :/
             return sd.DecisionTypes.MAYBE
         else:

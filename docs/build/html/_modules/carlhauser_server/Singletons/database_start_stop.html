@@ -1,0 +1,240 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>carlhauser_server.Singletons.database_start_stop &#8212; Douglas-Quaid 0.0.4 documentation</title>
+    <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for carlhauser_server.Singletons.database_start_stop</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="kn">import</span> <span class="nn">carlhauser_server.Configuration.database_conf</span> <span class="k">as</span> <span class="nn">database_conf</span>
+<span class="kn">import</span> <span class="nn">carlhauser_server.Helpers.socket</span> <span class="k">as</span> <span class="nn">socket</span>
+<span class="kn">from</span> <span class="nn">carlhauser_server.Singletons.singleton</span> <span class="k">import</span> <span class="n">Singleton</span>
+<span class="kn">from</span> <span class="nn">common.environment_variable</span> <span class="k">import</span> <span class="n">get_homedir</span>
+<span class="kn">from</span> <span class="nn">common.environment_variable</span> <span class="k">import</span> <span class="n">load_server_logging_conf_file</span>
+
+<span class="n">load_server_logging_conf_file</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="Database_StartStop"><a class="viewcode-back" href="../../../carlhauser_server.Singletons.html#carlhauser_server.Singletons.database_start_stop.Database_StartStop">[docs]</a><span class="k">class</span> <span class="nc">Database_StartStop</span><span class="p">(</span><span class="nb">object</span><span class="p">,</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">Singleton</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Singleton class that handle database access</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">db_conf</span><span class="p">:</span> <span class="n">database_conf</span><span class="o">.</span><span class="n">Default_database_conf</span><span class="p">):</span>
+        <span class="c1"># STD attributes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db_conf</span> <span class="o">=</span> <span class="n">db_conf</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="s2">&quot;SINGLETON CREATED (database start stop)&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Only the test database will be used = </span><span class="si">{self.db_conf.ONLY_TEST_DB}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Specific attributes</span>
+        <span class="c1"># We are in a test mode, so we want the test database to be handled too.</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_conf</span><span class="o">.</span><span class="n">ONLY_TEST_DB</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">socket_test</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">Socket</span><span class="p">(</span><span class="n">get_homedir</span><span class="p">()</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_conf</span><span class="o">.</span><span class="n">DB_SOCKETS_PATH_TEST</span><span class="p">,</span>
+                                             <span class="n">get_homedir</span><span class="p">()</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_conf</span><span class="o">.</span><span class="n">DB_SCRIPTS_PATH_TEST</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mapping</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s1">&#39;cache&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">socket_test</span><span class="o">.</span><span class="n">socket_path</span><span class="p">,</span>
+                <span class="s1">&#39;storage&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">socket_test</span><span class="o">.</span><span class="n">socket_path</span><span class="p">,</span>
+                <span class="s1">&#39;test&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">socket_test</span><span class="o">.</span><span class="n">socket_path</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">socket_cache</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">Socket</span><span class="p">(</span><span class="n">get_homedir</span><span class="p">()</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_conf</span><span class="o">.</span><span class="n">DB_SOCKETS_PATH_CACHE</span><span class="p">,</span>
+                                              <span class="n">get_homedir</span><span class="p">()</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_conf</span><span class="o">.</span><span class="n">DB_SCRIPTS_PATH_CACHE</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">socket_storage</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">Socket</span><span class="p">(</span><span class="n">get_homedir</span><span class="p">()</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_conf</span><span class="o">.</span><span class="n">DB_SOCKETS_PATH_STORAGE</span><span class="p">,</span>
+                                                <span class="n">get_homedir</span><span class="p">()</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_conf</span><span class="o">.</span><span class="n">DB_SCRIPTS_PATH_STORAGE</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mapping</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s1">&#39;cache&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">socket_cache</span><span class="o">.</span><span class="n">socket_path</span><span class="p">,</span>
+                <span class="s1">&#39;storage&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">socket_storage</span><span class="o">.</span><span class="n">socket_path</span><span class="p">,</span>
+            <span class="p">}</span>
+
+<div class="viewcode-block" id="Database_StartStop.get_socket_path"><a class="viewcode-back" href="../../../carlhauser_server.Singletons.html#carlhauser_server.Singletons.database_start_stop.Database_StartStop.get_socket_path">[docs]</a>    <span class="k">def</span> <span class="nf">get_socket_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Redis is configured to allow connection from/to Unix socket</span>
+<span class="sd">        Unix sockets paths for Redis are defined in cache.conf and storage.conf</span>
+<span class="sd">        :param name: The name of the socket Type to get</span>
+<span class="sd">        :return: The socket object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mapping</span><span class="p">[</span><span class="n">name</span><span class="p">])</span></div>
+
+    <span class="c1"># ==================== ------ CACHE AND STORAGE MNGT ------- ====================</span>
+
+<div class="viewcode-block" id="Database_StartStop.launch_all_redis"><a class="viewcode-back" href="../../../carlhauser_server.Singletons.html#carlhauser_server.Singletons.database_start_stop.Database_StartStop.launch_all_redis">[docs]</a>    <span class="k">def</span> <span class="nf">launch_all_redis</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Launch the cache, storage and test instance of redis</span>
+<span class="sd">        :return: Nothing</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_conf</span><span class="o">.</span><span class="n">ONLY_TEST_DB</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">socket_test</span><span class="o">.</span><span class="n">launch</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">socket_cache</span><span class="o">.</span><span class="n">launch</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">socket_storage</span><span class="o">.</span><span class="n">launch</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Database_StartStop.stop_all_redis"><a class="viewcode-back" href="../../../carlhauser_server.Singletons.html#carlhauser_server.Singletons.database_start_stop.Database_StartStop.stop_all_redis">[docs]</a>    <span class="k">def</span> <span class="nf">stop_all_redis</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Stop the cache, storage and test instance of redis</span>
+<span class="sd">        :return: Nothing</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_conf</span><span class="o">.</span><span class="n">ONLY_TEST_DB</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">socket_test</span><span class="o">.</span><span class="n">shutdown</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">socket_cache</span><span class="o">.</span><span class="n">shutdown</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">socket_storage</span><span class="o">.</span><span class="n">shutdown</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Database_StartStop.flush_all_redis"><a class="viewcode-back" href="../../../carlhauser_server.Singletons.html#carlhauser_server.Singletons.database_start_stop.Database_StartStop.flush_all_redis">[docs]</a>    <span class="k">def</span> <span class="nf">flush_all_redis</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Flush the cache, storage and test instance of redis</span>
+<span class="sd">        :return: Nothing</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_conf</span><span class="o">.</span><span class="n">ONLY_TEST_DB</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">socket_test</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">socket_cache</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">socket_storage</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Database_StartStop.wait_until_all_redis_running"><a class="viewcode-back" href="../../../carlhauser_server.Singletons.html#carlhauser_server.Singletons.database_start_stop.Database_StartStop.wait_until_all_redis_running">[docs]</a>    <span class="k">def</span> <span class="nf">wait_until_all_redis_running</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Blocking function that wait until all database are launched.</span>
+<span class="sd">        :return: True if all are launched, False otherwise</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Launch test DB if asked</span>
+        <span class="n">t_is_launched</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">c_is_launched</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">s_is_launched</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="c1"># Wait until all databases are launched and return True if all are running</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_conf</span><span class="o">.</span><span class="n">ONLY_TEST_DB</span><span class="p">:</span>
+            <span class="n">t_is_launched</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">socket_test</span><span class="o">.</span><span class="n">wait_until_running</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">c_is_launched</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">socket_cache</span><span class="o">.</span><span class="n">wait_until_running</span><span class="p">()</span>
+            <span class="n">s_is_launched</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">socket_storage</span><span class="o">.</span><span class="n">wait_until_running</span><span class="p">()</span>
+
+        <span class="c1"># Create the boolean value</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">c_is_launched</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">s_is_launched</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">t_is_launched</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="Database_StartStop.wait_until_all_redis_stopped"><a class="viewcode-back" href="../../../carlhauser_server.Singletons.html#carlhauser_server.Singletons.database_start_stop.Database_StartStop.wait_until_all_redis_stopped">[docs]</a>    <span class="k">def</span> <span class="nf">wait_until_all_redis_stopped</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Blocking function that wait until all database are stopped.</span>
+<span class="sd">        :return: True if all are stopped, False otherwise</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">t_is_stopped</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">c_is_stopped</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">s_is_stopped</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="c1"># Wait until all databases are stopped and return True if all are stopped</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_conf</span><span class="o">.</span><span class="n">ONLY_TEST_DB</span><span class="p">:</span>
+            <span class="n">t_is_stopped</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">socket_test</span><span class="o">.</span><span class="n">wait_until_stopped</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">c_is_stopped</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">socket_cache</span><span class="o">.</span><span class="n">wait_until_stopped</span><span class="p">()</span>
+            <span class="n">s_is_stopped</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">socket_storage</span><span class="o">.</span><span class="n">wait_until_stopped</span><span class="p">()</span>
+
+        <span class="c1"># Create the boolean value</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">c_is_stopped</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">s_is_stopped</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">t_is_stopped</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="Database_StartStop.prevent_workers_shutdown"><a class="viewcode-back" href="../../../carlhauser_server.Singletons.html#carlhauser_server.Singletons.database_start_stop.Database_StartStop.prevent_workers_shutdown">[docs]</a>    <span class="k">def</span> <span class="nf">prevent_workers_shutdown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Remove HALT key in all redis instance. Worker then can&#39;t stop themselves on launch</span>
+<span class="sd">        :return: Nothing</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_conf</span><span class="o">.</span><span class="n">ONLY_TEST_DB</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">socket_test</span><span class="o">.</span><span class="n">prevent_workers_stop</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">socket_cache</span><span class="o">.</span><span class="n">prevent_workers_stop</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">socket_storage</span><span class="o">.</span><span class="n">prevent_workers_stop</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Database_StartStop.request_workers_shutdown"><a class="viewcode-back" href="../../../carlhauser_server.Singletons.html#carlhauser_server.Singletons.database_start_stop.Database_StartStop.request_workers_shutdown">[docs]</a>    <span class="k">def</span> <span class="nf">request_workers_shutdown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Post a HALT key in all redis instance. Worker should react &quot;quickly&quot; and stop themselves</span>
+<span class="sd">        :return: Nothing</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_conf</span><span class="o">.</span><span class="n">ONLY_TEST_DB</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">socket_test</span><span class="o">.</span><span class="n">stop_workers</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">socket_cache</span><span class="o">.</span><span class="n">stop_workers</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">socket_storage</span><span class="o">.</span><span class="n">stop_workers</span><span class="p">()</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, Vincent FALCONIERI.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.2.
+    </div>
+  </body>
+</html>

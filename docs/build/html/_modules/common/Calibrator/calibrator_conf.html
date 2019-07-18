@@ -1,0 +1,228 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>common.Calibrator.calibrator_conf &#8212; Douglas-Quaid 0.0.4 documentation</title>
+    <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for common.Calibrator.calibrator_conf</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">namedtuple</span>
+
+<span class="kn">from</span> <span class="nn">carlhauser_server.Configuration.algo_conf</span> <span class="k">import</span> <span class="n">Algo_conf</span>
+<span class="kn">from</span> <span class="nn">common.environment_variable</span> <span class="k">import</span> <span class="n">JSON_parsable_Dict</span>
+<span class="kn">from</span> <span class="nn">common.environment_variable</span> <span class="k">import</span> <span class="n">load_server_logging_conf_file</span>
+
+<span class="n">load_server_logging_conf_file</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="Pair_rate_threshold"><a class="viewcode-back" href="../../../common.Calibrator.html#common.Calibrator.calibrator_conf.Pair_rate_threshold">[docs]</a><span class="k">class</span> <span class="nc">Pair_rate_threshold</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rate</span><span class="p">,</span> <span class="n">threshold</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rate</span> <span class="o">=</span> <span class="n">rate</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">threshold</span> <span class="o">=</span> <span class="n">threshold</span></div>
+
+
+<div class="viewcode-block" id="Default_calibrator_conf"><a class="viewcode-back" href="../../../common.Calibrator.html#common.Calibrator.calibrator_conf.Default_calibrator_conf">[docs]</a><span class="k">class</span> <span class="nc">Default_calibrator_conf</span><span class="p">(</span><span class="n">JSON_parsable_Dict</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+        <span class="c1"># Calibrator inputs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Acceptable_false_positive_rate</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Acceptable_false_negative_rate</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Minimum_true_positive_rate</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Minimum_true_negative_rate</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># Calibrator outputs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">thre_upper_at_least_xpercent_TPR</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">thre_upper_at_most_xpercent_FNR</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">thre_below_at_least_xpercent_TNR</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">thre_below_at_most_xpercent_FPR</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">maximum_F1</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="Default_calibrator_conf.get_default_instance"><a class="viewcode-back" href="../../../common.Calibrator.html#common.Calibrator.calibrator_conf.Default_calibrator_conf.get_default_instance">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_default_instance</span><span class="p">():</span>
+        <span class="n">new_instance</span> <span class="o">=</span> <span class="n">Default_calibrator_conf</span><span class="p">()</span>
+        <span class="n">new_instance</span><span class="o">.</span><span class="n">Acceptable_false_positive_rate</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span>
+        <span class="n">new_instance</span><span class="o">.</span><span class="n">Acceptable_false_negative_rate</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span>
+        <span class="n">new_instance</span><span class="o">.</span><span class="n">Minimum_true_positive_rate</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.9</span>
+        <span class="n">new_instance</span><span class="o">.</span><span class="n">Minimum_true_negative_rate</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.9</span></div>
+
+<div class="viewcode-block" id="Default_calibrator_conf.validate"><a class="viewcode-back" href="../../../common.Calibrator.html#common.Calibrator.calibrator_conf.Default_calibrator_conf.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Validate if at least two values are set and their values are acceptable</span>
+
+        <span class="n">case_1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Minimum_true_negative_rate</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">Acceptable_false_negative_rate</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="n">case_2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Acceptable_false_positive_rate</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">Acceptable_false_negative_rate</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="n">case_3</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Minimum_true_negative_rate</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">Minimum_true_positive_rate</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="n">case_4</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Acceptable_false_positive_rate</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">Minimum_true_positive_rate</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="n">case_1</span><span class="p">:</span>
+            <span class="n">case_1_order</span> <span class="o">=</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Minimum_true_negative_rate</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Acceptable_false_negative_rate</span> <span class="o">&lt;=</span> <span class="mi">1</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">case_1_order</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Invalid information to continue. Following formula not ensured : 0 &lt;= (Minimum TNR) &lt;= (Acceptable FNR) &lt;= 1&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">case_2</span><span class="p">:</span>
+            <span class="n">case_2_order</span> <span class="o">=</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Acceptable_false_positive_rate</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Acceptable_false_negative_rate</span> <span class="o">&lt;=</span> <span class="mi">1</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">case_2_order</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Invalid information to continue. Following formula not ensured : 0 &lt;= (Acceptable FPR) &lt;= (Acceptable FNR) &lt;= 1 &quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">case_3</span><span class="p">:</span>
+            <span class="n">case_3_order</span> <span class="o">=</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Minimum_true_negative_rate</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Minimum_true_positive_rate</span> <span class="o">&lt;=</span> <span class="mi">1</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">case_3_order</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Invalid information to continue. Following formula not ensured : 0 &lt;= (Minimum TNR) &lt;= (Minimum TPR) &lt;= 1 &quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">case_4</span><span class="p">:</span>
+            <span class="n">case_4_order</span> <span class="o">=</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Acceptable_false_positive_rate</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Minimum_true_positive_rate</span> <span class="o">&lt;=</span> <span class="mi">1</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">case_4_order</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Invalid information to continue. Following formula not ensured : 0 &lt;= (Acceptable FPR) &lt;= (Acceptable FNR) &lt;= 1 &quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Not enough information to continue. Please set :  (Acceptable FPR or Minimum TNR) AND (Acceptable FNR or Minimum TPR).&quot;</span><span class="p">)</span>
+
+        <span class="c1"># All good. At least one pair is good.</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="Default_calibrator_conf.return_good_pair"><a class="viewcode-back" href="../../../common.Calibrator.html#common.Calibrator.calibrator_conf.Default_calibrator_conf.return_good_pair">[docs]</a>    <span class="k">def</span> <span class="nf">return_good_pair</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">case_FNR_TNR</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Minimum_true_negative_rate</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">Acceptable_false_negative_rate</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="n">case_FNR_FPR</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Acceptable_false_positive_rate</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">Acceptable_false_negative_rate</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="n">case_TPR_TNR</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Minimum_true_negative_rate</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">Minimum_true_positive_rate</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="n">case_TPR_FPR</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Acceptable_false_positive_rate</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">Minimum_true_positive_rate</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+
+        <span class="n">pair_FNR</span> <span class="o">=</span> <span class="n">Pair_rate_threshold</span><span class="p">(</span><span class="n">rate</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">Acceptable_false_negative_rate</span><span class="p">,</span>
+                                       <span class="n">threshold</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">thre_upper_at_most_xpercent_FNR</span><span class="p">)</span>
+        <span class="n">pair_TNR</span> <span class="o">=</span> <span class="n">Pair_rate_threshold</span><span class="p">(</span><span class="n">rate</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">Minimum_true_negative_rate</span><span class="p">,</span>
+                                       <span class="n">threshold</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">thre_below_at_least_xpercent_TNR</span><span class="p">)</span>
+        <span class="n">pair_FPR</span> <span class="o">=</span> <span class="n">Pair_rate_threshold</span><span class="p">(</span><span class="n">rate</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">Acceptable_false_positive_rate</span><span class="p">,</span>
+                                       <span class="n">threshold</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">thre_below_at_most_xpercent_FPR</span><span class="p">)</span>
+        <span class="n">pair_TPR</span> <span class="o">=</span> <span class="n">Pair_rate_threshold</span><span class="p">(</span><span class="n">rate</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">Minimum_true_positive_rate</span><span class="p">,</span>
+                                       <span class="n">threshold</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">thre_upper_at_least_xpercent_TPR</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">case_FNR_TNR</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">pair_TNR</span><span class="p">,</span> <span class="n">pair_FNR</span>
+        <span class="k">elif</span> <span class="n">case_FNR_FPR</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">pair_FPR</span><span class="p">,</span> <span class="n">pair_FNR</span>
+        <span class="k">elif</span> <span class="n">case_TPR_TNR</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">pair_TNR</span><span class="p">,</span> <span class="n">pair_TPR</span>
+        <span class="k">elif</span> <span class="n">case_TPR_FPR</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">pair_FPR</span><span class="p">,</span> <span class="n">pair_TPR</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Not enough information to continue. Please set :  (Acceptable FPR or Minimum TNR) AND (Acceptable FNR or Minimum TPR).&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Default_calibrator_conf.export_to_Algo"><a class="viewcode-back" href="../../../common.Calibrator.html#common.Calibrator.calibrator_conf.Default_calibrator_conf.export_to_Algo">[docs]</a>    <span class="k">def</span> <span class="nf">export_to_Algo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_Algo_Conf</span><span class="p">:</span> <span class="n">Algo_conf</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Algo_conf</span><span class="p">:</span>
+        <span class="c1"># Overwrite parameter of the algorithm configuration</span>
+        <span class="c1"># to apply the thresholds it contains to this algorithm configuration</span>
+        <span class="c1"># AGGRESSIVE = Work on negative rate</span>
+
+        <span class="n">pair_1</span><span class="p">,</span> <span class="n">pair_2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">return_good_pair</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">pair_1</span><span class="o">.</span><span class="n">threshold</span> <span class="o">&gt;</span> <span class="n">pair_2</span><span class="o">.</span><span class="n">threshold</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="s2">&quot;Yes_to_Maybe threshold is upper than Maybe_to_no threshold : No MAYBE area !&quot;</span><span class="p">)</span>
+
+        <span class="n">input_Algo_Conf</span><span class="o">.</span><span class="n">threshold_yes_to_maybe</span> <span class="o">=</span> <span class="n">pair_1</span><span class="o">.</span><span class="n">threshold</span>
+        <span class="n">input_Algo_Conf</span><span class="o">.</span><span class="n">threshold_maybe_to_no</span> <span class="o">=</span> <span class="n">pair_2</span><span class="o">.</span><span class="n">threshold</span>
+
+        <span class="k">return</span> <span class="n">input_Algo_Conf</span></div>
+
+    <span class="c1"># ==================== To string ====================</span>
+
+    <span class="c1"># Overwrite to print the content of the cluster instead of the cluster memory address</span>
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_str</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_str</span><span class="p">()</span>
+
+<div class="viewcode-block" id="Default_calibrator_conf.get_str"><a class="viewcode-back" href="../../../common.Calibrator.html#common.Calibrator.calibrator_conf.Default_calibrator_conf.get_str">[docs]</a>    <span class="k">def</span> <span class="nf">get_str</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39; thre_upper_at_least_xpercent_TPR=&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">thre_upper_at_least_xpercent_TPR</span><span class="p">,</span>
+                                 <span class="s1">&#39; thre_upper_at_most_xpercent_FNR=&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">thre_upper_at_most_xpercent_FNR</span><span class="p">,</span>
+                                 <span class="s1">&#39; mean=&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">maximum_F1</span><span class="p">,</span>
+                                 <span class="s1">&#39; thre_below_at_least_xpercent_TNR=&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">thre_below_at_least_xpercent_TNR</span><span class="p">,</span>
+                                 <span class="s1">&#39; thre_below_at_most_xpercent_FPR=&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">thre_below_at_most_xpercent_FPR</span><span class="p">]))</span></div></div>
+
+
+<div class="viewcode-block" id="parse_from_dict"><a class="viewcode-back" href="../../../common.Calibrator.html#common.Calibrator.calibrator_conf.parse_from_dict">[docs]</a><span class="k">def</span> <span class="nf">parse_from_dict</span><span class="p">(</span><span class="n">conf</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s2">&quot;Default_calibrator_conf&quot;</span><span class="p">,</span> <span class="n">conf</span><span class="o">.</span><span class="n">keys</span><span class="p">())(</span><span class="o">*</span><span class="n">conf</span><span class="o">.</span><span class="n">values</span><span class="p">())</span></div>
+
+
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd"># ==================== To string ====================</span>
+
+<span class="sd"># Overwrite to print the content of the cluster instead of the cluster memory address</span>
+<span class="sd">def __repr__(self):</span>
+<span class="sd">    return self.get_str()</span>
+
+<span class="sd">def __str__(self):</span>
+<span class="sd">    return self.get_str()</span>
+
+<span class="sd">def get_str(self):</span>
+<span class="sd">    return &#39;&#39;.join(map(str, [&#39; \nTOP_N_CLUSTERS=&#39;, self.TOP_N_CLUSTERS,</span>
+<span class="sd">                             &#39; \nTOP_N_PICTURES=&#39;, self.TOP_N_PICTURES,</span>
+<span class="sd">                             &#39; \nPICT_TO_TEST_PER_CLUSTER=&#39;, self.PICT_TO_TEST_PER_CLUSTER,</span>
+<span class="sd">                             &#39; \nMAX_DIST_FOR_NEW_CLUSTER=&#39;, self.MAX_DIST_FOR_NEW_CLUSTER,</span>
+<span class="sd">                             &#39; \nCROSSCHECK=&#39;, self.CROSSCHECK]))</span>
+
+<span class="sd">&#39;&#39;&#39;</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, Vincent FALCONIERI.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.2.
+    </div>
+  </body>
+</html>

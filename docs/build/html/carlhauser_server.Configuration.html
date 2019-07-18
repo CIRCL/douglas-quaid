@@ -1,0 +1,238 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>carlhauser_server.Configuration package &#8212; Douglas-Quaid 0.0.4 documentation</title>
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="carlhauser-server-configuration-package">
+<h1>carlhauser_server.Configuration package<a class="headerlink" href="#carlhauser-server-configuration-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-carlhauser_server.Configuration.algo_conf">
+<span id="carlhauser-server-configuration-algo-conf-module"></span><h2>carlhauser_server.Configuration.algo_conf module<a class="headerlink" href="#module-carlhauser_server.Configuration.algo_conf" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="carlhauser_server.Configuration.algo_conf.Algo_conf">
+<em class="property">class </em><code class="sig-prename descclassname">carlhauser_server.Configuration.algo_conf.</code><code class="sig-name descname">Algo_conf</code><span class="sig-paren">(</span><em class="sig-param">algo_name: str</em>, <em class="sig-param">is_enabled: bool</em>, <em class="sig-param">threshold_maybe: float</em>, <em class="sig-param">threshold_no: float</em>, <em class="sig-param">distance_weight: float</em>, <em class="sig-param">decision_weight=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/Configuration/algo_conf.html#Algo_conf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.Configuration.algo_conf.Algo_conf" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="common.html#common.environment_variable.JSON_parsable_Dict" title="common.environment_variable.JSON_parsable_Dict"><code class="xref py py-class docutils literal notranslate"><span class="pre">common.environment_variable.JSON_parsable_Dict</span></code></a></p>
+<dl class="method">
+<dt id="carlhauser_server.Configuration.algo_conf.Algo_conf.get">
+<code class="sig-name descname">get</code><span class="sig-paren">(</span><em class="sig-param">attr_name</em>, <em class="sig-param">default=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/Configuration/algo_conf.html#Algo_conf.get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.Configuration.algo_conf.Algo_conf.get" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="carlhauser_server.Configuration.algo_conf.Algo_conf.get_str">
+<code class="sig-name descname">get_str</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/Configuration/algo_conf.html#Algo_conf.get_str"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.Configuration.algo_conf.Algo_conf.get_str" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-carlhauser_server.Configuration.database_conf">
+<span id="carlhauser-server-configuration-database-conf-module"></span><h2>carlhauser_server.Configuration.database_conf module<a class="headerlink" href="#module-carlhauser_server.Configuration.database_conf" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="carlhauser_server.Configuration.database_conf.Default_database_conf">
+<em class="property">class </em><code class="sig-prename descclassname">carlhauser_server.Configuration.database_conf.</code><code class="sig-name descname">Default_database_conf</code><a class="reference internal" href="_modules/carlhauser_server/Configuration/database_conf.html#Default_database_conf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.Configuration.database_conf.Default_database_conf" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="common.html#common.environment_variable.JSON_parsable_Dict" title="common.environment_variable.JSON_parsable_Dict"><code class="xref py py-class docutils literal notranslate"><span class="pre">common.environment_variable.JSON_parsable_Dict</span></code></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="carlhauser_server.Configuration.database_conf.parse_from_dict">
+<code class="sig-prename descclassname">carlhauser_server.Configuration.database_conf.</code><code class="sig-name descname">parse_from_dict</code><span class="sig-paren">(</span><em class="sig-param">conf</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/Configuration/database_conf.html#parse_from_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.Configuration.database_conf.parse_from_dict" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-carlhauser_server.Configuration.distance_engine_conf">
+<span id="carlhauser-server-configuration-distance-engine-conf-module"></span><h2>carlhauser_server.Configuration.distance_engine_conf module<a class="headerlink" href="#module-carlhauser_server.Configuration.distance_engine_conf" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="carlhauser_server.Configuration.distance_engine_conf.Default_distance_engine_conf">
+<em class="property">class </em><code class="sig-prename descclassname">carlhauser_server.Configuration.distance_engine_conf.</code><code class="sig-name descname">Default_distance_engine_conf</code><a class="reference internal" href="_modules/carlhauser_server/Configuration/distance_engine_conf.html#Default_distance_engine_conf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.Configuration.distance_engine_conf.Default_distance_engine_conf" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="common.html#common.environment_variable.JSON_parsable_Dict" title="common.environment_variable.JSON_parsable_Dict"><code class="xref py py-class docutils literal notranslate"><span class="pre">common.environment_variable.JSON_parsable_Dict</span></code></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="carlhauser_server.Configuration.distance_engine_conf.parse_from_dict">
+<code class="sig-prename descclassname">carlhauser_server.Configuration.distance_engine_conf.</code><code class="sig-name descname">parse_from_dict</code><span class="sig-paren">(</span><em class="sig-param">conf</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/Configuration/distance_engine_conf.html#parse_from_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.Configuration.distance_engine_conf.parse_from_dict" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-carlhauser_server.Configuration.feature_extractor_conf">
+<span id="carlhauser-server-configuration-feature-extractor-conf-module"></span><h2>carlhauser_server.Configuration.feature_extractor_conf module<a class="headerlink" href="#module-carlhauser_server.Configuration.feature_extractor_conf" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="carlhauser_server.Configuration.feature_extractor_conf.Decision_MergingMethod">
+<em class="property">class </em><code class="sig-prename descclassname">carlhauser_server.Configuration.feature_extractor_conf.</code><code class="sig-name descname">Decision_MergingMethod</code><a class="reference internal" href="_modules/carlhauser_server/Configuration/feature_extractor_conf.html#Decision_MergingMethod"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.Configuration.feature_extractor_conf.Decision_MergingMethod" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="common.html#common.environment_variable.JSON_parsable_Enum" title="common.environment_variable.JSON_parsable_Enum"><code class="xref py py-class docutils literal notranslate"><span class="pre">common.environment_variable.JSON_parsable_Enum</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">enum.Enum</span></code></p>
+<p>An enumeration.</p>
+<dl class="attribute">
+<dt id="carlhauser_server.Configuration.feature_extractor_conf.Decision_MergingMethod.MAJORITY">
+<code class="sig-name descname">MAJORITY</code><em class="property"> = 2</em><a class="headerlink" href="#carlhauser_server.Configuration.feature_extractor_conf.Decision_MergingMethod.MAJORITY" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="carlhauser_server.Configuration.feature_extractor_conf.Decision_MergingMethod.PARETO">
+<code class="sig-name descname">PARETO</code><em class="property"> = 1</em><a class="headerlink" href="#carlhauser_server.Configuration.feature_extractor_conf.Decision_MergingMethod.PARETO" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="carlhauser_server.Configuration.feature_extractor_conf.Decision_MergingMethod.PYRAMID">
+<code class="sig-name descname">PYRAMID</code><em class="property"> = 4</em><a class="headerlink" href="#carlhauser_server.Configuration.feature_extractor_conf.Decision_MergingMethod.PYRAMID" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="carlhauser_server.Configuration.feature_extractor_conf.Decision_MergingMethod.WEIGHTED_MAJORITY">
+<code class="sig-name descname">WEIGHTED_MAJORITY</code><em class="property"> = 3</em><a class="headerlink" href="#carlhauser_server.Configuration.feature_extractor_conf.Decision_MergingMethod.WEIGHTED_MAJORITY" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="carlhauser_server.Configuration.feature_extractor_conf.Default_feature_extractor_conf">
+<em class="property">class </em><code class="sig-prename descclassname">carlhauser_server.Configuration.feature_extractor_conf.</code><code class="sig-name descname">Default_feature_extractor_conf</code><a class="reference internal" href="_modules/carlhauser_server/Configuration/feature_extractor_conf.html#Default_feature_extractor_conf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.Configuration.feature_extractor_conf.Default_feature_extractor_conf" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="common.html#common.environment_variable.JSON_parsable_Dict" title="common.environment_variable.JSON_parsable_Dict"><code class="xref py py-class docutils literal notranslate"><span class="pre">common.environment_variable.JSON_parsable_Dict</span></code></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="carlhauser_server.Configuration.feature_extractor_conf.Distance_MergingMethod">
+<em class="property">class </em><code class="sig-prename descclassname">carlhauser_server.Configuration.feature_extractor_conf.</code><code class="sig-name descname">Distance_MergingMethod</code><a class="reference internal" href="_modules/carlhauser_server/Configuration/feature_extractor_conf.html#Distance_MergingMethod"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.Configuration.feature_extractor_conf.Distance_MergingMethod" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="common.html#common.environment_variable.JSON_parsable_Enum" title="common.environment_variable.JSON_parsable_Enum"><code class="xref py py-class docutils literal notranslate"><span class="pre">common.environment_variable.JSON_parsable_Enum</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">enum.Enum</span></code></p>
+<p>An enumeration.</p>
+<dl class="attribute">
+<dt id="carlhauser_server.Configuration.feature_extractor_conf.Distance_MergingMethod.HARMONIC_MEAN">
+<code class="sig-name descname">HARMONIC_MEAN</code><em class="property"> = 3</em><a class="headerlink" href="#carlhauser_server.Configuration.feature_extractor_conf.Distance_MergingMethod.HARMONIC_MEAN" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="carlhauser_server.Configuration.feature_extractor_conf.Distance_MergingMethod.MAX">
+<code class="sig-name descname">MAX</code><em class="property"> = 1</em><a class="headerlink" href="#carlhauser_server.Configuration.feature_extractor_conf.Distance_MergingMethod.MAX" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="carlhauser_server.Configuration.feature_extractor_conf.Distance_MergingMethod.MEAN">
+<code class="sig-name descname">MEAN</code><em class="property"> = 2</em><a class="headerlink" href="#carlhauser_server.Configuration.feature_extractor_conf.Distance_MergingMethod.MEAN" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="carlhauser_server.Configuration.feature_extractor_conf.Distance_MergingMethod.MIN">
+<code class="sig-name descname">MIN</code><em class="property"> = 4</em><a class="headerlink" href="#carlhauser_server.Configuration.feature_extractor_conf.Distance_MergingMethod.MIN" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="carlhauser_server.Configuration.feature_extractor_conf.Distance_MergingMethod.WEIGHTED_MEAN">
+<code class="sig-name descname">WEIGHTED_MEAN</code><em class="property"> = 5</em><a class="headerlink" href="#carlhauser_server.Configuration.feature_extractor_conf.Distance_MergingMethod.WEIGHTED_MEAN" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="carlhauser_server.Configuration.feature_extractor_conf.parse_from_dict">
+<code class="sig-prename descclassname">carlhauser_server.Configuration.feature_extractor_conf.</code><code class="sig-name descname">parse_from_dict</code><span class="sig-paren">(</span><em class="sig-param">conf</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/Configuration/feature_extractor_conf.html#parse_from_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.Configuration.feature_extractor_conf.parse_from_dict" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-carlhauser_server.Configuration.webservice_conf">
+<span id="carlhauser-server-configuration-webservice-conf-module"></span><h2>carlhauser_server.Configuration.webservice_conf module<a class="headerlink" href="#module-carlhauser_server.Configuration.webservice_conf" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="carlhauser_server.Configuration.webservice_conf.Default_webservice_conf">
+<em class="property">class </em><code class="sig-prename descclassname">carlhauser_server.Configuration.webservice_conf.</code><code class="sig-name descname">Default_webservice_conf</code><a class="reference internal" href="_modules/carlhauser_server/Configuration/webservice_conf.html#Default_webservice_conf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.Configuration.webservice_conf.Default_webservice_conf" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="common.html#common.environment_variable.JSON_parsable_Dict" title="common.environment_variable.JSON_parsable_Dict"><code class="xref py py-class docutils literal notranslate"><span class="pre">common.environment_variable.JSON_parsable_Dict</span></code></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="carlhauser_server.Configuration.webservice_conf.parse_from_dict">
+<code class="sig-prename descclassname">carlhauser_server.Configuration.webservice_conf.</code><code class="sig-name descname">parse_from_dict</code><span class="sig-paren">(</span><em class="sig-param">conf</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/Configuration/webservice_conf.html#parse_from_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.Configuration.webservice_conf.parse_from_dict" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-carlhauser_server.Configuration">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-carlhauser_server.Configuration" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">carlhauser_server.Configuration package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-carlhauser_server.Configuration.algo_conf">carlhauser_server.Configuration.algo_conf module</a></li>
+<li><a class="reference internal" href="#module-carlhauser_server.Configuration.database_conf">carlhauser_server.Configuration.database_conf module</a></li>
+<li><a class="reference internal" href="#module-carlhauser_server.Configuration.distance_engine_conf">carlhauser_server.Configuration.distance_engine_conf module</a></li>
+<li><a class="reference internal" href="#module-carlhauser_server.Configuration.feature_extractor_conf">carlhauser_server.Configuration.feature_extractor_conf module</a></li>
+<li><a class="reference internal" href="#module-carlhauser_server.Configuration.webservice_conf">carlhauser_server.Configuration.webservice_conf module</a></li>
+<li><a class="reference internal" href="#module-carlhauser_server.Configuration">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/carlhauser_server.Configuration.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, Vincent FALCONIERI.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.2.
+    </div>
+  </body>
+</html>

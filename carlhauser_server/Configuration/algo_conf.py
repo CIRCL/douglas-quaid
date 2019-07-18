@@ -1,13 +1,4 @@
-# ==================== ------ STD LIBRARIES ------- ====================
-import os
-import sys
-from collections import namedtuple
-from enum import Enum, auto
-from typing import List
-
-# ==================== ------ PERSONAL LIBRARIES ------- ====================
-sys.path.append(os.path.abspath(os.path.pardir))
-from carlhauser_server.Configuration.template_conf import JSON_parsable_Enum, JSON_parsable_Dict
+from common.environment_variable import JSON_parsable_Dict
 
 
 class Algo_conf(JSON_parsable_Dict):
@@ -16,8 +7,8 @@ class Algo_conf(JSON_parsable_Dict):
         self.is_enabled: bool = is_enabled
 
         # Threshold for Y/M/N
-        self.threshold_maybe: float = threshold_maybe  # Inclusive
-        self.threshold_no: float = threshold_no  # Inclusive
+        self.threshold_yes_to_maybe: float = threshold_maybe  # Inclusive
+        self.threshold_maybe_to_no: float = threshold_no  # Inclusive
 
         # Relative weight of this algorithm in merging phase
         self.distance_weight: float = distance_weight
@@ -39,7 +30,7 @@ class Algo_conf(JSON_parsable_Dict):
     def get_str(self):
         return ''.join(map(str, [' algo_name=', self.algo_name,
                                  ' is_enabled=', self.is_enabled,
-                                 ' threshold_maybe=', self.threshold_maybe,
-                                 ' threshold_no=', self.threshold_no,
+                                 ' threshold_maybe=', self.threshold_yes_to_maybe,
+                                 ' threshold_no=', self.threshold_maybe_to_no,
                                  ' distance_weight=', self.distance_weight,
                                  ' decision_weight=', self.decision_weight]))

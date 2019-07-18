@@ -1,0 +1,242 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>carlhauser_client.EvaluationTools.SimilarityGraphExtractor.similarity_graph_quality_evaluator &#8212; Douglas-Quaid 0.0.4 documentation</title>
+    <link rel="stylesheet" href="../../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for carlhauser_client.EvaluationTools.SimilarityGraphExtractor.similarity_graph_quality_evaluator</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+
+<span class="kn">import</span> <span class="nn">logging.config</span>
+<span class="kn">import</span> <span class="nn">pathlib</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span>
+
+<span class="kn">import</span> <span class="nn">carlhauser_client.Helpers.dict_utilities</span> <span class="k">as</span> <span class="nn">dict_utilities</span>
+<span class="kn">import</span> <span class="nn">common.ImportExport.json_import_export</span> <span class="k">as</span> <span class="nn">json_import_export</span>
+<span class="kn">import</span> <span class="nn">common.PerformanceDatastructs.perf_datastruct</span> <span class="k">as</span> <span class="nn">perf_datastruct</span>
+<span class="kn">import</span> <span class="nn">common.PerformanceDatastructs.stats_datastruct</span> <span class="k">as</span> <span class="nn">stats_datastruct</span>
+<span class="kn">from</span> <span class="nn">carlhauser_client.API.extended_api</span> <span class="k">import</span> <span class="n">Extended_API</span>
+<span class="kn">from</span> <span class="nn">common.Graph.graph_datastructure</span> <span class="k">import</span> <span class="n">GraphDataStruct</span>
+<span class="kn">from</span> <span class="nn">common.environment_variable</span> <span class="k">import</span> <span class="n">get_homedir</span>
+<span class="kn">from</span> <span class="nn">common.environment_variable</span> <span class="k">import</span> <span class="n">load_client_logging_conf_file</span>
+
+<span class="n">load_client_logging_conf_file</span><span class="p">()</span>
+
+
+<span class="c1"># ==================== ------ LAUNCHER ------- ====================</span>
+<div class="viewcode-block" id="similarity_graph_quality_evaluator"><a class="viewcode-back" href="../../../../carlhauser_client.EvaluationTools.SimilarityGraphExtractor.html#carlhauser_client.EvaluationTools.SimilarityGraphExtractor.similarity_graph_quality_evaluator.similarity_graph_quality_evaluator">[docs]</a><span class="k">class</span> <span class="nc">similarity_graph_quality_evaluator</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ext_api</span> <span class="o">=</span> <span class="n">Extended_API</span><span class="o">.</span><span class="n">get_api</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">pts_nb</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">50</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">min_threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">1</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">NB_TO_CHECK</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span>  <span class="c1"># Number of first match to check to get the scores and overview</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">TOLERANCE</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span>  <span class="c1"># [0-1] acceptable drop of True Positive and increase of False Negative</span>
+
+    <span class="c1"># =================== Optimizer for one value ===================</span>
+<div class="viewcode-block" id="similarity_graph_quality_evaluator.get_perf_list"><a class="viewcode-back" href="../../../../carlhauser_client.EvaluationTools.SimilarityGraphExtractor.html#carlhauser_client.EvaluationTools.SimilarityGraphExtractor.similarity_graph_quality_evaluator.similarity_graph_quality_evaluator.get_perf_list">[docs]</a>    <span class="k">def</span> <span class="nf">get_perf_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">list_results</span><span class="p">:</span> <span class="n">List</span><span class="p">,</span>
+                      <span class="n">gt_graph</span><span class="p">:</span> <span class="n">GraphDataStruct</span><span class="p">,</span>
+                      <span class="n">output_folder</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">perf_datastruct</span><span class="o">.</span><span class="n">Perf</span><span class="p">]:</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Extract a list of performance datastructure from a list of results (list_results)</span>
+<span class="sd">        compared to a ground truth file (gt_graph). Can store provided list and ground truth results if a (output_folder) is given.</span>
+<span class="sd">        :param list_results: The list of results extracted from server (one result for each node of the graph)</span>
+<span class="sd">        :param gt_graph: The ground truth file that serves as reference</span>
+<span class="sd">        :param output_folder: Faculatative output folder to save inputs</span>
+<span class="sd">        :return: a list of performance datastructure, each having a threshold and a stats datastructure. This means that for each computed threshold, we know the quality of the graph.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="c1"># DEBUG purposes / Display arguments</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Received requests results :&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">list_results</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Received ground truth graph :&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">gt_graph</span><span class="o">.</span><span class="n">export_as_dict</span><span class="p">())</span>
+
+        <span class="c1"># TODO : Remove output folder ?</span>
+        <span class="k">if</span> <span class="n">output_folder</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># Saving ground truth graph</span>
+            <span class="n">json_import_export</span><span class="o">.</span><span class="n">save_json</span><span class="p">(</span><span class="n">list_results</span><span class="p">,</span> <span class="n">get_homedir</span><span class="p">()</span> <span class="o">/</span> <span class="s2">&quot;requests_result.json&quot;</span><span class="p">)</span>
+
+            <span class="c1"># Saving list results</span>
+            <span class="n">json_import_export</span><span class="o">.</span><span class="n">save_json</span><span class="p">(</span><span class="n">gt_graph</span><span class="o">.</span><span class="n">export_as_dict</span><span class="p">(),</span> <span class="n">get_homedir</span><span class="p">()</span> <span class="o">/</span> <span class="s2">&quot;gt_graph.json&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;List results and ground truth graph can&#39;t be saved : no output_folder specified.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Init a void performance list</span>
+        <span class="n">perfs_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">perf_datastruct</span><span class="o">.</span><span class="n">Perf</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># For each evaluation points</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pts_nb</span><span class="p">):</span>
+            <span class="c1"># Computing the new threshold</span>
+            <span class="n">curr_threshold</span> <span class="o">=</span> <span class="n">i</span> <span class="o">*</span> <span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">max_threshold</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_threshold</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">pts_nb</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Current threshold computation : </span><span class="si">{curr_threshold}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="c1"># Compute score for this threshold</span>
+            <span class="n">tmp_score</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_score_for_one_threshold</span><span class="p">(</span><span class="n">list_results</span><span class="p">,</span> <span class="n">gt_graph</span><span class="p">,</span> <span class="n">curr_threshold</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Current score for this threshold : </span><span class="si">{tmp_score}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="c1"># Store the score in the performance datastructure</span>
+            <span class="n">tmp_perf</span> <span class="o">=</span> <span class="n">perf_datastruct</span><span class="o">.</span><span class="n">Perf</span><span class="p">(</span><span class="n">tmp_score</span><span class="p">,</span> <span class="n">curr_threshold</span><span class="p">)</span>
+
+            <span class="c1"># Add to performance list</span>
+            <span class="n">perfs_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tmp_perf</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">perfs_list</span></div>
+
+<div class="viewcode-block" id="similarity_graph_quality_evaluator.is_correct"><a class="viewcode-back" href="../../../../carlhauser_client.EvaluationTools.SimilarityGraphExtractor.html#carlhauser_client.EvaluationTools.SimilarityGraphExtractor.similarity_graph_quality_evaluator.similarity_graph_quality_evaluator.is_correct">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">is_correct</span><span class="p">(</span><span class="n">result</span><span class="p">:</span> <span class="n">Dict</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Checks if a request result is valid to be evaluated.</span>
+<span class="sd">        Check if it has enough matches, if correctly formatted ...</span>
+<span class="sd">        :param result: One request result from server</span>
+<span class="sd">        :return: True if correct, Error if problem</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;request_id&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Request id not set in requests result. Please review data set ?&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;list_pictures&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;No matched list of picture in requests result.&quot;</span><span class="p">)</span>
+            <span class="c1"># TODO : No pictures matched :</span>
+            <span class="c1">#  check if alone in gt in his cluster, if so, good. Does not participate to score ?</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;list_pictures&quot;</span><span class="p">))</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;No matched for current picture in requests result.&quot;</span><span class="p">)</span>
+            <span class="c1"># TODO : Same as upper case</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="similarity_graph_quality_evaluator.compute_score_for_one_threshold"><a class="viewcode-back" href="../../../../carlhauser_client.EvaluationTools.SimilarityGraphExtractor.html#carlhauser_client.EvaluationTools.SimilarityGraphExtractor.similarity_graph_quality_evaluator.similarity_graph_quality_evaluator.compute_score_for_one_threshold">[docs]</a>    <span class="k">def</span> <span class="nf">compute_score_for_one_threshold</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">list_results</span><span class="p">:</span> <span class="n">List</span><span class="p">,</span>
+                                        <span class="n">gt_graph</span><span class="p">:</span> <span class="n">GraphDataStruct</span><span class="p">,</span>
+                                        <span class="n">dist_threshold</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">stats_datastruct</span><span class="o">.</span><span class="n">Stats_datastruct</span><span class="p">:</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Compute stats about the quality of a result (requests_result), given a specific threshold (dist_threshold)</span>
+<span class="sd">        and compared to a ground truth graph (gt_graph)</span>
+<span class="sd">        :param list_results: Result of a similarity request to server</span>
+<span class="sd">        :param gt_graph: Ground truth file to provide to compute if matches are good or not</span>
+<span class="sd">        :param dist_threshold: threshold to apply to the results to compare to ground truth graph</span>
+<span class="sd">        :return: stats about the quality of a result</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="c1"># Create ready to go (with 0 valued) score object</span>
+        <span class="n">tmp_score</span> <span class="o">=</span> <span class="n">stats_datastruct</span><span class="o">.</span><span class="n">Stats_datastruct</span><span class="p">()</span>
+        <span class="n">tmp_score</span><span class="o">.</span><span class="n">reset_basics_values</span><span class="p">()</span>
+
+        <span class="c1"># TODO : Construct good datastructure to perform the matching</span>
+        <span class="c1"># Sort cand_graph to mapping [node.id] -&gt; [node.id sorted by distance increasing]</span>
+
+        <span class="c1"># For each node and its neighbourhood (by distance)</span>
+        <span class="k">for</span> <span class="n">curr_result</span> <span class="ow">in</span> <span class="n">list_results</span><span class="p">:</span>
+
+            <span class="c1"># Check if node is correctly formatted</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_correct</span><span class="p">(</span><span class="n">curr_result</span><span class="p">):</span>
+
+                <span class="c1"># Remove its own occurence from the list if presents.</span>
+                <span class="n">matches_list</span> <span class="o">=</span> <span class="n">dict_utilities</span><span class="o">.</span><span class="n">get_clear_matches</span><span class="p">(</span><span class="n">curr_result</span><span class="p">)</span>
+
+                <span class="c1"># For all N first matches of the current picture (or below if less matches)</span>
+                <span class="n">nb_matches_to_process</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">NB_TO_CHECK</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">matches_list</span><span class="p">))</span>
+
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">nb_matches_to_process</span><span class="p">):</span>
+                    <span class="c1"># fetch the match to process</span>
+                    <span class="n">curr_matched_node</span> <span class="o">=</span> <span class="n">matches_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+                    <span class="c1"># Please note :</span>
+                    <span class="c1"># If the two nodes are in the same cluster in gt, then it should be a positive value.</span>
+                    <span class="c1"># Then this link is counted as a positive value in the entire dataset.</span>
+                    <span class="c1"># The distance and threshold DOES NOT IMPACT the Positive/Negative counts !</span>
+
+                    <span class="k">if</span> <span class="n">curr_matched_node</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;distance&quot;</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">dist_threshold</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">gt_graph</span><span class="o">.</span><span class="n">are_names_in_same_cluster</span><span class="p">(</span><span class="n">curr_result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;request_id&quot;</span><span class="p">),</span> <span class="n">curr_matched_node</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;image_id&quot;</span><span class="p">)):</span>  <span class="c1"># Even if it&#39;s request_id, it the current name of the file.</span>
+                            <span class="n">tmp_score</span><span class="o">.</span><span class="n">TP</span> <span class="o">+=</span> <span class="mi">1</span>
+                            <span class="n">tmp_score</span><span class="o">.</span><span class="n">P</span> <span class="o">+=</span> <span class="mi">1</span>
+
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">tmp_score</span><span class="o">.</span><span class="n">FP</span> <span class="o">+=</span> <span class="mi">1</span>
+                            <span class="n">tmp_score</span><span class="o">.</span><span class="n">N</span> <span class="o">+=</span> <span class="mi">1</span>
+
+                    <span class="k">if</span> <span class="n">curr_matched_node</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;distance&quot;</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">dist_threshold</span><span class="p">:</span>
+
+                        <span class="k">if</span> <span class="n">gt_graph</span><span class="o">.</span><span class="n">are_names_in_same_cluster</span><span class="p">(</span><span class="n">curr_result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;request_id&quot;</span><span class="p">),</span> <span class="n">curr_matched_node</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;image_id&quot;</span><span class="p">)):</span>  <span class="c1"># Even if it&#39;s request_id, it the current name of the file.</span>
+                            <span class="n">tmp_score</span><span class="o">.</span><span class="n">FN</span> <span class="o">+=</span> <span class="mi">1</span>
+                            <span class="n">tmp_score</span><span class="o">.</span><span class="n">P</span> <span class="o">+=</span> <span class="mi">1</span>
+
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">tmp_score</span><span class="o">.</span><span class="n">TN</span> <span class="o">+=</span> <span class="mi">1</span>
+                            <span class="n">tmp_score</span><span class="o">.</span><span class="n">N</span> <span class="o">+=</span> <span class="mi">1</span>
+
+            <span class="n">tmp_score</span><span class="o">.</span><span class="n">total_nb_elements</span> <span class="o">=</span> <span class="n">tmp_score</span><span class="o">.</span><span class="n">P</span> <span class="o">+</span> <span class="n">tmp_score</span><span class="o">.</span><span class="n">N</span>
+            <span class="n">tmp_score</span><span class="o">.</span><span class="n">compute_in_good_order</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">tmp_score</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, Vincent FALCONIERI.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.2.
+    </div>
+  </body>
+</html>

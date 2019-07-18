@@ -1,0 +1,357 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>carlhauser_client.API package &#8212; Douglas-Quaid 0.0.4 documentation</title>
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="carlhauser-client-api-package">
+<h1>carlhauser_client.API package<a class="headerlink" href="#carlhauser-client-api-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-carlhauser_client.API.cli">
+<span id="carlhauser-client-api-cli-module"></span><h2>carlhauser_client.API.cli module<a class="headerlink" href="#module-carlhauser_client.API.cli" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="carlhauser_client.API.cli.CLI">
+<em class="property">class </em><code class="sig-prename descclassname">carlhauser_client.API.cli.</code><code class="sig-name descname">CLI</code><a class="reference internal" href="_modules/carlhauser_client/API/cli.html#CLI"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_client.API.cli.CLI" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Command line interface for client side</p>
+<dl class="method">
+<dt id="carlhauser_client.API.cli.CLI.dump">
+<code class="sig-name descname">dump</code><span class="sig-paren">(</span><em class="sig-param">args</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_client/API/cli.html#CLI.dump"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_client.API.cli.CLI.dump" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dump the database and transmit it to the client, and save it in a file(args.dbfile)
+Translate back the provided ids of the server with the filenames to id mapping
+saved previously (args.mapfile). Can duplicate id of picture to their “image” and “shape” attributes. Allows to visualize the database with visjs-classificator (args.copyids)
+:param args: arguments as described
+:return: The database as a Dict of a graphe (visjs-classificator style)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="carlhauser_client.API.cli.CLI.ping">
+<code class="sig-name descname">ping</code><span class="sig-paren">(</span><em class="sig-param">args</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="_modules/carlhauser_client/API/cli.html#CLI.ping"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_client.API.cli.CLI.ping" title="Permalink to this definition">¶</a></dt>
+<dd><p>Ping the server to check if he is alive.
+:param args: Not needed
+:return: True if the server is alive, False if the server is not</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="carlhauser_client.API.cli.CLI.request">
+<code class="sig-name descname">request</code><span class="sig-paren">(</span><em class="sig-param">args</em><span class="sig-paren">)</span> &#x2192; Dict<a class="reference internal" href="_modules/carlhauser_client/API/cli.html#CLI.request"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_client.API.cli.CLI.request" title="Permalink to this definition">¶</a></dt>
+<dd><p>Request the similar pictures of the provided picture (args.path)
+if we get an answer before timeout (args.waittime). Translate back the provided ids
+of the server with the filenames to id mapping saved previously (args.mapfile)
+:param args: arguments as described
+:return: A dict of results # TODO : Add an example of dict of results</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="carlhauser_client.API.cli.CLI.upload">
+<code class="sig-name descname">upload</code><span class="sig-paren">(</span><em class="sig-param">args</em><span class="sig-paren">)</span> &#x2192; Dict[str, str]<a class="reference internal" href="_modules/carlhauser_client/API/cli.html#CLI.upload"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_client.API.cli.CLI.upload" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perform the upload of all picture in the provided folder (args.path)
+and save the mapping (original_file_name)-&gt;(id_given_by_server)
+in provided file (args.mapfile)
+:param args: arguments as described
+:return: Mapping filename to id</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="carlhauser_client.API.cli.main">
+<code class="sig-prename descclassname">carlhauser_client.API.cli.</code><code class="sig-name descname">main</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_client/API/cli.html#main"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_client.API.cli.main" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-carlhauser_client.API.extended_api">
+<span id="carlhauser-client-api-extended-api-module"></span><h2>carlhauser_client.API.extended_api module<a class="headerlink" href="#module-carlhauser_client.API.extended_api" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="carlhauser_client.API.extended_api.Extended_API">
+<em class="property">class </em><code class="sig-prename descclassname">carlhauser_client.API.extended_api.</code><code class="sig-name descname">Extended_API</code><span class="sig-paren">(</span><em class="sig-param">url</em>, <em class="sig-param">certificate_path</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_client/API/extended_api.html#Extended_API"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_client.API.extended_api.Extended_API" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#carlhauser_client.API.simple_api.Simple_API" title="carlhauser_client.API.simple_api.Simple_API"><code class="xref py py-class docutils literal notranslate"><span class="pre">carlhauser_client.API.simple_api.Simple_API</span></code></a></p>
+<p>Provides “Higher-level” API calls</p>
+<dl class="method">
+<dt id="carlhauser_client.API.extended_api.Extended_API.add_many_pictures_and_wait">
+<code class="sig-name descname">add_many_pictures_and_wait</code><span class="sig-paren">(</span><em class="sig-param">image_folder: pathlib.Path) -&gt; (typing.Dict[str, str], &lt;class 'int'&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_client/API/extended_api.html#Extended_API.add_many_pictures_and_wait"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_client.API.extended_api.Extended_API.add_many_pictures_and_wait" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add all the pictures of the provided folder to the server (direct children, not recursive)
+wait for each of them to be added (one after the other)
+:param image_folder: path to the folder of pictures
+:return: Mapping (filename-&gt; ID provided by server) and the number of pictures successfuly uploaded</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="carlhauser_client.API.extended_api.Extended_API.add_many_pictures_no_wait">
+<code class="sig-name descname">add_many_pictures_no_wait</code><span class="sig-paren">(</span><em class="sig-param">image_folder: pathlib.Path) -&gt; (typing.Dict[str, str], &lt;class 'int'&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_client/API/extended_api.html#Extended_API.add_many_pictures_no_wait"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_client.API.extended_api.Extended_API.add_many_pictures_no_wait" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add all the pictures of the provided folder to the server (direct children, not recursive)
+:param image_folder: path to the folder of pictures
+:return: Mapping (filename-&gt; ID provided by server) and the number of pictures successfuly uploaded</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="carlhauser_client.API.extended_api.Extended_API.add_one_picture_and_wait">
+<code class="sig-name descname">add_one_picture_and_wait</code><span class="sig-paren">(</span><em class="sig-param">image_path: pathlib.Path</em>, <em class="sig-param">max_time: int = 60</em><span class="sig-paren">)</span> &#x2192; Dict<a class="reference internal" href="_modules/carlhauser_client/API/extended_api.html#Extended_API.add_one_picture_and_wait"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_client.API.extended_api.Extended_API.add_one_picture_and_wait" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a picture to the server, wait for the adding to be performed.
+:param image_path: the path of the picture to add
+:param max_time: maximum allowed time to wait before timing out. By default -1 = No time out
+:return: boolean : True if the picture had successfuly been added, False otherwise , and the server_id of the sent picture</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="carlhauser_client.API.extended_api.Extended_API.add_request_dump_pictures">
+<code class="sig-name descname">add_request_dump_pictures</code><span class="sig-paren">(</span><em class="sig-param">image_folder: pathlib.Path</em><span class="sig-paren">)</span> &#x2192; List<a class="reference internal" href="_modules/carlhauser_client/API/extended_api.html#Extended_API.add_request_dump_pictures"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_client.API.extended_api.Extended_API.add_request_dump_pictures" title="Permalink to this definition">¶</a></dt>
+<dd><p>Send pictures of a folder, request all pictures one by one, construct a list of results, revert the mapping to get back pictures names
+:param image_folder: The folder of images to send
+:return: The list of results</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="carlhauser_client.API.extended_api.Extended_API.get_api">
+<em class="property">static </em><code class="sig-name descname">get_api</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_client/API/extended_api.html#Extended_API.get_api"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_client.API.extended_api.Extended_API.get_api" title="Permalink to this definition">¶</a></dt>
+<dd><p>Static method that return an instance of the API (ExtendedAPI type)
+:return: Extended API instance</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="carlhauser_client.API.extended_api.Extended_API.get_db_dump_as_graph">
+<code class="sig-name descname">get_db_dump_as_graph</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; common.Graph.graph_datastructure.GraphDataStruct<a class="reference internal" href="_modules/carlhauser_client/API/extended_api.html#Extended_API.get_db_dump_as_graph"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_client.API.extended_api.Extended_API.get_db_dump_as_graph" title="Permalink to this definition">¶</a></dt>
+<dd><p>Ask the server a copy of the database, convert it as graphe and returns it
+:return: A graph datastructure of the server’s storage</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="carlhauser_client.API.extended_api.Extended_API.request_many_pictures">
+<code class="sig-name descname">request_many_pictures</code><span class="sig-paren">(</span><em class="sig-param">image_folder: pathlib.Path) -&gt; (&lt;class 'dict'&gt;</em>, <em class="sig-param">&lt;class 'int'&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_client/API/extended_api.html#Extended_API.request_many_pictures"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_client.API.extended_api.Extended_API.request_many_pictures" title="Permalink to this definition">¶</a></dt>
+<dd><p>Request similar picture of all pictures of the provided folder to the server (direct children, not recursive)
+wait for each of them (one after the other) and store all the result in one unique list
+:param image_folder: path to the folder of pictures
+:return: A list of all answers, and the total number of pictures successfully requested</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="carlhauser_client.API.extended_api.Extended_API.request_one_picture_and_wait">
+<code class="sig-name descname">request_one_picture_and_wait</code><span class="sig-paren">(</span><em class="sig-param">image_path: pathlib.Path</em>, <em class="sig-param">max_time: int = 60</em><span class="sig-paren">)</span> &#x2192; Dict<a class="reference internal" href="_modules/carlhauser_client/API/extended_api.html#Extended_API.request_one_picture_and_wait"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_client.API.extended_api.Extended_API.request_one_picture_and_wait" title="Permalink to this definition">¶</a></dt>
+<dd><p>Request similar picture of one picture to the server, wait for an answer.
+:param image_path: the path of the picture to request
+:param max_time: maximum allowed time to wait before timing out. By default -1 = No time out
+:return: the answer of the server. #TODO : Give an example of answer</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-carlhauser_client.API.simple_api">
+<span id="carlhauser-client-api-simple-api-module"></span><h2>carlhauser_client.API.simple_api module<a class="headerlink" href="#module-carlhauser_client.API.simple_api" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="carlhauser_client.API.simple_api.Simple_API">
+<em class="property">class </em><code class="sig-prename descclassname">carlhauser_client.API.simple_api.</code><code class="sig-name descname">Simple_API</code><span class="sig-paren">(</span><em class="sig-param">url</em>, <em class="sig-param">certificate_path</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_client/API/simple_api.html#Simple_API"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_client.API.simple_api.Simple_API" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Provides “Low-level” API calls</p>
+<dl class="method">
+<dt id="carlhauser_client.API.simple_api.Simple_API.add_one_picture">
+<code class="sig-name descname">add_one_picture</code><span class="sig-paren">(</span><em class="sig-param">file_path: pathlib.Path) -&gt; (&lt;class 'bool'&gt;</em>, <em class="sig-param">&lt;class 'str'&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_client/API/simple_api.html#Simple_API.add_one_picture"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_client.API.simple_api.Simple_API.add_one_picture" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add one picture to the server
+:param file_path: the path of the picture to add
+:return: success or failure boolean, and the id of the added picture</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="carlhauser_client.API.simple_api.Simple_API.export_db_server">
+<code class="sig-name descname">export_db_server</code><span class="sig-paren">(</span><em class="sig-param">) -&gt; (&lt;class 'bool'&gt;</em>, <em class="sig-param">typing.Dict</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_client/API/simple_api.html#Simple_API.export_db_server"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_client.API.simple_api.Simple_API.export_db_server" title="Permalink to this definition">¶</a></dt>
+<dd><p>Ask the server a copy of the database
+:return: Boolean (True if server answered) and copy of the DB</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="carlhauser_client.API.simple_api.Simple_API.get_api">
+<em class="property">static </em><code class="sig-name descname">get_api</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_client/API/simple_api.html#Simple_API.get_api"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_client.API.simple_api.Simple_API.get_api" title="Permalink to this definition">¶</a></dt>
+<dd><p>Static method that return an instance of the API (SimpleAPI type)
+:return: Simple API instance</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="carlhauser_client.API.simple_api.Simple_API.get_custom_api">
+<em class="property">static </em><code class="sig-name descname">get_custom_api</code><span class="sig-paren">(</span><em class="sig-param">api_class</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_client/API/simple_api.html#Simple_API.get_custom_api"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_client.API.simple_api.Simple_API.get_custom_api" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="carlhauser_client.API.simple_api.Simple_API.get_results">
+<code class="sig-name descname">get_results</code><span class="sig-paren">(</span><em class="sig-param">request_id: str) -&gt; (&lt;class 'bool'&gt;</em>, <em class="sig-param">typing.Dict</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_client/API/simple_api.html#Simple_API.get_results"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_client.API.simple_api.Simple_API.get_results" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fetch the results of a request previously sent.
+:param request_id: the previously made request id
+:return: the answer of the server. #TODO : Give an example of answer</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="carlhauser_client.API.simple_api.Simple_API.is_adding_done">
+<code class="sig-name descname">is_adding_done</code><span class="sig-paren">(</span><em class="sig-param">) -&gt; (&lt;class 'bool'&gt;</em>, <em class="sig-param">&lt;class 'bool'&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_client/API/simple_api.html#Simple_API.is_adding_done"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_client.API.simple_api.Simple_API.is_adding_done" title="Permalink to this definition">¶</a></dt>
+<dd><p>Ask the server if the adding had been performed
+:return: 2 booleans. First : True if the server answered, False otherwise. Second : True if the request is ready, False otherwise</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="carlhauser_client.API.simple_api.Simple_API.is_result_ready">
+<code class="sig-name descname">is_result_ready</code><span class="sig-paren">(</span><em class="sig-param">request_id) -&gt; (&lt;class 'bool'&gt;</em>, <em class="sig-param">&lt;class 'bool'&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_client/API/simple_api.html#Simple_API.is_result_ready"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_client.API.simple_api.Simple_API.is_result_ready" title="Permalink to this definition">¶</a></dt>
+<dd><p>Ask the server if the results of the provided (request_id) is ready.
+:param request_id: request_id response to ask for
+:return: 2 booleans. First : True if the server answered, False otherwise. Second : True if the request is ready, False otherwise</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="carlhauser_client.API.simple_api.Simple_API.ping_server">
+<code class="sig-name descname">ping_server</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="_modules/carlhauser_client/API/simple_api.html#Simple_API.ping_server"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_client.API.simple_api.Simple_API.ping_server" title="Permalink to this definition">¶</a></dt>
+<dd><p>Ping the server to check if he is alive with both GET and POST requests.
+:return: True if the server is alive (for GET and POST), False if the server is not</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="carlhauser_client.API.simple_api.Simple_API.ping_server_get">
+<code class="sig-name descname">ping_server_get</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; requests.models.Response<a class="reference internal" href="_modules/carlhauser_client/API/simple_api.html#Simple_API.ping_server_get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_client.API.simple_api.Simple_API.ping_server_get" title="Permalink to this definition">¶</a></dt>
+<dd><p>Ping the server to check if he is alive with GET request
+:return: the response from the server</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="carlhauser_client.API.simple_api.Simple_API.ping_server_post">
+<code class="sig-name descname">ping_server_post</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; requests.models.Response<a class="reference internal" href="_modules/carlhauser_client/API/simple_api.html#Simple_API.ping_server_post"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_client.API.simple_api.Simple_API.ping_server_post" title="Permalink to this definition">¶</a></dt>
+<dd><p>Ping the server to check if he is alive with POST request
+:return: the response from the server</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="carlhauser_client.API.simple_api.Simple_API.poll_until_adding_done">
+<code class="sig-name descname">poll_until_adding_done</code><span class="sig-paren">(</span><em class="sig-param">max_time: int = -1</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="_modules/carlhauser_client/API/simple_api.html#Simple_API.poll_until_adding_done"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_client.API.simple_api.Simple_API.poll_until_adding_done" title="Permalink to this definition">¶</a></dt>
+<dd><p>Regularly ask the server if the adding of a picture had been performed
+Returns when ready or when timeout
+:param max_time: maximum allowed time to wait before timing out. By default -1 = No time out
+:return: boolean, True if adding done, False if not</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="carlhauser_client.API.simple_api.Simple_API.poll_until_result_ready">
+<code class="sig-name descname">poll_until_result_ready</code><span class="sig-paren">(</span><em class="sig-param">request_id: str</em>, <em class="sig-param">max_time: int = -1</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="_modules/carlhauser_client/API/simple_api.html#Simple_API.poll_until_result_ready"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_client.API.simple_api.Simple_API.poll_until_result_ready" title="Permalink to this definition">¶</a></dt>
+<dd><p>Regularly ask the server if the results of the provided (request_id) are ready.
+Returns when ready or when timeout
+:param request_id: request_id response to wait for
+:param max_time: maximum allowed time to wait before timing out. By default -1 = No time out
+:return: boolean, True if request is ready, False if not</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="carlhauser_client.API.simple_api.Simple_API.request_similar">
+<code class="sig-name descname">request_similar</code><span class="sig-paren">(</span><em class="sig-param">file_path: pathlib.Path) -&gt; (&lt;class 'bool'&gt;</em>, <em class="sig-param">&lt;class 'str'&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_client/API/simple_api.html#Simple_API.request_similar"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_client.API.simple_api.Simple_API.request_similar" title="Permalink to this definition">¶</a></dt>
+<dd><p>Request similar picture of one picture to the server
+:param file_path: the path of the picture to request
+:return: success or failure boolean, and the id of the request picture</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="carlhauser_client.API.simple_api.Simple_API.utility_extract_and_log_response">
+<code class="sig-name descname">utility_extract_and_log_response</code><span class="sig-paren">(</span><em class="sig-param">r: requests.models.Response</em><span class="sig-paren">)</span> &#x2192; Dict<a class="reference internal" href="_modules/carlhauser_client/API/simple_api.html#Simple_API.utility_extract_and_log_response"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_client.API.simple_api.Simple_API.utility_extract_and_log_response" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extract the json version of the provided response (r), log it and return the data
+:param r: response of server
+:return: json format of the response</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="carlhauser_client.API.simple_api.Simple_API.utility_image_to_HTTP_payload">
+<code class="sig-name descname">utility_image_to_HTTP_payload</code><span class="sig-paren">(</span><em class="sig-param">file_path: pathlib.Path</em>, <em class="sig-param">img</em><span class="sig-paren">)</span> &#x2192; Dict<a class="reference internal" href="_modules/carlhauser_client/API/simple_api.html#Simple_API.utility_image_to_HTTP_payload"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_client.API.simple_api.Simple_API.utility_image_to_HTTP_payload" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="carlhauser_client.API.simple_api.Simple_API.utility_request_id_to_HTTP_payload">
+<em class="property">static </em><code class="sig-name descname">utility_request_id_to_HTTP_payload</code><span class="sig-paren">(</span><em class="sig-param">request_id: str</em><span class="sig-paren">)</span> &#x2192; Dict<a class="reference internal" href="_modules/carlhauser_client/API/simple_api.html#Simple_API.utility_request_id_to_HTTP_payload"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_client.API.simple_api.Simple_API.utility_request_id_to_HTTP_payload" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-carlhauser_client.API">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-carlhauser_client.API" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">carlhauser_client.API package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-carlhauser_client.API.cli">carlhauser_client.API.cli module</a></li>
+<li><a class="reference internal" href="#module-carlhauser_client.API.extended_api">carlhauser_client.API.extended_api module</a></li>
+<li><a class="reference internal" href="#module-carlhauser_client.API.simple_api">carlhauser_client.API.simple_api module</a></li>
+<li><a class="reference internal" href="#module-carlhauser_client.API">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/carlhauser_client.API.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, Vincent FALCONIERI.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.2.
+    </div>
+  </body>
+</html>

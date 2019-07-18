@@ -1,18 +1,16 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+
 import logging
-# ==================== ------ STD LIBRARIES ------- ====================
-import os
-import sys
 
 import cv2
 import numpy as np
 
-# ==================== ------ PERSONAL LIBRARIES ------- ====================
 import carlhauser_server.Configuration.feature_extractor_conf as feature_extractor_conf
+from common.environment_variable import load_server_logging_conf_file
 
-sys.path.append(os.path.abspath(os.path.pardir))
+load_server_logging_conf_file()
 
 
 class Picture_Orber:
@@ -24,6 +22,11 @@ class Picture_Orber:
         self.algo = cv2.ORB_create(nfeatures=fe_conf.ORB_KEYPOINTS_NB)
 
     def orb_picture(self, curr_picture):
+        """
+        Orb a picture and returns the orb value
+        :param curr_picture: the picture to orb
+        :return: the orb version of the picture
+        """
         answer = {}
         self.logger.info("Orbing picture ... ")
 
@@ -55,13 +58,3 @@ class Picture_Orber:
             self.logger.error("Error during orbing : " + str(e))
 
         return answer
-
-    '''
-        def check_null_hash(self, hash):
-        # Check if the hash provided is null/None/empty. If yes, provide a default hash
-
-        if not hash or hash is None or hash == "":
-            return '0000000000000000000000000000000000000000000000000000000000000000000000'
-        return hash
-    
-    '''

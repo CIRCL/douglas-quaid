@@ -1,12 +1,7 @@
-# ==================== ------ STD LIBRARIES ------- ====================
-import os
 import pathlib
-import sys
 from collections import namedtuple
 
-# ==================== ------ PERSONAL LIBRARIES ------- ====================
-sys.path.append(os.path.abspath(os.path.pardir))
-from carlhauser_server.Configuration.template_conf import JSON_parsable_Dict
+from common.environment_variable import JSON_parsable_Dict
 
 
 class Default_database_conf(JSON_parsable_Dict):

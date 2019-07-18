@@ -1,0 +1,146 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>carlhauser_server_tests.test_singleton &#8212; Douglas-Quaid 0.0.4 documentation</title>
+    <link rel="stylesheet" href="../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for carlhauser_server_tests.test_singleton</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">unittest</span>
+
+<span class="kn">import</span> <span class="nn">carlhauser_server.Singletons.template_singleton</span> <span class="k">as</span> <span class="nn">template_singleton</span>
+
+
+<div class="viewcode-block" id="testSingleton"><a class="viewcode-back" href="../../carlhauser_server_tests.html#carlhauser_server_tests.test_singleton.testSingleton">[docs]</a><span class="k">class</span> <span class="nc">testSingleton</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Basic test cases.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="testSingleton.setUp"><a class="viewcode-back" href="../../carlhauser_server_tests.html#carlhauser_server_tests.test_singleton.testSingleton.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span></div>
+        <span class="c1"># self.conf = .Default_configuration()</span>
+        <span class="c1"># self.test_file_path = get_homedir() / pathlib.Path(&quot;carlhauser_server_tests/test_Helpers/environment_variable&quot;)</span>
+
+<div class="viewcode-block" id="testSingleton.Derived"><a class="viewcode-back" href="../../carlhauser_server_tests.html#carlhauser_server_tests.test_singleton.testSingleton.Derived">[docs]</a>    <span class="k">class</span> <span class="nc">Derived</span><span class="p">(</span><span class="n">metaclass</span><span class="o">=</span><span class="n">template_singleton</span><span class="o">.</span><span class="n">Singleton</span><span class="p">):</span>
+        <span class="n">value_shared</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">myvalue</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Init called&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="testSingleton.Derived.get_value_shared"><a class="viewcode-back" href="../../carlhauser_server_tests.html#carlhauser_server_tests.test_singleton.testSingleton.Derived.get_value_shared">[docs]</a>        <span class="k">def</span> <span class="nf">get_value_shared</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;get shared value :&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">value_shared</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">value_shared</span></div>
+
+<div class="viewcode-block" id="testSingleton.Derived.get_myvalue"><a class="viewcode-back" href="../../carlhauser_server_tests.html#carlhauser_server_tests.test_singleton.testSingleton.Derived.get_myvalue">[docs]</a>        <span class="k">def</span> <span class="nf">get_myvalue</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;get personal value :&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">myvalue</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">myvalue</span></div>
+
+<div class="viewcode-block" id="testSingleton.Derived.increment_value"><a class="viewcode-back" href="../../carlhauser_server_tests.html#carlhauser_server_tests.test_singleton.testSingleton.Derived.increment_value">[docs]</a>        <span class="k">def</span> <span class="nf">increment_value</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;increment all values&quot;</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">value_shared</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">myvalue</span> <span class="o">+=</span> <span class="mi">1</span></div></div>
+
+<div class="viewcode-block" id="testSingleton.test_singleton"><a class="viewcode-back" href="../../carlhauser_server_tests.html#carlhauser_server_tests.test_singleton.testSingleton.test_singleton">[docs]</a>    <span class="k">def</span> <span class="nf">test_singleton</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">classe1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Derived</span><span class="p">()</span>
+        <span class="n">classe2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Derived</span><span class="p">()</span>
+        <span class="n">classe3</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Derived</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">classe1</span><span class="o">.</span><span class="n">get_value_shared</span><span class="p">(),</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">classe1</span><span class="o">.</span><span class="n">get_myvalue</span><span class="p">(),</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">classe1</span><span class="o">.</span><span class="n">increment_value</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">classe1</span><span class="o">.</span><span class="n">get_value_shared</span><span class="p">(),</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">classe1</span><span class="o">.</span><span class="n">get_myvalue</span><span class="p">(),</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># Does it changed it on the second instance ?</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">classe2</span><span class="o">.</span><span class="n">get_value_shared</span><span class="p">(),</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">classe2</span><span class="o">.</span><span class="n">get_myvalue</span><span class="p">(),</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="n">classe3</span><span class="o">.</span><span class="n">increment_value</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">classe3</span><span class="o">.</span><span class="n">get_value_shared</span><span class="p">(),</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">classe3</span><span class="o">.</span><span class="n">get_myvalue</span><span class="p">(),</span> <span class="mi">2</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="testSingleton.test_singleton_instance_equality"><a class="viewcode-back" href="../../carlhauser_server_tests.html#carlhauser_server_tests.test_singleton.testSingleton.test_singleton_instance_equality">[docs]</a>    <span class="k">def</span> <span class="nf">test_singleton_instance_equality</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">classe1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Derived</span><span class="p">()</span>
+        <span class="n">classe2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Derived</span><span class="p">()</span>
+        <span class="n">classe3</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Derived</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">classe1</span><span class="p">,</span> <span class="n">classe2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">classe2</span><span class="p">,</span> <span class="n">classe3</span><span class="p">)</span></div></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">unittest</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, Vincent FALCONIERI.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.2.
+    </div>
+  </body>
+</html>

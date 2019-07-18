@@ -1,22 +1,29 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-# ==================== ------ STD LIBRARIES ------- ====================
 from enum import Enum, auto
 from typing import List
 
-# ==================== ------ PERSONAL LIBRARIES ------- ====================
-from carlhauser_server.Configuration.template_conf import JSON_parsable_Enum
+from common.environment_variable import JSON_parsable_Enum
+from common.environment_variable import load_server_logging_conf_file
+
+load_server_logging_conf_file()
+
 
 class DecisionTypes(JSON_parsable_Enum, Enum):
-    # Possible answer to the question "Are these pictures the same ?"
+    """
+    Possible answer to the question "Are these pictures the same ?"
+    """
     YES = auto()
     MAYBE = auto()
     NO = auto()
 
 
 class AlgoMatch:
-    # Datastructure to handle the returned values of a "distance evaluation" between two hashs, Orb ...
+    """
+    Datastructure to handle the returned values of a "distance evaluation" between two hashs, Orb ...
+    """
+
     def __init__(self, name=None, distance=None, decision=None):
         self.name = name
         self.distance = distance
@@ -45,8 +52,12 @@ class AlgoMatch:
                                  ' decision=', self.decision]))
 
 
-# Datastructures to handle a list of matches
+#
 class ClusterMatch:
+    """
+     Datastructures to handle a list of matches
+    """
+
     def __init__(self, cluster_id=None, distance=None, decision=None):
         self.cluster_id = cluster_id
         self.distance = distance
@@ -76,6 +87,10 @@ class ClusterMatch:
 
 
 class ImageMatch:
+    """
+     Datastructures to handle a list of matches
+    """
+
     def __init__(self, image_id=None, cluster_id=None, distance=None, decision=None):
         self.image_id = image_id
         self.cluster_id = cluster_id
@@ -108,6 +123,10 @@ class ImageMatch:
 
 
 class TopN:
+    """
+     Datastructures to handle a list of matches
+    """
+
     # TODO : Improve datastructure (priority queue, probably)
     def __init__(self, top_n):
         self.list_top_n_elements = []
@@ -118,7 +137,7 @@ class TopN:
         self.list_top_n_elements.append(element)
         self.sorted = False
 
-    def get_top_n(self):
+    def get_top_n(self) -> List:
         # Get the top n of the elements of the list
 
         # Sort elements if not sorted

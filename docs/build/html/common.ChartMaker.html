@@ -1,0 +1,234 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>common.ChartMaker package &#8212; Douglas-Quaid 0.0.4 documentation</title>
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="common-chartmaker-package">
+<h1>common.ChartMaker package<a class="headerlink" href="#common-chartmaker-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-common.ChartMaker.confusion_matrix_generator">
+<span id="common-chartmaker-confusion-matrix-generator-module"></span><h2>common.ChartMaker.confusion_matrix_generator module<a class="headerlink" href="#module-common.ChartMaker.confusion_matrix_generator" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="common.ChartMaker.confusion_matrix_generator.ConfusionMatrixGenerator">
+<em class="property">class </em><code class="sig-prename descclassname">common.ChartMaker.confusion_matrix_generator.</code><code class="sig-name descname">ConfusionMatrixGenerator</code><a class="reference internal" href="_modules/common/ChartMaker/confusion_matrix_generator.html#ConfusionMatrixGenerator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#common.ChartMaker.confusion_matrix_generator.ConfusionMatrixGenerator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="common.ChartMaker.confusion_matrix_generator.ConfusionMatrixGenerator.annotate_heatmap">
+<em class="property">static </em><code class="sig-name descname">annotate_heatmap</code><span class="sig-paren">(</span><em class="sig-param">im, data=None, valfmt='{x:.2f}', textcolors=['black', 'white'], threshold=None, **textkw</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/common/ChartMaker/confusion_matrix_generator.html#ConfusionMatrixGenerator.annotate_heatmap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#common.ChartMaker.confusion_matrix_generator.ConfusionMatrixGenerator.annotate_heatmap" title="Permalink to this definition">¶</a></dt>
+<dd><p>A function to annotate a heatmap.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>im</strong> – The AxesImage to be labeled.</p>
+</dd>
+</dl>
+<dl>
+<dt>Optional arguments:</dt><dd><p>data       : Data used to annotate. If None, the image’s data is used.
+valfmt     : The format of the annotations inside the heatmap.</p>
+<blockquote>
+<div><p>This should either use the string format method, e.g.
+“$ {x:.2f}”, or be a <code class="xref py py-class docutils literal notranslate"><span class="pre">matplotlib.ticker.Formatter</span></code>.</p>
+</div></blockquote>
+<dl class="simple">
+<dt>textcolors<span class="classifier">A list or array of two color specifications. The first is</span></dt><dd><p>used for values below a threshold, the second for those
+above.</p>
+</dd>
+<dt>threshold<span class="classifier">Value in data units according to which the colors from</span></dt><dd><p>textcolors are applied. If None (the default) uses the
+middle of the colormap as separation.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p>Further arguments are passed on to the created text labels.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="common.ChartMaker.confusion_matrix_generator.ConfusionMatrixGenerator.create_and_export_confusion_matrix">
+<code class="sig-name descname">create_and_export_confusion_matrix</code><span class="sig-paren">(</span><em class="sig-param">original: List[common.Graph.cluster.Cluster], candidate: List[common.Graph.cluster.Cluster], save_path: pathlib.Path = None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/common/ChartMaker/confusion_matrix_generator.html#ConfusionMatrixGenerator.create_and_export_confusion_matrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#common.ChartMaker.confusion_matrix_generator.ConfusionMatrixGenerator.create_and_export_confusion_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create and export a confusion matrix from two list of clusters. The confusion matrix display the number of pictures in common between any pair of two cluster, taken in both lists.
+:param original: a List of cluster with their members
+:param candidate: a List of cluster with their members
+:param save_path: the path to which the matrix PDF) will be stored
+:return: Nothing</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="common.ChartMaker.confusion_matrix_generator.ConfusionMatrixGenerator.heatmap">
+<em class="property">static </em><code class="sig-name descname">heatmap</code><span class="sig-paren">(</span><em class="sig-param">data</em>, <em class="sig-param">row_labels</em>, <em class="sig-param">col_labels</em>, <em class="sig-param">ax=None</em>, <em class="sig-param">cbar_kw={}</em>, <em class="sig-param">cbarlabel=''</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/common/ChartMaker/confusion_matrix_generator.html#ConfusionMatrixGenerator.heatmap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#common.ChartMaker.confusion_matrix_generator.ConfusionMatrixGenerator.heatmap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a heatmap from a numpy array and two lists of labels.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> – A 2D numpy array of shape (N,M)</p></li>
+<li><p><strong>row_labels</strong> – A list or array of length N with the labels
+for the rows</p></li>
+<li><p><strong>col_labels</strong> – A list or array of length M with the labels
+for the columns</p></li>
+</ul>
+</dd>
+</dl>
+<dl>
+<dt>Optional arguments:</dt><dd><dl>
+<dt>ax<span class="classifier">A matplotlib.axes.Axes instance to which the heatmap</span></dt><dd><p>is plotted. If not provided, use current axes or
+create a new one.</p>
+</dd>
+<dt>cbar_kw<span class="classifier">A dictionary with arguments to</span></dt><dd><dl class="field-list simple">
+<dt class="field-odd">param ax</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+<p><code class="xref py py-meth docutils literal notranslate"><span class="pre">matplotlib.Figure.colorbar()</span></code>.</p>
+</dd>
+</dl>
+<p>cbarlabel  : The label for the colorbar</p>
+</dd>
+</dl>
+<p>All other arguments are directly passed on to the imshow call.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="common.ChartMaker.confusion_matrix_generator.ConfusionMatrixGenerator.save_matrix">
+<code class="sig-name descname">save_matrix</code><span class="sig-paren">(</span><em class="sig-param">output_file: pathlib.Path</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/common/ChartMaker/confusion_matrix_generator.html#ConfusionMatrixGenerator.save_matrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#common.ChartMaker.confusion_matrix_generator.ConfusionMatrixGenerator.save_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a matrix (a picture/chart) with specific size, etc.
+:param output_file: The path where to save the matrix picture.
+:return: Nothing</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="common.ChartMaker.confusion_matrix_generator.ConfusionMatrixGenerator.set_values">
+<code class="sig-name descname">set_values</code><span class="sig-paren">(</span><em class="sig-param">ordo</em>, <em class="sig-param">absi</em>, <em class="sig-param">values</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/common/ChartMaker/confusion_matrix_generator.html#ConfusionMatrixGenerator.set_values"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#common.ChartMaker.confusion_matrix_generator.ConfusionMatrixGenerator.set_values" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-common.ChartMaker.two_dimensions_plot">
+<span id="common-chartmaker-two-dimensions-plot-module"></span><h2>common.ChartMaker.two_dimensions_plot module<a class="headerlink" href="#module-common.ChartMaker.two_dimensions_plot" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="common.ChartMaker.two_dimensions_plot.TwoDimensionsPlot">
+<em class="property">class </em><code class="sig-prename descclassname">common.ChartMaker.two_dimensions_plot.</code><code class="sig-name descname">TwoDimensionsPlot</code><a class="reference internal" href="_modules/common/ChartMaker/two_dimensions_plot.html#TwoDimensionsPlot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#common.ChartMaker.two_dimensions_plot.TwoDimensionsPlot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="common.ChartMaker.two_dimensions_plot.TwoDimensionsPlot.add_meta">
+<em class="property">static </em><code class="sig-name descname">add_meta</code><span class="sig-paren">(</span><em class="sig-param">legend</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/common/ChartMaker/two_dimensions_plot.html#TwoDimensionsPlot.add_meta"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#common.ChartMaker.two_dimensions_plot.TwoDimensionsPlot.add_meta" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="common.ChartMaker.two_dimensions_plot.TwoDimensionsPlot.plot_perf_list">
+<code class="sig-name descname">plot_perf_list</code><span class="sig-paren">(</span><em class="sig-param">perf_list: List[common.PerformanceDatastructs.perf_datastruct.Perf]</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/common/ChartMaker/two_dimensions_plot.html#TwoDimensionsPlot.plot_perf_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#common.ChartMaker.two_dimensions_plot.TwoDimensionsPlot.plot_perf_list" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="common.ChartMaker.two_dimensions_plot.TwoDimensionsPlot.plot_thresholds">
+<code class="sig-name descname">plot_thresholds</code><span class="sig-paren">(</span><em class="sig-param">thresholds_handler: common.Calibrator.calibrator_conf.Default_calibrator_conf</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/common/ChartMaker/two_dimensions_plot.html#TwoDimensionsPlot.plot_thresholds"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#common.ChartMaker.two_dimensions_plot.TwoDimensionsPlot.plot_thresholds" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="common.ChartMaker.two_dimensions_plot.TwoDimensionsPlot.print_graph">
+<code class="sig-name descname">print_graph</code><span class="sig-paren">(</span><em class="sig-param">perf_list: List[common.PerformanceDatastructs.perf_datastruct.Perf], output_path: pathlib.Path, file_name: str = 'overview.png'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/common/ChartMaker/two_dimensions_plot.html#TwoDimensionsPlot.print_graph"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#common.ChartMaker.two_dimensions_plot.TwoDimensionsPlot.print_graph" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="common.ChartMaker.two_dimensions_plot.TwoDimensionsPlot.print_graph_with_thresholds">
+<code class="sig-name descname">print_graph_with_thresholds</code><span class="sig-paren">(</span><em class="sig-param">perf_list: List[common.PerformanceDatastructs.perf_datastruct.Perf], thresholds_handler: common.Calibrator.calibrator_conf.Default_calibrator_conf, output_path: pathlib.Path, file_name: str = 'overview_with_thresholds.png'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/common/ChartMaker/two_dimensions_plot.html#TwoDimensionsPlot.print_graph_with_thresholds"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#common.ChartMaker.two_dimensions_plot.TwoDimensionsPlot.print_graph_with_thresholds" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="common.ChartMaker.two_dimensions_plot.TwoDimensionsPlot.save_fig">
+<code class="sig-name descname">save_fig</code><span class="sig-paren">(</span><em class="sig-param">output_path: pathlib.Path</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/common/ChartMaker/two_dimensions_plot.html#TwoDimensionsPlot.save_fig"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#common.ChartMaker.two_dimensions_plot.TwoDimensionsPlot.save_fig" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-common.ChartMaker">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-common.ChartMaker" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">common.ChartMaker package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-common.ChartMaker.confusion_matrix_generator">common.ChartMaker.confusion_matrix_generator module</a></li>
+<li><a class="reference internal" href="#module-common.ChartMaker.two_dimensions_plot">common.ChartMaker.two_dimensions_plot module</a></li>
+<li><a class="reference internal" href="#module-common.ChartMaker">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/common.ChartMaker.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, Vincent FALCONIERI.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.2.
+    </div>
+  </body>
+</html>

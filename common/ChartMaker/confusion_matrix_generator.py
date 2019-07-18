@@ -2,27 +2,17 @@
 # -*- coding: utf-8 -*-
 
 import logging.config
-# ==================== ------ STD LIBRARIES ------- ====================
-import os
 import pathlib
-import sys
 from typing import List
 
 import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 
-# ==================== ------ PERSONAL LIBRARIES ------- ====================
-sys.path.append(os.path.abspath(os.path.pardir))
-from common.environment_variable import get_homedir
 from common.Graph.cluster import Cluster
+from common.environment_variable import load_server_logging_conf_file
 
-# from . import helpers
-
-# ==================== ------ PREPARATION ------- ====================
-# load the logging configuration
-logconfig_path = (get_homedir() / pathlib.Path("carlhauser_client", "logging.ini")).resolve()
-logging.config.fileConfig(str(logconfig_path))
+load_server_logging_conf_file()
 
 
 class ConfusionMatrixGenerator:
@@ -35,8 +25,18 @@ class ConfusionMatrixGenerator:
 
     # ============================== ---- Creation of matrix ----  ==============================
 
-    def create_and_export_confusion_matrix(self, original: List[Cluster], candidate: List[Cluster], matching: List[List[Cluster]], save_path: pathlib.Path = None):
-        self.logger.debug(f"Inputs : {original} {candidate}")
+    def create_and_export_confusion_matrix(self, original: List[Cluster],
+                                           candidate: List[Cluster],
+                                           save_path: pathlib.Path = None):
+        '''
+        Create and export a confusion matrix from two list of clusters. The confusion matrix display the number of pictures in common between any pair of two cluster, taken in both lists.
+        :param original: a List of cluster with their members
+        :param candidate: a List of cluster with their members
+        :param save_path: the path to which the matrix PDF) will be stored
+        :return: Nothing
+        '''
+
+        self.logger.debug(f"Create and export confusion matrix, inputs : original = {original} ; candidate = {candidate}")
 
         # Sort arrays (bigger to smaller)
         original.sort(key=lambda x: len(x.members), reverse=True)
@@ -65,9 +65,8 @@ class ConfusionMatrixGenerator:
 
         # TODO : Color if matched on this attribute ?
 
-        graph = ConfusionMatrixGenerator()
-        graph.set_values(ordo, absi, values)
-        graph.save_matrix(save_path.with_suffix(".pdf"))
+        self.set_values(ordo, absi, values)
+        self.save_matrix(save_path.with_suffix(".pdf"))
 
     # ============================== ---- Utility ----  ==============================
 
@@ -77,6 +76,11 @@ class ConfusionMatrixGenerator:
         self.values = np.array(values)
 
     def save_matrix(self, output_file: pathlib.Path):
+        '''
+        Create a matrix (a picture/chart) with specific size, etc.
+        :param output_file: The path where to save the matrix picture.
+        :return: Nothing
+        '''
         fig, ax = plt.subplots(figsize=(20, 14), dpi=200)
 
         im, cbar = self.heatmap(self.values, self.ord, self.abs, ax=ax,
@@ -105,6 +109,7 @@ class ConfusionMatrixGenerator:
                          is plotted. If not provided, use current axes or
                          create a new one.
             cbar_kw    : A dictionary with arguments to
+                         :param ax:
                          :meth:`matplotlib.Figure.colorbar`.
             cbarlabel  : The label for the colorbar
         All other arguments are directly passed on to the imshow call.
