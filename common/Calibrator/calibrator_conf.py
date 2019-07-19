@@ -4,7 +4,7 @@ from collections import namedtuple
 from carlhauser_server.Configuration.algo_conf import Algo_conf
 from common.environment_variable import JSON_parsable_Dict
 from common.environment_variable import load_server_logging_conf_file
-
+import carlhauser_server.Configuration.distance_engine_conf as distance_engine_conf
 load_server_logging_conf_file()
 
 
@@ -136,6 +136,14 @@ class Default_calibrator_conf(JSON_parsable_Dict):
                                  ' thre_below_at_least_xpercent_TNR=', self.thre_below_at_least_xpercent_TNR,
                                  ' thre_below_at_most_xpercent_FPR=', self.thre_below_at_most_xpercent_FPR]))
 
+
+
+def calibrator_conf_to_conf_file(cal_conf: Default_calibrator_conf) -> distance_engine_conf.Default_distance_engine_conf:
+        basic_conf = distance_engine_conf.Default_distance_engine_conf()
+
+        basic_conf.MAX_DIST_FOR_NEW_CLUSTER = cal_conf.maximum_F1
+
+        return basic_conf
 
 def parse_from_dict(conf):
     return namedtuple("Default_calibrator_conf", conf.keys())(*conf.values())

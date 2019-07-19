@@ -20,6 +20,9 @@ from carlhauser_client.API.extended_api import Extended_API
 from carlhauser_server.Configuration import feature_extractor_conf
 from carlhauser_server.Configuration.algo_conf import Algo_conf
 from common.environment_variable import load_server_logging_conf_file
+# from carlhauser_server.Configuration.distance_engine_conf import Default_distance_engine_conf
+from carlhauser_server.Configuration.feature_extractor_conf import Default_feature_extractor_conf
+from carlhauser_server.Configuration.database_conf import Default_database_conf
 
 load_server_logging_conf_file()
 
@@ -39,9 +42,9 @@ class Calibrator:
         self.ground_truth_file = None
         self.output_folder = None
         '''
-        self.db_conf: test_database_only_conf.TestInstance_database_conf = None
-        self.fe_conf: feature_extractor_conf.Default_feature_extractor_conf = None
-        self.de_conf: distance_engine_conf.Default_distance_engine_conf = None
+        # self.db_conf: test_database_only_conf.TestInstance_database_conf = None
+        # self.fe_conf: feature_extractor_conf.Default_feature_extractor_conf = None
+        # self.de_conf: distance_engine_conf.Default_distance_engine_conf = None
         self.test_db_handler: test_database_handler.TestInstanceLauncher = None
         self.calibrator_conf: calibrator_conf.Default_calibrator_conf = None
 
@@ -68,7 +71,7 @@ class Calibrator:
         self.check_inputs(folder_of_pictures, ground_truth_file, output_folder)
 
         # Call each algorithm evaluator
-        calibrated_algos = self.algorithms_evaluator(folder_of_pictures, ground_truth_file, output_folder)
+        calibrated_algos = self.calibrate_each_algo_separately(folder_of_pictures, ground_truth_file, output_folder)
 
         # Save algorithm evaluator results
         json_import_export.save_json(calibrated_algos, output_folder / "calibrated_algo.json")
@@ -78,6 +81,19 @@ class Calibrator:
 
         # Save algorithm evaluator results
         json_import_export.save_json(configuration_file, output_folder / "calibrated_db_conf.json")
+
+        # Call evaluator on all algorithms at once, to get the threshold to constitute clusters
+        calibrated_algo_set = self.calibrate_std_algo_set(folder_of_pictures, ground_truth_file, output_folder)
+
+        # Save algorithm evaluator results
+        json_import_export.save_json(calibrated_algos, output_folder / "calibrated_algo_set.json")
+
+        # Construct result algo_conf depending on thresholds
+        self.logger.debug(f"Export to algorithm configuration")
+        dist_conf_calibrated = calibrator_conf.calibrator_conf_to_conf_file(calibrated_algo_set)
+
+        # Save algorithm evaluator results
+        json_import_export.save_json(dist_conf_calibrated, output_folder / "dist_conf_calibrated.json")
 
         return calibrated_algos
 
@@ -106,16 +122,16 @@ class Calibrator:
 
         self.logger.debug("Paths provided checked and corrects.")
 
-    def algorithms_evaluator(self, folder_of_pictures: pathlib.Path,
-                             ground_truth_file: pathlib.Path,
-                             output_folder: pathlib.Path) -> List[Algo_conf]:
+    def calibrate_each_algo_separately(self, folder_of_pictures: pathlib.Path,
+                                       ground_truth_file: pathlib.Path,
+                                       output_folder: pathlib.Path) -> List[Algo_conf]:
         """
-        Evaluate all algorithms on the specific dataset, returns the "best" configuration file
-        Uses ground truth files and provided pictures list
-        :param folder_of_pictures:
-        :param ground_truth_file:
-        :param output_folder:
-        :return:
+        Evaluate each possible algorithm on the specific dataset, returns the "best" configuration file for each
+        Uses ground truth files and provided pictures list to optimize goals setted in calibrator conf
+        :param folder_of_pictures: The folder of pictures on which to calibrate (subset of a bigger dataset)
+        :param ground_truth_file: The path to the ground truth file used as the "perfect matches", as a goal to reach
+        :param output_folder: Path to folder where results will be saved
+        :return: List of Algorithms configuration modified with "good" thresholds
         """
 
         self.logger.debug("Iterate over all algorithms ... ")
@@ -125,21 +141,56 @@ class Calibrator:
 
         # For each possible algorithm, evaluate the algorithms
         # TODO : Restrict the algorithms list
-        for algo in default_feature_conf.list_algos:
-            self.logger.debug(f"Current algorithm calibration {algo.algo_name} ... ")
+        for to_calibrate_algo in default_feature_conf.list_algos:
+            self.logger.debug(f"Current algorithm calibration {to_calibrate_algo.algo_name} ... ")
 
             # Create the output folder for this algo
-            tmp_output_folder_algo = (output_folder / algo.algo_name)
+            tmp_output_folder_algo = (output_folder / to_calibrate_algo.algo_name)
             tmp_output_folder_algo.mkdir(exist_ok=True)
 
+            # Configurations files
+            db_conf = test_database_only_conf.TestInstance_database_conf()  # For test sockets only
+            fe_conf = self.generate_feature_conf(to_calibrate_algo)  # For 1 algo only
+            # de_conf = self.generate_distance_conf()  # For internal inter distance cluster that allow to test all pictures
+
             # Evaluation of this algorithm
-            calibrated_algo = self.algorithm_evaluator(folder_of_pictures, ground_truth_file, algo, tmp_output_folder_algo)
-            self.logger.debug(f"Calibrated algorithm {algo.algo_name} with : {calibrated_algo} ")
+            _, tmp_calibrator_conf = self.create_instance_and_calibrate(db_conf, fe_conf, folder_of_pictures, ground_truth_file, tmp_output_folder_algo)
+
+            # Construct result algo_conf depending on thresholds
+            self.logger.debug(f"Export to algorithm configuration")
+            calibrated_algo = tmp_calibrator_conf.export_to_Algo(to_calibrate_algo)
+
+            self.logger.debug(f"Calibrated algorithm {to_calibrate_algo.algo_name} with : {calibrated_algo} ")
 
             # Keeping the best configuration for this algorithm
             list_calibrated_algos.append(calibrated_algo)
 
         return list_calibrated_algos
+
+    def calibrate_std_algo_set(self, folder_of_pictures: pathlib.Path,
+                               ground_truth_file: pathlib.Path,
+                               output_folder: pathlib.Path = None) -> calibrator_conf.Default_calibrator_conf:
+        """
+        Returns a distance configuration file calibrated to optimize given metrics on ground truth files and provided pictures list.
+        :param folder_of_pictures: The folder of pictures on which to calibrate (subset of a bigger dataset)
+        :param ground_truth_file: The path to the ground truth file used as the "perfect matches", as a goal to reach
+        :param output_folder: Path to folder where results will be saved
+        :return: The distance configuration file calibrated (with good cluster threshold)
+        """
+
+        self.logger.debug(f"Evaluate standard configuration ... ")
+
+        # Configurations files
+        db_conf = test_database_only_conf.TestInstance_database_conf()  # For test sockets only
+        fe_conf = feature_extractor_conf.Default_feature_extractor_conf()  # For current standard configuration
+        # de_conf = self.generate_distance_conf()  # For internal inter distance cluster that allow to test all pictures
+        tmp_output_folder_algo = (output_folder / "STD_ALGO_SET")
+
+        _, tmp_calibrator_conf =  self.create_instance_and_calibrate(db_conf, fe_conf, folder_of_pictures, ground_truth_file, tmp_output_folder_algo)
+
+
+        return tmp_calibrator_conf
+
 
     '''
         # HASH parameters
@@ -154,6 +205,45 @@ class Calibrator:
         # Visual Descriptors parameters
         self.ORB = Algo_conf("ORB", True, 0.2, 0.6, distance_weight=5)
         self.ORB_KEYPOINTS_NB = 500
+    '''
+
+    def create_instance_and_calibrate(self,
+                                      db_conf: Default_database_conf,
+                                      fe_conf: Default_feature_extractor_conf,
+                                      # Unused ? # de_conf : Default_distance_engine_conf,
+                                      folder_of_pictures: pathlib.Path,
+                                      ground_truth_file: pathlib.Path,
+                                      output_folder: pathlib.Path = None) -> (List[perf_datastruct.Perf], calibrator_conf.Default_calibrator_conf):
+        """
+        Create an instance of a server and client only working on a temporary database (test db).
+        Calibrate distance threshold given provided configuration file (an so which algorithms to activate together) and
+        ground truth files and provided pictures list. Modify calibrator configuration and returns a list of performance object as results.
+        :param db_conf: The database configuration file (should be "in test only" mode)
+        :param fe_conf: The feature extractor configuration file (Can be default one, or custom one, with only algorithms to evaluate together)
+        :param folder_of_pictures: The folder of pictures on which to calibrate (subset of a bigger dataset)
+        :param ground_truth_file: The path to the ground truth file used as the "perfect matches", as a goal to reach
+        :param output_folder: Path to folder where results will be saved
+        :return: List of performance object (each possible value of the threshold) and a modified calibrator configuration
+        """
+
+        # Launch a modified server
+        self.logger.debug(f"Creation of a full instance of redis (Test only) ... ")
+        self.test_db_handler = test_database_handler.TestInstanceLauncher()
+        self.test_db_handler.create_full_instance(db_conf=db_conf, fe_conf=fe_conf)
+
+        # Launch an evaluator client to extract the graphe
+        self.logger.debug(f"Launching Algorithm evaluation ... ")
+        perfs_list, tmp_calibrator_conf = self.get_best_thresholds(image_folder=folder_of_pictures,
+                                                                   visjs_json_path=ground_truth_file,
+                                                                   output_path=output_folder,
+                                                                   cal_conf=self.calibrator_conf)
+
+        # Kill server instance
+        self.logger.debug(f"Shutting down Redis test instance")
+        self.test_db_handler.tearDown()
+
+        return perfs_list, tmp_calibrator_conf
+
     '''
 
     def algorithm_evaluator(self, folder_of_pictures: pathlib.Path,
@@ -194,15 +284,13 @@ class Calibrator:
         self.logger.debug(f"Shutting down Redis test instance")
         self.test_db_handler.tearDown()
 
-        # Evaluate the graphe to find thresholds
-        # = Already done in thresholds object = thresholds
-
         # Construct result algo_conf depending on thresholds
-        # TOOD : Extract only setted values
         self.logger.debug(f"Export to algorithm configuration")
         updated_algo_conf = tmp_calibrator_conf.export_to_Algo(to_calibrate_algo)
 
         return updated_algo_conf  # perfs_list,
+    '''
+
 
     @staticmethod
     def generate_feature_conf(to_calibrate_algo: Algo_conf) -> feature_extractor_conf.Default_feature_extractor_conf:
