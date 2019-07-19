@@ -8,7 +8,7 @@ import carlhauser_client.EvaluationTools.SimilarityGraphExtractor.similarity_gra
 from common.Graph.cluster import Cluster
 from common.Graph.edge import Edge
 from common.Graph.graph_datastructure import GraphDataStruct
-from common.Graph.metadata import Metadata
+from common.Graph.metadata import Metadata, Source
 from common.Graph.node import Node
 from common.Calibrator.calibrator_conf import Default_calibrator_conf
 

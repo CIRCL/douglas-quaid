@@ -61,6 +61,7 @@ class GraphDataStruct:
         for n in nodes:
             self.nodes[n.id] = n
             self.edges.append(edge.Edge(cluster.id, n.id, color))
+            # TODO : Test + checks
 
     def add_edge(self, edge: edge.Edge):
         """
@@ -85,7 +86,7 @@ class GraphDataStruct:
 
     # ==================== Request ====================
 
-    def are_ids_in_same_cluster(self, id_1, id_2):
+    def are_ids_in_same_cluster(self, id_1, id_2) -> bool:
         """
         Return True if both nodes ids are in this cluster (by ids) # TODO : make test !
         :param id_1: first id
@@ -113,15 +114,19 @@ class GraphDataStruct:
         id_1 = None
         id_2 = None
 
-        # For each node
+        # For each node of the current graph
+        # we try to find the ones with provided names
         for n in self.nodes.values():
-            if n.image == name_1:
+            # The first name has matched
+            if n.image == name_1 or n.label == name_1:
                 id_1 = n.id
                 if not one_found:  # First id found = Continue
                     one_found = True
                 elif one_found:
                     break  # Second id found ! = Stop
-            if n.image == name_2:
+
+            # The second name provided has matched
+            if n.image == name_2 or n.label == name_2:
                 id_2 = n.id
                 if not one_found:  # First id found = Continue
                     one_found = True

@@ -74,6 +74,8 @@ class similarity_graph_quality_evaluator:
             self.logger.info(f"Current threshold computation : {curr_threshold}")
 
             # Compute score for this threshold
+            #TODO : To remove the export (debug only)
+            json_import_export.save_json(list_results, pathlib.Path(get_homedir() / "result_file_to_be_evaluated.json"))
             tmp_score = self.compute_score_for_one_threshold(list_results, gt_graph, curr_threshold)
             self.logger.info(f"Current score for this threshold : {tmp_score}")
 
@@ -144,7 +146,7 @@ class similarity_graph_quality_evaluator:
                     # Then this link is counted as a positive value in the entire dataset.
                     # The distance and threshold DOES NOT IMPACT the Positive/Negative counts !
 
-                    if curr_matched_node.get("distance") < dist_threshold:
+                    if curr_matched_node.get("distance") <= dist_threshold:
                         # Even if it's request_id, it the current name of the file.
                         if gt_graph.are_names_in_same_cluster(curr_result.get("request_id"), curr_matched_node.get("image_id")):
                             tmp_score.TP += 1

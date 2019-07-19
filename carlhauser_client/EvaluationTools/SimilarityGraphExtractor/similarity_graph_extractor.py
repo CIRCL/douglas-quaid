@@ -34,7 +34,7 @@ class GraphExtractor:
         '''
 
         # Get distance results for each picture
-        list_results = self.ext_api.add_request_dump_pictures(image_folder)
+        list_results = self.ext_api.add_and_request_and_dump_pictures(image_folder)
 
         # Save to file
         json_import_export.save_json(list_results, output_path / "requests_result.json")

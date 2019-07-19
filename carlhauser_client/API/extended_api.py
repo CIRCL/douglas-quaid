@@ -5,11 +5,13 @@ import pathlib
 import time
 from typing import Dict, List
 
+import common.ImportExport.json_import_export as json_import_export
+from common.environment_variable import get_homedir
 import carlhauser_client.Helpers.dict_utilities as dict_utilities
 from carlhauser_client.API.simple_api import Simple_API
 from common.Graph.graph_datastructure import GraphDataStruct
 from common.environment_variable import load_client_logging_conf_file
-
+from pprint import pformat
 load_client_logging_conf_file()
 
 
@@ -33,7 +35,7 @@ class Extended_API(Simple_API):
     # ========= UTILITIES =============
     # ================= ADD PICTURES =================
 
-    def add_one_picture_and_wait(self, image_path: pathlib.Path, max_time: int = 60) -> Dict:
+    def add_one_picture_and_wait(self, image_path: pathlib.Path, max_time: int = 60) -> (bool, str):
         '''
         Add a picture to the server, wait for the adding to be performed.
         :param image_path: the path of the picture to add
@@ -55,7 +57,7 @@ class Extended_API(Simple_API):
 
             if is_success:
                 self.logger.info(f"Adding executed in : {time.time() - start}s")
-                return img_id
+                return is_success, img_id
             else:
                 self.logger.error(f"Error on adding status polling.")
                 raise Exception("Error on adding status polling.")
@@ -77,7 +79,7 @@ class Extended_API(Simple_API):
         Add all the pictures of the provided folder to the server (direct children, not recursive)
         wait for each of them to be added (one after the other)
         :param image_folder: path to the folder of pictures
-        :return: Mapping (filename-> ID provided by server) and the number of pictures successfuly uploaded
+        :return: Mapping (filename-> ID provided by server) and the number of pictures successfully uploaded
         '''
 
         return self._add_many_pictures_with(image_folder, self.add_one_picture_and_wait)
@@ -87,10 +89,10 @@ class Extended_API(Simple_API):
         Add all the pictures at once of the provided folder to the server (direct children, not recursive)
         and then wait for ALL of them to be added (as a batch). Faster than add_many_pictures_and_wait
         :param image_folder: path to the folder of pictures
-        :return: Mapping (filename-> ID provided by server) and the number of pictures successfuly uploaded
+        :return: Mapping (filename-> ID provided by server) and the number of pictures successfully uploaded
         '''
 
-        result = self._add_many_pictures_with(image_folder, self.add_one_picture)
+        mapping, nb_pics_sent = self._add_many_pictures_with(image_folder, self.add_one_picture)
 
         self.logger.info(f"Pictures all sent to server ... waiting for adding complete.")
         start = time.time()
@@ -102,7 +104,7 @@ class Extended_API(Simple_API):
             self.logger.error(f"Error on adding status polling.")
             raise Exception("Error on adding status polling.")
 
-        return result
+        return mapping, nb_pics_sent
 
     def _add_many_pictures_with(self, image_folder: pathlib.Path, function) -> (Dict[str, str], int):
         '''
@@ -121,15 +123,15 @@ class Extended_API(Simple_API):
                 self.logger.debug(f"Found picture to be send : {image_path}.")
 
                 # Upload the image to db
-                res = function(image_path) # Return picture id ! only !
+                success, server_id = function(image_path) # Return picture id ! only !
 
-                if res:
+                if success:
                     # The upload had been successful
-                    self.logger.info(f"Mapping from {image_path.name} to {res}")
-                    mapping_filename_to_id[image_path.name] = res
+                    self.logger.info(f"Mapping from {image_path.name} to {server_id}")
+                    mapping_filename_to_id[image_path.name] = server_id
                     nb_pics_sent += 1
                 else:
-                    self.logger.error(f"Error during upload of {image_path.name} : {res}")
+                    self.logger.error(f"Error during upload of {image_path.name} : {server_id}")
 
         return mapping_filename_to_id, nb_pics_sent
 
@@ -264,19 +266,36 @@ class Extended_API(Simple_API):
 
     # ================= ALL =================
 
-    def add_request_dump_pictures(self, image_folder: pathlib.Path) -> List:
+    def add_and_request_and_dump_pictures(self, image_folder: pathlib.Path) -> List:
         '''
         Send pictures of a folder, request all pictures one by one, construct a list of results, revert the mapping to get back pictures names
         :param image_folder: The folder of images to send
         :return: The list of results
         '''
 
+        self.logger.info("Automated launch : add pictures from folder, request all, and dump graph / list of results")
+
         # 1-  Send pictures to DB and get id mapping
         mapping_old_filename_to_new_id, nb_pictures = self.add_many_pictures_and_wait_global(image_folder)
 
+        # TODO : To remove , debug only
+        json_import_export.save_json(mapping_old_filename_to_new_id, pathlib.Path(get_homedir() / "mapping_old_filename_to_new_id.json"))
+
+        # add_many_pictures_and_wait_global
+        # add_many_picture_and_wait_for_each
+
         # 2 - Get a DB dump
         list_results, nb_pictures = self.request_many_pictures_and_wait_global(image_folder)
+        # request_many_pictures_and_wait_global
+        # request_many_pictures_and_wait_for_each
+
+        # TODO : To remove , debug only
+        json_import_export.save_json(list_results, pathlib.Path(get_homedir() / "list_result_before_reversion.json"))
+
         list_results = dict_utilities.apply_revert_mapping(list_results, mapping_old_filename_to_new_id)
         # TODO : do it with graphes ? graphe_struct.replace_id_from_mapping(mapping)
+
+        # TODO : To remove , debug only
+        json_import_export.save_json(list_results, pathlib.Path(get_homedir() / "list_result_after_reversion.json"))
 
         return list_results

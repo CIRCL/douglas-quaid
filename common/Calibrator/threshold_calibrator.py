@@ -23,6 +23,7 @@ from common.environment_variable import load_server_logging_conf_file
 # from carlhauser_server.Configuration.distance_engine_conf import Default_distance_engine_conf
 from carlhauser_server.Configuration.feature_extractor_conf import Default_feature_extractor_conf
 from carlhauser_server.Configuration.database_conf import Default_database_conf
+from common.environment_variable import dir_path
 
 load_server_logging_conf_file()
 
@@ -373,7 +374,7 @@ class Calibrator:
 
         # Get results from DB and ground truth graph from visjs file
         self.logger.debug(f"Sending pictures ... ")
-        list_results = self.ext_api.add_request_dump_pictures(image_folder)
+        list_results = self.ext_api.add_and_request_and_dump_pictures(image_folder)
 
         # Save to file
         json_import_export.save_json(list_results, output_path / "requests_result.json")
@@ -836,13 +837,6 @@ class Calibrator:
                                                         higher=True,
                                                         rightmost=True,
                                                         is_increasing=True)
-
-
-def dir_path(path):
-    if pathlib.Path(path).exists():
-        return path
-    else:
-        raise argparse.ArgumentTypeError(f"readable_dir:{path} is not a valid path")
 
 
 def default_conf(args):
