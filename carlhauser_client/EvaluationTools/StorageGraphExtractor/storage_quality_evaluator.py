@@ -42,7 +42,7 @@ class InternalClusteringQualityEvaluator:
 
         # ========= AUTO EVALUATION =========
         # Send pictures to DB and get id mapping
-        mapping_old_filename_to_new_id, nb_pictures = self.API.add_many_pictures_and_wait(image_folder)
+        mapping_old_filename_to_new_id, nb_pictures = self.API.add_many_picture_and_wait_for_each(image_folder)
 
         # Get a DB dump
         db_dump = self.API.get_db_dump_as_graph()

@@ -2,7 +2,6 @@ from collections import namedtuple
 
 from common.environment_variable import JSON_parsable_Dict
 
-
 class Default_distance_engine_conf(JSON_parsable_Dict):
     def __init__(self):
         # Inputs
@@ -16,6 +15,7 @@ class Default_distance_engine_conf(JSON_parsable_Dict):
 
         # ORB PARAMETERS
         self.CROSSCHECK: bool = True
+
 
 
 def parse_from_dict(conf):

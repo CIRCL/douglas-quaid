@@ -72,7 +72,7 @@ class Extended_API(Simple_API):
 
         return self._add_many_pictures_with(image_folder, self.add_one_picture)
 
-    def add_many_pictures_and_wait(self, image_folder: pathlib.Path) -> (Dict[str, str], int):
+    def add_many_picture_and_wait_for_each(self, image_folder: pathlib.Path) -> (Dict[str, str], int):
         '''
         Add all the pictures of the provided folder to the server (direct children, not recursive)
         wait for each of them to be added (one after the other)
@@ -81,6 +81,28 @@ class Extended_API(Simple_API):
         '''
 
         return self._add_many_pictures_with(image_folder, self.add_one_picture_and_wait)
+
+    def add_many_pictures_and_wait_global(self, image_folder: pathlib.Path) -> (Dict[str, str], int):
+        '''
+        Add all the pictures at once of the provided folder to the server (direct children, not recursive)
+        and then wait for ALL of them to be added (as a batch). Faster than add_many_pictures_and_wait
+        :param image_folder: path to the folder of pictures
+        :return: Mapping (filename-> ID provided by server) and the number of pictures successfuly uploaded
+        '''
+
+        result = self._add_many_pictures_with(image_folder, self.add_one_picture)
+
+        self.logger.info(f"Pictures all sent to server ... waiting for adding complete.")
+        start = time.time()
+        is_success = self.poll_until_adding_done(max_time=-1)
+
+        if is_success:
+            self.logger.info(f"Adding executed in : {time.time() - start}s after all pictures sent")
+        else:
+            self.logger.error(f"Error on adding status polling.")
+            raise Exception("Error on adding status polling.")
+
+        return result
 
     def _add_many_pictures_with(self, image_folder: pathlib.Path, function) -> (Dict[str, str], int):
         '''
@@ -153,7 +175,7 @@ class Extended_API(Simple_API):
             self.logger.error(f"Error on request sending.")
             raise Exception("Error on request sending.")
 
-    def request_many_pictures(self, image_folder: pathlib.Path) -> (dict, int):
+    def request_many_pictures_and_wait_for_each(self, image_folder: pathlib.Path) -> (dict, int):
         '''
         Request similar picture of all pictures of the provided folder to the server (direct children, not recursive)
         wait for each of them (one after the other) and store all the result in one unique list
@@ -180,6 +202,44 @@ class Extended_API(Simple_API):
 
                 except Exception as e:
                     self.logger.error(f"Error occurred during {image_path.name} request : {e}.")
+
+        return list_answers, nb_pics_requested
+
+    def request_many_pictures_and_wait_global(self, image_folder: pathlib.Path) -> (dict, int):
+        '''
+        Request similar picture of all pictures of the provided folder to the server (direct children, not recursive)
+        wait for them AS A BATCH (wait the last one only), fetch and store all the results in one unique list
+        :param image_folder: path to the folder of pictures
+        :return: A list of all answers, and the total number of pictures successfully requested
+        '''
+
+        self.logger.debug(f"Requesting similar pictures of {image_folder} to the DB.")
+        list_requests_id = []
+        nb_pics_requested = 0
+        list_answers = []
+
+        # Iterate over all picture directly child of the folder
+        for image_path in image_folder.iterdir():
+            if image_path.is_file():
+
+                # Got one image to upload
+                try:
+                    self.logger.debug(f"Working on picture #{nb_pics_requested}.")
+                    is_success, request_id = self.request_similar(image_path)
+
+                    self.logger.debug(f"Successfully requested {image_path.name}. Waiting to ask results")
+                    list_requests_id.append(request_id)
+                    nb_pics_requested += 1
+
+                except Exception as e:
+                    self.logger.error(f"Error occurred during {image_path.name} request : {e}.")
+
+        # Wait until last requested picture is
+        _ = self.poll_until_result_ready(list_requests_id[len(list_requests_id)-1], max_time=-1)
+
+        for request_id in list_requests_id:
+            is_success, results = self.get_results(request_id)
+            list_answers.append(results)
 
         return list_answers, nb_pics_requested
 
@@ -212,10 +272,10 @@ class Extended_API(Simple_API):
         '''
 
         # 1-  Send pictures to DB and get id mapping
-        mapping_old_filename_to_new_id, nb_pictures = self.add_many_pictures_and_wait(image_folder)
+        mapping_old_filename_to_new_id, nb_pictures = self.add_many_pictures_and_wait_global(image_folder)
 
         # 2 - Get a DB dump
-        list_results, nb_pictures = self.request_many_pictures(image_folder)
+        list_results, nb_pictures = self.request_many_pictures_and_wait_global(image_folder)
         list_results = dict_utilities.apply_revert_mapping(list_results, mapping_old_filename_to_new_id)
         # TODO : do it with graphes ? graphe_struct.replace_id_from_mapping(mapping)
 

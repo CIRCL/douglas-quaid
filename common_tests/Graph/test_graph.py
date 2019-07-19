@@ -112,7 +112,8 @@ class test_template(unittest.TestCase):
     def test_absolute_truth_and_meaning(self):
         self.assertTrue(True)
 
-    def generate_basic_graph(self) -> GraphDataStruct:
+    @staticmethod
+    def generate_basic_graph() -> GraphDataStruct:
         # Create a graphe structure
         tmp_meta = Metadata(Source.DBDUMP)
         tmp_graph = GraphDataStruct(tmp_meta)
@@ -129,7 +130,8 @@ class test_template(unittest.TestCase):
 
         return tmp_graph
 
-    def generate_basic_graph_with_mapping(self,  VISJS=False) -> (GraphDataStruct, dict):
+    @staticmethod
+    def generate_basic_graph_with_mapping(VISJS=False) -> (GraphDataStruct, dict):
         mapping = {}
 
         # Create a graphe structure

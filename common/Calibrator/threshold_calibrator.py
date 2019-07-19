@@ -186,11 +186,9 @@ class Calibrator:
         # de_conf = self.generate_distance_conf()  # For internal inter distance cluster that allow to test all pictures
         tmp_output_folder_algo = (output_folder / "STD_ALGO_SET")
 
-        _, tmp_calibrator_conf =  self.create_instance_and_calibrate(db_conf, fe_conf, folder_of_pictures, ground_truth_file, tmp_output_folder_algo)
-
+        _, tmp_calibrator_conf = self.create_instance_and_calibrate(db_conf, fe_conf, folder_of_pictures, ground_truth_file, tmp_output_folder_algo)
 
         return tmp_calibrator_conf
-
 
     '''
         # HASH parameters
@@ -290,7 +288,6 @@ class Calibrator:
 
         return updated_algo_conf  # perfs_list,
     '''
-
 
     @staticmethod
     def generate_feature_conf(to_calibrate_algo: Algo_conf) -> feature_extractor_conf.Default_feature_extractor_conf:
