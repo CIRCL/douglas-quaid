@@ -2,40 +2,16 @@
 # -*- coding: utf-8 -*-
 
 import argparse
-import json
 import pathlib
 import pprint
 
-
-def save_json(obj, file_path: pathlib.Path):
-    # TODO : To fix json_data = ast.literal_eval(json_data) ?
-    #  See : https://stackoverflow.com/questions/25707558/json-valueerror-expecting-property-name-line-1-column-2-char-1
-
-    # Create parents if they does not exist
-    file_path.parent.mkdir(parents=True, exist_ok=True)
-
-    with file_path.open("w", encoding="utf-8") as f:
-        json.dump(obj, f, indent=4)
-
-
-def load_json(file_path: pathlib.Path):
-    # !! : json.load() is for loading a file. json.loads() works with strings.
-    # json.loads will load a json string into a python dict, json.dumps will dump a python dict to a json string,
-
-    if file_path.is_file():
-        # We have a valid file to load
-        with open(str(file_path.resolve())) as json_file:
-            data = json.load(json_file)
-    else:
-        raise Exception(f"Cannot load the provided path to json : path is not a valid file {file_path}")
-
-    return data
+from common.ImportExport.json_import_export import save_json, load_json
 
 
 class Dataturksparser:
 
     def __init__(self):
-        self.to_export = None
+        self.to_export = []
         self.file_names_to_delete = set({})
 
     def load_file(self, inputfile_path: pathlib.Path):

@@ -8,26 +8,12 @@ import pprint
 
 import matplotlib.pyplot as plt
 import numpy as np
-
-
-def load_json(file_path: pathlib.Path):
-    # !! : json.load() is for loading a file. json.loads() works with strings.
-    # json.loads will load a json string into a python dict, json.dumps will dump a python dict to a json string,
-
-    if file_path.is_file():
-        # We have a valid file to load
-        with open(str(file_path.resolve())) as json_file:
-            data = json.load(json_file)
-    else:
-        raise Exception(f"Cannot load the provided path to json : path is not a valid file {file_path}")
-
-    return data
-
+from common.ImportExport.json_import_export import load_json
 
 class DataturksGraph:
 
     def __init__(self):
-        self.to_export = None
+        self.to_export = []
         self.file_names_to_delete = set({})
 
     def load_file(self, inputfile_path: pathlib.Path, outputfile_path: pathlib.Path):

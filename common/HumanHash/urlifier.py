@@ -2,16 +2,16 @@
 # -*- coding: utf-8 -*-
 
 import argparse
-import hashlib
 import json
 import pathlib
-from typing import Dict
 
 
 class Referencer:
 
-    def __init__(self):
-        self.already_generated = {}
+    def __init__(self, ip, port):
+        self.ip = ip
+        self.port = port
+        self.already_generated = set({})
 
     def reference_all_files(self, path: pathlib.Path):
         path = path.resolve()
@@ -22,52 +22,39 @@ class Referencer:
         # Therefore, we are sure about the order of treatment on any machine (determinism)
 
         for f in files:
-            self.check_correctness(f.name)
-            tmp_file = f.read_bytes()
-            hash_list = self.hash_file(tmp_file)
-            self.store_hash(f.name, hash_list)
+            self.store_value(f, path)
 
-        self.save_json(self.already_generated, path.parent / (str(path.name) + "_references.json"))
+        save_path = path.parent / (str(path.name) + '_url_list.txt')
+        self.save_to_text(list(self.already_generated), save_path)
 
-        print(f"Done. {len(files)} hashed and stored in.")
+        print(f"Done. {len(files)} converted in url and stored in {save_path}.")
 
     @staticmethod
-    def check_correctness(name:str):
-        if " " in name :
+    def check_correctness(name: str):
+        if " " in name:
             print("WARNING : space detected in namespace. Are you sure you renamed file correctly ?")
 
-    @staticmethod
-    def hash_file(open_file) -> Dict:
-        hash_list = {}
-
-        hash_list['md5'] = hashlib.md5(open_file).hexdigest()
-        hash_list['sha1'] = hashlib.sha1(open_file).hexdigest()
-        hash_list['sha256'] = hashlib.sha256(open_file).hexdigest()
-
-        return hash_list
-
-    def store_hash(self, name: str, hash_list):
-        self.already_generated[name] = hash_list
+    def store_value(self, name: pathlib.Path, reference_path):
+        tmp_str = "http://" + str(self.ip) + ":" + str(self.port) + "/" + str(name.relative_to(reference_path))
+        self.already_generated.add(tmp_str)
 
     @staticmethod
-    def save_json(obj, file_path: pathlib.Path):
-        # Create parents if they does not exist
-        file_path.parent.mkdir(parents=True, exist_ok=True)
-
-        with file_path.open("w", encoding="utf-8") as f:
-            json.dump(obj, f, indent=4)
-
-        print(f"File saved as {file_path}.")
+    def save_to_text(obj, file_path: pathlib.Path):
+        with open(str(file_path), 'w') as f:
+            for item in obj:
+                f.write("%s\n" % item)
 
 
 def main():
     # Usage example : python3 ./referencer.py -p ./MINI_DATASET/
     parser = argparse.ArgumentParser(description='Hash all files in the given directory and subdirectories, and saves a summary in a <Foldername>_references.json> at same level as target folder.')
     parser.add_argument('-p', '--path', dest='path', action='store', type=lambda p: pathlib.Path(p).absolute(), default=1, help='all path')
+    parser.add_argument('-i', '--ip', dest='ip', action='store', type=str, default=1, help='IP of the server to serve')
+    parser.add_argument('-t', '--port', dest='port', action='store', type=str, default=1, help='port of the server to serve')
     parser.add_argument('--version', action='version', version='humanizer %s' % "1.0.0")
 
     args = parser.parse_args()
-    referencer = Referencer()
+    referencer = Referencer(args.ip, args.port)
     referencer.reference_all_files(args.path)
 
 
