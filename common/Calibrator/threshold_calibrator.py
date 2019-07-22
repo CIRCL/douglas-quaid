@@ -122,6 +122,22 @@ class Calibrator:
                 raise Exception(f"Output folder does not exist and impossible to create it. Aborting. Please check permissions (most likely)")
 
         self.logger.debug("Paths provided checked and corrects.")
+        self.logger.debug("Verification of ground truth graph and files folder")
+
+        gt_graph = graph_datastructure.load_visjs_to_graph(ground_truth_file)
+
+        file_list = set()
+        for image_path in folder_of_pictures.iterdir():
+            if image_path.is_file():
+                file_list.add(image_path.name)
+
+        images_set, labels_set = gt_graph.get_nodes_not_included(file_list)
+
+        if len(images_set) == 0 or len(labels_set) == 0 :
+            self.logger.debug("Files names are included in the graph. Continuing ... ")
+        else :
+            self.logger.error("Files names are not included in the graph. If continuing, the calibrator will encounter error during evaluation phase. Cancelling ...")
+            raise Exception("Filenames not in ground truth file.")
 
     def calibrate_each_algo_separately(self, folder_of_pictures: pathlib.Path,
                                        ground_truth_file: pathlib.Path,

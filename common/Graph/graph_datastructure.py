@@ -3,7 +3,7 @@
 
 import logging
 import pathlib
-from typing import List, Dict
+from typing import List, Dict, Set
 from pprint import pformat
 
 import common.ImportExport.json_import_export as json_import_export
@@ -261,6 +261,41 @@ class GraphDataStruct:
             tmp_graph.add_edge(e)
 
         return tmp_graph
+
+
+
+    def get_nodes_not_included(self, list_names : Set[str]) -> (Set[str],Set[str]):
+
+        filenames_not_in_images = set()
+        filenames_not_in_labels = set()
+        nodes_images_set = set()
+        nodes_labels_set = set()
+
+        # Put nodes info in set (faster constant time retrieval)
+        for n in self.nodes.values():
+            nodes_images_set.add(n.image)
+            nodes_labels_set.add(n.label)
+
+        for f in list_names :
+            if f not in nodes_images_set :
+                filenames_not_in_images.add(f)
+
+            if f not in nodes_labels_set :
+                filenames_not_in_labels.add(f)
+
+        if len(filenames_not_in_images) == 0 :
+            self.logger.info("All file names are present in the graph (images names)")
+        else :
+            self.logger.error("File names are NOT present in the graph (images names) : ")
+            self.logger.error(pformat(filenames_not_in_images))
+
+        if len(filenames_not_in_labels) == 0 :
+            self.logger.info("All file names are present in the graph (labels)")
+        else :
+            self.logger.error("File names are NOT present in the graph (labels) : ")
+            self.logger.error(pformat(filenames_not_in_labels))
+
+        return filenames_not_in_images, filenames_not_in_labels
 
 
 def merge_graphs(visjs_graph: GraphDataStruct, db_graph: GraphDataStruct, cluster_mapping: List[ClusterMatch]) -> Dict:
