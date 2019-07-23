@@ -6,6 +6,7 @@ import logging
 import pathlib
 from pprint import pformat
 from typing import List
+import time
 
 import carlhauser_client.EvaluationTools.SimilarityGraphExtractor.similarity_graph_quality_evaluator as  graph_quality_evaluator
 import carlhauser_server.Configuration.distance_engine_conf as distance_engine_conf
@@ -23,7 +24,7 @@ from common.environment_variable import load_server_logging_conf_file
 # from carlhauser_server.Configuration.distance_engine_conf import Default_distance_engine_conf
 from carlhauser_server.Configuration.feature_extractor_conf import Default_feature_extractor_conf
 from carlhauser_server.Configuration.database_conf import Default_database_conf
-from common.environment_variable import dir_path
+from common.environment_variable import dir_path, make_big_line
 
 load_server_logging_conf_file()
 
@@ -47,11 +48,11 @@ class Calibrator:
         # self.fe_conf: feature_extractor_conf.Default_feature_extractor_conf = None
         # self.de_conf: distance_engine_conf.Default_distance_engine_conf = None
         self.test_db_handler: test_database_handler.TestInstanceLauncher = None
-        self.calibrator_conf: calibrator_conf.Default_calibrator_conf = None
+        self.cal_conf: calibrator_conf.Default_calibrator_conf = None
 
     def set_calibrator_conf(self, tmp_calibrator_conf: calibrator_conf.Default_calibrator_conf):
         self.logger.debug("Setting configuration")
-        self.calibrator_conf = tmp_calibrator_conf
+        self.cal_conf = tmp_calibrator_conf
         self.logger.debug("Validation of the configuration ... ")
         tmp_calibrator_conf.validate()
 
@@ -67,6 +68,7 @@ class Calibrator:
         :return: A list of AlgoConfiguraiton (including thresholds for YES/MAYBE/NO from their distance outputs)
         """
         self.logger.debug("Launching calibration of douglas quaid configuration ... ")
+        start_time = time.time()
 
         # Verify if path are corrects
         self.check_inputs(folder_of_pictures, ground_truth_file, output_folder)
@@ -95,6 +97,9 @@ class Calibrator:
 
         # Save algorithm evaluator results
         json_import_export.save_json(dist_conf_calibrated, output_folder / "dist_conf_calibrated.json")
+
+        make_big_line()
+        self.logger.info(f"Calibration completed in {abs(start_time-time.time())}s")
 
         return calibrated_algos
 
@@ -251,7 +256,7 @@ class Calibrator:
         perfs_list, tmp_calibrator_conf = self.get_best_thresholds(image_folder=folder_of_pictures,
                                                                    visjs_json_path=ground_truth_file,
                                                                    output_path=output_folder,
-                                                                   cal_conf=self.calibrator_conf)
+                                                                   cal_conf=self.cal_conf)
 
         # Kill server instance
         self.logger.debug(f"Shutting down Redis test instance")
@@ -919,9 +924,9 @@ if __name__ == '__main__':
 
     try:
         func = args.func
-        calibrator_conf = func(args)
+        tmp_cal_conf = func(args)
         calibrator = Calibrator()
-        calibrator.set_calibrator_conf(calibrator_conf)
+        calibrator.set_calibrator_conf(tmp_cal_conf)
         calibrator.calibrate_douglas_quaid(folder_of_pictures=pathlib.Path(args.src),
                                            ground_truth_file=pathlib.Path(args.gt),
                                            output_folder=pathlib.Path(args.dest))

@@ -158,6 +158,29 @@ class test_template(unittest.TestCase):
 
         return tmp_graph, mapping
 
+
+    def test_get_clusters(self):
+        tmp_graph = self.generate_basic_graph()
+
+        clusters = tmp_graph.get_clusters()
+        pprint.pprint(clusters)
+
+        list_id = [i.id for i in clusters]
+        list_id.sort()
+
+        self.assertEqual(list_id[0], 0)
+        self.assertEqual(list_id[1], 1)
+
+    def test_get_clusters_of(self):
+        tmp_graph = self.generate_basic_graph()
+        tmp_graph.add_node(Node(label="to_find", id="10", image=""))
+        tmp_graph.add_edge(Edge(_from="10", _to=0))
+
+        cluster = tmp_graph.get_clusters_of("10")
+        pprint.pprint(cluster)
+
+        self.assertEqual(cluster.id, 0)
+
     def test_graph_export(self):
 
         '''

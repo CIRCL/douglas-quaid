@@ -95,15 +95,24 @@ class similarity_graph_quality_evaluator:
         :param result: One request result from server
         :return: True if correct, Error if problem
         '''
+
         if result.get("request_id", None) is None:
+            print(pformat(result))
             raise Exception("Request id not set in requests result. Please review data set ?")
         elif result.get("list_pictures", None) is None:
-            raise Exception("No matched list of picture in requests result.")
-            # TODO : No pictures matched :
-            #  check if alone in gt in his cluster, if so, good. Does not participate to score ?
+
+            if result.get("status",None) == "matches_not_found" :
+                # No pictures matched :
+                return False
+            else :
+                print(pformat(result))
+                raise Exception("No matched list of picture in requests result.")
+
         elif len(result.get("list_pictures")) == 0:
+            print(pformat(result))
             raise Exception("No matched for current picture in requests result.")
             # TODO : Same as upper case
+
         return True
 
     def compute_score_for_one_threshold(self, list_results: List,
@@ -149,23 +158,36 @@ class similarity_graph_quality_evaluator:
                     if curr_matched_node.get("distance") <= dist_threshold:
                         # Even if it's request_id, it the current name of the file.
                         if gt_graph.are_names_in_same_cluster(curr_result.get("request_id"), curr_matched_node.get("image_id")):
-                            tmp_score.TP += 1
-                            tmp_score.P += 1
+                            tmp_score.TP += 1   # Match but good
+                            tmp_score.P += 1    # Should be good
 
                         else:
-                            tmp_score.FP += 1
-                            tmp_score.N += 1
+                            tmp_score.FP += 1   # No match but not good
+                            tmp_score.N += 1    # Should be not good
 
                     elif curr_matched_node.get("distance") > dist_threshold:
 
                         # Even if it's request_id, it the current name of the file.
                         if gt_graph.are_names_in_same_cluster(curr_result.get("request_id"), curr_matched_node.get("image_id")):
-                            tmp_score.FN += 1
-                            tmp_score.P += 1
+                            tmp_score.FN += 1   # No match but not good
+                            tmp_score.P += 1    # Should be good
 
                         else:
-                            tmp_score.TN += 1
-                            tmp_score.N += 1
+                            tmp_score.TN += 1   # No match but good
+                            tmp_score.N += 1    # Should be not good
+
+            else :
+                cluster = gt_graph.get_clusters_of(curr_result.get("request_id"))
+
+                if cluster is None or len(cluster.members) <= 1:
+                    # this picture has no cluster OR Only one element in the cluster,
+                    # so it's the node = Good if no match
+                    tmp_score.TN += 1   # No match but good
+                    tmp_score.N += 1    # Should be not good
+                else:
+                    # No matches, but not alone in the cluster, so should have been one.
+                    tmp_score.FN += 1   # No match but not good
+                    tmp_score.P += 1    # Should be good
 
             tmp_score.total_nb_elements = tmp_score.P + tmp_score.N
             tmp_score.compute_in_good_order()

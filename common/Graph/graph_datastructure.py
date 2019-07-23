@@ -193,6 +193,21 @@ class GraphDataStruct:
         """
         return list(self.clusters.values())
 
+    def get_clusters_of(self, node_id:str) -> cluster.Cluster:
+        """
+        Get the cluster of one node
+        Hypothesis : node is only in one cluster
+        :return: The cluster if found, None otherwise
+        """
+
+        for c in self.clusters.values():
+            for n in c.members :
+                if node_id == n :
+                    return c
+
+        return None
+
+
     def get_edges_dict(self) -> Dict[str, str]:
         """
         Returns a list of edges as a dict in the order (node_id => has edge to => cluster_id)
