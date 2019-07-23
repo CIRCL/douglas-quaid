@@ -83,7 +83,7 @@ class Calibrator:
         configuration_file = feature_extractor_conf.calibrated_algos_to_conf_file(calibrated_algos)
 
         # Save algorithm evaluator results
-        json_import_export.save_json(configuration_file, output_folder / "calibrated_db_conf.json")
+        json_import_export.save_json(configuration_file, output_folder / "calibrated_fe_conf.json")
 
         # Call evaluator on all algorithms at once, to get the threshold to constitute clusters
         calibrated_algo_set = self.calibrate_std_algo_set(folder_of_pictures, ground_truth_file, output_folder)
