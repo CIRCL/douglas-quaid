@@ -70,18 +70,19 @@ Please follow 'detailed installation instruction' if you meet any issue.
 ###### Installation
 
 ```bash
-pipenv install
-pipenv shell  
-chmod +x ./tlsh_install.sh    
-sudo ./tlsh_install.sh     
-sudo apt-get install redis
+pipenv install              # Create a virtual environment with needed dependencies
+pipenv shell                # Get into the virtual environment
+chmod +x ./tlsh_install.sh  # Make the TLSH script runnable
+sudo ./tlsh_install.sh      # Install TLSH
+sudo apt-get install redis  # Install redis
+./setup_env_vars.sh         # Setup environment variable automatically
 ```
 
 ###### Server side launch
 
 ```bash
 cd ./carlhauser_server
-pipenv run python3 ./core.py   
+pipenv run python3 ./instance_handler.py   
 ```
 
 ###### Client side launch
@@ -89,7 +90,7 @@ All approaches are equivalents. Pick the one that suits you the most.
 
 ```bash
 cd ./carlhauser_client
-pipenv run python3 ./core.py  
+pipenv run python3 ./client_instance_example.py
 ```
 
 or via CLI 
@@ -110,8 +111,7 @@ python3 ./API/cli.py dump -o ./dbdumpfile.json -m ./mapping.json -c
 or from your own custom python file
 
 ```python
-import pathlib
-from carlhauser_client.Helpers.environment_variable import get_homedir
+from common.environment_variable import get_homedir
 from carlhauser_client.API.simple_api import Simple_API
 
 # Generate the API access point link to the hardcoded server
@@ -129,23 +129,22 @@ api.add_one_picture(get_homedir() / "datasets" / "simple_pictures" / "image.jpg"
 # (...)
 
 # Request a picture matches
-request_id = api.request_similar(get_homedir() / "datasets" / "simple_pictures" / "image.bmp")[1]
+success, request_id = api.request_similar(get_homedir() / "datasets" / "simple_pictures" / "image.bmp")
 # (...)
 
 # Wait a bit
 api.poll_until_result_ready(request_id, max_time=60)
 
 # Retrieve results of the previous request (print on screen)
-results = api.get_results(request_id)[1]
+success, results = api.get_results(request_id)
 
-# Triggers a DB export of the server as-is, to be displayed with visjsclassificator. Server-side only operation.
-api.export_db_server()
+# Triggers a DB export of the server as-is, to be displayed with visjsclassificator. Dump to a file on server side too.
+success, graph = api.export_db_server()
 ```
 
 or from extended API
 ```python
-import pathlib
-from carlhauser_client.Helpers.environment_variable import get_homedir
+from common.environment_variable import get_homedir
 from carlhauser_client.API.extended_api import Extended_API
 
 # Generate the API access point link to the hardcoded server
@@ -156,14 +155,45 @@ api = Extended_API(url='https://localhost:5000/', certificate_path=cert)
 api.ping_server()
 
 # perform uploads
-api.add_many_pictures_no_wait(get_homedir() / "datasets" / "simple_pictures")
+api.add_many_pictures_and_wait_global(get_homedir() / "datasets" / "simple_pictures")
 
 # Retrieve results of the previous request (print on screen)
-results = api.request_one_picture_and_wait(get_homedir() / "datasets" / "simple_pictures" / "image.bmp")
+list_answers, nb_pics = api.request_many_pictures_and_wait_global(get_homedir() / "datasets" / "simple_pictures")
 
 # Triggers a DB export of the server as-is, to be displayed with visjsclassificator. Server-side only operation.
-db_dump = api.get_db_dump_as_graph()
+success, graph  = api.export_db_server()
 ```
+
+or with even less call
+```python
+from common.environment_variable import get_homedir
+from carlhauser_client.API.extended_api import Extended_API
+
+# Generate the API access point link to the hardcoded server
+api = Extended_API.get_api()
+
+# Ping server, and perform uploads
+api.ping_server()
+
+# Request a picture matches
+list_answers = api.add_and_request_and_dump_pictures(get_homedir() / "datasets" / "simple_pictures")
+
+# Triggers a DB export of the server as-is, to be displayed with visjsclassificator. Dump to a file on server side too.
+graph = api.export_db_server()[1]
+```
+
+or with 2 liners
+```python
+from common.environment_variable import get_homedir
+from carlhauser_client.API.extended_api import Extended_API
+
+# Generate the API access point link to the hardcoded server
+api = Extended_API.get_api()
+
+# Request a picture matches
+list_answers = api.add_and_request_and_dump_pictures(get_homedir() / "datasets" / "simple_pictures")
+```
+        
 
 ### Prerequisites
 

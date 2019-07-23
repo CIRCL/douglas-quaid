@@ -104,7 +104,7 @@ class ClientInstanceExample:
         # (...)
 
         # Request a picture matches
-        list_answers, nb_pics = api.request_many_pictures_and_wait_global(get_homedir() / "datasets" / "simple_pictures")[1]
+        list_answers, nb_pics = api.request_many_pictures_and_wait_global(get_homedir() / "datasets" / "simple_pictures")
         # (...)
 
         # Triggers a DB export of the server as-is, to be displayed with visjsclassificator. Dump to a file on server side too.
