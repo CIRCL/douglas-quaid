@@ -107,7 +107,12 @@ def calibrated_algos_to_conf_file(calibrated_algos: List[Algo_conf]) -> Default_
 
 
 def parse_from_dict(conf):
-    return namedtuple("Default_feature_extractor_configuration", conf.keys())(*conf.values())
+    tmp_conf = Default_feature_extractor_conf()
+    tmp_conf.__dict__.update(conf)
+    # Or : tmp_conf.__dict__ = conf
+
+    return tmp_conf
+    # return namedtuple("Default_feature_extractor_configuration", conf.keys())(*conf.values())
 
 
 '''
