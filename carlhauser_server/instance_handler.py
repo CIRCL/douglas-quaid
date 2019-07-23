@@ -87,6 +87,8 @@ class Instance_Handler(metaclass=template_singleton.Singleton):
         # Shutdown database
         if with_database:
             self.stop_database(wait=True)  # Wait for stop
+
+        self.check_worker()
         self.flush_workers()
 
         print("\n" + make_big_line())

@@ -156,7 +156,7 @@ class similarity_graph_quality_evaluator:
                             tmp_score.FP += 1
                             tmp_score.N += 1
 
-                    if curr_matched_node.get("distance") > dist_threshold:
+                    elif curr_matched_node.get("distance") > dist_threshold:
 
                         # Even if it's request_id, it the current name of the file.
                         if gt_graph.are_names_in_same_cluster(curr_result.get("request_id"), curr_matched_node.get("image_id")):

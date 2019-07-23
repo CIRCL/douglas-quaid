@@ -144,7 +144,7 @@ class TestClusterMatcher(unittest.TestCase):
         pprint.pprint(requests_results)
         pprint.pprint(graph_data_struct.export_as_dict())
 
-        quality_evaluator.NB_TO_CHECK = 1
+        quality_evaluator.cal_conf.NB_TO_CHECK = 1
 
         dist_threshold = 0
         stats_datastruct = quality_evaluator.compute_score_for_one_threshold(requests_results, graph_data_struct, dist_threshold)
@@ -176,7 +176,7 @@ class TestClusterMatcher(unittest.TestCase):
         self.assertAlmostEqual(stats_datastruct.FPR, 1.0, delta=0.05)
         self.assertAlmostEqual(stats_datastruct.FNR, 0.0, delta=0.05)
 
-        quality_evaluator.NB_TO_CHECK = 3
+        quality_evaluator.cal_conf.NB_TO_CHECK = 3
 
         dist_threshold = 0.5
         stats_datastruct = quality_evaluator.compute_score_for_one_threshold(requests_results, graph_data_struct, dist_threshold)

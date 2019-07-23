@@ -12,6 +12,7 @@ from carlhauser_client.API.simple_api import Simple_API
 from common.Graph.graph_datastructure import GraphDataStruct
 from common.environment_variable import load_client_logging_conf_file
 from pprint import pformat
+
 load_client_logging_conf_file()
 
 
@@ -123,7 +124,7 @@ class Extended_API(Simple_API):
                 self.logger.debug(f"Found picture to be send : {image_path}.")
 
                 # Upload the image to db
-                success, server_id = function(image_path) # Return picture id ! only !
+                success, server_id = function(image_path)  # Return picture id ! only !
 
                 if success:
                     # The upload had been successful
@@ -237,7 +238,7 @@ class Extended_API(Simple_API):
                     self.logger.error(f"Error occurred during {image_path.name} request : {e}.")
 
         # Wait until last requested picture is
-        _ = self.poll_until_result_ready(list_requests_id[len(list_requests_id)-1], max_time=-1)
+        _ = self.poll_until_result_ready(list_requests_id[len(list_requests_id) - 1], max_time=-1)
 
         for request_id in list_requests_id:
             is_success, results = self.get_results(request_id)
@@ -277,12 +278,11 @@ class Extended_API(Simple_API):
 
         # 1-  Send pictures to DB and get id mapping
         mapping_old_filename_to_new_id, nb_pictures = self.add_many_pictures_and_wait_global(image_folder)
+        # add_many_pictures_and_wait_global
+        # add_many_picture_and_wait_for_each
 
         # TODO : To remove , debug only
         json_import_export.save_json(mapping_old_filename_to_new_id, pathlib.Path(get_homedir() / "mapping_old_filename_to_new_id.json"))
-
-        # add_many_pictures_and_wait_global
-        # add_many_picture_and_wait_for_each
 
         # 2 - Get a DB dump
         list_results, nb_pictures = self.request_many_pictures_and_wait_global(image_folder)

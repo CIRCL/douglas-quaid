@@ -262,8 +262,6 @@ class GraphDataStruct:
 
         return tmp_graph
 
-
-
     def get_nodes_not_included(self, list_names : Set[str]) -> (Set[str],Set[str]):
 
         filenames_not_in_images = set()
@@ -276,12 +274,17 @@ class GraphDataStruct:
             nodes_images_set.add(n.image)
             nodes_labels_set.add(n.label)
 
+        self.logger.info(f"{len(nodes_images_set)} different node's images names in ground truth file.")
+        self.logger.info(f"{len(nodes_labels_set)} different node's labels in ground truth file.")
+
         for f in list_names :
             if f not in nodes_images_set :
                 filenames_not_in_images.add(f)
 
             if f not in nodes_labels_set :
                 filenames_not_in_labels.add(f)
+
+        self.logger.info(f"{len(list_names)} different file names in folder.")
 
         if len(filenames_not_in_images) == 0 :
             self.logger.info("All file names are present in the graph (images names)")

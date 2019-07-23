@@ -137,7 +137,7 @@ class Calibrator:
             self.logger.debug("Files names are included in the graph. Continuing ... ")
         else :
             self.logger.error("Files names are not included in the graph. If continuing, the calibrator will encounter error during evaluation phase. Cancelling ...")
-            raise Exception("Filenames not in ground truth file.")
+            raise Exception("File names not in ground truth file. Please review ground truth file or input images folder")
 
     def calibrate_each_algo_separately(self, folder_of_pictures: pathlib.Path,
                                        ground_truth_file: pathlib.Path,
@@ -256,6 +256,8 @@ class Calibrator:
         # Kill server instance
         self.logger.debug(f"Shutting down Redis test instance")
         self.test_db_handler.tearDown()
+
+        # input()
 
         return perfs_list, tmp_calibrator_conf
 
@@ -706,7 +708,7 @@ class Calibrator:
                 first_val = getattr(perfs_list[0].score, attribute)
                 last_val = getattr(perfs_list[len(perfs_list) - 1].score, attribute)
 
-                if first_val < last_val:
+                if first_val < last_val and attribute != "F1":
                     raise Exception("Graph is not decreasing ! Impossible to compute on such graph without heavy artifacts and unknown outputs. Aborting.")
 
             return threshold, max_value
@@ -908,7 +910,7 @@ if __name__ == '__main__':
     # create the parser for the "command_2" command
     parser_b = subparsers.add_parser('from_cmd_args', help='Set-up expected values/thresholds from command line [(TNR or FPR) AND (TPR or FNR)]')
     parser_b.add_argument('-AFPR', dest="AFPR", type=float, action='store', help='Acceptable False Positive Rate (target)')
-    parser_b.add_argument('-AFNR', dest="AFNR", type=float, action='store', help='Acceptable False Positive Rate (target)')
+    parser_b.add_argument('-AFNR', dest="AFNR", type=float, action='store', help='Acceptable False Negative Rate (target)')
     parser_b.add_argument('-MTPR', dest="MTPR", type=float, action='store', help='Minimum True Positive Rate (target)')
     parser_b.add_argument('-MTNR', dest="MTNR", type=float, action='store', help='Minimum True Negative Rate (target)')
     parser_b.set_defaults(func=load_from_args)
