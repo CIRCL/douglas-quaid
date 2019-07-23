@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import argparse
 import logging.config
-# ==================== ------ STD LIBRARIES ------- ====================
 import pathlib
 import signal
 import sys
 import time
 import traceback
-
+import carlhauser_server.safe_launcher as safe_launcher
 import carlhauser_server.Configuration.database_conf as database_conf
 import carlhauser_server.Configuration.distance_engine_conf as distance_engine_conf
 import carlhauser_server.Configuration.feature_extractor_conf as feature_extractor_conf
@@ -16,8 +16,8 @@ import carlhauser_server.Configuration.webservice_conf as webservice_conf
 import carlhauser_server.Singletons.database_start_stop as database_start_stop
 import carlhauser_server.Singletons.singleton as template_singleton
 import carlhauser_server.Singletons.worker_start_stop as worker_start_stop
+from carlhauser_server.Helpers import arg_parser
 from carlhauser_server.Singletons.worker_start_stop import WorkerTypes as workertype
-# ==================== ------ PERSONAL LIBRARIES ------- ====================
 from common.environment_variable import get_homedir, make_big_line
 
 # ==================== ------ PREPARATION ------- ====================
@@ -87,6 +87,8 @@ class Instance_Handler(metaclass=template_singleton.Singleton):
         # Shutdown database
         if with_database:
             self.stop_database(wait=True)  # Wait for stop
+
+        self.check_worker()
         self.flush_workers()
 
         print("\n" + make_big_line())
@@ -259,63 +261,28 @@ class Instance_Handler(metaclass=template_singleton.Singleton):
         return self.worker_startstop.kill_and_flush_workers()
 
 
-def exit_gracefully(signum, frame):
-    """
-    restore the original signal handler as otherwise evil things will happen
-    in raw_input when CTRL+C is pressed, and our signal handler is not re-entrant
-    signal.signal(signal.SIGINT, original_sigint) # TODO : To put back ?
-    :param signum: ? Automatic
-    :param frame:  ? Automatic
-    :return: ? Automatic
-    """
-
-    try:
-        stopper = Instance_Handler()
-        print("Wait for the extinction ... ")
-        stopper.stop()
-        sys.exit(1)
-
-    except KeyboardInterrupt:
-        print("You should be nicer to carl-hauser.")
-        sys.exit(1)
-
-    # restore the exit gracefully handler here
-    # signal.signal(signal.SIGINT, exit_gracefully) # TODO : To put back ?
-
-
+# Launch a server instance
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Launch a server instance. You can provide optional configuration to overwrite the default ones.')
+    parser = arg_parser.add_arg_db_conf(parser)
+    parser = arg_parser.add_arg_dist_conf(parser)
+    parser = arg_parser.add_arg_fe_conf(parser)
+    parser = arg_parser.add_arg_ws_conf(parser)
+
+    args = parser.parse_args()
+
+    db_conf, dist_conf, fe_conf, ws_conf = arg_parser.parse_conf_files(args)
+
     launcher = Instance_Handler()
 
-    try:
-        # Setting SIGINT handler
-        # original_sigint = signal.getsignal(signal.SIGINT)  # Storing original
-        signal.signal(signal.SIGINT, exit_gracefully)  # Setting custom
-        launcher.launch()
-        time.sleep(1)
+    if db_conf is not None :
+        launcher.db_conf = db_conf
+    if dist_conf is not None :
+        launcher.dist_conf = dist_conf
+    if fe_conf is not None :
+        launcher.fe_conf = fe_conf
+    if ws_conf is not None :
+        launcher.ws_conf = ws_conf
 
-        do_stop = False
-        while not do_stop:
-            print("Press any key to stop ... ")
-            input()
-            print("Are you sure you want to stop ? [yes/no] ")
-            value = input()
-            if value == "yes":
-                do_stop = True
-
-        launcher.stop()
-
-
-    except KeyboardInterrupt:
-        print('Interruption detected')
-        try:
-            print('Handling interruptions ...')
-            launcher.stop()
-            # TODO : Handle interrupt and shutdown, and clean ...
-            sys.exit(0)
-        except SystemExit:
-            traceback.print_exc(file=sys.stdout)
-    except Exception as e:
-        traceback.print_exc(file=sys.stdout)
-        print(f'Critical problem during execution {e}')
-        launcher.stop()
-        sys.exit(0)
+    sf = safe_launcher.SafeLauncher(launcher, "launch", "stop")
+    sf.launch()

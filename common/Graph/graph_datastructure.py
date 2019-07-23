@@ -3,7 +3,7 @@
 
 import logging
 import pathlib
-from typing import List, Dict
+from typing import List, Dict, Set
 from pprint import pformat
 
 import common.ImportExport.json_import_export as json_import_export
@@ -61,6 +61,7 @@ class GraphDataStruct:
         for n in nodes:
             self.nodes[n.id] = n
             self.edges.append(edge.Edge(cluster.id, n.id, color))
+            # TODO : Test + checks
 
     def add_edge(self, edge: edge.Edge):
         """
@@ -85,7 +86,7 @@ class GraphDataStruct:
 
     # ==================== Request ====================
 
-    def are_ids_in_same_cluster(self, id_1, id_2):
+    def are_ids_in_same_cluster(self, id_1, id_2) -> bool:
         """
         Return True if both nodes ids are in this cluster (by ids) # TODO : make test !
         :param id_1: first id
@@ -113,15 +114,19 @@ class GraphDataStruct:
         id_1 = None
         id_2 = None
 
-        # For each node
+        # For each node of the current graph
+        # we try to find the ones with provided names
         for n in self.nodes.values():
-            if n.image == name_1:
+            # The first name has matched
+            if n.image == name_1 or n.label == name_1:
                 id_1 = n.id
                 if not one_found:  # First id found = Continue
                     one_found = True
                 elif one_found:
                     break  # Second id found ! = Stop
-            if n.image == name_2:
+
+            # The second name provided has matched
+            if n.image == name_2 or n.label == name_2:
                 id_2 = n.id
                 if not one_found:  # First id found = Continue
                     one_found = True
@@ -187,6 +192,21 @@ class GraphDataStruct:
         :return: List of clusters of the graph
         """
         return list(self.clusters.values())
+
+    def get_clusters_of(self, node_id:str) -> cluster.Cluster:
+        """
+        Get the cluster of one node
+        Hypothesis : node is only in one cluster
+        :return: The cluster if found, None otherwise
+        """
+
+        for c in self.clusters.values():
+            for n in c.members :
+                if node_id == n :
+                    return c
+
+        return None
+
 
     def get_edges_dict(self) -> Dict[str, str]:
         """
@@ -256,6 +276,44 @@ class GraphDataStruct:
             tmp_graph.add_edge(e)
 
         return tmp_graph
+
+    def get_nodes_not_included(self, list_names : Set[str]) -> (Set[str],Set[str]):
+
+        filenames_not_in_images = set()
+        filenames_not_in_labels = set()
+        nodes_images_set = set()
+        nodes_labels_set = set()
+
+        # Put nodes info in set (faster constant time retrieval)
+        for n in self.nodes.values():
+            nodes_images_set.add(n.image)
+            nodes_labels_set.add(n.label)
+
+        self.logger.info(f"{len(nodes_images_set)} different node's images names in ground truth file.")
+        self.logger.info(f"{len(nodes_labels_set)} different node's labels in ground truth file.")
+
+        for f in list_names :
+            if f not in nodes_images_set :
+                filenames_not_in_images.add(f)
+
+            if f not in nodes_labels_set :
+                filenames_not_in_labels.add(f)
+
+        self.logger.info(f"{len(list_names)} different file names in folder.")
+
+        if len(filenames_not_in_images) == 0 :
+            self.logger.info("All file names are present in the graph (images names)")
+        else :
+            self.logger.error("File names are NOT present in the graph (images names) : ")
+            self.logger.error(pformat(filenames_not_in_images))
+
+        if len(filenames_not_in_labels) == 0 :
+            self.logger.info("All file names are present in the graph (labels)")
+        else :
+            self.logger.error("File names are NOT present in the graph (labels) : ")
+            self.logger.error(pformat(filenames_not_in_labels))
+
+        return filenames_not_in_images, filenames_not_in_labels
 
 
 def merge_graphs(visjs_graph: GraphDataStruct, db_graph: GraphDataStruct, cluster_mapping: List[ClusterMatch]) -> Dict:

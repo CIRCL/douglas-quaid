@@ -84,14 +84,23 @@ class Distance_Engine:
         # From distance between algos, obtain the distance between pictures
         merged_dict = self.get_dist_and_decision_algos_to_algos(pic_package_from, pic_package_to)
 
-        dist = self.merging_engine.merge_algos_distance(merged_dict)
-        decision = self.merging_engine.merge_algos_decision(merged_dict)
+        try :
+            dist = self.merging_engine.merge_algos_distance(merged_dict)
+        except Exception as e :
+            self.logger.critical("Error during merging of distances. Default distance taken : 1.")
+            dist = 1
+
+        try:
+            decision = self.merging_engine.merge_algos_decision(merged_dict)
+        except Exception as e :
+            self.logger.critical("Error during merging of decisions. Default decision taken : MAYBE.")
+            decision = scoring_datastrutures.DecisionTypes.MAYBE
 
         return dist, decision
 
     def match_enough(self, matching_picture: scoring_datastrutures.ImageMatch) -> bool:
         """
-        Check if a match is good enough. Compare the distance between pictures with the threshold between clsuters. Usable for storage graph.
+        Check if a match is good enough. Compare the distance between pictures with the threshold between clusters. Usable for storage graph.
         :param matching_picture: An ImageMatch object, which includes distance between pictures
         :return: boolean, True if pictures are close enough, False otherwise.
         """

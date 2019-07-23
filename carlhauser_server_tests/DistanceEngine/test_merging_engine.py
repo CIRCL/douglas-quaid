@@ -40,7 +40,8 @@ class testDistanceEngine(unittest.TestCase):
         self.merging_engine.fe_conf.D_HASH.decision_weight = 1
         self.merging_engine.fe_conf.ORB.decision_weight = 5
 
-    def get_CCC(self, choice_1 : dt, choice_2 : dt, choice_3 : dt):
+    @staticmethod
+    def get_CCC(choice_1 : dt, choice_2 : dt, choice_3 : dt):
         dict_matches = {
             "A_HASH": sd.AlgoMatch(name="A_HASH", distance=0.0, decision=choice_1),
             "P_HASH": sd.AlgoMatch(name="P_HASH", distance=0.0, decision=choice_2),
@@ -48,7 +49,8 @@ class testDistanceEngine(unittest.TestCase):
         }
         return dict_matches
 
-    def get_CCCCC(self, choice_1 : dt, choice_2 : dt, choice_3 : dt, choice_4 : dt, choice_5 : dt):
+    @staticmethod
+    def get_CCCCC(choice_1 : dt, choice_2 : dt, choice_3 : dt, choice_4 : dt, choice_5 : dt):
         dict_matches = {
             "A_HASH": sd.AlgoMatch(name="A_HASH", distance=0.0, decision=choice_1),
             "P_HASH": sd.AlgoMatch(name="P_HASH", distance=0.0, decision=choice_2),

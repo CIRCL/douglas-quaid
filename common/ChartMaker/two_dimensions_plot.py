@@ -119,7 +119,7 @@ class TwoDimensionsPlot:
 
     def save_fig(self, output_path: pathlib.Path):
         # plt.show()
-        plt.savefig(output_path, figsize=(15, 15), dpi=200)
+        plt.savefig(output_path, figsize=(20, 20), dpi=200)
         plt.clf()
         plt.cla()
         plt.close()

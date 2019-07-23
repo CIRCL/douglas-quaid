@@ -112,7 +112,8 @@ class test_template(unittest.TestCase):
     def test_absolute_truth_and_meaning(self):
         self.assertTrue(True)
 
-    def generate_basic_graph(self) -> GraphDataStruct:
+    @staticmethod
+    def generate_basic_graph() -> GraphDataStruct:
         # Create a graphe structure
         tmp_meta = Metadata(Source.DBDUMP)
         tmp_graph = GraphDataStruct(tmp_meta)
@@ -129,7 +130,8 @@ class test_template(unittest.TestCase):
 
         return tmp_graph
 
-    def generate_basic_graph_with_mapping(self,  VISJS=False) -> (GraphDataStruct, dict):
+    @staticmethod
+    def generate_basic_graph_with_mapping(VISJS=False) -> (GraphDataStruct, dict):
         mapping = {}
 
         # Create a graphe structure
@@ -155,6 +157,29 @@ class test_template(unittest.TestCase):
                 tmp_graph.add_edge(Edge(_from=cluster_id, _to=pic_id))
 
         return tmp_graph, mapping
+
+
+    def test_get_clusters(self):
+        tmp_graph = self.generate_basic_graph()
+
+        clusters = tmp_graph.get_clusters()
+        pprint.pprint(clusters)
+
+        list_id = [i.id for i in clusters]
+        list_id.sort()
+
+        self.assertEqual(list_id[0], 0)
+        self.assertEqual(list_id[1], 1)
+
+    def test_get_clusters_of(self):
+        tmp_graph = self.generate_basic_graph()
+        tmp_graph.add_node(Node(label="to_find", id="10", image=""))
+        tmp_graph.add_edge(Edge(_from="10", _to=0))
+
+        cluster = tmp_graph.get_clusters_of("10")
+        pprint.pprint(cluster)
+
+        self.assertEqual(cluster.id, 0)
 
     def test_graph_export(self):
 
@@ -423,3 +448,48 @@ class test_template(unittest.TestCase):
         self.assertTrue(edge_list[1].color, "red")
         self.assertTrue(edge_list[2].color, "orange")
         self.assertTrue(edge_list[3].color, "black")
+
+    def get_basic_graph(self):
+        graph_1 = graph_datastructure.GraphDataStruct(Metadata(Source.DBDUMP))
+        graph_1.add_cluster(Cluster(label="cluster_1", id="c1", image="image_c1"))
+        graph_1.add_cluster(Cluster(label="cluster_2", id="c2", image="image_c2"))
+        graph_1.add_cluster(Cluster(label="cluster_3", id="c3", image="image_c3"))
+
+        graph_1.add_node(Node(label="node_1", id="n1", image="image_n1"))
+        graph_1.add_node(Node(label="node_2", id="n2", image="image_n2"))
+        graph_1.add_node(Node(label="node_3", id="n3", image="image_n3"))
+        graph_1.add_node(Node(label="node_4", id="n4", image="image_n4"))
+
+        graph_1.add_edge(Edge(_from="n1", _to="c1"))
+        graph_1.add_edge(Edge(_from="n4", _to="c1"))
+        graph_1.add_edge(Edge(_from="n2", _to="c2"))
+        graph_1.add_edge(Edge(_from="n3", _to="c3"))
+
+        return graph_1
+
+    def test_are_ids_in_same_cluster(self):
+
+        graph_1 = self.get_basic_graph()
+
+        self.assertTrue(graph_1.are_ids_in_same_cluster("n1","n4"))
+        self.assertFalse(graph_1.are_ids_in_same_cluster("n1","n2"))
+        self.assertTrue(graph_1.are_ids_in_same_cluster("n2","n2"))
+        self.assertFalse(graph_1.are_ids_in_same_cluster("n2","n4"))
+
+    def test_are_names_in_same_cluster_with_label(self):
+
+        graph_1 = self.get_basic_graph()
+
+        self.assertTrue(graph_1.are_names_in_same_cluster("node_1","node_4"))
+        self.assertFalse(graph_1.are_names_in_same_cluster("node_1","node_2"))
+        self.assertTrue(graph_1.are_names_in_same_cluster("node_2","node_2"))
+        self.assertFalse(graph_1.are_names_in_same_cluster("node_2","node_4"))
+
+    def test_are_names_in_same_cluster_with_image(self):
+
+        graph_1 = self.get_basic_graph()
+
+        self.assertTrue(graph_1.are_names_in_same_cluster("image_n1","image_n4"))
+        self.assertFalse(graph_1.are_names_in_same_cluster("image_n1","image_n2"))
+        self.assertTrue(graph_1.are_names_in_same_cluster("image_n2","image_n2"))
+        self.assertFalse(graph_1.are_names_in_same_cluster("image_n2","image_n4"))

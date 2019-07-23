@@ -89,8 +89,48 @@ class ClientInstanceExample:
         # Retrieve results of the previous request
         api.get_results(request_id)
 
-        # Triggers a DB export of the server as-is, to be displayed with visjsclassificator. Server-side only operation.
-        api.export_db_server()
+        # Triggers a DB export of the server as-is, to be displayed with visjsclassificator. Dump to a file on server side too.
+        graph = api.export_db_server()[1]
+
+    @staticmethod
+    def example_automated():
+        # Generate the API access point link to the hardcoded server
+        cert = (get_homedir() / "carlhauser_client" / "cert.pem").resolve()
+        api = Extended_API(url='https://localhost:5000/', certificate_path=cert)
+
+        # Ping server, and perform uploads
+        api.ping_server()
+        api.add_many_pictures_and_wait_global(get_homedir() / "datasets" / "simple_pictures")
+        # (...)
+
+        # Request a picture matches
+        list_answers, nb_pics = api.request_many_pictures_and_wait_global(get_homedir() / "datasets" / "simple_pictures")
+        # (...)
+
+        # Triggers a DB export of the server as-is, to be displayed with visjsclassificator. Dump to a file on server side too.
+        graph = api.export_db_server()[1]
+
+    @staticmethod
+    def example_full_automated():
+        # Generate the API access point link to the hardcoded server
+        api = Extended_API.get_api()
+
+        # Ping server, and perform uploads
+        api.ping_server()
+
+        # Request a picture matches
+        list_answers = api.add_and_request_and_dump_pictures(get_homedir() / "datasets" / "simple_pictures")
+
+        # Triggers a DB export of the server as-is, to be displayed with visjsclassificator. Dump to a file on server side too.
+        graph = api.export_db_server()[1]
+
+    @staticmethod
+    def example_minimal():
+        # Generate the API access point link to the hardcoded server
+        api = Extended_API.get_api()
+
+        # Request a picture matches
+        list_answers = api.add_and_request_and_dump_pictures(get_homedir() / "datasets" / "simple_pictures")
 
 
 if __name__ == '__main__':
