@@ -147,4 +147,9 @@ def calibrator_conf_to_conf_file(cal_conf: Default_calibrator_conf) -> distance_
 
 
 def parse_from_dict(conf):
-    return namedtuple("Default_calibrator_conf", conf.keys())(*conf.values())
+    tmp_conf = Default_calibrator_conf()
+    tmp_conf.__dict__.update(conf)
+    # Or : tmp_conf.__dict__ = conf
+
+    return tmp_conf
+    # return namedtuple("Default_calibrator_conf", conf.keys())(*conf.values())

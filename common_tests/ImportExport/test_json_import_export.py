@@ -6,6 +6,7 @@ import common.ImportExport.json_import_export as json_import_export
 import logging
 import pathlib
 from common.environment_variable import get_homedir
+from carlhauser_server.Configuration.feature_extractor_conf import Default_feature_extractor_conf
 
 class testJSONImportExport(unittest.TestCase):
     """Basic test cases."""
@@ -87,7 +88,9 @@ class testJSONImportExport(unittest.TestCase):
         except Exception as e:
             self.assertTrue(False)
 
-        return
+    # def test_configuration_file_cycles(self):
+    #     # Test if a configuration can be loaded and unloaded many times in a row
+
 
 
 if __name__ == '__main__':

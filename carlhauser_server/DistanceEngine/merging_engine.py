@@ -22,7 +22,7 @@ class Merging_Engine:
         # Save configuration
         # self.db_conf = db_conf  # TODO : REMOVE = NOT USEFUL FOR NOW !
         # self.dist_conf = dist_conf  # TODO : REMOVE = NOT USEFUL FOR NOW !
-        self.fe_conf = fe_conf
+        self.fe_conf : feature_extractor_conf.Default_feature_extractor_conf = fe_conf
 
         # Transform text into Enum back.
         # TODO : Properly handle enum passed by file. Maybe https://stackoverflow.com/questions/22562425/attributeerror-cant-set-attribute-in-python ?
