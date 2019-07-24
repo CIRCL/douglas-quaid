@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+from collections import namedtuple
 
 import json
 import logging
@@ -7,7 +8,7 @@ import pathlib
 
 import common.environment_variable
 from common.environment_variable import load_server_logging_conf_file
-
+# import dataclasses
 load_server_logging_conf_file()
 
 
@@ -30,8 +31,11 @@ class Custom_JSON_Encoder(json.JSONEncoder):
         if isinstance(o, common.environment_variable.JSON_parsable_Dict):
             # If this is an object flagged as dict equivalent, parse it as a dict.
             return o.__dict__
+        # if dataclasses.is_dataclass(o):
+        #     return dataclasses.asdict(o)
+        if isinstance(o, namedtuple):
+            return o._asdict()
         return json.JSONEncoder.default(self, o)
-
 
 def save_json(obj, file_path: pathlib.Path):
     """

@@ -19,7 +19,12 @@ class Default_distance_engine_conf(JSON_parsable_Dict):
 
 
 def parse_from_dict(conf):
-    return namedtuple("Default_distance_engine_conf", conf.keys())(*conf.values())
+    tmp_conf = Default_distance_engine_conf()
+    tmp_conf.__dict__.update(conf)
+    # Or : tmp_conf.__dict__ = conf
+
+    return tmp_conf
+    # return namedtuple("Default_distance_engine_conf", conf.keys())(*conf.values())
 
 
 '''

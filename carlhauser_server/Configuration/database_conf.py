@@ -45,7 +45,12 @@ class Default_database_conf(JSON_parsable_Dict):
 
 
 def parse_from_dict(conf):
-    return namedtuple("Default_database_conf", conf.keys())(*conf.values())
+    tmp_conf = Default_database_conf()
+    tmp_conf.__dict__.update(conf)
+    # Or : tmp_conf.__dict__ = conf
+
+    return tmp_conf
+    # return namedtuple("Default_database_conf", conf.keys())(*conf.values())
 
 
 # ==================== To string ====================

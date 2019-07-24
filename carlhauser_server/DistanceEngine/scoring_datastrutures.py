@@ -18,6 +18,19 @@ class DecisionTypes(JSON_parsable_Enum, Enum):
     MAYBE = auto()
     NO = auto()
 
+    @staticmethod
+    def get_fictive_dist(decision: str):
+        # set threshold depending on Yes/Maybe/No in VisJS
+        # By creation a fictive distance, depending on the decision
+        if decision == DecisionTypes.YES.name:
+            return 0
+        elif decision == DecisionTypes.MAYBE.name:
+            return 0.5
+        elif decision == DecisionTypes.NO.name:
+            return 0.75
+        else:
+            return 1.0  # This is an error if such value is in the final graph
+
 
 class AlgoMatch:
     """
@@ -55,7 +68,7 @@ class AlgoMatch:
 #
 class ClusterMatch:
     """
-     Datastructures to handle a list of matches
+    Datastructures to handle a match, a distance/decision, from a picture to a cluster.
     """
 
     def __init__(self, cluster_id=None, distance=None, decision=None):
@@ -88,7 +101,7 @@ class ClusterMatch:
 
 class ImageMatch:
     """
-     Datastructures to handle a list of matches
+    Datastructures to handle a match, a distance/decision, from a picture to another picture.
     """
 
     def __init__(self, image_id=None, cluster_id=None, distance=None, decision=None):
@@ -124,7 +137,7 @@ class ImageMatch:
 
 class TopN:
     """
-     Datastructures to handle a list of matches
+    Datastructure to handle the top N matches of some type.
     """
 
     # TODO : Improve datastructure (priority queue, probably)

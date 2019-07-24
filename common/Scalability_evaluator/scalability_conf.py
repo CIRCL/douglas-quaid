@@ -57,9 +57,15 @@ class Default_scalability_conf(JSON_parsable_Dict):
         return self.get_str()
 
     def get_str(self):
-        return ''.join(map(str, [' thre_upper_at_least_xpercent_TPR=', self.thre_upper_at_least_xpercent_TPR,
-                                 ' thre_upper_at_most_xpercent_FNR=', self.thre_upper_at_most_xpercent_FNR]))
+        return ''.join(map(str, [' NB_PICS_TO_REQUEST=', self.NB_PICS_TO_REQUEST,
+                                 ' STARTING_NB_PICS_IN_DB=', self.STARTING_NB_PICS_IN_DB,
+                                 ' MULTIPLIER_LIST=', self.MULTIPLIER_LIST]))
 
 
 def parse_from_dict(conf):
-    return namedtuple("Default_calibrator_conf", conf.keys())(*conf.values())
+    tmp_conf = Default_scalability_conf()
+    tmp_conf.__dict__.update(conf)
+    # Or : tmp_conf.__dict__ = conf
+
+    return tmp_conf
+    # return namedtuple("Default_calibrator_conf", conf.keys())(*conf.values())

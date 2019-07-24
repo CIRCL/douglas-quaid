@@ -81,7 +81,7 @@ class Simple_API:
         r_post = self.ping_server_post()
         data_post = self.utility_extract_and_log_response(r_post)
 
-        return data_get["Called_function"] == "ping" and data_post["Called_function"] == "ping"
+        return data_get.get("Called_function", False) == "ping" and data_post.get("Called_function", False) == "ping"
 
     def ping_server_get(self) -> requests.Response:
         '''
@@ -130,7 +130,7 @@ class Simple_API:
                 # Check the JSON Response Content documentation below
                 data = self.utility_extract_and_log_response(r)
 
-                return data["Status"] == "Success", data["id"] # picture_id
+                return data.get("Status",False) == "Success", data.get("id",None) # picture_id
 
     # ================= ADD PICTURES - WAITING =================
 
@@ -179,7 +179,7 @@ class Simple_API:
             # Check the JSON Response Content documentation below
             data = self.utility_extract_and_log_response(r)
 
-            return data["Status"] == "Success", data["are_empty"]
+            return data.get("Status",False) == "Success", data.get("are_empty",None)
 
     # ================= REQUEST PICTURES =================
 
@@ -208,7 +208,7 @@ class Simple_API:
                 # Check the JSON Response Content documentation below
                 data = self.utility_extract_and_log_response(r)
 
-                return data["Status"] == "Success", data["id"] # request_id
+                return data.get("Status",False) == "Success", data.get("id", None) # request_id
 
     def get_results(self, request_id: str) -> (bool, Dict):
         '''
@@ -231,7 +231,7 @@ class Simple_API:
             data = r.json()  # Check the JSON Response Content documentation below
             self.logger.info(data)
 
-            return data["Status"] == "Success", data["results"]
+            return data.get("Status",False) == "Success", data.get("results",None)
 
     # ================= REQUEST PICTURES - WAITING =================
 
@@ -285,7 +285,7 @@ class Simple_API:
             # Check the JSON Response Content documentation below
             data = self.utility_extract_and_log_response(r)
 
-            return data["Status"] == "Success", data["is_ready"]
+            return data.get("Status",False) == "Success", data.get("is_ready",None)
 
     # ================= EXPORT AND DUMP =================
 
@@ -304,4 +304,4 @@ class Simple_API:
             # Check the JSON Response Content documentation below
             data = self.utility_extract_and_log_response(r)
 
-            return data["Status"] == "Success", data["db"]
+            return data.get("Status",False) == "Success", data.get("db",None)

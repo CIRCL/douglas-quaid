@@ -4,11 +4,7 @@
 import argparse
 import logging.config
 import pathlib
-import signal
-import sys
-import time
-import traceback
-import carlhauser_server.safe_launcher as safe_launcher
+
 import carlhauser_server.Configuration.database_conf as database_conf
 import carlhauser_server.Configuration.distance_engine_conf as distance_engine_conf
 import carlhauser_server.Configuration.feature_extractor_conf as feature_extractor_conf
@@ -16,13 +12,15 @@ import carlhauser_server.Configuration.webservice_conf as webservice_conf
 import carlhauser_server.Singletons.database_start_stop as database_start_stop
 import carlhauser_server.Singletons.singleton as template_singleton
 import carlhauser_server.Singletons.worker_start_stop as worker_start_stop
+import carlhauser_server.safe_launcher as safe_launcher
 from carlhauser_server.Helpers import arg_parser
 from carlhauser_server.Singletons.worker_start_stop import WorkerTypes as workertype
-from common.environment_variable import get_homedir, make_big_line
+from common.environment_variable import make_big_line
+from common.environment_variable import load_server_logging_conf_file
 
 # ==================== ------ PREPARATION ------- ====================
 # load the logging configuration
-logconfig_path = (get_homedir() / pathlib.Path("carlhauser_server", "logging.ini")).resolve()
+load_server_logging_conf_file()
 
 
 # ==================== ------ LAUNCHER ------- ====================
@@ -275,13 +273,13 @@ if __name__ == '__main__':
 
     launcher = Instance_Handler()
 
-    if db_conf is not None :
+    if db_conf is not None:
         launcher.db_conf = db_conf
-    if dist_conf is not None :
+    if dist_conf is not None:
         launcher.dist_conf = dist_conf
-    if fe_conf is not None :
+    if fe_conf is not None:
         launcher.fe_conf = fe_conf
-    if ws_conf is not None :
+    if ws_conf is not None:
         launcher.ws_conf = ws_conf
 
     sf = safe_launcher.SafeLauncher(launcher, "launch", "stop")

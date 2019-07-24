@@ -14,9 +14,9 @@ load_server_logging_conf_file()
 
 
 class Picture_Orber:
-    def __init__(self, fe_conf: feature_extractor_conf):
+    def __init__(self, fe_conf: feature_extractor_conf.Default_feature_extractor_conf):
         # STD attributes
-        self.fe_conf = fe_conf
+        self.fe_conf : feature_extractor_conf.Default_feature_extractor_conf = fe_conf
         self.logger = logging.getLogger(__name__)
         self.logger.info("Creation of a Picture Hasher")
         self.algo = cv2.ORB_create(nfeatures=fe_conf.ORB_KEYPOINTS_NB)
