@@ -298,4 +298,10 @@ class Extended_API(Simple_API):
         # TODO : To remove , debug only
         json_import_export.save_json(list_results, pathlib.Path(get_homedir() / "list_result_after_reversion.json"))
 
-        return list_results
+        # We guarantee that each request is not None and each request has a request_id
+        clean_list_results = [r for r in list_results if r is not None and r.get("request_id", None) is not None]
+
+        if len(list_results) != len(clean_list_results):
+            self.logger.critical(f"Errors during results fetching. {abs(len(list_results) - len(clean_list_results))} elements were null or without request id.")
+
+        return clean_list_results

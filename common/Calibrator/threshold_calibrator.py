@@ -9,6 +9,7 @@ from typing import List
 import time
 
 import carlhauser_client.EvaluationTools.SimilarityGraphExtractor.similarity_graph_quality_evaluator as  graph_quality_evaluator
+import carlhauser_client.EvaluationTools.SimilarityGraphExtractor.similarity_graph_extractor as  similarity_graph_extractor
 import carlhauser_server.Configuration.distance_engine_conf as distance_engine_conf
 import common.Calibrator.calibrator_conf as calibrator_conf
 import common.ChartMaker.two_dimensions_plot as two_dimensions_plot
@@ -403,6 +404,7 @@ class Calibrator:
         json_import_export.save_json(list_results, output_path / "requests_result.json")
         self.logger.debug(f"Results raw json saved.")
 
+        '''
         # Load ground truth file
         gt_graph = graph_datastructure.load_visjs_to_graph(visjs_json_path)
 
@@ -411,6 +413,10 @@ class Calibrator:
         perf_eval = graph_quality_evaluator.similarity_graph_quality_evaluator(cal_conf)
         perfs_list = perf_eval.get_perf_list(list_results, gt_graph)  # ==> List of scores
         self.logger.debug(f"Fetched performance list : {pformat(perfs_list)} ")
+        '''
+        # Load ground truth file and evaluate
+        graph_extractor = similarity_graph_extractor.GraphExtractor()
+        perfs_list = graph_extractor.evaluate_list_results(list_results, visjs_json_path, output_path, cal_conf)
 
         # Save to file
         json_import_export.save_json(perfs_list, output_path / "graph_perfs.json")

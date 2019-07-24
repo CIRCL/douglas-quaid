@@ -16,6 +16,8 @@ from common.Graph.graph_datastructure import GraphDataStruct
 from common.environment_variable import get_homedir
 from common.environment_variable import load_client_logging_conf_file
 import common.Calibrator.calibrator_conf as calibrator_conf
+import carlhauser_server.DistanceEngine.scoring_datastrutures as scoring_datastrutures
+import common.ChartMaker.two_dimensions_plot as two_dimensions_plot
 
 load_client_logging_conf_file()
 
@@ -64,6 +66,43 @@ class similarity_graph_quality_evaluator:
         else:
             self.logger.debug("List results and ground truth graph can't be saved : no output_folder specified.")
 
+        perfs_list = self._compute_perfs_list(list_results, gt_graph)
+
+        return perfs_list
+
+    def get_perf_list_decision(self, list_results: List,
+                      gt_graph: GraphDataStruct,
+                      output_folder: pathlib.Path):
+
+        # Build 4 list, each filtering out all except one decision type
+        self.build_list_and_evaluate_and_save_chart(list_results, gt_graph,
+                                                    [scoring_datastrutures.DecisionTypes.YES], output_folder)
+        self.build_list_and_evaluate_and_save_chart(list_results, gt_graph,
+                                                    [scoring_datastrutures.DecisionTypes.MAYBE], output_folder)
+        self.build_list_and_evaluate_and_save_chart(list_results, gt_graph,
+                                                    [scoring_datastrutures.DecisionTypes.YES,
+                                                     scoring_datastrutures.DecisionTypes.MAYBE], output_folder)
+        self.build_list_and_evaluate_and_save_chart(list_results, gt_graph,
+                                                    [scoring_datastrutures.DecisionTypes.NO], output_folder)
+
+    def build_list_and_evaluate_and_save_chart(self , list_results : List,
+                                               gt_graph: GraphDataStruct,
+                                               only_decisions : List[scoring_datastrutures.DecisionTypes],
+                                               output_folder: pathlib.Path):
+
+        # Generate name of the list
+        generated_name = "".join([d.name + "_" for d in only_decisions]) + "only"
+
+        # Filter out results
+        results_list_filtered = [self.filter_out_request_result(r, only_decisions) for r in list_results]
+        json_import_export.save_json(results_list_filtered, pathlib.Path(get_homedir() / (generated_name + ".json")))
+
+        perfs_list_filtered = self._compute_perfs_list(results_list_filtered, gt_graph)
+        # Save to graph
+        twoDplot = two_dimensions_plot.TwoDimensionsPlot()
+        twoDplot.print_graph(perfs_list_filtered, output_folder, file_name=(generated_name + ".png"))
+
+    def _compute_perfs_list(self, list_results : List, gt_graph: GraphDataStruct):
         # Init a void performance list
         perfs_list: List[perf_datastruct.Perf] = []
 
@@ -74,8 +113,8 @@ class similarity_graph_quality_evaluator:
             self.logger.info(f"Current threshold computation : {curr_threshold}")
 
             # Compute score for this threshold
-            #TODO : To remove the export (debug only)
-            json_import_export.save_json(list_results, pathlib.Path(get_homedir() / "result_file_to_be_evaluated.json"))
+            # TODO : To remove the export (debug only)
+            # json_import_export.save_json(list_results, pathlib.Path(get_homedir() / "result_file_to_be_evaluated.json"))
             tmp_score = self.compute_score_for_one_threshold(list_results, gt_graph, curr_threshold)
             self.logger.info(f"Current score for this threshold : {tmp_score}")
 
@@ -86,6 +125,33 @@ class similarity_graph_quality_evaluator:
             perfs_list.append(tmp_perf)
 
         return perfs_list
+
+    @staticmethod
+    def filter_out_request_result(request : Dict, only_decisions : List[scoring_datastrutures.DecisionTypes]):
+        # DOES NOT MODIFY REQUEST OBJECT ANY LONGER !
+
+        filtered_matches = []
+        new_request = request.copy()
+
+        '''
+        new_request["list_cluster"] = request["list_cluster"]
+        new_request["list_pictures"] = request["list_pictures"]
+        new_request["request_id"] = request["request_id"]
+        new_request["status"] = request["status"]
+        '''
+
+        # Transform decision in string
+        tmp_decision_names = [d.name for d in only_decisions]
+
+        # Filter out each match which is not in the provided decisions list
+        for match in new_request.get("list_pictures", []):
+            if match["decision"] in tmp_decision_names:
+                filtered_matches.append(match)
+
+        # Put it back in place in the request dict
+        new_request["list_pictures"] = filtered_matches
+
+        return new_request
 
     @staticmethod
     def is_correct(result: Dict):
@@ -110,7 +176,8 @@ class similarity_graph_quality_evaluator:
 
         elif len(result.get("list_pictures")) == 0:
             print(pformat(result))
-            raise Exception("No matched for current picture in requests result.")
+            return False
+            # raise Exception("No matched for current picture in requests result.")
             # TODO : Same as upper case
 
         return True
@@ -193,3 +260,4 @@ class similarity_graph_quality_evaluator:
             tmp_score.compute_in_good_order()
 
         return tmp_score
+

@@ -76,34 +76,35 @@ class Default_feature_extractor_conf(JSON_parsable_Dict):
     }, (...)
     '''
 
+
 def calibrated_algos_to_conf_file(calibrated_algos: List[Algo_conf]) -> Default_feature_extractor_conf:
-        basic_conf = Default_feature_extractor_conf()
+    basic_conf = Default_feature_extractor_conf()
 
-        # Create a dict (algo_name => algo_conf)
-        algo_name_to_conf = {}
-        for curr_calibrated_algo in calibrated_algos:
-            algo_name_to_conf[curr_calibrated_algo.algo_name] = curr_calibrated_algo
+    # Create a dict (algo_name => algo_conf)
+    algo_name_to_conf = {}
+    for curr_calibrated_algo in calibrated_algos:
+        algo_name_to_conf[curr_calibrated_algo.algo_name] = curr_calibrated_algo
 
-        # Replace algo conf (if exists ! )
-        basic_conf.A_HASH = algo_name_to_conf.get("A_HASH", basic_conf.A_HASH)
-        basic_conf.P_HASH = algo_name_to_conf.get("P_HASH", basic_conf.P_HASH)
-        basic_conf.P_HASH_SIMPLE = algo_name_to_conf.get("P_HASH_SIMPLE", basic_conf.P_HASH_SIMPLE)
-        basic_conf.D_HASH = algo_name_to_conf.get("D_HASH", basic_conf.D_HASH)
-        basic_conf.D_HASH_VERTICAL = algo_name_to_conf.get("D_HASH_VERTICAL", basic_conf.D_HASH_VERTICAL)
-        basic_conf.W_HASH = algo_name_to_conf.get("W_HASH", basic_conf.W_HASH)
-        basic_conf.TLSH = algo_name_to_conf.get("TLSH", basic_conf.TLSH)
+    # Replace algo conf (if exists ! )
+    basic_conf.A_HASH = algo_name_to_conf.get("A_HASH", basic_conf.A_HASH)
+    basic_conf.P_HASH = algo_name_to_conf.get("P_HASH", basic_conf.P_HASH)
+    basic_conf.P_HASH_SIMPLE = algo_name_to_conf.get("P_HASH_SIMPLE", basic_conf.P_HASH_SIMPLE)
+    basic_conf.D_HASH = algo_name_to_conf.get("D_HASH", basic_conf.D_HASH)
+    basic_conf.D_HASH_VERTICAL = algo_name_to_conf.get("D_HASH_VERTICAL", basic_conf.D_HASH_VERTICAL)
+    basic_conf.W_HASH = algo_name_to_conf.get("W_HASH", basic_conf.W_HASH)
+    basic_conf.TLSH = algo_name_to_conf.get("TLSH", basic_conf.TLSH)
 
-        # Visual Descriptors parameters
-        basic_conf.ORB = algo_name_to_conf.get("ORB", basic_conf.ORB)
-        # TODO : add this parameter to calibrator ? basic_conf.ORB_KEYPOINTS_NB: int = 500
+    # Visual Descriptors parameters
+    basic_conf.ORB = algo_name_to_conf.get("ORB", basic_conf.ORB)
+    # TODO : add this parameter to calibrator ? basic_conf.ORB_KEYPOINTS_NB: int = 500
 
-        # Reconstruct the list of algorithms
-        basic_conf.list_algos: List[Algo_conf] = [basic_conf.A_HASH, basic_conf.P_HASH, basic_conf.P_HASH_SIMPLE,
-                                                  basic_conf.D_HASH, basic_conf.D_HASH_VERTICAL, basic_conf.W_HASH,
-                                                  basic_conf.TLSH,
-                                                  basic_conf.ORB]
+    # Reconstruct the list of algorithms
+    basic_conf.list_algos: List[Algo_conf] = [basic_conf.A_HASH, basic_conf.P_HASH, basic_conf.P_HASH_SIMPLE,
+                                              basic_conf.D_HASH, basic_conf.D_HASH_VERTICAL, basic_conf.W_HASH,
+                                              basic_conf.TLSH,
+                                              basic_conf.ORB]
 
-        return basic_conf
+    return basic_conf
 
 
 def parse_from_dict(conf):
