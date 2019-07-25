@@ -7,71 +7,19 @@ import pathlib
 import time
 from typing import List, Set
 
-from common.environment_variable import JSON_parsable_Dict
+import carlhauser_server.Configuration.distance_engine_conf as distance_engine_conf
+import carlhauser_server.Configuration.feature_extractor_conf as feature_extractor_conf
 import common.ChartMaker.two_dimensions_plot as two_dimensions_plot
+import common.ImportExport.json_import_export as json_import_export
 import common.Scalability_evaluator.scalability_conf as scalability_conf
 import common.TestInstanceLauncher.one_db_conf as test_database_only_conf
 import common.TestInstanceLauncher.one_db_instance_launcher as test_database_handler
 from carlhauser_client.API.extended_api import Extended_API
-# from carlhauser_server.Configuration.distance_engine_conf import Default_distance_engine_conf
+from common.Scalability_evaluator.scalability_datastructures import ScalabilityData, ComputationTime, PathlibSet, Pathobject
 from common.environment_variable import dir_path
 from common.environment_variable import load_server_logging_conf_file
-import common.ImportExport.json_import_export as json_import_export
+
 load_server_logging_conf_file()
-
-
-class ComputationTime(JSON_parsable_Dict):
-    def __init__(self):
-        # Time
-        self.feature_time: float = None
-        self.adding_time: float = None
-        self.request_time: float = None
-        # Amount
-        self.nb_picture_added: int = None
-        self.nb_picture_requested: int = None
-
-    def get_sum(self):
-        return self.feature_time if not None else 0 + self.adding_time if not None else 0 + self.request_time if not None else 0
-
-    # Overwrite to print the content of the cluster instead of the cluster memory address
-    def __repr__(self):
-        return self.get_str()
-
-    def __str__(self):
-        return self.get_str()
-
-    def get_str(self):
-        return ''.join(map(str, [' \nfeature_time=', self.feature_time,
-                                 ' \nadding_time=', self.adding_time,
-                                 ' \nrequest_time=', self.request_time,
-                                 ' \nnb_picture_added=', self.nb_picture_added,
-                                 ' \nnb_picture_requested=', self.nb_picture_requested]))
-
-class ScalabilityData:
-    def __init__(self):
-        # self.response_time: float = None
-
-        # Request time of each
-        self.list_request_time: List[ComputationTime] = []
-
-    def print_data(self, output_folder: pathlib.Path, file_name: str = "scalability_graph.pdf"):
-
-        twoDplot = two_dimensions_plot.TwoDimensionsPlot()
-        twoDplot.print_Scalability_Data(self, output_folder, file_name)
-
-        # Save to file
-        json_import_export.save_json(self.list_request_time, output_folder / "scalability_graph.json")
-        print("Results scalability_graph json saved.")
-
-    # Overwrite to print the content of the cluster instead of the cluster memory address
-    def __repr__(self):
-        return self.get_str()
-
-    def __str__(self):
-        return self.get_str()
-
-    def get_str(self):
-        return ''.join(map(str, [' \nlist_request_time=', self.list_request_time]))
 
 
 class ScalabilityEvaluator:
@@ -84,17 +32,22 @@ class ScalabilityEvaluator:
         print(tmp_scalability_conf)
         self.scalability_conf: scalability_conf.Default_scalability_conf = tmp_scalability_conf
 
+    def load_pictures(self, pictures_folder: pathlib.Path) -> Set[pathlib.Path]:
+        pictures_set = set()
+
+        # Load all path to pictures in a set
+        for x in pictures_folder.resolve().glob('**/*'):  # pictures_folder.resolve().iterdir():
+            if x.is_file():
+                pictures_set.add(Pathobject(x))
+
+        return pictures_set
+
     def evaluate_scalability(self,
                              pictures_folder: pathlib.Path,
                              output_folder: pathlib.Path) -> ScalabilityData:
 
         # ==== Separate the folder files ====
-        pictures_set = set()
-
-        # Load all path to pictures in a set
-        for x in pictures_folder.resolve().glob('**/*') : # pictures_folder.resolve().iterdir():
-            if x.is_file():
-                pictures_set.add(Pathobject(x))
+        pictures_set = self.load_pictures(pictures_folder)
 
         # Extract X pictures to evaluate their matching (at each cycle, the sames)
         pictures_set, pics_to_evaluate = self.biner(pictures_set, self.scalability_conf.NB_PICS_TO_REQUEST)
@@ -104,33 +57,50 @@ class ScalabilityEvaluator:
         list_boxes_sizes = self.scalability_conf.generate_boxes(self.scalability_conf.MAX_NB_PICS_TO_SEND)
 
         # ==== Upload pictures + Make requests ====
+        scalability_data = self.get_scalability_list(list_boxes_sizes, pictures_set, pics_to_evaluate)
+
+        self.logger.info(f"Scalability data : {scalability_data}")
+        self.print_data(scalability_data, output_folder)
+
+        return scalability_data
+
+    def get_scalability_list(self, list_boxes_sizes: List[int], pictures_set: Set[pathlib.Path], pics_to_evaluate: Set[pathlib.Path],
+                             dist_conf: distance_engine_conf.Default_distance_engine_conf = distance_engine_conf.Default_distance_engine_conf(),
+                             fe_conf: feature_extractor_conf.Default_feature_extractor_conf = feature_extractor_conf.Default_feature_extractor_conf()
+                             ):
+        # ==== Upload pictures + Make requests ====
         scalability_data = ScalabilityData()
 
         # For each box
-        for curr_box_size in list_boxes_sizes:
+        for i, curr_box_size in enumerate(list_boxes_sizes):
             # Get a list of pictures to send
             pictures_set, pics_to_store = self.biner(pictures_set, curr_box_size)
 
-            # Evaluate time for this database size and store it
-            scalability_data.list_request_time.append(self.evaluate_scalability_lists(list_pictures_eval=pics_to_evaluate,
-                                                                                      list_picture_to_up=pics_to_store))
-
-        self.logger.info(f"Scalability data : {scalability_data}")
-        scalability_data.print_data(output_folder)
+            # If we are not out of pictures to send
+            if len(pics_to_store) != 0:
+                # Evaluate time for this database size and store it
+                tmp_scal_datastruct = self.evaluate_scalability_lists(list_pictures_eval=pics_to_evaluate,
+                                                                      list_picture_to_up=pics_to_store,
+                                                                      tmp_id=i)
+                scalability_data.list_request_time.append(tmp_scal_datastruct)
 
         return scalability_data
 
     def evaluate_scalability_lists(self,
                                    list_pictures_eval: Set[pathlib.Path],
                                    list_picture_to_up: Set[pathlib.Path],
-                                   ) -> ComputationTime:
+                                   tmp_id: int,
+                                   dist_conf: distance_engine_conf.Default_distance_engine_conf = distance_engine_conf.Default_distance_engine_conf(),
+                                   fe_conf: feature_extractor_conf.Default_feature_extractor_conf = feature_extractor_conf.Default_feature_extractor_conf()) -> ComputationTime:
 
         db_conf = test_database_only_conf.TestInstance_database_conf()  # For test sockets only
 
         # Launch a modified server
         self.logger.debug(f"Creation of a full instance of redis (Test only) ... ")
+
         self.test_db_handler = test_database_handler.TestInstanceLauncher()
-        self.test_db_handler.create_full_instance(db_conf=db_conf)
+
+        self.test_db_handler.create_full_instance(db_conf=db_conf, dist_conf=dist_conf, fe_conf=fe_conf)
 
         # Tricky tricky : create a fake Pathlib folder to perform the upload
         self.logger.debug(f"Faking pathlib folders ... ")
@@ -165,6 +135,7 @@ class ScalabilityEvaluator:
         resp_time.request_time = stop_request
         resp_time.nb_picture_added = len(list_picture_to_up)
         resp_time.nb_picture_requested = len(list_pictures_eval)
+        resp_time.iteration = tmp_id
 
         # Kill server instance
         self.logger.debug(f"Shutting down Redis test instance")
@@ -182,19 +153,13 @@ class ScalabilityEvaluator:
 
         return potential_pictures, bin_set
 
+    def print_data(self, scalabilitygraph: ScalabilityData, output_folder: pathlib.Path, file_name: str = "scalability_graph.pdf"):
+        twoDplot = two_dimensions_plot.TwoDimensionsPlot()
+        twoDplot.print_scalability_data(scalabilitygraph, output_folder, file_name)
 
-# Tricky construction to make the API believe we are passing a flder of pictures
-class Pathobject(pathlib.PosixPath):
-    def is_file(self):
-        return True
-
-
-class PathlibSet():
-    def __init__(self, myset: Set):
-        self.set = myset
-
-    def iterdir(self):
-        return list(self.set)
+        # Save to file
+        json_import_export.save_json(scalabilitygraph.list_request_time, output_folder / "scalability_graph.json")
+        self.logger.info("Results scalability_graph json saved.")
 
 
 # Launcher for this worker. Launch this file to launch a worker

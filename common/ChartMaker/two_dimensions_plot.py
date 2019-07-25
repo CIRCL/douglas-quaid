@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 
 import common.Calibrator.calibrator_conf as calibrator_conf
 from common.PerformanceDatastructs.perf_datastruct import Perf
-from common.Scalability_evaluator.scalability_evaluator import ScalabilityData
+from common.Scalability_evaluator.scalability_datastructures import ScalabilityData
 from common.environment_variable import load_server_logging_conf_file
 
 load_server_logging_conf_file()
@@ -49,7 +49,7 @@ class TwoDimensionsPlot:
 
         self.save_fig(output_path=output_file)
 
-    def print_Scalability_Data(self, scalability_data: ScalabilityData, output_path: pathlib.Path,
+    def print_scalability_data(self, scalability_data: ScalabilityData, output_path: pathlib.Path,
                                file_name: str = "scalability_graph.png", title: str = None):
         # Print a graph of the performance results
 
@@ -154,7 +154,7 @@ class TwoDimensionsPlot:
     def plot_ScalabilityData(self, scalability_data: ScalabilityData, normalized: bool = True):
 
         # Sort the list of request time, increasing order
-        scalability_data.list_request_time.sort(key=lambda c: c.nb_picture_added)
+        scalability_data.list_request_time.sort(key=lambda c: c.iteration)
 
         # Create coordinates lists
         vertical_coords_feature_time = []
