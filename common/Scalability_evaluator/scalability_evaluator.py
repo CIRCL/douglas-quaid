@@ -15,7 +15,7 @@ from carlhauser_client.API.extended_api import Extended_API
 # from carlhauser_server.Configuration.distance_engine_conf import Default_distance_engine_conf
 from common.environment_variable import dir_path
 from common.environment_variable import load_server_logging_conf_file
-
+import common.ImportExport.json_import_export as json_import_export
 load_server_logging_conf_file()
 
 
@@ -32,6 +32,19 @@ class ComputationTime:
     def get_sum(self):
         return self.feature_time if not None else 0 + self.adding_time if not None else 0 + self.request_time if not None else 0
 
+    # Overwrite to print the content of the cluster instead of the cluster memory address
+    def __repr__(self):
+        return self.get_str()
+
+    def __str__(self):
+        return self.get_str()
+
+    def get_str(self):
+        return ''.join(map(str, [' \nfeature_time=', self.feature_time,
+                                 ' \nadding_time=', self.adding_time,
+                                 ' \nrequest_time=', self.request_time,
+                                 ' \nnb_picture_added=', self.nb_picture_added,
+                                 ' \nnb_picture_requested=', self.nb_picture_requested]))
 
 class ScalabilityData:
     def __init__(self):
@@ -42,11 +55,21 @@ class ScalabilityData:
 
     def print_data(self, output_folder: pathlib.Path, file_name: str = "scalability_graph.pdf"):
         # Save to file
-        # json_import_export.save_json(list_results, output_path / "requests_result.json")
-        # self.logger.debug(f"Results raw json saved.")
+        json_import_export.save_json(self.list_request_time, output_folder / "scalability_graph.json")
+        self.logger.debug(f"Results scalability_graph json saved.")
 
         twoDplot = two_dimensions_plot.TwoDimensionsPlot()
         twoDplot.print_Scalability_Data(self, output_folder, file_name)
+
+    # Overwrite to print the content of the cluster instead of the cluster memory address
+    def __repr__(self):
+        return self.get_str()
+
+    def __str__(self):
+        return self.get_str()
+
+    def get_str(self):
+        return ''.join(map(str, [' \nlist_request_time=', self.list_request_time]))
 
 
 class ScalabilityEvaluator:
@@ -90,6 +113,7 @@ class ScalabilityEvaluator:
             scalability_data.list_request_time.append(self.evaluate_scalability_lists(list_pictures_eval=pics_to_evaluate,
                                                                                       list_picture_to_up=pics_to_store))
 
+        self.logger.info(f"Scalability data : {scalability_data}")
         scalability_data.print_data(output_folder)
 
         return scalability_data

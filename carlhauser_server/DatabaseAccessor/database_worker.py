@@ -127,7 +127,8 @@ class Database_Worker:
                     to_split = str(tmp_id.decode('utf-8'))
 
                 stored_queue_name, stored_id = to_split.split("|")
-                # TODO : Handle removal ? self.cache_db.delete(tmp_id) ==> Already expire time (24H)
+
+                # Handle removal = self.cache_db.delete(tmp_id) ==> even if already expire time (24H)
                 self.logger.info("Data had been removed as it had been fetched ! ")
                 storage.delete(tmp_id)
 

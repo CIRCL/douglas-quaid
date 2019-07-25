@@ -168,27 +168,27 @@ class TwoDimensionsPlot:
             curr_nb_pictures += computation_time.nb_picture_added
             horizontal_coords.append(curr_nb_pictures)
 
-
-            if normalized :
-                if computation_time.nb_picture_added != 0 and computation_time.nb_picture_added is not None and computation_time.feature_time is not None :
+            if normalized:
+                if computation_time.nb_picture_added != 0 and computation_time.nb_picture_added is not None and computation_time.feature_time is not None:
                     vertical_coords_feature_time.append(computation_time.feature_time / computation_time.nb_picture_added)
-                if computation_time.nb_picture_added != 0 and computation_time.nb_picture_added is not None and computation_time.adding_time is not None :
+                else:
+                    vertical_coords_feature_time.append(0)
+                if computation_time.nb_picture_added != 0 and computation_time.nb_picture_added is not None and computation_time.adding_time is not None:
                     vertical_coords_adding_time.append(computation_time.adding_time / computation_time.nb_picture_added)
-                # else:
-                #     vertical_coords_feature_time.append(0)
-                #     vertical_coords_adding_time.append(0)
+                else:
+                    vertical_coords_adding_time.append(0)
 
-                if computation_time.nb_picture_requested != 0 and computation_time.nb_picture_requested is not None and computation_time.request_time is not None :
+                if computation_time.nb_picture_requested != 0 and computation_time.nb_picture_requested is not None and computation_time.request_time is not None:
                     vertical_coords_request_time.append(computation_time.request_time / computation_time.nb_picture_requested)
-                # else:
-                #     vertical_coords_request_time.append(0)
+                else:
+                    vertical_coords_request_time.append(0)
 
             else:
-                if  computation_time.feature_time is not None :
+                if computation_time.feature_time is not None:
                     vertical_coords_feature_time.append(computation_time.feature_time)
-                if  computation_time.adding_time is not None :
+                if computation_time.adding_time is not None:
                     vertical_coords_adding_time.append(computation_time.adding_time)
-                if  computation_time.request_time is not None :
+                if computation_time.request_time is not None:
                     vertical_coords_request_time.append(computation_time.request_time)
 
         self.logger.info(f"Feature time : {vertical_coords_feature_time}")
@@ -198,13 +198,13 @@ class TwoDimensionsPlot:
 
         # order :  absciss followed by ordinates
         list_legend = []
-        if len(vertical_coords_feature_time) != 0 :
+        if len(vertical_coords_feature_time) != 0:
             plt.plot(horizontal_coords, vertical_coords_feature_time)
             list_legend.append('Feature time')
-        if len(vertical_coords_adding_time) != 0 :
+        if len(vertical_coords_adding_time) != 0:
             plt.plot(horizontal_coords, vertical_coords_adding_time)
             list_legend.append('Adding time')
-        if len(vertical_coords_request_time) != 0 :
+        if len(vertical_coords_request_time) != 0:
             plt.plot(horizontal_coords, vertical_coords_request_time)
             list_legend.append('Request time')
 
