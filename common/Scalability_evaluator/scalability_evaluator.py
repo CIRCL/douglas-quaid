@@ -90,7 +90,7 @@ class ScalabilityEvaluator:
         pictures_set = set()
 
         # Load all path to pictures in a set
-        for x in pictures_folder.resolve().iterdir():
+        for x in pictures_folder.resolve().glob('**/*') : # pictures_folder.resolve().iterdir():
             if x.is_file():
                 pictures_set.add(Pathobject(x))
 
