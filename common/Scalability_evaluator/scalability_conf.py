@@ -18,6 +18,7 @@ class Default_scalability_conf(JSON_parsable_Dict):
 
         self.STARTING_NB_PICS_IN_DB = 5
         self.MULTIPLIER_LIST = [2, 5]
+        self.MAX_NB_PICS_TO_SEND = 100000
 
     def generate_boxes(self, max_nb_pictures: int) -> List[int]:
         """
