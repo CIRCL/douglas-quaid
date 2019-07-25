@@ -7,6 +7,7 @@ import pathlib
 import time
 from typing import List, Set
 
+from common.environment_variable import JSON_parsable_Dict
 import common.ChartMaker.two_dimensions_plot as two_dimensions_plot
 import common.Scalability_evaluator.scalability_conf as scalability_conf
 import common.TestInstanceLauncher.one_db_conf as test_database_only_conf
@@ -19,7 +20,7 @@ import common.ImportExport.json_import_export as json_import_export
 load_server_logging_conf_file()
 
 
-class ComputationTime:
+class ComputationTime(JSON_parsable_Dict):
     def __init__(self):
         # Time
         self.feature_time: float = None
@@ -54,12 +55,13 @@ class ScalabilityData:
         self.list_request_time: List[ComputationTime] = []
 
     def print_data(self, output_folder: pathlib.Path, file_name: str = "scalability_graph.pdf"):
-        # Save to file
-        json_import_export.save_json(self.list_request_time, output_folder / "scalability_graph.json")
-        self.logger.debug(f"Results scalability_graph json saved.")
 
         twoDplot = two_dimensions_plot.TwoDimensionsPlot()
         twoDplot.print_Scalability_Data(self, output_folder, file_name)
+
+        # Save to file
+        json_import_export.save_json(self.list_request_time, output_folder / "scalability_graph.json")
+        print("Results scalability_graph json saved.")
 
     # Overwrite to print the content of the cluster instead of the cluster memory address
     def __repr__(self):
