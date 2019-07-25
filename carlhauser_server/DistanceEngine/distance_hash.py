@@ -85,7 +85,6 @@ class Distance_Hash:
 
         if pic_package_from.get(algo_name, None) is None or pic_package_to.get(algo_name, None) is None:
             self.logger.warning(f"Algo hashes values are NOT presents in the results.")
-            input()
         else:
             self.logger.debug(f"Algo hashes values are presents in the results.")
 
