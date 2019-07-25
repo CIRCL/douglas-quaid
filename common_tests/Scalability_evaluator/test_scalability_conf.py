@@ -23,5 +23,9 @@ class test_scalability_conf(unittest.TestCase):
         self.logger.info("List boxes generated : ")
         self.logger.info(list_boxes)
 
+        l =[10, 50, 100, 500, 1000, 5000, 10000]
+        self.assertListEqual(l, list_boxes)
+
+
 if __name__ == '__main__':
     unittest.main()
