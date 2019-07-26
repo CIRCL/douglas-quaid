@@ -26,7 +26,8 @@ class ScalabilityEvaluatorWithThreshold(ScalabilityEvaluator):
                                             nbiter: int) -> List[ScalabilityData]:
         # Put TOTAL-X pictures into boxes (10, 50, 100, 500, 1000, 5000, 10000, 50000, 100000 ...)
         # Generate the boxes
-        list_boxes_sizes = self.scalability_conf.generate_boxes(self.scalability_conf.MAX_NB_PICS_TO_SEND)
+        # list_boxes_sizes = self.scalability_conf.generate_boxes(self.scalability_conf.MAX_NB_PICS_TO_SEND)
+        list_boxes_sizes = self.scalability_conf.generate_boxes_linear(self.scalability_conf.MAX_NB_PICS_TO_SEND)
 
         nb_pts = nbiter
         min_thre = 0.01
@@ -37,12 +38,17 @@ class ScalabilityEvaluatorWithThreshold(ScalabilityEvaluator):
         for i in range(nb_pts):
             # ==== Separate the folder files ====
             pictures_set = self.load_pictures(pictures_folder)
+            # Ex :  Load the list of XXX pictures
 
             # Extract X pictures to evaluate their matching (at each cycle, the sames)
             pictures_set, pics_to_evaluate = self.biner(pictures_set, self.scalability_conf.NB_PICS_TO_REQUEST)
+            self.logger.info(f"Nb of pictures to be uploaded in many passes : {len(pictures_set)}")
+            self.logger.info(f"Nb of pictures to request : {len(pics_to_evaluate)}")
+            # Ex :  XXX pictures to use later + 10 pictures to request
 
             # Computing the new threshold
             curr_threshold = i * ((max_thre - min_thre) / nb_pts)
+            self.logger.info(f"Current threshold scalability test : {curr_threshold}")
 
             # Generate configuration file
             dist_conf = distance_engine_conf.Default_distance_engine_conf()
@@ -52,7 +58,6 @@ class ScalabilityEvaluatorWithThreshold(ScalabilityEvaluator):
             # ==== Upload pictures + Make requests ====
             scalability_data = self.get_scalability_list(list_boxes_sizes, pictures_set, pics_to_evaluate, dist_conf=dist_conf)
             scalability_data.threshold_cluster = curr_threshold
-
             self.logger.info(f"Scalability data : {scalability_data}")
 
             # Create folder and store data

@@ -155,6 +155,7 @@ class DBUtilities:
         for c in clusters_list :
             nb_pics += len(self.get_pictures_of_cluster(c))
 
+        self.logger.debug(f"Number of pictures in database : {nb_pics}")
         return nb_pics
 
     @staticmethod

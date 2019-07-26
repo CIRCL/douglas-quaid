@@ -18,6 +18,7 @@ class ComputationTime(JSON_parsable_Dict):
         self.request_time: float = None
         # Amount
         self.nb_picture_added: int = None
+        self.nb_picture_total_in_db: int = None
         self.nb_picture_requested: int = None
         self.iteration: int = None
 
