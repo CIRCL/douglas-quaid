@@ -24,12 +24,6 @@ class ScalabilityEvaluatorWithThreshold(ScalabilityEvaluator):
                                             pictures_folder: pathlib.Path,
                                             output_folder: pathlib.Path,
                                             nbiter: int) -> List[ScalabilityData]:
-        # ==== Separate the folder files ====
-        pictures_set = self.load_pictures(pictures_folder)
-
-        # Extract X pictures to evaluate their matching (at each cycle, the sames)
-        pictures_set, pics_to_evaluate = self.biner(pictures_set, self.scalability_conf.NB_PICS_TO_REQUEST)
-
         # Put TOTAL-X pictures into boxes (10, 50, 100, 500, 1000, 5000, 10000, 50000, 100000 ...)
         # Generate the boxes
         list_boxes_sizes = self.scalability_conf.generate_boxes(self.scalability_conf.MAX_NB_PICS_TO_SEND)
@@ -40,8 +34,13 @@ class ScalabilityEvaluatorWithThreshold(ScalabilityEvaluator):
 
         # TODO : Factorize axis iteration in one function, already used in calibrator.
         list_scalability_data = []
-
         for i in range(nb_pts):
+            # ==== Separate the folder files ====
+            pictures_set = self.load_pictures(pictures_folder)
+
+            # Extract X pictures to evaluate their matching (at each cycle, the sames)
+            pictures_set, pics_to_evaluate = self.biner(pictures_set, self.scalability_conf.NB_PICS_TO_REQUEST)
+
             # Computing the new threshold
             curr_threshold = i * ((max_thre - min_thre) / nb_pts)
 

@@ -155,17 +155,16 @@ class WorkerProcessus:
         self.logger.debug(f"Worker stopped after {round(abs(time.time() - start), 3)}s.")
         return True
 
-    def monitor_worker(self, interval : int = 1):
+    def monitor_worker(self, interval: int = 1):
 
         # Create path where to save pictures and logs
         curr_name = str(self.worker_path.name) + "_at_" + str(self.start_time)
-        logpath = pathlib.Path("./" + curr_name + ".log")
-        graphpath = pathlib.Path("./" + curr_name + ".pdf")
+        logpath = pathlib.Path(get_homedir() /  (curr_name + ".log"))
+        graphpath = pathlib.Path(get_homedir() / (curr_name + ".pdf"))
         # monitor(self.process.pid, logfile=logpath, plot=graphpath, include_children=True)
         # pid, logfile = None, plot = None, duration = None, interval = None,
-        include_children = False
         # Launch the monitoring process
-        Process(target=monitor, args=(self.process.pid,str(logpath),str(graphpath), interval, True))
+        Process(target=monitor, args=(self.process.pid, str(logpath), str(graphpath), interval, True))
 
     # ==================== To string ====================
 

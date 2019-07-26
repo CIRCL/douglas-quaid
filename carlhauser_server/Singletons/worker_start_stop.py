@@ -122,6 +122,7 @@ class Worker_StartStop(object, metaclass=Singleton):
 
             # Monitor the worker if asked to
             if self.db_conf.MONITOR_WORKER:
+                self.logger.info(f"Monitoring is being added on the Worker PID")
                 tmp_worker_process.monitor_worker(self.db_conf.MONITOR_RATE)
 
             # Store its reference (as new member of the list of the good type)

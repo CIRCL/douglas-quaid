@@ -69,12 +69,12 @@ class GraphExtractor:
         return perfs_list
 
     def get_proximity_graph(self, image_folder: pathlib.Path, output_path: pathlib.Path) -> (List[Dict], GraphDataStruct):
-        '''
+        """
         Extract a proximity graph from a folder of pictures, sent to DB and requested one by one.
         :param image_folder: The folder of picture to send and request, to build the similarity graph from
         :param output_path: The output path where the graph and other data will be stored
         :return: the proximity graph
-        '''
+        """
 
         # Get distance results for each picture
         # list_results = self.ext_api.add_and_request_and_dump_pictures(image_folder)
@@ -106,14 +106,14 @@ class GraphExtractor:
 
     @staticmethod
     def results_list_to_graph(requests_list, nb_match: int = 1, yes_maybe_no_mode: bool = False) -> GraphDataStruct:
-        '''
+        """
         Construct a graph from results list of requests on the database
         Hypothesis : All database pictures are requested pictures
         Edges are colored : from green to red depending on the match index (Best is green)
         :param requests_list: a List of results extracted from server
         :param nb_match: Number of matches per pictures to add to the graph (1=first level match/best match, 2 = 2 best match per picture, etc.)
         :return: A graph datastructure
-        '''
+        """
         logger = logging.getLogger(__name__)
         # logger.debug(f"Received request_list : {pformat(requests_list)}")
 

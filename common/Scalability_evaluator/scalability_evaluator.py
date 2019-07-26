@@ -28,7 +28,7 @@ class ScalabilityEvaluator:
         self.logger = logging.getLogger()
         self.ext_api: Extended_API = Extended_API.get_api()
 
-        self.test_db_handler: test_database_handler.TestInstanceLauncher = None
+        # self.test_db_handler: test_database_handler.TestInstanceLauncher = None
         print(tmp_scalability_conf)
         self.scalability_conf: scalability_conf.Default_scalability_conf = tmp_scalability_conf
 
@@ -81,7 +81,9 @@ class ScalabilityEvaluator:
                 # Evaluate time for this database size and store it
                 tmp_scal_datastruct = self.evaluate_scalability_lists(list_pictures_eval=pics_to_evaluate,
                                                                       list_picture_to_up=pics_to_store,
-                                                                      tmp_id=i)
+                                                                      tmp_id=i,
+                                                                      dist_conf=dist_conf,
+                                                                      fe_conf=fe_conf)
                 scalability_data.list_request_time.append(tmp_scal_datastruct)
 
         return scalability_data
@@ -98,9 +100,9 @@ class ScalabilityEvaluator:
         # Launch a modified server
         self.logger.debug(f"Creation of a full instance of redis (Test only) ... ")
 
-        self.test_db_handler = test_database_handler.TestInstanceLauncher()
+        test_db_handler = test_database_handler.TestInstanceLauncher()
 
-        self.test_db_handler.create_full_instance(db_conf=db_conf, dist_conf=dist_conf, fe_conf=fe_conf)
+        test_db_handler.create_full_instance(db_conf=db_conf, dist_conf=dist_conf, fe_conf=fe_conf)
 
         # Tricky tricky : create a fake Pathlib folder to perform the upload
         self.logger.debug(f"Faking pathlib folders ... ")
@@ -139,7 +141,7 @@ class ScalabilityEvaluator:
 
         # Kill server instance
         self.logger.debug(f"Shutting down Redis test instance")
-        self.test_db_handler.tearDown()
+        test_db_handler.tearDown()
 
         return resp_time
 
