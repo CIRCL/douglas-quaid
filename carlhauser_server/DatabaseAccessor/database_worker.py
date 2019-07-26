@@ -199,7 +199,6 @@ class Database_Worker:
         return fetched_dict
 
     # ==================== ------ GET/SET IMAGES ------- ====================
-
     def add_picture_to_storage(self, storage: redis.Redis, input_id: str, image_dict: dict) -> bool:
         """
         Store images as pickled dict in the provided storage
@@ -246,7 +245,6 @@ class Database_Worker:
         return self.get_dict_from_key(storage, tmp_id, pickle=True)
 
     # ==================== ------ CHECK QUEUE EMPTINESS ------- ====================
-
     def are_all_queues_empty(self) -> bool:
         """
         Check if all queues (TO ADD, TO REQUEST, etc.) are empty

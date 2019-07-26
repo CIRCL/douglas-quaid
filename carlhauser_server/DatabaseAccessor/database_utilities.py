@@ -143,6 +143,20 @@ class DBUtilities:
         # Get the list of pictures associated of the given cluster
         return self.db_access_decode.zrange(self.get_setname_of_cluster(cluster_name), 0, -1, withscores=with_score)  # SORTED SET
 
+    def get_nb_stored_pictures(self) -> int:
+        """
+        Retrieve the number of stored pictures
+        :return: the number of pictures
+        """
+        self.logger.debug(f"Retrieving the number of pictures in the database")
+
+        clusters_list = self.get_cluster_list()
+        nb_pics = 0
+        for c in clusters_list :
+            nb_pics += len(self.get_pictures_of_cluster(c))
+
+        return nb_pics
+
     @staticmethod
     def get_setname_of_cluster(cluster_name: str) -> str:
         """
