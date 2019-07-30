@@ -153,8 +153,8 @@ class ScalabilityEvaluator:
         resp_time = ComputationTime()
         resp_time.adding_time = stop_upload
         resp_time.request_time = stop_request
-        resp_time.nb_picture_added = len(list_picture_to_up)
-        resp_time.nb_picture_requested = len(list_pictures_eval)
+        resp_time.nb_picture_added = nb_pictures_add
+        resp_time.nb_picture_requested = nb_pictures_req
         resp_time.iteration = tmp_id
 
         return resp_time

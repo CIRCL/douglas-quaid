@@ -6,7 +6,7 @@ import logging
 import pathlib
 import time
 import unittest
-
+from pprint import pformat
 import cv2
 import redis
 
@@ -22,14 +22,14 @@ from carlhauser_server.Configuration.algo_conf import Algo_conf
 from common.environment_variable import QueueNames
 from common.environment_variable import get_homedir
 from carlhauser_server.DatabaseAccessor.database_utilities import DBUtilities
-
+from carlhauser_client.API.extended_api import Extended_API
 
 class testDBAdder(unittest.TestCase):
     """Basic test cases."""
 
     def setUp(self):
         self.logger = logging.getLogger()
-        self.test_file_path = get_homedir() / pathlib.Path("carlhauser_server_tests/test_DistanceEngine/")
+        self.test_file_path = get_homedir() / pathlib.Path("carlhauser_server_tests/DatabaseAccessor/DBUtils")
 
         # Create configurations
         self.test_db_conf = test_database_only_conf.TestInstance_database_conf()
@@ -55,6 +55,17 @@ class testDBAdder(unittest.TestCase):
 
         nb = self.db_utils.get_nb_stored_pictures()
         self.assertEqual(nb, 4)
+
+    def test_get_nb_stored_pictures_a_lot(self):
+        api = Extended_API.get_api()
+        mapping, nb_pics_sent = api.add_many_pictures_and_wait_global(image_folder =  self.test_file_path / "MINI_DATASET")
+
+        nb = self.db_utils.get_nb_stored_pictures()
+
+        self.logger.info(pformat(mapping))
+
+        self.assertEqual(nb, nb_pics_sent)
+        self.assertEqual(nb, 46)
 
     def test_absolute_truth_and_meaning(self):
         self.assertTrue(True)
