@@ -4,11 +4,9 @@
 import argparse
 import hashlib
 import pathlib
-import pprint
 import shutil
 from pprint import pformat
 from typing import Dict, Set
-from codenamize import codenamize
 
 
 class Deduplicator:
@@ -18,7 +16,7 @@ class Deduplicator:
 
     def deduplicate_folder_to(self, path: pathlib.Path, output_path: pathlib.Path):
 
-        if not output_path.resolve().exists() :
+        if not output_path.resolve().exists():
             output_path.resolve().mkdir(exist_ok=True)
 
         p = path.resolve().glob('**/*')
@@ -34,13 +32,16 @@ class Deduplicator:
 
         set_dict: Dict[str, Set[pathlib.Path]] = {}
 
-        for file in files:
+        for i, file in enumerate(files):
             # Open file
             with open(str(file), "rb") as f:
-                bytes = f.read()  # read entire file as bytes
+                if i % 20 == 0 :
+                    print(f"Hashing {f.name} and 20 other")
+
+                tmp_bytes = f.read()  # read entire file as bytes
 
                 # compute sha1
-                sha256 = self.get_hash(bytes)
+                sha256 = self.get_hash(tmp_bytes)
 
                 # Store file path in a mapping sha256 -> all file paths
                 if sha256 not in set_dict:
@@ -72,7 +73,7 @@ class Deduplicator:
 
         print(f"Number of files in original folder : {len(files)}")
         print(f"Done. {nb_remove} duplicated files not copied.")
-        print(f"Done. {len(files)-nb_remove} not duplicated files copied.")
+        print(f"Done. {len(files) - nb_remove} not duplicated files copied.")
 
     @staticmethod
     def get_hash(content) -> str:
@@ -80,7 +81,7 @@ class Deduplicator:
 
 
 def main():
-    # Usage example : python3 ./humanizer.py -p ./MINI_DATASET/
+    # Usage example : python3 ./deduplicator.py -p ./../../../DATASETS/PHISHING/PHISHING-DATASET-SORTED/ -o ./../../../DATASETS/PHISHING/PHISHING-DATASET-SORTED-DEDUPLICATED/
     parser = argparse.ArgumentParser(description='Check all files in the given directory and subdirectory for duplicates (strict, by hash) and remove them upon validation')
     parser.add_argument('-p', '--path', dest='path', action='store', type=lambda p: pathlib.Path(p).absolute(), help='input path')
     parser.add_argument('-o', '--outpath', dest='outpath', action='store', type=lambda p: pathlib.Path(p).absolute(), help='output path')
