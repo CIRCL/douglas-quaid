@@ -4,7 +4,7 @@
 
 import logging
 from typing import List, Dict
-
+from carlhauser_server.DistanceEngine.scoring_datastrutures import DecisionTypes as dt
 import carlhauser_server.Configuration.database_conf as database_conf
 import carlhauser_server.Configuration.distance_engine_conf as distance_engine_conf
 import carlhauser_server.Configuration.feature_extractor_conf as feature_extractor_conf
@@ -111,7 +111,10 @@ class Distance_Engine:
         # Check if the picture is too far or not
         if matching_picture.distance <= self.dist_conf.MAX_DIST_FOR_NEW_CLUSTER:
             return True
-        # TODO : Use decision ?
+
+        # TODO : Check for decisions
+        if matching_picture.decision == dt.YES.name or matching_picture.decision == dt.MAYBE.name :
+            return True
 
         # Picture is too "far"
         return False

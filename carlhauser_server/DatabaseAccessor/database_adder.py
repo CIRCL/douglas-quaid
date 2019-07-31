@@ -54,7 +54,6 @@ class Database_Adder(database_common.Database_Common):
             self.db_utils.add_picture_to_cluster(fetched_id, cluster_id)
 
             # Re-evaluate representative picture(s) of cluster
-            # TODO : TO ADD
             self.reevaluate_representative_picture_order(cluster_id, fetched_id=fetched_id)
             self.logger.info(f"Picture added in existing cluster : {cluster_id}")
 
@@ -66,7 +65,6 @@ class Database_Adder(database_common.Database_Common):
             self.logger.info(f"Picture added in its own new cluster : {cluster_id}")
 
         # Add to a queue, to be reviewed later, when more pictures will be added
-        # TODO
         # TODO : TO ADD self.db_utils.add_to_review(fetched_id)
         self.logger.info(f"Adding done.")
         print(make_small_line())
@@ -126,7 +124,6 @@ class Database_Adder(database_common.Database_Common):
         :param picture_dict: the picture (dict) which centrality is computed
         :return: the centrality of the picture dict
         """
-        #
 
         self.logger.debug(picture_dict)
         curr_sum = 0

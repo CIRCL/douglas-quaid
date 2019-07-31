@@ -89,11 +89,6 @@ class TestInstanceLauncher:
         # Set the configuration to use.
         self.logger.debug(f"Settings configuration file on the test instance launcher")
 
-        self.logger.error(f"Configuration db_conf : \n{db_conf}")
-        self.logger.error(f"Configuration dist_conf : \n{dist_conf}")
-        self.logger.error(f"Configuration fe_conf : \n{fe_conf}")
-        self.logger.error(f"Configuration ws_conf : \n{ws_conf}")
-
         # Create a configuration files if none is provided
         self.db_conf = database_conf.Default_database_conf() if db_conf is None else db_conf
         self.dist_conf = distance_engine_conf.Default_distance_engine_conf() if dist_conf is None else dist_conf

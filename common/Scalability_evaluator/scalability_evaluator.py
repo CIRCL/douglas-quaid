@@ -61,7 +61,7 @@ class ScalabilityEvaluator:
         list_boxes_sizes = self.scalability_conf.generate_boxes(self.scalability_conf.MAX_NB_PICS_TO_SEND)
 
         # ==== Upload pictures + Make requests ====
-        scalability_data = self.get_scalability_list(list_boxes_sizes, pictures_set)  # , pics_to_evaluate)
+        scalability_data = self.get_scalability_list(list_boxes_sizes, pictures_set, output_folder=output_folder)  # , pics_to_evaluate)
 
         self.logger.info(f"Scalability data : {scalability_data}")
         self.print_data(scalability_data, output_folder)
@@ -70,7 +70,7 @@ class ScalabilityEvaluator:
 
     def get_scalability_list(self, list_boxes_sizes: List[int], pictures_set: Set[pathlib.Path],  # pics_to_evaluate: Set[pathlib.Path],
                              dist_conf: dec.Default_distance_engine_conf = dec.Default_distance_engine_conf(),
-                             fe_conf: fec.Default_feature_extractor_conf = fec.Default_feature_extractor_conf()):
+                             fe_conf: fec.Default_feature_extractor_conf = fec.Default_feature_extractor_conf(), output_folder: pathlib.Path = None):
         # ==== Upload pictures + Make requests ====
         scalability_data = ScalabilityData()
 
@@ -117,6 +117,13 @@ class ScalabilityEvaluator:
                 tmp_scal_datastruct.nb_clusters_in_db = len(db_utils.get_cluster_list())
                 tmp_scal_datastruct.clusters_sizes = db_utils.get_list_cluster_sizes()
 
+                # Export graph
+                if output_folder is not None :
+                    db_dump = self.ext_api.get_db_dump_as_graph()
+                    save_path_json = output_folder / "storage_graph_dump.json"
+                    json_import_export.save_json(db_dump.export_as_dict(), save_path_json)
+
+                # Print error
                 if tmp_scal_datastruct.nb_picture_total_in_db != nb_picture_total_in_db:
                     self.logger.error(
                         f"Error in scalability evaluator, number of picture really in DB and computed as should being in DB are differents : {tmp_scal_datastruct.nb_picture_total_in_db} {nb_picture_total_in_db}")
