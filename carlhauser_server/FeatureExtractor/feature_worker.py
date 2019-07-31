@@ -46,7 +46,11 @@ class Feature_Worker(database_accessor.Database_Worker):
         :return: Nothing (or to be defined)
         """
         # Get picture from picture_id
-        picture = fetched_dict[b"img"]
+        try :
+            picture = fetched_dict[b"img"]
+        except Exception as e :
+            self.logger.critical(f"Error while fetching dictionnary : {e} with {fetched_dict}")
+            raise Exception(f"Impossible to fetch image in stored dictionnary in feature worker : {e}")
         self.logger.info(f"Loaded picture {type(picture)}")
 
         # Get hash values of picture

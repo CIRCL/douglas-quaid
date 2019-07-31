@@ -3,7 +3,6 @@
 
 import argparse
 import logging.config
-import pathlib
 
 import carlhauser_server.Configuration.database_conf as database_conf
 import carlhauser_server.Configuration.distance_engine_conf as distance_engine_conf
@@ -15,8 +14,8 @@ import carlhauser_server.Singletons.worker_start_stop as worker_start_stop
 import carlhauser_server.safe_launcher as safe_launcher
 from carlhauser_server.Helpers import arg_parser
 from carlhauser_server.Singletons.worker_start_stop import WorkerTypes as workertype
-from common.environment_variable import make_big_line
 from common.environment_variable import load_server_logging_conf_file
+from common.environment_variable import make_big_line
 
 # ==================== ------ PREPARATION ------- ====================
 # load the logging configuration
@@ -29,6 +28,9 @@ class Instance_Handler(metaclass=template_singleton.Singleton):
     Handle a server instance
     """
 
+    # Prevent dynamically generated attributes
+    __slots__ = ['logger', 'db_conf', 'ws_conf', 'fe_conf', 'dist_conf', 'db_startstop', 'worker_startstop']
+
     def __init__(self):
         self.logger = logging.getLogger(__name__)
 
@@ -36,7 +38,7 @@ class Instance_Handler(metaclass=template_singleton.Singleton):
         self.db_conf = database_conf.Default_database_conf()
         self.ws_conf = webservice_conf.Default_webservice_conf()
         self.fe_conf = feature_extractor_conf.Default_feature_extractor_conf()
-        self.di_conf = distance_engine_conf.Default_distance_engine_conf()
+        self.dist_conf = distance_engine_conf.Default_distance_engine_conf()
 
         # Handlers
         self.db_startstop: database_start_stop.Database_StartStop = None
@@ -163,7 +165,7 @@ class Instance_Handler(metaclass=template_singleton.Singleton):
         self.check_worker_startstop()
         self.logger.info(f"Launching to_add worker (x{self.db_conf.ADDER_WORKER_NB}) ...")
         self.worker_startstop.start_and_add_n_worker(worker_type=workertype.ADDER,
-                                                     db_conf=self.db_conf, dist_conf=self.di_conf, fe_conf=self.fe_conf,
+                                                     db_conf=self.db_conf, dist_conf=self.dist_conf, fe_conf=self.fe_conf,
                                                      nb=self.db_conf.ADDER_WORKER_NB)
 
     def start_requester_workers(self):
@@ -174,7 +176,7 @@ class Instance_Handler(metaclass=template_singleton.Singleton):
         self.check_worker_startstop()
         self.logger.info(f"Launching to_request worker (x{self.db_conf.REQUESTER_WORKER_NB}) ...")
         self.worker_startstop.start_and_add_n_worker(worker_type=workertype.REQUESTER,
-                                                     db_conf=self.db_conf, dist_conf=self.di_conf, fe_conf=self.fe_conf,
+                                                     db_conf=self.db_conf, dist_conf=self.dist_conf, fe_conf=self.fe_conf,
                                                      nb=self.db_conf.REQUESTER_WORKER_NB)
 
     # ==================== ------ FEATURE WORKERS ------- ====================

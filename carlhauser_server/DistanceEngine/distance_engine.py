@@ -106,6 +106,8 @@ class Distance_Engine:
         """
         # Check if the matching pictures provided are "close enough" of the current picture.
 
+        self.logger.critical(f" Max distance for new cluster in distance engine : {self.dist_conf.MAX_DIST_FOR_NEW_CLUSTER}")
+
         # Check if the picture is too far or not
         if matching_picture.distance <= self.dist_conf.MAX_DIST_FOR_NEW_CLUSTER:
             return True

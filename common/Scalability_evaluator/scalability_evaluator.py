@@ -6,6 +6,7 @@ import logging
 import pathlib
 import time
 from typing import List, Set
+
 import redis
 
 import carlhauser_server.Configuration.distance_engine_conf as dec
@@ -16,10 +17,11 @@ import common.Scalability_evaluator.scalability_conf as scalability_conf
 import common.TestInstanceLauncher.one_db_conf as test_database_only_conf
 import common.TestInstanceLauncher.one_db_instance_launcher as test_database_handler
 from carlhauser_client.API.extended_api import Extended_API
+from carlhauser_server.DatabaseAccessor.database_utilities import DBUtilities
 from common.Scalability_evaluator.scalability_datastructures import ScalabilityData, ComputationTime, PathlibSet, Pathobject
 from common.environment_variable import dir_path
 from common.environment_variable import load_server_logging_conf_file
-from carlhauser_server.DatabaseAccessor.database_utilities import DBUtilities
+
 load_server_logging_conf_file()
 
 
@@ -52,24 +54,23 @@ class ScalabilityEvaluator:
         pictures_set = self.load_pictures(pictures_folder)
 
         # Extract X pictures to evaluate their matching (at each cycle, the sames)
-        pictures_set, pics_to_evaluate = self.biner(pictures_set, self.scalability_conf.NB_PICS_TO_REQUEST)
+        # TODO : REMOVED FOR NOW. SHOULD BE ABLE TO DELETE RESULTS TO WORK. # pictures_set, pics_to_evaluate = self.biner(pictures_set, self.scalability_conf.NB_PICS_TO_REQUEST)
 
         # Put TOTAL-X pictures into boxes (10, 50, 100, 500, 1000, 5000, 10000, 50000, 100000 ...)
         # Generate the boxes
         list_boxes_sizes = self.scalability_conf.generate_boxes(self.scalability_conf.MAX_NB_PICS_TO_SEND)
 
         # ==== Upload pictures + Make requests ====
-        scalability_data = self.get_scalability_list(list_boxes_sizes, pictures_set, pics_to_evaluate)
+        scalability_data = self.get_scalability_list(list_boxes_sizes, pictures_set)  # , pics_to_evaluate)
 
         self.logger.info(f"Scalability data : {scalability_data}")
         self.print_data(scalability_data, output_folder)
 
         return scalability_data
 
-    def get_scalability_list(self, list_boxes_sizes: List[int], pictures_set: Set[pathlib.Path], pics_to_evaluate: Set[pathlib.Path],
+    def get_scalability_list(self, list_boxes_sizes: List[int], pictures_set: Set[pathlib.Path],  # pics_to_evaluate: Set[pathlib.Path],
                              dist_conf: dec.Default_distance_engine_conf = dec.Default_distance_engine_conf(),
-                             fe_conf: fec.Default_feature_extractor_conf = fec.Default_feature_extractor_conf()
-                             ):
+                             fe_conf: fec.Default_feature_extractor_conf = fec.Default_feature_extractor_conf()):
         # ==== Upload pictures + Make requests ====
         scalability_data = ScalabilityData()
 
@@ -91,20 +92,34 @@ class ScalabilityEvaluator:
         for i, curr_box_size in enumerate(list_boxes_sizes):
             # Get a list of pictures to send
             pictures_set, pics_to_store = self.biner(pictures_set, curr_box_size)
+            pictures_set, pics_to_request = self.biner(pictures_set, self.scalability_conf.NB_PICS_TO_REQUEST)
+
             self.logger.info(f"Nb of pictures left to be uploaded later : {len(pictures_set)}")
             self.logger.info(f"Nb of pictures to upload (adding) : {len(pics_to_store)}")
 
             # If we are not out of pictures to send
             if len(pics_to_store) != 0:
                 # Evaluate time for this database size and store it
-                tmp_scal_datastruct = self.evaluate_scalability_lists(list_pictures_eval=pics_to_evaluate,
+                tmp_scal_datastruct = self.evaluate_scalability_lists(list_pictures_eval=pics_to_request,  # pics_to_evaluate,
                                                                       list_picture_to_up=pics_to_store,
                                                                       tmp_id=i)
-                nb_picture_total_in_db += tmp_scal_datastruct.nb_picture_added
 
+                # Store few more values
+                # Nb of picture in teh database right now
+                nb_picture_total_in_db += tmp_scal_datastruct.nb_picture_added
                 tmp_scal_datastruct.nb_picture_total_in_db = db_utils.get_nb_stored_pictures()
-                if tmp_scal_datastruct.nb_picture_total_in_db != nb_picture_total_in_db :
-                    self.logger.error(f"Error in scalability evaluator, number of picture really in DB and computed as should being in DB are differents : {tmp_scal_datastruct.nb_picture_total_in_db} {nb_picture_total_in_db}")
+
+                # Nb of pictures sent at the beginning to be added
+                tmp_scal_datastruct.nb_picture_tried_to_be_added = len(pics_to_store)
+                tmp_scal_datastruct.nb_picture_tried_to_be_requested = len(pics_to_request)
+
+                # Nb of cluster and their content
+                tmp_scal_datastruct.nb_clusters_in_db = len(db_utils.get_cluster_list())
+                tmp_scal_datastruct.clusters_sizes = db_utils.get_list_cluster_sizes()
+
+                if tmp_scal_datastruct.nb_picture_total_in_db != nb_picture_total_in_db:
+                    self.logger.error(
+                        f"Error in scalability evaluator, number of picture really in DB and computed as should being in DB are differents : {tmp_scal_datastruct.nb_picture_total_in_db} {nb_picture_total_in_db}")
                 scalability_data.list_request_time.append(tmp_scal_datastruct)
 
         # Kill server instance

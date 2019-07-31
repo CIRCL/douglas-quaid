@@ -41,9 +41,9 @@ class ScalabilityEvaluatorWithThreshold(ScalabilityEvaluator):
             # Ex :  Load the list of XXX pictures
 
             # Extract X pictures to evaluate their matching (at each cycle, the sames)
-            pictures_set, pics_to_evaluate = self.biner(pictures_set, self.scalability_conf.NB_PICS_TO_REQUEST)
+            # TODO : REMOVED FOR NOW. SHOULD BE ABLE TO DELETE RESULTS TO WORK. #pictures_set, pics_to_evaluate = self.biner(pictures_set, self.scalability_conf.NB_PICS_TO_REQUEST)
             self.logger.info(f"Nb of pictures to be uploaded in many passes : {len(pictures_set)}")
-            self.logger.info(f"Nb of pictures to request : {len(pics_to_evaluate)}")
+            # TODO : REMOVED FOR NOW. SHOULD BE ABLE TO DELETE RESULTS TO WORK. #self.logger.info(f"Nb of pictures to request : {len(pics_to_evaluate)}")
             # Ex :  XXX pictures to use later + 10 pictures to request
 
             # Computing the new threshold
@@ -56,7 +56,7 @@ class ScalabilityEvaluatorWithThreshold(ScalabilityEvaluator):
             # fe_conf = feature_extractor_conf.Default_feature_extractor_conf()
 
             # ==== Upload pictures + Make requests ====
-            scalability_data = self.get_scalability_list(list_boxes_sizes, pictures_set, pics_to_evaluate, dist_conf=dist_conf)
+            scalability_data = self.get_scalability_list(list_boxes_sizes, pictures_set, dist_conf=dist_conf) # pics_to_evaluate,
             scalability_data.threshold_cluster = curr_threshold
             self.logger.info(f"Scalability data : {scalability_data}")
 

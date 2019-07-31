@@ -54,6 +54,7 @@ class Database_Adder(database_common.Database_Common):
             self.db_utils.add_picture_to_cluster(fetched_id, cluster_id)
 
             # Re-evaluate representative picture(s) of cluster
+            # TODO : TO ADD
             self.reevaluate_representative_picture_order(cluster_id, fetched_id=fetched_id)
             self.logger.info(f"Picture added in existing cluster : {cluster_id}")
 
@@ -66,7 +67,7 @@ class Database_Adder(database_common.Database_Common):
 
         # Add to a queue, to be reviewed later, when more pictures will be added
         # TODO
-        self.db_utils.add_to_review(fetched_id)
+        # TODO : TO ADD self.db_utils.add_to_review(fetched_id)
         self.logger.info(f"Adding done.")
         print(make_small_line())
         print("Adder Worker ready to accept more queries.")
@@ -144,6 +145,9 @@ class Database_Adder(database_common.Database_Common):
 
 # Launcher for this worker. Launch this file to launch a worker
 if __name__ == '__main__':
+    # python3 -m cProfile -o temp.dat <PROGRAM>.py
+    # python3 -m cProfile -o database_adder.dat ./database_adder.py -dbc ./../../tmp_db_conf.json -distc ./../../tmp_dist_conf.json -fec ./../../tmp_fe_conf.json
+    # python3 ./database_adder.py -dbc ./../../tmp_db_conf.json -distc ./../../tmp_dist_conf.json -fec ./../../tmp_fe_conf.json
     parser = argparse.ArgumentParser(description='Launch a worker for a specific task : adding picture to database')
     parser = arg_parser.add_arg_db_conf(parser)
     parser = arg_parser.add_arg_dist_conf(parser)

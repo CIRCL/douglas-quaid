@@ -58,7 +58,7 @@ class testDBAdder(unittest.TestCase):
 
     def test_get_nb_stored_pictures_a_lot(self):
         api = Extended_API.get_api()
-        mapping, nb_pics_sent = api.add_many_pictures_and_wait_global(image_folder =  self.test_file_path / "MINI_DATASET")
+        mapping, nb_pics_sent = api.add_many_pictures_and_wait_global(image_folder =  self.test_file_path / "MINI_DATASET_DEDUPLICATED")
 
         nb = self.db_utils.get_nb_stored_pictures()
 
