@@ -294,9 +294,23 @@ Min, max, mean (`0.5`) are similar in both cases. However, in first case, all al
 This problem exists because each algorithm has its own "range of values" in which a match is a meaningful match. Normalization could have been a solution, but decisions seems more human-readable.     
 It allows to launch more algorithms depending on the decision, too.     
 
-That's why a "YES" or "MAYBE" decision can come after a "NO" decision in a distance-sorted list)
+That's why a "YES" or "MAYBE" decision can come after a "NO" decision in a distance-sorted list.
 
 #### Performance optimization process
+
+The API is simplistic and the complexity moved to the server side. The choice of algorithm parameters is difficult, but is solved by a calibration algorithm. 
+
+The library therefore only needs:
+-   a subset of the production dataset (for example, 20 to 40 images sampled from a complete dataset);
+-   a "ground truth" file to define the ideal result expected;
+-   the target rates of false positive/true positive, false negative/true negative (at least two of them).
+
+The calibration algorithm will seek to optimize the internal parameters of Douglas-Quaid with these inputs. The main advantage is therefore the absence of obscure parameters (example: a threshold between 0 and 1) to be provided without knowledge of the internal functioning of the library.
+
+<img src="./docs/images/calibratorscheme.svg" alt="Action" height="400"/>
+
+Internally, the calibration algorithm will send pictures to the database, extract the similarity graph and evaluate this similarity graph in comparison of the ground truth clusterisation provided. As a comparision between a graph and a list of cluster of pictures is not trivial, we prune the graph (of distances) with a threshold. Then, we can convert the graph into clusters and compare clusters to ground truth clusters. This give us a bunch of metrics (True Positive rate, False Positive rate, etc.) for this specific threshold. We can then find the best threshold that optimize this or that metric (e.g. 10% and no more False positive, etc.). 
+If the original graph had been generated from a configuration enabling only one algorithm, we then have extracted two thresholds for this specific algorithm. If more than one algorithm were activated, we then have two thresholds for the whole output of the library. This is not used and not relevant in our setting. So, the calibration algorithm extract only per-algorithm thresholds to build the future configuration file of the server.
 
 ### For Developers
 
