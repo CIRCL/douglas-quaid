@@ -29,7 +29,7 @@ class Instance_Handler(metaclass=template_singleton.Singleton):
     """
 
     # Prevent dynamically generated attributes
-    __slots__ = ['logger', 'db_conf', 'ws_conf', 'fe_conf', 'dist_conf', 'db_startstop', 'worker_startstop']
+    # __slots__ = ['logger', 'db_conf', 'ws_conf', 'fe_conf', 'dist_conf', 'db_startstop', 'worker_startstop']
 
     def __init__(self):
         self.logger = logging.getLogger(__name__)
