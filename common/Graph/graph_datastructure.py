@@ -145,7 +145,7 @@ class GraphDataStruct:
         Replace olds id by new ids, if provided in the input list (filename_to_id).
         Ex : {"toto":id=2} input with {Edge : {"toto":id=1}} input => {Edge : {"toto":id=2}} output
         :param filename_to_id: a mapping from name to ids
-        :return: a mapping from old id to new ids (Ex : {2:1} in previus example) + change state of the graph
+        :return: a mapping from old id to new ids (Ex : {2:1} in previous example) + change state of the graph
         """
 
         self.logger.debug("Replacing id from mapping for the graph datastructure.")

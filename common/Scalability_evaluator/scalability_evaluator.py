@@ -5,7 +5,7 @@ import argparse
 import logging
 import pathlib
 import time
-from typing import List, Set
+from typing import List, Set, Dict
 
 import redis
 
@@ -21,6 +21,7 @@ from carlhauser_server.DatabaseAccessor.database_utilities import DBUtilities
 from common.Scalability_evaluator.scalability_datastructures import ScalabilityData, ComputationTime, PathlibSet, Pathobject
 from common.environment_variable import dir_path
 from common.environment_variable import load_server_logging_conf_file
+import carlhauser_client.Helpers.dict_utilities as dict_utilities
 
 load_server_logging_conf_file()
 
@@ -87,12 +88,13 @@ class ScalabilityEvaluator:
         db_utils = DBUtilities(db_access_decode=db_access_decode, db_access_no_decode=db_access_no_decode)
 
         nb_picture_total_in_db = 0
+        global_mapping = {}
 
         # For each box
         for i, curr_box_size in enumerate(list_boxes_sizes):
             # Get a list of pictures to send
-            pictures_set, pics_to_store = self.biner(pictures_set, curr_box_size)
             pictures_set, pics_to_request = self.biner(pictures_set, self.scalability_conf.NB_PICS_TO_REQUEST)
+            pictures_set, pics_to_store = self.biner(pictures_set, curr_box_size)
 
             self.logger.info(f"Nb of pictures left to be uploaded later : {len(pictures_set)}")
             self.logger.info(f"Nb of pictures to upload (adding) : {len(pics_to_store)}")
@@ -100,9 +102,10 @@ class ScalabilityEvaluator:
             # If we are not out of pictures to send
             if len(pics_to_store) != 0:
                 # Evaluate time for this database size and store it
-                tmp_scal_datastruct = self.evaluate_scalability_lists(list_pictures_eval=pics_to_request,  # pics_to_evaluate,
-                                                                      list_picture_to_up=pics_to_store,
-                                                                      tmp_id=i)
+                tmp_scal_datastruct, mapping = self.evaluate_scalability_lists(list_pictures_eval=pics_to_request,  # pics_to_evaluate,
+                                                                               list_picture_to_up=pics_to_store,
+                                                                               tmp_id=i)
+                global_mapping = {**global_mapping, **mapping}
 
                 # Store few more values
                 # Nb of picture in teh database right now
@@ -118,10 +121,28 @@ class ScalabilityEvaluator:
                 tmp_scal_datastruct.clusters_sizes = db_utils.get_list_cluster_sizes()
 
                 # Export graph
-                if output_folder is not None :
+                if output_folder is not None:
                     db_dump = self.ext_api.get_db_dump_as_graph()
-                    save_path_json = output_folder / "storage_graph_dump.json"
-                    json_import_export.save_json(db_dump.export_as_dict(), save_path_json)
+                    db_dump_dict = db_dump.export_as_dict()
+                    save_path_json = output_folder / "original_storage_graph_dump.json"
+                    json_import_export.save_json(db_dump_dict, save_path_json)
+                    # Full of new ids
+
+                    save_path_json = output_folder / "mapping.json"
+                    json_import_export.save_json(mapping, save_path_json)
+                    save_path_json = output_folder / "global_mapping.json"
+                    json_import_export.save_json(global_mapping, save_path_json)
+                    # old name -> new id
+
+                    db_dump_dict = dict_utilities.apply_revert_mapping(db_dump_dict, global_mapping)
+
+                    # db_dump.replace_id_from_mapping(mapping)
+                    db_dump_dict = dict_utilities.copy_id_to_image(db_dump_dict)
+
+                    save_path_json = output_folder / "modified_storage_graph_dump.json"
+                    json_import_export.save_json(db_dump_dict, save_path_json)
+
+                    # node server.js -i ./../DATASETS/PHISHING/PHISHING-DATASET-DISTRIBUTED-DEDUPLICATED/ -t ./TMP -o ./TMP -j ./../douglas-quaid/datasets/OUTPUT_EVALUATION/threshold_0.0195/modified_storage_graph_dump.json
 
                 # Print error
                 if tmp_scal_datastruct.nb_picture_total_in_db != nb_picture_total_in_db:
@@ -138,7 +159,7 @@ class ScalabilityEvaluator:
     def evaluate_scalability_lists(self,
                                    list_pictures_eval: Set[pathlib.Path],
                                    list_picture_to_up: Set[pathlib.Path],
-                                   tmp_id: int) -> ComputationTime:
+                                   tmp_id: int) -> (ComputationTime, Dict):
 
         # Tricky tricky : create a fake Pathlib folder to perform the upload
         self.logger.debug(f"Faking pathlib folders ... ")
@@ -151,7 +172,7 @@ class ScalabilityEvaluator:
 
         # Upload pictures of one bin
         self.logger.debug(f"Sending pictures ... ")
-        _, nb_pictures_add = self.ext_api.add_many_pictures_and_wait_global(simulated_folder_add)
+        mapping, nb_pictures_add = self.ext_api.add_many_pictures_and_wait_global(simulated_folder_add)
 
         # Time Management - Stop
         self.logger.debug(f"Stopping timer ... ")
@@ -179,7 +200,7 @@ class ScalabilityEvaluator:
         resp_time.nb_picture_requested = nb_pictures_req
         resp_time.iteration = tmp_id
 
-        return resp_time
+        return resp_time, mapping
 
     @staticmethod
     def biner(potential_pictures: Set[pathlib.Path], nb_to_bin):

@@ -49,6 +49,7 @@ class ScalabilityEvaluatorWithThreshold(ScalabilityEvaluator):
             # Computing the new threshold
             curr_threshold = i * ((max_thre - min_thre) / nb_pts)
             self.logger.info(f"Current threshold scalability test : {curr_threshold}")
+            curr_output_folder = output_folder / ("threshold_" + str(curr_threshold))
 
             # Generate configuration file
             dist_conf = distance_engine_conf.Default_distance_engine_conf()
@@ -56,12 +57,11 @@ class ScalabilityEvaluatorWithThreshold(ScalabilityEvaluator):
             # fe_conf = feature_extractor_conf.Default_feature_extractor_conf()
 
             # ==== Upload pictures + Make requests ====
-            scalability_data = self.get_scalability_list(list_boxes_sizes, pictures_set, dist_conf=dist_conf) # pics_to_evaluate,
+            scalability_data = self.get_scalability_list(list_boxes_sizes, pictures_set, dist_conf=dist_conf, output_folder=curr_output_folder) # pics_to_evaluate,
             scalability_data.threshold_cluster = curr_threshold
             self.logger.info(f"Scalability data : {scalability_data}")
 
             # Create folder and store data
-            curr_output_folder = output_folder / ("threshold_" + str(curr_threshold))
             curr_output_folder.mkdir(exist_ok=True)
             self.print_data(scalability_data, curr_output_folder)
 

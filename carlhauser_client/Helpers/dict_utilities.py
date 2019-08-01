@@ -8,7 +8,7 @@ from common.environment_variable import load_client_logging_conf_file
 load_client_logging_conf_file()
 
 
-def copy_id_to_image(dict_to_modify: Dict) -> Dict:
+def copy_id_to_image(dict_to_modify: Dict, with_extension=False) -> Dict:
     '''
     From a dict of pictures/graphe json,
     copy ids of cluster and pictures to their 'picture' attribute
@@ -20,7 +20,10 @@ def copy_id_to_image(dict_to_modify: Dict) -> Dict:
         i["image"] = "anchor.png"
         i["shape"] = "icon"
     for i in dict_to_modify['nodes']:
-        i["image"] = i["id"]
+        if with_extension :
+            i["image"] = i["id"] + ".png"
+        else :
+            i["image"] = i["id"]
 
     return dict_to_modify
 
@@ -55,8 +58,11 @@ def apply_revert_mapping(dict_to_modify, mapping_to_revert: Dict):  # -> Dict or
     :param mapping_to_revert: mapping from name to name, to be reverted before application
     :return: Original dict modified with applied reversed dict
     '''
+    # old_name -> id 
     reverted_mapping = revert_mapping(mapping_to_revert)
+    # id -> old name
     output_dict = apply_mapping(dict_to_modify, reverted_mapping)
+    # 
     return output_dict
 
 
