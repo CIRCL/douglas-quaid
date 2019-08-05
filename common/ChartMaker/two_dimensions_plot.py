@@ -180,10 +180,13 @@ class TwoDimensionsPlot:
         vertical_coords_request_time = []
         horizontal_coords = []
 
-        if with_reference and len(scalability_data.list_request_time) > 0 :
-            computation_time = scalability_data.list_request_time[0]
-            if  computation_time.nb_picture_added != 0 and computation_time.nb_picture_added is not None :
-                ratio = computation_time.adding_time / computation_time.nb_picture_added
+        if with_reference and len(scalability_data.list_request_time) > 1 :
+            computation_time_0 = scalability_data.list_request_time[0]
+            computation_time_1 = scalability_data.list_request_time[0]
+
+            if computation_time_0.nb_picture_added != 0 and computation_time_1.nb_picture_added != 0 \
+                    and computation_time_0.nb_picture_added is not None and computation_time_1.nb_picture_added is not None :
+                ratio = (computation_time_0.adding_time + computation_time_1.adding_time) / (computation_time_0.nb_picture_added + computation_time_1.nb_picture_added)
             else :
                 ratio = 1
 

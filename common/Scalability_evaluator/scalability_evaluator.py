@@ -102,7 +102,7 @@ class ScalabilityEvaluator:
             # If we are not out of pictures to send
             if len(pics_to_store) != 0:
                 # Evaluate time for this database size and store it
-                tmp_scal_datastruct, mapping = self.evaluate_scalability_lists(list_pictures_eval=pics_to_request,  # pics_to_evaluate,
+                tmp_scal_datastruct, mapping, request_list = self.evaluate_scalability_lists(list_pictures_eval=pics_to_request,  # pics_to_evaluate,
                                                                                list_picture_to_up=pics_to_store,
                                                                                tmp_id=i)
                 global_mapping = {**global_mapping, **mapping}
@@ -120,35 +120,43 @@ class ScalabilityEvaluator:
                 tmp_scal_datastruct.nb_clusters_in_db = len(db_utils.get_cluster_list())
                 tmp_scal_datastruct.clusters_sizes = db_utils.get_list_cluster_sizes()
 
-                # Export graph
-                if output_folder is not None:
-                    db_dump = self.ext_api.get_db_dump_as_graph()
-                    db_dump_dict = db_dump.export_as_dict()
-                    save_path_json = output_folder / "original_storage_graph_dump.json"
-                    json_import_export.save_json(db_dump_dict, save_path_json)
-                    # Full of new ids
-
-                    save_path_json = output_folder / "mapping.json"
-                    json_import_export.save_json(mapping, save_path_json)
-                    save_path_json = output_folder / "global_mapping.json"
-                    json_import_export.save_json(global_mapping, save_path_json)
-                    # old name -> new id
-
-                    db_dump_dict = dict_utilities.apply_revert_mapping(db_dump_dict, global_mapping)
-
-                    # db_dump.replace_id_from_mapping(mapping)
-                    db_dump_dict = dict_utilities.copy_id_to_image(db_dump_dict)
-
-                    save_path_json = output_folder / "modified_storage_graph_dump.json"
-                    json_import_export.save_json(db_dump_dict, save_path_json)
-
-                    # node server.js -i ./../DATASETS/PHISHING/PHISHING-DATASET-DISTRIBUTED-DEDUPLICATED/ -t ./TMP -o ./TMP -j ./../douglas-quaid/datasets/OUTPUT_EVALUATION/threshold_0.0195/modified_storage_graph_dump.json
-
                 # Print error
                 if tmp_scal_datastruct.nb_picture_total_in_db != nb_picture_total_in_db:
                     self.logger.error(
                         f"Error in scalability evaluator, number of picture really in DB and computed as should being in DB are differents : {tmp_scal_datastruct.nb_picture_total_in_db} {nb_picture_total_in_db}")
                 scalability_data.list_request_time.append(tmp_scal_datastruct)
+
+                if output_folder is not None:
+
+                    save_path_json = output_folder / ("global_mapping" + str(i) + ".json")
+                    json_import_export.save_json(request_list, save_path_json)
+
+                    save_path_json = output_folder / ("mapping" + str(i) + ".json")
+                    json_import_export.save_json(mapping, save_path_json)
+
+        # Export graph
+        if output_folder is not None:
+            db_dump = self.ext_api.get_db_dump_as_graph()
+            db_dump_dict = db_dump.export_as_dict()
+            save_path_json = output_folder / "original_storage_graph_dump.json"
+            json_import_export.save_json(db_dump_dict, save_path_json)
+            # Full of new ids
+
+            save_path_json = output_folder / "global_mapping.json"
+            json_import_export.save_json(global_mapping, save_path_json)
+            # old name -> new id
+
+            db_dump_dict = dict_utilities.apply_revert_mapping(db_dump_dict, global_mapping)
+
+            # db_dump.replace_id_from_mapping(mapping)
+            db_dump_dict = dict_utilities.copy_id_to_image(db_dump_dict)
+
+            save_path_json = output_folder / "modified_storage_graph_dump.json"
+            json_import_export.save_json(db_dump_dict, save_path_json)
+        else:
+            self.logger.critical("outputfolder is None ! ")
+
+            # node server.js -i ./../DATASETS/PHISHING/PHISHING-DATASET-DISTRIBUTED-DEDUPLICATED/ -t ./TMP -o ./TMP -j ./../douglas-quaid/datasets/OUTPUT_EVALUATION/threshold_0.0195/modified_storage_graph_dump.json
 
         # Kill server instance
         self.logger.debug(f"Shutting down Redis test instance")
@@ -159,8 +167,7 @@ class ScalabilityEvaluator:
     def evaluate_scalability_lists(self,
                                    list_pictures_eval: Set[pathlib.Path],
                                    list_picture_to_up: Set[pathlib.Path],
-                                   tmp_id: int) -> (ComputationTime, Dict):
-
+                                   tmp_id: int) -> (ComputationTime, Dict, List):
         # Tricky tricky : create a fake Pathlib folder to perform the upload
         self.logger.debug(f"Faking pathlib folders ... ")
         simulated_folder_add = PathlibSet(list_picture_to_up)
@@ -185,7 +192,7 @@ class ScalabilityEvaluator:
 
         # Make request of the X standard pictures
         self.logger.debug(f"Requesting pictures ... ")
-        _, nb_pictures_req = self.ext_api.request_many_pictures_and_wait_global(simulated_folder_request)
+        request_list, nb_pictures_req = self.ext_api.request_many_pictures_and_wait_global(simulated_folder_request)
 
         # Time Management - Stop
         self.logger.debug(f"Stopping timer ... ")
@@ -200,7 +207,7 @@ class ScalabilityEvaluator:
         resp_time.nb_picture_requested = nb_pictures_req
         resp_time.iteration = tmp_id
 
-        return resp_time, mapping
+        return resp_time, mapping, request_list
 
     @staticmethod
     def biner(potential_pictures: Set[pathlib.Path], nb_to_bin):

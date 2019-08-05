@@ -7,7 +7,7 @@ class Default_distance_engine_conf(JSON_parsable_Dict):
         # Inputs
         self.TOP_N_CLUSTERS: int = 3  # Nb of "best clusters" to be matched on picture representative
         self.TOP_N_PICTURES: int = 10  # Nb of "best pictures" to be returned, from TOP_N_CLUSTERS best clusters (total, not per cluster)
-        self.PICT_TO_TEST_PER_CLUSTER: int = 1  # Nb of "central picture" to test per cluster
+        self.PICT_TO_TEST_PER_CLUSTER: int = 3  # Nb of "central picture" to test per cluster
 
         self.MAX_DIST_FOR_NEW_CLUSTER: float = 0.2  # Distance threshold to create a new cluster. Lesser the more cluster.
 
