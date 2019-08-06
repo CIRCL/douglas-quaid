@@ -6,13 +6,11 @@ import unittest
 from common.HumanHash.dataturks_graph import DataturksGraph
 
 
-class test_template(unittest.TestCase):
+class test_Humanhash(unittest.TestCase):
     """Basic test cases."""
 
     def setUp(self):
         self.logger = logging.getLogger()
-        # self.base_folder = pathlib.Path("./HumanHash/HumanHash").resolve()
-        tmp_instance = DataturksGraph()
 
     def test_strip_tag_normal(self):
         stripped = DataturksGraph.strip_tag('dark - web: structure = "legal-statement"')
@@ -23,7 +21,8 @@ class test_template(unittest.TestCase):
         self.assertEqual(stripped, "to_delete")
 
     def test_create_set_from_labels_list(self):
-        set, key = DataturksGraph.create_set_from_labels_list(['dark - web: structure = "legal-statement"', "to_delete"])
+        set, key = DataturksGraph.create_set_from_labels_list(['legal-statement', "to_delete"])
+        print(set)
         self.assertSetEqual(set, {"legal-statement", "to_delete"})
         self.assertEqual(key, "legal-statement + to_delete")
 
@@ -31,5 +30,5 @@ class test_template(unittest.TestCase):
         mydict = {"toto": "tata", "end": "final"}
         list_key, list_val = DataturksGraph.get_list_val_list_key_from_dict(mydict)
 
-        self.assertListEqual(list_key, ["toto", "end"])
-        self.assertListEqual(list_val, ["tata", "final"])
+        self.assertListEqual(list_key, ["end", "toto"])
+        self.assertListEqual(list_val, ["final", "tata"])

@@ -19,7 +19,7 @@ class InfiniteLooper():
 
     def start(self):
         n = 0
-        while True and n < 5 :
+        while n < 5 :
             print("test")
             time.sleep(1)
             n += 1
