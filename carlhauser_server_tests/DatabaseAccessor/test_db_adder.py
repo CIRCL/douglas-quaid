@@ -270,7 +270,7 @@ class testDBAdder(unittest.TestCase):
 
         self.logger.debug("CHECKING EMPTY LIST")
         val = self.db_adder.is_queue_empty(self.db_adder.storage_db_no_decode, QueueNames.FEATURE_TO_ADD)
-        self.assertFalse(val)
+        self.assertTrue(val)
 
     def test_is_feature_request_list_empty(self):
         self.logger.debug("CHECKING EMPTY LIST")
@@ -295,7 +295,7 @@ class testDBAdder(unittest.TestCase):
 
         self.logger.debug("CHECKING EMPTY LIST")
         val = self.db_adder.is_queue_empty(self.db_adder.storage_db_no_decode, QueueNames.FEATURE_TO_REQUEST)
-        self.assertFalse(val)
+        self.assertTrue(val)
 
     def test_is_request_list_empty(self):
         self.logger.debug("CHECKING EMPTY LIST")

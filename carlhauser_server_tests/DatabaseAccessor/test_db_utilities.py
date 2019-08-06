@@ -65,7 +65,18 @@ class testDBAdder(unittest.TestCase):
         self.logger.info(pformat(mapping))
 
         self.assertEqual(nb, nb_pics_sent)
-        self.assertEqual(nb, 46)
+        self.assertEqual(nb, 38)
+
+    def test_get_nb_stored_pictures_a_lot_handle_duplicates(self):
+        api = Extended_API.get_api()
+        mapping, nb_pics_sent = api.add_many_pictures_and_wait_global(image_folder =  self.test_file_path / "MINI_DATASET")
+
+        nb = self.db_utils.get_nb_stored_pictures()
+
+        self.logger.info(pformat(mapping))
+
+        self.assertNotEqual(nb, nb_pics_sent)
+        self.assertNotEqual(nb, 46)
 
     def test_absolute_truth_and_meaning(self):
         self.assertTrue(True)

@@ -3,7 +3,7 @@
 import unittest
 import logging
 import pathlib
-
+import common.Scalability_evaluator.scalability_evaluator as se
 from common.environment_variable import get_homedir
 
 import common.ChartMaker.two_dimensions_plot as two_dimensions_plot
@@ -49,29 +49,34 @@ class TestClusterMatcher(unittest.TestCase):
         t1.nb_picture_added = 100
         t1.request_time = 10
         t1.nb_picture_requested = 10
+        t1.iteration = 0
 
         t2 = ComputationTime()
         t2.adding_time = 1000
         t2.nb_picture_added = 500
         t2.request_time = 50
         t2.nb_picture_requested = 10
+        t2.iteration = 2
 
         t3 = ComputationTime()
         t3.adding_time = 2300
         t3.nb_picture_added = 1000
         t3.request_time = 100
         t3.nb_picture_requested = 10
+        t3.iteration = 3
 
         t4 = ComputationTime()
         t4.adding_time = 13000
         t4.nb_picture_added = 5000
         t4.request_time = 500
         t4.nb_picture_requested = 10
+        t4.iteration = 4
 
         s = ScalabilityData()
         s.list_request_time = [t1, t2, t3, t4]
-        s.print_data(self.test_path, file_name="scalability1.png")
-        s.print_data(self.test_path, file_name="scalability1.pdf")
+
+        tmp_se = se.ScalabilityEvaluator()
+        tmp_se.print_data(s, self.test_path, file_name="scalability1.png")
 
         # TO VERIFY MANUALLY
 

@@ -57,9 +57,9 @@ class TestInMemoryOperations(unittest.TestCase):
         # Create list of algo conf
         list_algo_conf.append(Algo_conf("A_HASH", False, 0.0, 0.3, distance_weight=1))
         # self.P_HASH: Algo_conf = Algo_conf("P_HASH", True, 0.2, 0.6, distance_weight=1)
-        list_algo_conf.append(Algo_conf("P_HASH_SIMPLE", False, 0.2, 0.5, distance_weight=3))
+        list_algo_conf.append(Algo_conf("P_HASH", False, 0.2, 0.5, distance_weight=3))
         # self.D_HASH: Algo_conf = Algo_conf("D_HASH", True, 0.2, 0.6, distance_weight=1)
-        list_algo_conf.append(Algo_conf("D_HASH_VERTICAL", False, 0.4, 0.7, distance_weight=5))
+        list_algo_conf.append(Algo_conf("D_HASH", True, 0.4, 0.7, distance_weight=5))
         # self.W_HASH: Algo_conf = Algo_conf("W_HASH", False, 0.2, 0.6, distance_weight=1)
         list_algo_conf.append(Algo_conf("TLSH", True, 0.6, 0.9, distance_weight=7))
         list_algo_conf.append(Algo_conf("ORB", True, 0.7, 1.0, distance_weight=8))
@@ -75,13 +75,13 @@ class TestInMemoryOperations(unittest.TestCase):
 
         self.assertAlmostEqual(fe_conf.A_HASH.threshold_yes_to_maybe, 0.0, delta=0.05)
         self.assertAlmostEqual(fe_conf.P_HASH.threshold_yes_to_maybe, 0.2, delta=0.05)
-        self.assertAlmostEqual(fe_conf.D_HASH.threshold_yes_to_maybe, 0.2, delta=0.05)
+        self.assertAlmostEqual(fe_conf.D_HASH.threshold_yes_to_maybe, 0.4, delta=0.05)
         self.assertAlmostEqual(fe_conf.TLSH.threshold_yes_to_maybe, 0.6, delta=0.05)
         self.assertAlmostEqual(fe_conf.ORB.threshold_yes_to_maybe, 0.7, delta=0.05)
 
         self.assertAlmostEqual(fe_conf.A_HASH.threshold_maybe_to_no, 0.3, delta=0.05)
-        self.assertAlmostEqual(fe_conf.P_HASH.threshold_maybe_to_no, 0.6, delta=0.05)
-        self.assertAlmostEqual(fe_conf.D_HASH.threshold_maybe_to_no, 0.6, delta=0.05)
+        self.assertAlmostEqual(fe_conf.P_HASH.threshold_maybe_to_no, 0.5, delta=0.05)
+        self.assertAlmostEqual(fe_conf.D_HASH.threshold_maybe_to_no, 0.7, delta=0.05)
         self.assertAlmostEqual(fe_conf.TLSH.threshold_maybe_to_no, 0.9, delta=0.05)
         self.assertAlmostEqual(fe_conf.ORB.threshold_maybe_to_no, 1.0, delta=0.05)
 
