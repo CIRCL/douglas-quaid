@@ -1,10 +1,11 @@
 from collections import namedtuple
 from enum import Enum, auto
 from typing import List
+import pathlib
 
 from carlhauser_server.Configuration.algo_conf import Algo_conf
 from common.environment_variable import JSON_parsable_Enum, JSON_parsable_Dict
-
+from common.environment_variable import get_homedir
 
 class Distance_MergingMethod(JSON_parsable_Enum, Enum):
     MAX = auto()
@@ -34,23 +35,27 @@ class Default_feature_extractor_conf(JSON_parsable_Dict):
 
         # HASH parameters
         self.A_HASH: Algo_conf = Algo_conf("A_HASH", False, 0.02, 0.08, distance_weight=1)
-        self.P_HASH: Algo_conf = Algo_conf("P_HASH", True, 0.08, 0.08, distance_weight=1)
+        self.P_HASH: Algo_conf = Algo_conf("P_HASH", False, 0.08, 0.08, distance_weight=1) # True
         self.P_HASH_SIMPLE: Algo_conf = Algo_conf("P_HASH_SIMPLE", False, 0.04, 0.06, distance_weight=1)
-        self.D_HASH: Algo_conf = Algo_conf("D_HASH", True, 0.04, 0.08, distance_weight=1)
+        self.D_HASH: Algo_conf = Algo_conf("D_HASH", False, 0.04, 0.08, distance_weight=1) # True
         self.D_HASH_VERTICAL: Algo_conf = Algo_conf("D_HASH_VERTICAL", False, 0.04, 0.04, distance_weight=1)
         self.W_HASH: Algo_conf = Algo_conf("W_HASH", False, 0.06, 0.08, distance_weight=1)
-        self.TLSH: Algo_conf = Algo_conf("TLSH", True, 0.16, 0.18, distance_weight=1)
+        self.TLSH: Algo_conf = Algo_conf("TLSH", False, 0.16, 0.18, distance_weight=1) # True
 
         # Visual Descriptors parameters
-        self.ORB: Algo_conf = Algo_conf("ORB", True, 0.0, 0.2, distance_weight=5)
+        self.ORB: Algo_conf = Algo_conf("ORB", False, 0.0, 0.2, distance_weight=5) # True
         self.ORB_KEYPOINTS_NB: int = 500
+
+        self.BOW_ORB : Algo_conf = Algo_conf("BOW_ORB", True, 0.08, 0.32, distance_weight=5) # True
+        self.BOW_VOCAB_PATH : pathlib.Path = get_homedir() / "vocab.npy"
 
         # Algo list # /! IMPORTANT !\ BE-AWARE THAT /! IMPORTANT !\
         # IF YOU MODIFY PROGRAMMATICALLY ONE ELEMENT LATER, YOU NEED TO CHANGE IT IN THIS LIST TOO !
         self.list_algos: List[Algo_conf] = [self.A_HASH, self.P_HASH, self.P_HASH_SIMPLE,
                                             self.D_HASH, self.D_HASH_VERTICAL, self.W_HASH,
                                             self.TLSH,
-                                            self.ORB]
+                                            self.ORB,
+                                            self.BOW_ORB]
 
         # Merging method
         self.DISTANCE_MERGING_METHOD: Distance_MergingMethod = Distance_MergingMethod.WEIGHTED_MEAN.name
