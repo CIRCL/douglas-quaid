@@ -21,6 +21,8 @@ class ConfArgs(JSON_parsable_Dict):
     """
     Specify argument to use to launch workers
     """
+
+    # Worker Launcher
     DB_CONF_ARG = '-dbc'
     DB_CONF_NAME = 'db_conf'
 
@@ -35,6 +37,47 @@ class ConfArgs(JSON_parsable_Dict):
 
     MODE_ARG = '-m'
     MODE_NAME = 'mode'
+
+    # IN and OUT put
+    SOURCE_FILE_ARG = '-s'
+    SOURCE_FILE_NAME = 'source_file'
+
+    SOURCE_FOLDER_ARG = '-s'
+    SOURCE_FOLDER_NAME = 'source_folder'
+
+    OUTPUT_FOLDER_ARG = '-o'
+    OUTPUT_FOLDER_NAME = 'output_folder'
+
+    # IN and OUT put
+
+
+def add_source_file(parser: argparse.ArgumentParser):
+    parser.add_argument(ConfArgs.SOURCE_FILE_ARG,
+                        '--source_file',
+                        dest=ConfArgs.SOURCE_FILE_NAME,
+                        type=dir_path,
+                        help='Input File. Path')
+    return parser
+
+
+def add_source_folder(parser: argparse.ArgumentParser):
+    parser.add_argument(ConfArgs.SOURCE_FOLDER_ARG,
+                        '--source_folder',
+                        dest=ConfArgs.SOURCE_FOLDER_NAME,
+                        type=dir_path,
+                        help='Input Folder. Path')
+    return parser
+
+
+def add_output_folder(parser: argparse.ArgumentParser):
+    parser.add_argument(ConfArgs.OUTPUT_FOLDER_ARG,
+                        '--output_folder',
+                        dest=ConfArgs.OUTPUT_FOLDER_NAME,
+                        type=dir_path,
+                        help='Output Folder. Path')
+    return parser
+
+    # Worker Launcher
 
 
 def add_arg_db_conf(parser: argparse.ArgumentParser):
@@ -82,6 +125,8 @@ def add_mode(parser: argparse.ArgumentParser):
                         help='Specify queues to work from/to for the worker.')
     return parser
 
+    # Worker Launcher
+
 
 def parse_conf_files(args) -> (database_conf.Default_database_conf,
                                distance_engine_conf.Default_distance_engine_conf,
@@ -127,3 +172,31 @@ def parse_conf_files(args) -> (database_conf.Default_database_conf,
         logger.debug(f"No WS CONF argument : {e}. This may be normal if current launch (e.g. a worker) does not require this configuration.")
 
     return tmp_db_conf, tmp_dist_conf, tmp_fe_conf, tmp_ws_conf
+
+
+def parse_paths(args) -> (pathlib.Path, pathlib.Path, pathlib.Path):
+    logger = logging.getLogger()
+    in_file_path, in_folder_path, out_folder_path = None, None, None
+
+    try:
+        conf_arg = getattr(args, ConfArgs.SOURCE_FILE_NAME)
+        if conf_arg:
+            in_file_path = pathlib.Path(conf_arg)
+    except AttributeError as e:
+        logger.debug(f"No Input file : {e}. This may be normal if current launch does not require this configuration.")
+
+    try:
+        conf_arg = getattr(args, ConfArgs.SOURCE_FOLDER_NAME)
+        if conf_arg:
+            in_folder_path = pathlib.Path(conf_arg)
+    except AttributeError as e:
+        logger.debug(f"No Input folder : {e}. This may be normal if current launch does not require this configuration.")
+
+    try:
+        conf_arg = getattr(args, ConfArgs.OUTPUT_FOLDER_NAME)
+        if conf_arg:
+            out_folder_path = pathlib.Path(conf_arg)
+    except AttributeError as e:
+        logger.debug(f"No Output folder : {e}. This may be normal if current launch does not require this configuration.")
+
+    return in_file_path, in_folder_path, out_folder_path
