@@ -103,8 +103,8 @@ class ScalabilityEvaluator:
             if len(pics_to_store) != 0:
                 # Evaluate time for this database size and store it
                 tmp_scal_datastruct, mapping, request_list = self.evaluate_scalability_lists(list_pictures_eval=pics_to_request,  # pics_to_evaluate,
-                                                                               list_picture_to_up=pics_to_store,
-                                                                               tmp_id=i)
+                                                                                             list_picture_to_up=pics_to_store,
+                                                                                             tmp_id=i)
                 global_mapping = {**global_mapping, **mapping}
 
                 # Store few more values
@@ -127,7 +127,6 @@ class ScalabilityEvaluator:
                 scalability_data.list_request_time.append(tmp_scal_datastruct)
 
                 if output_folder is not None:
-
                     save_path_json = output_folder / ("global_mapping" + str(i) + ".json")
                     json_import_export.save_json(request_list, save_path_json)
 
@@ -136,6 +135,8 @@ class ScalabilityEvaluator:
 
         # Export graph
         if output_folder is not None:
+            self.export_graph(output_folder, global_mapping)
+            '''
             db_dump = self.ext_api.get_db_dump_as_graph()
             db_dump_dict = db_dump.export_as_dict()
             save_path_json = output_folder / "original_storage_graph_dump.json"
@@ -153,6 +154,7 @@ class ScalabilityEvaluator:
 
             save_path_json = output_folder / "modified_storage_graph_dump.json"
             json_import_export.save_json(db_dump_dict, save_path_json)
+            '''
         else:
             self.logger.critical("outputfolder is None ! ")
 
@@ -163,6 +165,25 @@ class ScalabilityEvaluator:
         test_db_handler.tearDown()
 
         return scalability_data
+
+    def export_graph(self, output_folder: pathlib.Path, global_mapping):
+        db_dump = self.ext_api.get_db_dump_as_graph()
+        db_dump_dict = db_dump.export_as_dict()
+        save_path_json = output_folder / "original_storage_graph_dump.json"
+        json_import_export.save_json(db_dump_dict, save_path_json)
+        # Full of new ids
+
+        save_path_json = output_folder / "global_mapping.json"
+        json_import_export.save_json(global_mapping, save_path_json)
+        # old name -> new id
+
+        db_dump_dict = dict_utilities.apply_revert_mapping(db_dump_dict, global_mapping)
+
+        # db_dump.replace_id_from_mapping(mapping)
+        db_dump_dict = dict_utilities.copy_id_to_image(db_dump_dict)
+
+        save_path_json = output_folder / "modified_storage_graph_dump.json"
+        json_import_export.save_json(db_dump_dict, save_path_json)
 
     def evaluate_scalability_lists(self,
                                    list_pictures_eval: Set[pathlib.Path],

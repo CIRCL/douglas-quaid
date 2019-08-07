@@ -88,6 +88,29 @@ class GraphExtractor:
         #  DEBUG IF FAILURE FOR MANUAL RECOVERY #
         list_results = [r for r in list_results if r is not None and r.get("request_id", None) is not None]
 
+        # Extract tmp_graph and save as graphs
+        tmp_graph = self.get_proximity_graph_from_list_result(list_results, output_path)
+
+        '''
+        # Construct graph from the list of distance results
+        tmp_graph = self.results_list_to_graph(list_results, nb_match=2)
+
+        # Save to file
+        json_import_export.save_json(tmp_graph.export_as_dict(), output_path / "distance_graph.json")
+        self.logger.debug(f"Distance graph json saved.")
+
+        # Construct graph from the list of distance results
+        tmp_graph = self.results_list_to_graph(list_results, nb_match=2, yes_maybe_no_mode=True)
+
+        # Save to file
+        json_import_export.save_json(tmp_graph.export_as_dict(), output_path / "distance_graph_yes_maybe_no.json")
+        self.logger.debug(f"Distance graph yes-maybe-no json saved.")
+        '''
+        return list_results, tmp_graph
+
+
+    def get_proximity_graph_from_list_result(self, list_results : List[Dict], output_path : pathlib.Path) -> GraphDataStruct:
+
         # Construct graph from the list of distance results
         tmp_graph = self.results_list_to_graph(list_results, nb_match=2)
 
@@ -102,7 +125,7 @@ class GraphExtractor:
         json_import_export.save_json(tmp_graph.export_as_dict(), output_path / "distance_graph_yes_maybe_no.json")
         self.logger.debug(f"Distance graph yes-maybe-no json saved.")
 
-        return list_results, tmp_graph
+        return tmp_graph
 
     @staticmethod
     def results_list_to_graph(requests_list, nb_match: int = 1, yes_maybe_no_mode: bool = False) -> GraphDataStruct:

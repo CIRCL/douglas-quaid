@@ -90,6 +90,7 @@ if __name__ == '__main__':
 
     parser.add_argument('-s', '--source_folder', dest="source_folder", type=dir_path)
     parser.add_argument('-o', '--output_folder', dest="output_folder", type=dir_path)
+    parser.add_argument('-n', '--nbwords', dest="nbwords", type=int)
 
     args = parser.parse_args()
 
@@ -97,4 +98,4 @@ if __name__ == '__main__':
     out_folder_path = pathlib.Path(args.output_folder)
 
     vocab_creator = BoWOrb_Vocabulary_Creator()
-    vocab_creator.create_dict_from_folder(in_folder_path, out_folder_path, 500, 500)
+    vocab_creator.create_dict_from_folder(in_folder_path, out_folder_path, int(args.nbwords), 500) # 500 to 500 000

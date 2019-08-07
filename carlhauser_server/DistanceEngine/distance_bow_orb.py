@@ -73,8 +73,7 @@ class Distance_BoW_ORB:
         algo_name = algo_conf.get('algo_name')
 
         # Depending on the type of
-        self.logger.debug(f"Comparison for BOW : {self.dist_conf.BOW_CMP_HIST} of {type(self.dist_conf.BOW_CMP_HIST)} "
-                          f"and {distance_engine_conf.BOW_CMP_HIST.CORREL.name} of {type(distance_engine_conf.BOW_CMP_HIST.CORREL.name)}")
+        # self.logger.debug(f"Comparison for BOW : {self.dist_conf.BOW_CMP_HIST} of {type(self.dist_conf.BOW_CMP_HIST)} " and {distance_engine_conf.BOW_CMP_HIST.CORREL.name} of {type(distance_engine_conf.BOW_CMP_HIST.CORREL.name)}")
 
         if self.dist_conf.BOW_CMP_HIST == distance_engine_conf.BOW_CMP_HIST.CORREL.name:
             tmp_dist = 1 - cv2.compareHist(pic_package_from["BOW_ORB_DESCRIPTOR"],
