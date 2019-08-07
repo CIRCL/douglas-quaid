@@ -314,8 +314,6 @@ If the original graph had been generated from a configuration enabling only one 
 
 ### For Developers
 
-(...)
-
 ![Software architecture overview](./docs/images/overview-v1.svg)
 More details are given in [Documentation PDF version](./SOTA/Core_doc.pdf)
 
@@ -330,9 +328,24 @@ More details are given in [Documentation PDF version](./SOTA/Core_doc.pdf)
 <img src="./docs/images/queue2.svg" alt="How queues are working" height="100"/>
 </p>
 
-## Deployment
+## Deployment and Test procedure
 
-(...)
+Process to follow, after installation.
+
+1. Launch calibration on a subset of your production data (40 to 100 pictures)
+2. Launch server with calibrated options
+3. Launch similarity graph extractor to send a bunch of production data in the server and to get an overview of the quality of matching
+4. Vizualize with VisJS-Classificator the graph
+
+```bash
+python3 ./common/Calibrator/threshold_calibrator.py -s <filepath to subset of your prod data> -gt <filepath to ground truth file made with visjs classificator>.json -d <Output folder path where you want configuration to be saved> from_cmd_args -AFPR < Acceptable rate of false positive. e.g. 0.1> -AFNR < Acceptable rate of false negative. e.g. 0.1>
+
+python3 ./carlhauser_server/instance_handler.py -fec <folderpath where config file saved>/calibrated_db_conf.json -distc <folderpath where config file saved>/dist_conf_calibrated.json
+
+python3 ./carlhauser_client/EvaluationTools/SimilarityGraphExtractor/similarity_graph_extractor.py -s <folder path to your big dataset (500>)> -gt <Filepath to your ground truth file for this dataset, if you want it to be evaluated. Optional>.json -d <folder path to output graphe, etc.>
+
+node server.js -i <folder path to your big dataset (500>)> -t <Path to a temporary folder, any one> -o <Path to an output folder, any one> -j <file path to the generated graph>/distance_graph.json
+```
 
 ## Built With & Sources
 
