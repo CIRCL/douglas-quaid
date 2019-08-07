@@ -34,7 +34,7 @@ class Worker_StartStop(object, metaclass=Singleton):
     Singleton class that handle workers and processses management
     """
 
-    def __init__(self, db_conf: database_conf):
+    def __init__(self, db_conf: database_conf.Default_database_conf):
         # STD attributes
         self.db_conf = db_conf
         self.logger = logging.getLogger(__name__)
@@ -120,8 +120,14 @@ class Worker_StartStop(object, metaclass=Singleton):
             # Launch it, with configurations
             tmp_worker_process.launch(db_conf, dist_conf, fe_conf, ws_conf, mode)
 
+            # Monitor the worker if asked to
+            if self.db_conf.MONITOR_WORKER:
+                self.logger.info(f"Monitoring is being added on the Worker PID")
+                tmp_worker_process.monitor_worker(self.db_conf.MONITOR_RATE)
+
             # Store its reference (as new member of the list of the good type)
             self.mapping.get(worker_type).append(tmp_worker_process)
+
 
     def stop_list_worker(self, worker_type: WorkerTypes) -> bool:
         """
@@ -152,9 +158,9 @@ class Worker_StartStop(object, metaclass=Singleton):
         time_out = False
         pinged = False
         while not pinged and not time_out:
-            try :
+            try:
                 pinged = api.ping_server()
-            except Exception as e :
+            except Exception as e:
                 # Not ready yet, wait a bit
                 self.logger.info(f"Webservice worker not online yet, waiting ...")
                 time.sleep(2)
@@ -170,7 +176,6 @@ class Worker_StartStop(object, metaclass=Singleton):
         self.logger.info(f"Webservice worker is detected online.")
 
         return True
-
 
     def wait_for_worker_shutdown(self, max_wait=60) -> bool:
         """

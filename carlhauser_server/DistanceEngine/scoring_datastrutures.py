@@ -71,7 +71,7 @@ class ClusterMatch:
     Datastructures to handle a match, a distance/decision, from a picture to a cluster.
     """
 
-    def __init__(self, cluster_id=None, distance=None, decision=None):
+    def __init__(self, cluster_id=None, distance=None, decision : DecisionTypes=None):
         self.cluster_id = cluster_id
         self.distance = distance
         self.decision = decision

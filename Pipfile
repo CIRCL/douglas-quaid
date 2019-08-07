@@ -20,6 +20,7 @@ pyopenssl = "*"
 redis = "*"
 objsize = "*"
 requests = "*"
+psrecord = "*"
 
 [requires]
 python_version = "3.7"

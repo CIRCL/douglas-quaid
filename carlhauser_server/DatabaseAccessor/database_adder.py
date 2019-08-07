@@ -3,13 +3,15 @@
 
 import argparse
 from typing import List, Dict
-
+from pprint import pformat
+import math
 import carlhauser_server.Configuration.database_conf as database_conf
 import carlhauser_server.Configuration.distance_engine_conf as distance_engine_conf
 import carlhauser_server.Configuration.feature_extractor_conf as feature_extractor_conf
 import carlhauser_server.DatabaseAccessor.database_common as database_common
 from carlhauser_server.Helpers import arg_parser
 from common.environment_variable import load_server_logging_conf_file, make_small_line, QueueNames
+import carlhauser_server.DistanceEngine.scoring_datastrutures as scoring_datastrutures
 
 load_server_logging_conf_file()
 
@@ -45,9 +47,16 @@ class Database_Adder(database_common.Database_Common):
         # Get top matching pictures in clusters
         top_matching_pictures, list_matching_clusters = self.get_top_matching_pictures(fetched_dict)
 
+        self.logger.critical(f"list_matching_clusters {pformat(list_matching_clusters)}")
+        self.logger.critical(f"top_matching_pictures {pformat(top_matching_pictures)}")
+
         # Depending on the quality of the match ...
-        if self.is_good_match(top_matching_pictures):
-            self.logger.info(f"Match is good enough with at least one cluster")
+        # if self.is_good_match(top_matching_pictures):
+        #TODO : TO VERIFY WHICH TO PICK
+        cluster_id = self.choose_cluster_from_cluster_matches(list_matching_clusters)
+        # cluster_id = self.choose_cluster_from_pics_matches(top_matching_pictures)
+        if cluster_id is not None:
+            self.logger.error(f"Match is good enough with at least one cluster")
 
             # Add picture to best picture's cluster
             cluster_id = top_matching_pictures[0].cluster_id
@@ -58,18 +67,61 @@ class Database_Adder(database_common.Database_Common):
             self.logger.info(f"Picture added in existing cluster : {cluster_id}")
 
         else:
-            self.logger.info(f"Match not good enough, with any cluster")
+            self.logger.error(f"Match not good enough, with any cluster")
             # Add picture to it's own cluster
             # First picture is "alone" and so central (score=0)
             cluster_id = self.db_utils.add_picture_to_new_cluster(fetched_id, score=0)
             self.logger.info(f"Picture added in its own new cluster : {cluster_id}")
 
         # Add to a queue, to be reviewed later, when more pictures will be added
-        # TODO
-        self.db_utils.add_to_review(fetched_id)
+        # TODO : TO ADD self.db_utils.add_to_review(fetched_id)
         self.logger.info(f"Adding done.")
         print(make_small_line())
         print("Adder Worker ready to accept more queries.")
+
+    def choose_cluster_from_cluster_matches(self, list_matching_clusters : List[scoring_datastrutures.ClusterMatch]) -> str:
+
+        # For each picture that has matched
+        for curr_cluster in list_matching_clusters :
+
+            # normalized_dist = cur_pic.distance
+            if curr_cluster.decision.name == scoring_datastrutures.DecisionTypes.YES.name and \
+                    curr_cluster.distance <= self.dist_conf.MAX_DIST_FOR_NEW_CLUSTER:
+                self.logger.error(f"Cluster : {curr_cluster.cluster_id} matches enough. Kept")
+
+                return curr_cluster.cluster_id
+            else :
+                self.logger.error(f"Cluster : {curr_cluster.cluster_id} not matches enough. Discarded. {curr_cluster.decision} {scoring_datastrutures.DecisionTypes.YES.name} {curr_cluster.distance} {self.dist_conf.MAX_DIST_FOR_NEW_CLUSTER} {type(curr_cluster.distance)} {type(self.dist_conf.MAX_DIST_FOR_NEW_CLUSTER)} {type(curr_cluster.decision)} {type(scoring_datastrutures.DecisionTypes.YES.name)} {curr_cluster.decision == scoring_datastrutures.DecisionTypes.YES.name} {curr_cluster.distance <= self.dist_conf.MAX_DIST_FOR_NEW_CLUSTER}")
+
+        return None
+
+    def choose_cluster_from_pics_matches(self, top_matching_pictures : List[scoring_datastrutures.ImageMatch]) -> str:
+
+        new_top_matching_list = []
+        for cur_pic in top_matching_pictures :
+            normalized_dist = self.get_ponderated_distance(cur_pic)
+            cur_pic.distance = normalized_dist
+            new_top_matching_list.append(cur_pic)
+
+        new_top_matching_list.sort(key=lambda x: x.distance)
+
+        # For each picture that has matched
+        for cur_pic in new_top_matching_list :
+
+            # normalized_dist = cur_pic.distance
+            if cur_pic.decision.name == scoring_datastrutures.DecisionTypes.YES.name and cur_pic.distance <= self.dist_conf.MAX_DIST_FOR_NEW_CLUSTER:
+                return cur_pic.cluster_id
+
+        return None
+
+    def get_ponderated_distance(self, picture : scoring_datastrutures.ImageMatch):
+
+        # dist = real dist + majoration/minoration depending on the % difference between expected cluster size and normal size
+        target_cluster_size = math.sqrt(self.db_utils.get_nb_stored_pictures())
+        # self.logger.debug(f"target_cluster_size : {target_cluster_size} / picture.distance {picture.distance} / self.db_utils.get_pictures_of_cluster(picture.cluster_id) {self.db_utils.get_pictures_of_cluster(picture.cluster_id)}")
+        normalized_dist = picture.distance + ((len(self.db_utils.get_pictures_of_cluster(picture.cluster_id)) - target_cluster_size) / target_cluster_size)
+
+        return normalized_dist
 
     def reevaluate_representative_picture_order(self, cluster_id, fetched_id=None):
         """
@@ -125,7 +177,6 @@ class Database_Adder(database_common.Database_Common):
         :param picture_dict: the picture (dict) which centrality is computed
         :return: the centrality of the picture dict
         """
-        #
 
         self.logger.debug(picture_dict)
         curr_sum = 0
@@ -144,6 +195,9 @@ class Database_Adder(database_common.Database_Common):
 
 # Launcher for this worker. Launch this file to launch a worker
 if __name__ == '__main__':
+    # python3 -m cProfile -o temp.dat <PROGRAM>.py
+    # python3 -m cProfile -o database_adder.dat ./database_adder.py -dbc ./../../tmp_db_conf.json -distc ./../../tmp_dist_conf.json -fec ./../../tmp_fe_conf.json
+    # python3 ./database_adder.py -dbc ./../../tmp_db_conf.json -distc ./../../tmp_dist_conf.json -fec ./../../tmp_fe_conf.json
     parser = argparse.ArgumentParser(description='Launch a worker for a specific task : adding picture to database')
     parser = arg_parser.add_arg_db_conf(parser)
     parser = arg_parser.add_arg_dist_conf(parser)

@@ -4,13 +4,14 @@
 
 import logging
 from typing import List, Dict
-
+from carlhauser_server.DistanceEngine.scoring_datastrutures import DecisionTypes as dt
 import carlhauser_server.Configuration.database_conf as database_conf
 import carlhauser_server.Configuration.distance_engine_conf as distance_engine_conf
 import carlhauser_server.Configuration.feature_extractor_conf as feature_extractor_conf
 import carlhauser_server.DatabaseAccessor.database_worker as database_worker
 import carlhauser_server.DistanceEngine.distance_hash as distance_hash
 import carlhauser_server.DistanceEngine.distance_orb as distance_orb
+import carlhauser_server.DistanceEngine.distance_bow_orb as distance_bow_orb
 import carlhauser_server.DistanceEngine.merging_engine as merging_engine
 import carlhauser_server.DistanceEngine.scoring_datastrutures as scoring_datastrutures
 from common.CustomException import AlgoFeatureNotPresentError
@@ -41,6 +42,7 @@ class Distance_Engine:
         # Create distance extractor
         self.distance_hash = distance_hash.Distance_Hash(db_conf, dist_conf, fe_conf)
         self.distance_orb = distance_orb.Distance_ORB(db_conf, dist_conf, fe_conf)
+        self.distance_bow_orb = distance_bow_orb.Distance_BoW_ORB(db_conf, dist_conf, fe_conf)
         self.merging_engine = merging_engine.Merging_Engine(db_conf, dist_conf, fe_conf)
 
     # ==================== ------ INTER ALGO DISTANCE ------- ====================
@@ -70,6 +72,14 @@ class Distance_Engine:
         except AlgoFeatureNotPresentError as e:
             self.logger.warning(f"No feature present for orbing algorithms : {e}")
 
+        # Get BoW-ORB distances
+        try:
+            bow_orb_dict = self.distance_bow_orb.bow_orb_distance(pic_package_from, pic_package_to)
+            self.logger.debug(f"Computed BoW-orb distance : {bow_orb_dict}")
+            merged_dict.update(bow_orb_dict)
+        except AlgoFeatureNotPresentError as e:
+            self.logger.warning(f"No feature present for orbing algorithms : {e}")
+
         self.logger.debug(f"Distance dict : {merged_dict}")
         return merged_dict
 
@@ -84,16 +94,16 @@ class Distance_Engine:
         # From distance between algos, obtain the distance between pictures
         merged_dict = self.get_dist_and_decision_algos_to_algos(pic_package_from, pic_package_to)
 
-        try :
+        try:
             dist = self.merging_engine.merge_algos_distance(merged_dict)
-        except Exception as e :
-            self.logger.critical("Error during merging of distances. Default distance taken : 1.")
+        except Exception as e:
+            self.logger.critical(f"Error during merging of distances. Default distance taken : 1. Error: {e}")
             dist = 1
 
         try:
             decision = self.merging_engine.merge_algos_decision(merged_dict)
-        except Exception as e :
-            self.logger.critical("Error during merging of decisions. Default decision taken : MAYBE.")
+        except Exception as e:
+            self.logger.critical(f"Error during merging of decisions. Default decision taken : MAYBE. Error: {e}")
             decision = scoring_datastrutures.DecisionTypes.MAYBE
 
         return dist, decision
@@ -106,10 +116,15 @@ class Distance_Engine:
         """
         # Check if the matching pictures provided are "close enough" of the current picture.
 
+        self.logger.critical(f" Max distance for new cluster in distance engine : {self.dist_conf.MAX_DIST_FOR_NEW_CLUSTER}")
+
         # Check if the picture is too far or not
         if matching_picture.distance <= self.dist_conf.MAX_DIST_FOR_NEW_CLUSTER:
             return True
-        # TODO : Use decision ?
+
+        # TODO : Check for decisions
+        if matching_picture.decision == dt.YES.name or matching_picture.decision == dt.MAYBE.name:
+            return True
 
         # Picture is too "far"
         return False

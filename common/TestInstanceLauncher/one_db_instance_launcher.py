@@ -53,7 +53,9 @@ class TestInstanceLauncher:
         self.core_launcher = self.create_core_launcher()
         self.core_launcher.launch(with_database=False)
 
-        # TODO: Flush database ? To be sure not to have artifacts ?
+        # Flush database ? To be sure not to have artifacts ?
+        # self.core_launcher.flush_db() : Not needed, as it's already in the shutdown script ! :) (for test database)
+
         self.logger.critical("[TESTS] LAUNCHING DATABASE AS TEST : NOTHING WILL BE REMOVED ON STORAGE OR CACHE DATABASES [TESTS] / full instance")
 
     def create_database_only_instance(self, db_conf: database_conf.Default_database_conf = None,

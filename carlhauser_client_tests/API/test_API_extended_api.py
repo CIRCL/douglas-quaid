@@ -144,8 +144,10 @@ class TestAPIExtendedAPI(unittest.TestCase):
         self.assertEqual(nb_pics_requested, 4)
 
         # Do mapping
+        print(pformat(list_answers))
         tmp_dict = {}
         for i in list_answers :
+            print(i)
             tmp_dict[i["request_id"]] = i
 
         self.assertEqual(tmp_dict["729f3e02-c138-5ccd-ad08-2b7f56206e1d"]["list_pictures"][0]["image_id"], '729f3e02-c138-5ccd-ad08-2b7f56206e1d')
@@ -178,6 +180,7 @@ class TestAPIExtendedAPI(unittest.TestCase):
         # Do mapping
         tmp_dict = {}
         for i in results_list :
+            print(i)
             tmp_dict[i["request_id"]] = i
 
         self.assertEqual(tmp_dict["image.bmp"]["list_pictures"][0]["image_id"], 'image.bmp')

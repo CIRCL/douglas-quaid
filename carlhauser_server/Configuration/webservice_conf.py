@@ -9,6 +9,9 @@ class Default_webservice_conf(JSON_parsable_Dict):
         self.CERT_FILE: pathlib.Path = get_homedir() / 'carlhauser_server' / 'cert.pem'  # './cert.pem'
         self.KEY_FILE: pathlib.Path = get_homedir() / 'carlhauser_server' / 'key.pem'  # './key.pem'
 
+        self.ip = '127.0.0.1'
+        self.port = 5000
+
 
 def parse_from_dict(conf):
     tmp_conf = Default_webservice_conf()

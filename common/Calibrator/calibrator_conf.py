@@ -59,9 +59,9 @@ class Default_calibrator_conf(JSON_parsable_Dict):
         case_4 = self.Acceptable_false_positive_rate is not None and self.Minimum_true_positive_rate is not None
 
         if case_1:
-            case_1_order = 0 <= self.Minimum_true_negative_rate <= self.Acceptable_false_negative_rate <= 1
+            case_1_order = 0 <= self.Acceptable_false_negative_rate <= self.Minimum_true_negative_rate  <= 1
             if not case_1_order:
-                raise Exception("Invalid information to continue. Following formula not ensured : 0 <= (Minimum TNR) <= (Acceptable FNR) <= 1")
+                raise Exception("Invalid information to continue. Following formula not ensured : 0 <= (Acceptable FNR) <= (Minimum TNR) <= 1")
         elif case_2:
             case_2_order = 0 <= self.Acceptable_false_positive_rate <= self.Acceptable_false_negative_rate <= 1
             if not case_2_order:

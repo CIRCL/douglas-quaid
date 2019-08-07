@@ -1,13 +1,21 @@
 from collections import namedtuple
 
 from common.environment_variable import JSON_parsable_Dict
+from common.environment_variable import JSON_parsable_Enum
+from enum import Enum, auto
+
+
+class BOW_CMP_HIST(JSON_parsable_Enum, Enum):
+    CORREL = auto()  # Standard
+    BHATTACHARYYA = auto()
+
 
 class Default_distance_engine_conf(JSON_parsable_Dict):
     def __init__(self):
         # Inputs
         self.TOP_N_CLUSTERS: int = 3  # Nb of "best clusters" to be matched on picture representative
         self.TOP_N_PICTURES: int = 10  # Nb of "best pictures" to be returned, from TOP_N_CLUSTERS best clusters (total, not per cluster)
-        self.PICT_TO_TEST_PER_CLUSTER: int = 1  # Nb of "central picture" to test per cluster
+        self.PICT_TO_TEST_PER_CLUSTER: int = 3  # Nb of "central picture" to test per cluster
 
         self.MAX_DIST_FOR_NEW_CLUSTER: float = 0.2  # Distance threshold to create a new cluster. Lesser the more cluster.
 
@@ -16,6 +24,8 @@ class Default_distance_engine_conf(JSON_parsable_Dict):
         # ORB PARAMETERS
         self.CROSSCHECK: bool = True
 
+        # Bow_ORB PARAMETERS
+        self.BOW_CMP_HIST = BOW_CMP_HIST.CORREL.name
 
 
 def parse_from_dict(conf):

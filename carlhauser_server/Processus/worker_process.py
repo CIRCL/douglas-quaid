@@ -6,6 +6,7 @@ import logging
 import pathlib
 import subprocess
 import time
+from multiprocessing import Process
 
 import carlhauser_server.Configuration.database_conf as database_conf
 import carlhauser_server.Configuration.distance_engine_conf as distance_engine_conf
@@ -15,6 +16,7 @@ import common.ImportExport.json_import_export as json_import_export
 from carlhauser_server.Helpers.arg_parser import ConfArgs
 from common.environment_variable import get_homedir
 from common.environment_variable import load_server_logging_conf_file
+from psrecord.main import monitor
 
 load_server_logging_conf_file()
 
@@ -152,6 +154,17 @@ class WorkerProcessus:
 
         self.logger.debug(f"Worker stopped after {round(abs(time.time() - start), 3)}s.")
         return True
+
+    def monitor_worker(self, interval: int = 1):
+
+        # Create path where to save pictures and logs
+        curr_name = str(self.worker_path.name) + "_at_" + str(self.start_time)
+        logpath = pathlib.Path(get_homedir() /  (curr_name + ".log"))
+        graphpath = pathlib.Path(get_homedir() / (curr_name + ".pdf"))
+        # monitor(self.process.pid, logfile=logpath, plot=graphpath, include_children=True)
+        # pid, logfile = None, plot = None, duration = None, interval = None,
+        # Launch the monitoring process
+        Process(target=monitor, args=(self.process.pid, str(logpath), str(graphpath), interval, True))
 
     # ==================== To string ====================
 

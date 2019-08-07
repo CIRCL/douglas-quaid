@@ -33,8 +33,8 @@ class Custom_JSON_Encoder(json.JSONEncoder):
             return o.__dict__
         # if dataclasses.is_dataclass(o):
         #     return dataclasses.asdict(o)
-        if isinstance(o, namedtuple):
-            return o._asdict()
+        # if isinstance(o, namedtuple):
+        #     return o._asdict()
         return json.JSONEncoder.default(self, o)
 
 def save_json(obj, file_path: pathlib.Path):

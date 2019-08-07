@@ -61,7 +61,7 @@ class ParameterExplorer:
 
             # Put configuration in place
             self.server_launcher = instance_handler.Instance_Handler()
-            self.server_launcher.di_conf.MAX_DIST_FOR_NEW_CLUSTER = curr_threshold
+            self.server_launcher.dist_conf.MAX_DIST_FOR_NEW_CLUSTER = curr_threshold
 
             # Create output folder for this configuration
             tmp_output = output_folder / ''.join([str(curr_threshold), "_threshold"])

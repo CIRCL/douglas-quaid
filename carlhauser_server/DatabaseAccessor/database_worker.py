@@ -127,7 +127,10 @@ class Database_Worker:
                     to_split = str(tmp_id.decode('utf-8'))
 
                 stored_queue_name, stored_id = to_split.split("|")
-                # TODO : Handle removal ? self.cache_db.delete(tmp_id) ==> Already expire time (24H)
+
+                # Handle removal = self.cache_db.delete(tmp_id) ==> even if already expire time (24H)
+                self.logger.info("Data had been removed as it had been fetched ! ")
+                storage.delete(tmp_id)
 
                 self.logger.debug(f"Stuff had been fetched from queue={queue_name}")
 
@@ -196,7 +199,6 @@ class Database_Worker:
         return fetched_dict
 
     # ==================== ------ GET/SET IMAGES ------- ====================
-
     def add_picture_to_storage(self, storage: redis.Redis, input_id: str, image_dict: dict) -> bool:
         """
         Store images as pickled dict in the provided storage
@@ -243,7 +245,6 @@ class Database_Worker:
         return self.get_dict_from_key(storage, tmp_id, pickle=True)
 
     # ==================== ------ CHECK QUEUE EMPTINESS ------- ====================
-
     def are_all_queues_empty(self) -> bool:
         """
         Check if all queues (TO ADD, TO REQUEST, etc.) are empty

@@ -60,6 +60,7 @@ class Database_Requester(database_common.Database_Common):
 
 # Launcher for this worker. Launch this file to launch a worker
 if __name__ == '__main__':
+    # python3 -m cProfile -o database_requester.dat ./database_requester.py -dbc ./../../tmp_db_conf.json -distc ./../../tmp_dist_conf.json -fec ./../../tmp_fe_conf.json
     parser = argparse.ArgumentParser(description='Launch a worker for a specific task : requesting picture to database')
     parser = arg_parser.add_arg_db_conf(parser)
     parser = arg_parser.add_arg_dist_conf(parser)

@@ -69,12 +69,12 @@ class GraphExtractor:
         return perfs_list
 
     def get_proximity_graph(self, image_folder: pathlib.Path, output_path: pathlib.Path) -> (List[Dict], GraphDataStruct):
-        '''
+        """
         Extract a proximity graph from a folder of pictures, sent to DB and requested one by one.
         :param image_folder: The folder of picture to send and request, to build the similarity graph from
         :param output_path: The output path where the graph and other data will be stored
         :return: the proximity graph
-        '''
+        """
 
         # Get distance results for each picture
         # list_results = self.ext_api.add_and_request_and_dump_pictures(image_folder)
@@ -87,6 +87,29 @@ class GraphExtractor:
 
         #  DEBUG IF FAILURE FOR MANUAL RECOVERY #
         list_results = [r for r in list_results if r is not None and r.get("request_id", None) is not None]
+
+        # Extract tmp_graph and save as graphs
+        tmp_graph = self.get_proximity_graph_from_list_result(list_results, output_path)
+
+        '''
+        # Construct graph from the list of distance results
+        tmp_graph = self.results_list_to_graph(list_results, nb_match=2)
+
+        # Save to file
+        json_import_export.save_json(tmp_graph.export_as_dict(), output_path / "distance_graph.json")
+        self.logger.debug(f"Distance graph json saved.")
+
+        # Construct graph from the list of distance results
+        tmp_graph = self.results_list_to_graph(list_results, nb_match=2, yes_maybe_no_mode=True)
+
+        # Save to file
+        json_import_export.save_json(tmp_graph.export_as_dict(), output_path / "distance_graph_yes_maybe_no.json")
+        self.logger.debug(f"Distance graph yes-maybe-no json saved.")
+        '''
+        return list_results, tmp_graph
+
+
+    def get_proximity_graph_from_list_result(self, list_results : List[Dict], output_path : pathlib.Path) -> GraphDataStruct:
 
         # Construct graph from the list of distance results
         tmp_graph = self.results_list_to_graph(list_results, nb_match=2)
@@ -102,18 +125,18 @@ class GraphExtractor:
         json_import_export.save_json(tmp_graph.export_as_dict(), output_path / "distance_graph_yes_maybe_no.json")
         self.logger.debug(f"Distance graph yes-maybe-no json saved.")
 
-        return list_results, tmp_graph
+        return tmp_graph
 
     @staticmethod
     def results_list_to_graph(requests_list, nb_match: int = 1, yes_maybe_no_mode: bool = False) -> GraphDataStruct:
-        '''
+        """
         Construct a graph from results list of requests on the database
         Hypothesis : All database pictures are requested pictures
         Edges are colored : from green to red depending on the match index (Best is green)
         :param requests_list: a List of results extracted from server
         :param nb_match: Number of matches per pictures to add to the graph (1=first level match/best match, 2 = 2 best match per picture, etc.)
         :return: A graph datastructure
-        '''
+        """
         logger = logging.getLogger(__name__)
         # logger.debug(f"Received request_list : {pformat(requests_list)}")
 

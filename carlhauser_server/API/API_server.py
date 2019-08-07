@@ -69,7 +69,7 @@ class EndpointAction(object):
 
 
 class FlaskAppWrapper(object):
-    def __init__(self, name: str, tmp_ws_conf: webservice_conf, tmp_db_conf: database_conf):
+    def __init__(self, name: str, tmp_ws_conf: webservice_conf.Default_webservice_conf, tmp_db_conf: database_conf.Default_database_conf):
         # STD attributes
         self.ws_conf = tmp_ws_conf
         self.logger = logging.getLogger(__name__)
@@ -89,10 +89,16 @@ class FlaskAppWrapper(object):
         """
         if self.ws_conf.CERT_FILE is None or self.ws_conf.KEY_FILE is None:
             self.logger.error(f"Provided CERT OR KEY file not found :  {self.ws_conf.CERT_FILE} and {self.ws_conf.KEY_FILE}")
-            self.app.run(ssl_context='adhoc')
+            ## Replaced with below code to run it using waitress
+            # serve(self.app, host=self.ws_conf.ip, port=self.ws_conf.port, ssl_context='adhoc')
+            self.app.run( ssl_context='adhoc')
         else:
             self.logger.info(f"Provided CERT OR KEY file used : {self.ws_conf.CERT_FILE} and {self.ws_conf.KEY_FILE}")
-            self.app.run(ssl_context=(str(self.ws_conf.CERT_FILE), str(self.ws_conf.KEY_FILE)))  # ssl_context='adhoc')
+            ## Replaced with below code to run it using waitress
+            self.app.run( ssl_context=(str(self.ws_conf.CERT_FILE), str(self.ws_conf.KEY_FILE)))  # ssl_context='adhoc')
+            # serve(self.app, host=self.ws_conf.ip, port=self.ws_conf.port, ssl_context=(str(self.ws_conf.CERT_FILE), str(self.ws_conf.KEY_FILE)))
+
+            self.logger.critical(f"Server running on {self.ws_conf.ip}:{self.ws_conf.port} ... ")
 
     def add_all_endpoints(self):
         """

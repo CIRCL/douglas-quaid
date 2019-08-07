@@ -4,12 +4,13 @@
 
 import argparse
 from typing import Dict
-
+import traceback
 import carlhauser_server.Configuration.database_conf as database_conf
 import carlhauser_server.Configuration.feature_extractor_conf as feature_extractor_conf
 import carlhauser_server.DatabaseAccessor.database_worker as database_accessor
 import carlhauser_server.FeatureExtractor.picture_hasher as picture_hasher
 import carlhauser_server.FeatureExtractor.picture_orber as picture_orber
+import carlhauser_server.FeatureExtractor.picture_bow_orber as picture_bow_orber
 from carlhauser_server.Helpers import arg_parser
 from common.environment_variable import load_server_logging_conf_file, make_small_line, QueueNames
 
@@ -29,6 +30,7 @@ class Feature_Worker(database_accessor.Database_Worker):
 
         self.picture_hasher = picture_hasher.Picture_Hasher(tmp_fe_conf)
         self.picture_orber = picture_orber.Picture_Orber(tmp_fe_conf)
+        self.picture_bow_orber = picture_bow_orber.Picture_BoW_Orber(tmp_fe_conf)
 
     def fetch_from_queue(self) -> (str, Dict):
         """
@@ -46,19 +48,42 @@ class Feature_Worker(database_accessor.Database_Worker):
         :return: Nothing (or to be defined)
         """
         # Get picture from picture_id
-        picture = fetched_dict[b"img"]
+        try :
+            picture = fetched_dict[b"img"]
+        except Exception as e :
+            self.logger.critical(f"Error while fetching dictionnary : {e} with {fetched_dict}")
+            raise Exception(f"Impossible to fetch image in stored dictionary in feature worker : {e}")
         self.logger.info(f"Loaded picture {type(picture)}")
 
         # Get hash values of picture
-        hash_dict = self.picture_hasher.hash_picture(picture)
-        self.logger.debug(f"Computed hashes : {hash_dict}")
+        try :
+            hash_dict = self.picture_hasher.hash_picture(picture)
+            self.logger.debug(f"Computed hashes : {hash_dict}")
+        except Exception as e :
+            traceback.print_tb(e.__traceback__)
+            self.logger.error(f"Error while computing hash dictionnary : {e}")
+            hash_dict = {}
 
         # Get ORB values of picture
-        orb_dict = self.picture_orber.orb_picture(picture)
-        self.logger.debug(f"Computed orb values : {orb_dict}")
+        try:
+            orb_dict = self.picture_orber.orb_picture(picture)
+            self.logger.debug(f"Computed orb values : {orb_dict}")
+        except Exception as e :
+            traceback.print_tb(e.__traceback__)
+            self.logger.error(f"Error while computing orb dictionnary : {e}")
+            orb_dict = {}
+
+        # Get BoW-ORB values of picture
+        try:
+            bow_orb_dict = self.picture_bow_orber.bow_orb_picture(picture, orb_dict)
+            self.logger.debug(f"Computed bow orb values : {bow_orb_dict}")
+        except Exception as e :
+            traceback.print_tb(e.__traceback__)
+            self.logger.error(f"Error while computing BoW-Orb dictionnary : {e}")
+            bow_orb_dict = {}
 
         # Merge dictionaries
-        merged_dict = {**hash_dict, **orb_dict}
+        merged_dict = {**hash_dict, **orb_dict, **bow_orb_dict}
         self.logger.debug(f"To send to db dict : {merged_dict}")
 
         # Remove old data and send dictionary in hashmap to redis

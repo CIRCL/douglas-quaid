@@ -42,6 +42,8 @@ class Default_database_conf(JSON_parsable_Dict):
         # ============================== TEST and EVALUATION PURPOSES ==============================
         # Nothing will be writen on storage or cache databases. Made for automatic evaluation, etc.
         self.ONLY_TEST_DB: bool = False
+        self.MONITOR_WORKER: bool = True
+        self.MONITOR_RATE : int = 1 # 1 measure per second
 
 
 def parse_from_dict(conf):

@@ -27,22 +27,22 @@ class Extended_API(Simple_API):
 
     @staticmethod
     def get_api():
-        '''
+        """
         Static method that return an instance of the API (ExtendedAPI type)
         :return: Extended API instance
-        '''
+        """
         return Extended_API.get_custom_api(Extended_API)
 
     # ========= UTILITIES =============
     # ================= ADD PICTURES =================
 
     def add_one_picture_and_wait(self, image_path: pathlib.Path, max_time: int = 60) -> (bool, str):
-        '''
+        """
         Add a picture to the server, wait for the adding to be performed.
         :param image_path: the path of the picture to add
         :param max_time: maximum allowed time to wait before timing out. By default -1 = No time out
         :return: boolean : True if the picture had successfuly been added, False otherwise , and the server_id of the sent picture
-        '''
+        """
 
         # Starting count-down
         start = time.time()
@@ -67,31 +67,31 @@ class Extended_API(Simple_API):
             raise Exception("Error on adding sending.")
 
     def add_many_pictures_no_wait(self, image_folder: pathlib.Path) -> (Dict[str, str], int):
-        '''
+        """
         Add all the pictures of the provided folder to the server (direct children, not recursive)
         :param image_folder: path to the folder of pictures
         :return: Mapping (filename-> ID provided by server) and the number of pictures successfuly uploaded
-        '''
+        """
 
         return self._add_many_pictures_with(image_folder, self.add_one_picture)
 
     def add_many_picture_and_wait_for_each(self, image_folder: pathlib.Path) -> (Dict[str, str], int):
-        '''
+        """
         Add all the pictures of the provided folder to the server (direct children, not recursive)
         wait for each of them to be added (one after the other)
         :param image_folder: path to the folder of pictures
         :return: Mapping (filename-> ID provided by server) and the number of pictures successfully uploaded
-        '''
+        """
 
         return self._add_many_pictures_with(image_folder, self.add_one_picture_and_wait)
 
     def add_many_pictures_and_wait_global(self, image_folder: pathlib.Path) -> (Dict[str, str], int):
-        '''
+        """
         Add all the pictures at once of the provided folder to the server (direct children, not recursive)
         and then wait for ALL of them to be added (as a batch). Faster than add_many_pictures_and_wait
         :param image_folder: path to the folder of pictures
         :return: Mapping (filename-> ID provided by server) and the number of pictures successfully uploaded
-        '''
+        """
 
         mapping, nb_pics_sent = self._add_many_pictures_with(image_folder, self.add_one_picture)
 
@@ -108,12 +108,12 @@ class Extended_API(Simple_API):
         return mapping, nb_pics_sent
 
     def _add_many_pictures_with(self, image_folder: pathlib.Path, function) -> (Dict[str, str], int):
-        '''
+        """
         Generic function to send pictures calling the "function". Internal use for factorization
         :param image_folder: path to the folder of pictures
         :param function: Mapping (filename-> ID provided by server) and the number of pictures successfuly uploaded
         :return:
-        '''
+        """
         self.logger.debug(f"Sending pictures of {image_folder} in the DB.")
         mapping_filename_to_id = {}
         nb_pics_sent = 0
@@ -237,8 +237,9 @@ class Extended_API(Simple_API):
                 except Exception as e:
                     self.logger.error(f"Error occurred during {image_path.name} request : {e}.")
 
-        # Wait until last requested picture is
-        _ = self.poll_until_result_ready(list_requests_id[len(list_requests_id) - 1], max_time=-1)
+        if len(list_requests_id) >= 1 :
+            # Wait until last requested picture is
+            _ = self.poll_until_result_ready(list_requests_id[len(list_requests_id) - 1], max_time=-1)
 
         for request_id in list_requests_id:
             is_success, results = self.get_results(request_id)
