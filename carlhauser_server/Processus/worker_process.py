@@ -159,7 +159,7 @@ class WorkerProcessus:
 
         # Create path where to save pictures and logs
         curr_name = str(self.worker_path.name) + "_at_" + str(self.start_time)
-        logpath = pathlib.Path(get_homedir() /  (curr_name + ".log"))
+        logpath = pathlib.Path(get_homedir() / (curr_name + ".log"))
         graphpath = pathlib.Path(get_homedir() / (curr_name + ".pdf"))
         # monitor(self.process.pid, logfile=logpath, plot=graphpath, include_children=True)
         # pid, logfile = None, plot = None, duration = None, interval = None,

@@ -2,10 +2,11 @@
 # -*- coding: utf-8 -*-
 
 import argparse
-import json
 import pathlib
 import pprint
+
 from common.ImportExport.json_import_export import save_json, load_json
+
 
 class VisJSsparser:
 
@@ -40,7 +41,6 @@ class VisJSsparser:
         for picture in tmp_json["nodes"]:
             self.num_to_name_dict[picture.get("id")] = picture.get("image")
 
-
         tmp_cluster_list = []
 
         # Modify clusters
@@ -52,7 +52,7 @@ class VisJSsparser:
 
             # Add tranlated member name
             tmp_members = []
-            for members in cluster.get("members") :
+            for members in cluster.get("members"):
                 tmp_members.append(self.num_to_name_dict[members])
 
             tmp_cluster["members"] = tmp_members
@@ -61,10 +61,9 @@ class VisJSsparser:
 
         print(tmp_cluster_list)
 
-
     def export_file(self, outputfile_path: pathlib.Path):
 
-        if self.to_export is not None :
+        if self.to_export is not None:
             save_json(self.to_export, outputfile_path)
             print(f"File exported to : {outputfile_path} with {len(self.to_export)} entries.")
 
@@ -82,6 +81,6 @@ def main():
     parser.load_file(args.path)
     parser.export_file(args.outpath)
 
+
 if __name__ == "__main__":
     main()
-

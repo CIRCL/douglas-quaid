@@ -57,7 +57,7 @@ class ScalabilityEvaluatorWithThreshold(ScalabilityEvaluator):
             # fe_conf = feature_extractor_conf.Default_feature_extractor_conf()
 
             # ==== Upload pictures + Make requests ====
-            scalability_data = self.get_scalability_list(list_boxes_sizes, pictures_set, dist_conf=dist_conf, output_folder=curr_output_folder) # pics_to_evaluate,
+            scalability_data = self.get_scalability_list(list_boxes_sizes, pictures_set, dist_conf=dist_conf, output_folder=curr_output_folder)  # pics_to_evaluate,
             scalability_data.threshold_cluster = curr_threshold
             self.logger.info(f"Scalability data : {scalability_data}")
 

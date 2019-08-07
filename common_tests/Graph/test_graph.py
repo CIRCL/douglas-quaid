@@ -120,12 +120,12 @@ class test_template(unittest.TestCase):
 
         # For each cluster, fetch all pictures and store it
         for cluster_id in range(0, 2):
-            tmp_graph.add_cluster(Cluster(label="", id=cluster_id, image=""))
+            tmp_graph.add_cluster(Cluster(label="", tmp_id=cluster_id, image=""))
 
             for id in range(0, 3):
                 pic_id = str(cluster_id) + "_" + str(id)
                 # Label = picture score, here
-                tmp_graph.add_node(Node(label="picture name +" + pic_id, id=pic_id, image=""))
+                tmp_graph.add_node(Node(label="picture name +" + pic_id, tmp_id=pic_id, image=""))
                 tmp_graph.add_edge(Edge(_from=cluster_id, _to=pic_id))
 
         return tmp_graph
@@ -143,7 +143,7 @@ class test_template(unittest.TestCase):
 
         # For each cluster, fetch all pictures and store it
         for cluster_id in range(0, 2):
-            tmp_graph.add_cluster(Cluster(label="", id=cluster_id, image=""))
+            tmp_graph.add_cluster(Cluster(label="", tmp_id=cluster_id, image=""))
 
             for id in range(0, 3):
                 pic_id = str(cluster_id) + "_" + str(id) + "OLD"
@@ -153,7 +153,7 @@ class test_template(unittest.TestCase):
                 mapping[pic_image] = str(cluster_id) + "_" + str(id) + "NEW"
 
                 # Label = picture score, here
-                tmp_graph.add_node(Node(label="picture name +" + pic_id, id=pic_id, image=pic_image))
+                tmp_graph.add_node(Node(label="picture name +" + pic_id, tmp_id=pic_id, image=pic_image))
                 tmp_graph.add_edge(Edge(_from=cluster_id, _to=pic_id))
 
         return tmp_graph, mapping
@@ -173,7 +173,7 @@ class test_template(unittest.TestCase):
 
     def test_get_clusters_of(self):
         tmp_graph = self.generate_basic_graph()
-        tmp_graph.add_node(Node(label="to_find", id="10", image=""))
+        tmp_graph.add_node(Node(label="to_find", tmp_id="10", image=""))
         tmp_graph.add_edge(Edge(_from="10", _to=0))
 
         cluster = tmp_graph.get_clusters_of("10")
@@ -451,14 +451,14 @@ class test_template(unittest.TestCase):
 
     def get_basic_graph(self):
         graph_1 = graph_datastructure.GraphDataStruct(Metadata(Source.DBDUMP))
-        graph_1.add_cluster(Cluster(label="cluster_1", id="c1", image="image_c1"))
-        graph_1.add_cluster(Cluster(label="cluster_2", id="c2", image="image_c2"))
-        graph_1.add_cluster(Cluster(label="cluster_3", id="c3", image="image_c3"))
+        graph_1.add_cluster(Cluster(label="cluster_1", tmp_id="c1", image="image_c1"))
+        graph_1.add_cluster(Cluster(label="cluster_2", tmp_id="c2", image="image_c2"))
+        graph_1.add_cluster(Cluster(label="cluster_3", tmp_id="c3", image="image_c3"))
 
-        graph_1.add_node(Node(label="node_1", id="n1", image="image_n1"))
-        graph_1.add_node(Node(label="node_2", id="n2", image="image_n2"))
-        graph_1.add_node(Node(label="node_3", id="n3", image="image_n3"))
-        graph_1.add_node(Node(label="node_4", id="n4", image="image_n4"))
+        graph_1.add_node(Node(label="node_1", tmp_id="n1", image="image_n1"))
+        graph_1.add_node(Node(label="node_2", tmp_id="n2", image="image_n2"))
+        graph_1.add_node(Node(label="node_3", tmp_id="n3", image="image_n3"))
+        graph_1.add_node(Node(label="node_4", tmp_id="n4", image="image_n4"))
 
         graph_1.add_edge(Edge(_from="n1", _to="c1"))
         graph_1.add_edge(Edge(_from="n4", _to="c1"))

@@ -1,8 +1,7 @@
-from collections import namedtuple
+from enum import Enum, auto
 
 from common.environment_variable import JSON_parsable_Dict
 from common.environment_variable import JSON_parsable_Enum
-from enum import Enum, auto
 
 
 class BOW_CMP_HIST(JSON_parsable_Enum, Enum):

@@ -4,11 +4,9 @@
 import argparse
 import logging
 import pathlib
-from pprint import pformat
-from typing import List
 import time
+from typing import List
 
-import carlhauser_client.EvaluationTools.SimilarityGraphExtractor.similarity_graph_quality_evaluator as  graph_quality_evaluator
 import carlhauser_client.EvaluationTools.SimilarityGraphExtractor.similarity_graph_extractor as  similarity_graph_extractor
 import carlhauser_server.Configuration.distance_engine_conf as distance_engine_conf
 import common.Calibrator.calibrator_conf as calibrator_conf
@@ -21,11 +19,11 @@ import common.TestInstanceLauncher.one_db_instance_launcher as test_database_han
 from carlhauser_client.API.extended_api import Extended_API
 from carlhauser_server.Configuration import feature_extractor_conf
 from carlhauser_server.Configuration.algo_conf import Algo_conf
-from common.environment_variable import load_server_logging_conf_file
+from carlhauser_server.Configuration.database_conf import Default_database_conf
 # from carlhauser_server.Configuration.distance_engine_conf import Default_distance_engine_conf
 from carlhauser_server.Configuration.feature_extractor_conf import Default_feature_extractor_conf
-from carlhauser_server.Configuration.database_conf import Default_database_conf
 from common.environment_variable import dir_path, make_big_line
+from common.environment_variable import load_server_logging_conf_file
 
 load_server_logging_conf_file()
 
@@ -100,7 +98,7 @@ class Calibrator:
         json_import_export.save_json(dist_conf_calibrated, output_folder / "dist_conf_calibrated.json")
 
         make_big_line()
-        self.logger.info(f"Calibration completed in {abs(start_time-time.time())}s")
+        self.logger.info(f"Calibration completed in {abs(start_time - time.time())}s")
 
         return calibrated_algos
 
@@ -139,9 +137,9 @@ class Calibrator:
 
         images_set, labels_set = gt_graph.get_nodes_not_included(file_list)
 
-        if len(images_set) == 0 or len(labels_set) == 0 :
+        if len(images_set) == 0 or len(labels_set) == 0:
             self.logger.debug("Files names are included in the graph. Continuing ... ")
-        else :
+        else:
             self.logger.error("Files names are not included in the graph. If continuing, the calibrator will encounter error during evaluation phase. Cancelling ...")
             raise Exception("File names not in ground truth file. Please review ground truth file or input images folder")
 
@@ -167,7 +165,7 @@ class Calibrator:
         for to_calibrate_algo in default_feature_conf.list_algos:
             self.logger.warning(f"Current algorithm calibration {to_calibrate_algo.algo_name} ... ")
 
-            if not to_calibrate_algo.is_enabled :
+            if not to_calibrate_algo.is_enabled:
                 continue
 
             # Create the output folder for this algo
@@ -196,14 +194,12 @@ class Calibrator:
 
         return list_calibrated_algos
 
-
-    def save_storage_graph(self, output_folder : pathlib.Path):
+    def save_storage_graph(self, output_folder: pathlib.Path):
 
         db_dump = self.ext_api.get_db_dump_as_graph()
         db_dump_dict = db_dump.export_as_dict()
         save_path_json = output_folder / "storage_graph_dump.json"
         json_import_export.save_json(db_dump_dict, save_path_json)
-
 
     def calibrate_std_algo_set(self, folder_of_pictures: pathlib.Path,
                                ground_truth_file: pathlib.Path,
@@ -273,8 +269,6 @@ class Calibrator:
                                                                    visjs_json_path=ground_truth_file,
                                                                    output_path=output_folder,
                                                                    cal_conf=self.cal_conf)
-
-
 
         # Kill server instance
         self.logger.debug(f"Shutting down Redis test instance")
@@ -407,14 +401,14 @@ class Calibrator:
                             output_path: pathlib.Path,
                             visjs_json_path: pathlib.Path,
                             cal_conf: calibrator_conf.Default_calibrator_conf) -> (List[perf_datastruct.Perf], calibrator_conf.Default_calibrator_conf):
-        '''
+        """
         Compute the best threshold to apply to distance to have an optimized number of False Positive, True Positive, etc.
         :param image_folder: The folder of picture to send and request, to optimize parameters for
         :param output_path: The output path where the graph and other data will be stored
         :param visjs_json_path: The "ground truth" file that serves as reference to optimize False Positive, etc.
         :param cal_conf: Values of False Positive, True Positive, etc. expected
         :return: List of performance values (threshold + False Positive, True Positive, etc. performances) and a modified cal_conf with "best threshold" regarding False Positive, True Positive, etc. target values
-        '''
+        """
 
         # Get results from DB and ground truth graph from visjs file
         self.logger.debug(f"Sending pictures ... ")
@@ -889,18 +883,18 @@ class Calibrator:
                                                         is_increasing=True)
 
 
-def default_conf(args):
+def default_conf(argss):
     cal_conf = calibrator_conf.Default_calibrator_conf.get_default_instance()
     return cal_conf
 
 
-def load_from_file(args):
+def load_from_file(argss):
     cal_conf = calibrator_conf.Default_calibrator_conf()
     # TODO : Load from file !
     return cal_conf
 
 
-def load_from_args(args):
+def load_from_args(argss):
     # Create a calibrator configuration from args
 
     cal_conf = calibrator_conf.Default_calibrator_conf()

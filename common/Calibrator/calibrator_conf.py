@@ -1,10 +1,9 @@
 import logging
-from collections import namedtuple
 
+import carlhauser_server.Configuration.distance_engine_conf as distance_engine_conf
 from carlhauser_server.Configuration.algo_conf import Algo_conf
 from common.environment_variable import JSON_parsable_Dict
 from common.environment_variable import load_server_logging_conf_file
-import carlhauser_server.Configuration.distance_engine_conf as distance_engine_conf
 
 load_server_logging_conf_file()
 
@@ -59,7 +58,7 @@ class Default_calibrator_conf(JSON_parsable_Dict):
         case_4 = self.Acceptable_false_positive_rate is not None and self.Minimum_true_positive_rate is not None
 
         if case_1:
-            case_1_order = 0 <= self.Acceptable_false_negative_rate <= self.Minimum_true_negative_rate  <= 1
+            case_1_order = 0 <= self.Acceptable_false_negative_rate <= self.Minimum_true_negative_rate <= 1
             if not case_1_order:
                 raise Exception("Invalid information to continue. Following formula not ensured : 0 <= (Acceptable FNR) <= (Minimum TNR) <= 1")
         elif case_2:

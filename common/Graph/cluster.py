@@ -14,8 +14,8 @@ class Cluster(node.Node):
     Handle a cluster of the graph
     """
 
-    def __init__(self, label: str, id, image: str):
-        super().__init__(label, id, image)
+    def __init__(self, label: str, tmp_id, image: str):
+        super().__init__(label, tmp_id, image)
 
         # For clusters only
         self.members = set()
@@ -62,7 +62,7 @@ class Cluster(node.Node):
 
     @staticmethod
     def create_from_parent(parent: node.Node):
-        return Cluster(label=parent.label, id=parent.id, image=parent.image)
+        return Cluster(label=parent.label, tmp_id=parent.id, image=parent.image)
 
     @staticmethod
     def load_from_dict(tmp_input: Dict):

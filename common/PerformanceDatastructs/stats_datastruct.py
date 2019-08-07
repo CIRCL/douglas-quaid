@@ -161,6 +161,7 @@ class Stats_datastruct(JSON_parsable_Dict):
 
             return True
         except Exception as e:
+            print(e)
             return False
 
     # Operator overwrite

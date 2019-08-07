@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import json
-import logging.config
 import pathlib
+
 from common.ImportExport.json_import_export import load_json
+
 
 def extract(path: pathlib.Path):
     tmp_json = load_json(path)

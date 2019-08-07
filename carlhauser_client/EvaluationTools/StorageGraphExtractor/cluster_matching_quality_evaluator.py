@@ -18,12 +18,12 @@ class ClusterMatchingQualityEvaluator:
 
     @staticmethod
     def evaluate_performance(clusters_pairs: List[ClusterMatch], total_number_element=None) -> List[ClusterMatch]:
-        '''
+        """
         Compute statistic about each cluster pairs, for them members. Check the True positive, False positive, etc. rates
         :param clusters_pairs: A list of pairs of clusters = [ (cluster1, clusterA), (cluster2, clusterB) ...)
         :param total_number_element: Total number of members (not the sum of all members of all clusters, but how many elements is there regardless of their classification) in the "world" considered.
         :return: The same List of pairs of cluster, but with the score set-up
-        '''
+        """
         # Flush the internal memory of the evaluator and compute statistics over each clusters pair. Store means, etc. in internal memory.
 
         for pair in clusters_pairs:

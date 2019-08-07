@@ -168,7 +168,7 @@ class TwoDimensionsPlot:
         legend = tuple(labels)
         return legend
 
-    def plot_ScalabilityData(self, scalability_data: ScalabilityData, normalized: bool = True, with_reference = False):
+    def plot_ScalabilityData(self, scalability_data: ScalabilityData, normalized: bool = True, with_reference=False):
 
         # Sort the list of request time, increasing order
         scalability_data.list_request_time.sort(key=lambda c: c.iteration)
@@ -180,15 +180,15 @@ class TwoDimensionsPlot:
         vertical_coords_request_time = []
         horizontal_coords = []
 
-        if with_reference and len(scalability_data.list_request_time) > 1 :
+        ratio = 1
+
+        if with_reference and len(scalability_data.list_request_time) > 1:
             computation_time_0 = scalability_data.list_request_time[0]
             computation_time_1 = scalability_data.list_request_time[0]
 
             if computation_time_0.nb_picture_added != 0 and computation_time_1.nb_picture_added != 0 \
-                    and computation_time_0.nb_picture_added is not None and computation_time_1.nb_picture_added is not None :
+                    and computation_time_0.nb_picture_added is not None and computation_time_1.nb_picture_added is not None:
                 ratio = (computation_time_0.adding_time + computation_time_1.adding_time) / (computation_time_0.nb_picture_added + computation_time_1.nb_picture_added)
-            else :
-                ratio = 1
 
         curr_nb_pictures = 0
         for computation_time in scalability_data.list_request_time:
@@ -196,8 +196,8 @@ class TwoDimensionsPlot:
             curr_nb_pictures += computation_time.nb_picture_added
             horizontal_coords.append(curr_nb_pictures)
 
-            if with_reference :
-                vertical_linear_reference.append(computation_time.nb_picture_added*ratio)
+            if with_reference:
+                vertical_linear_reference.append(computation_time.nb_picture_added * ratio)
 
             if normalized:
                 if computation_time.nb_picture_added != 0 and \
@@ -245,7 +245,7 @@ class TwoDimensionsPlot:
         if len(vertical_coords_request_time) != 0:
             plt.plot(horizontal_coords, vertical_coords_request_time)
             list_legend.append('Request time')
-        if with_reference :
+        if with_reference:
             plt.plot(horizontal_coords, vertical_linear_reference)
             list_legend.append('Linear Reference')
 

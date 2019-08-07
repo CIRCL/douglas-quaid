@@ -30,23 +30,23 @@ class GraphDataStruct:
 
     # ==================== Adding elements to the graph ====================
 
-    def add_node(self, node: node.Node):
+    def add_node(self, tmp_node: node.Node):
         """
         Add a node to the graph (a picture, not a cluster)
         :param node: Node to add to the graph
         :return: Nothing
         """
-        self.nodes[node.id] = node
+        self.nodes[tmp_node.id] = tmp_node
 
-    def add_cluster(self, cluster: cluster.Cluster):
+    def add_cluster(self, tmp_cluster: cluster.Cluster):
         """
         Add a cluster to the graph (not a picture)
         :param cluster: Cluster to add to the graph
         :return: Nothing
         """
-        self.clusters[cluster.id] = cluster
+        self.clusters[tmp_cluster.id] = tmp_cluster
 
-    def add_cluster_with_nodes(self, cluster: cluster.Cluster, nodes: List[node.Node], color="gray"):
+    def add_cluster_with_nodes(self, tmp_cluster: cluster.Cluster, nodes: List[node.Node], color="gray"):
         """
         Add a cluster to the graph with its nodes
         :param cluster: Cluster to add to the graph
@@ -55,26 +55,26 @@ class GraphDataStruct:
         :return: Nothing
         """
 
-        self.clusters[cluster.id] = cluster
+        self.clusters[tmp_cluster.id] = tmp_cluster
 
         # For each node, add the node and add an edge between the cluster and the node
         for n in nodes:
             self.nodes[n.id] = n
-            self.edges.append(edge.Edge(cluster.id, n.id, color))
+            self.edges.append(edge.Edge(tmp_cluster.id, n.id, color))
             # TODO : Test + checks
 
-    def add_edge(self, edge: edge.Edge):
+    def add_edge(self, tmp_edge: edge.Edge):
         """
         Add an edge to the graph
         :param edge: Edge to add to the graph
         :return: Nothing
         """
 
-        self.edges.append(edge)
-        if edge._from in self.clusters.keys():
-            self.clusters[edge._from].add_member_id(edge._to)
-        if edge._to in self.clusters.keys():
-            self.clusters[edge._to].add_member_id(edge._from)
+        self.edges.append(tmp_edge)
+        if tmp_edge._from in self.clusters.keys():
+            self.clusters[tmp_edge._from].add_member_id(tmp_edge._to)
+        if tmp_edge._to in self.clusters.keys():
+            self.clusters[tmp_edge._to].add_member_id(tmp_edge._from)
 
     '''
     def rem_edge(self, edge:edge.Edge):
@@ -193,7 +193,7 @@ class GraphDataStruct:
         """
         return list(self.clusters.values())
 
-    def get_clusters_of(self, node_id:str) -> cluster.Cluster:
+    def get_clusters_of(self, node_id: str) -> cluster.Cluster:
         """
         Get the cluster of one node
         Hypothesis : node is only in one cluster
@@ -201,12 +201,11 @@ class GraphDataStruct:
         """
 
         for c in self.clusters.values():
-            for n in c.members :
-                if node_id == n :
+            for n in c.members:
+                if node_id == n:
                     return c
 
         return None
-
 
     def get_edges_dict(self) -> Dict[str, str]:
         """
@@ -277,7 +276,7 @@ class GraphDataStruct:
 
         return tmp_graph
 
-    def get_nodes_not_included(self, list_names : Set[str]) -> (Set[str],Set[str]):
+    def get_nodes_not_included(self, list_names: Set[str]) -> (Set[str], Set[str]):
 
         filenames_not_in_images = set()
         filenames_not_in_labels = set()
@@ -292,24 +291,24 @@ class GraphDataStruct:
         self.logger.info(f"{len(nodes_images_set)} different node's images names in ground truth file.")
         self.logger.info(f"{len(nodes_labels_set)} different node's labels in ground truth file.")
 
-        for f in list_names :
-            if f not in nodes_images_set :
+        for f in list_names:
+            if f not in nodes_images_set:
                 filenames_not_in_images.add(f)
 
-            if f not in nodes_labels_set :
+            if f not in nodes_labels_set:
                 filenames_not_in_labels.add(f)
 
         self.logger.info(f"{len(list_names)} different file names in folder.")
 
-        if len(filenames_not_in_images) == 0 :
+        if len(filenames_not_in_images) == 0:
             self.logger.info("All file names are present in the graph (images names)")
-        else :
+        else:
             self.logger.error("File names are NOT present in the graph (images names) : ")
             self.logger.error(pformat(filenames_not_in_images))
 
-        if len(filenames_not_in_labels) == 0 :
+        if len(filenames_not_in_labels) == 0:
             self.logger.info("All file names are present in the graph (labels)")
-        else :
+        else:
             self.logger.error("File names are NOT present in the graph (labels) : ")
             self.logger.error(pformat(filenames_not_in_labels))
 
@@ -317,14 +316,14 @@ class GraphDataStruct:
 
 
 def merge_graphs(visjs_graph: GraphDataStruct, db_graph: GraphDataStruct, cluster_mapping: List[ClusterMatch]) -> Dict:
-    '''
+    """
     Merge two graphs into one unique graph. Uses the list of clusters matches to merge each cluster with each other.
     Merge a visjs and db graph to produce only one visjs graph, with colors depending on good/bad matches
     :param visjs_graph: The first graph to merge (ground truth one)
     :param db_graph: The second graph to merge (extracted from server)
     :param cluster_mapping: The list of clusterMatch that say "This cluster is the same as this one" for the merge.
     :return: A datastructure (json style/ dict style) that displays all data
-    '''
+    """
 
     tmp_dict = {}
 

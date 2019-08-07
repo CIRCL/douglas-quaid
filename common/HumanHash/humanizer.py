@@ -57,9 +57,9 @@ class Humanizer:
         for file in files:
 
             with open(str(file), "rb") as f:
-                bytes = f.read()  # read entire file as bytes
+                tmp_bytes = f.read()  # read entire file as bytes
 
-                new_name = self.humanize_name(bytes, file.name, file.suffix)  # toto.png ->  tata.png
+                new_name = self.humanize_name(tmp_bytes, file.name, file.suffix)  # toto.png ->  tata.png
 
                 if first:
                     print(f"The file {file.name} is going to be changed to {new_name}. \n Do you want to continue ? (Automatically approved after this first warning)")

@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-from collections import namedtuple
 
 import json
 import logging
@@ -8,6 +7,7 @@ import pathlib
 
 import common.environment_variable
 from common.environment_variable import load_server_logging_conf_file
+
 # import dataclasses
 load_server_logging_conf_file()
 

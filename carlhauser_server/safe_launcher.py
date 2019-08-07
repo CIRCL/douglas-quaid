@@ -16,14 +16,14 @@ logconfig_path = (get_homedir() / pathlib.Path("carlhauser_server", "logging.ini
 
 
 # ==================== ------ LAUNCHER ------- ====================
-class SafeLauncher():
+class SafeLauncher:
     """
     Handle a class launch with fallback method and clean exit even if brutally stopped.
     """
 
     def __init__(self, class_to_call=None,
-                 launch_method : str=None,
-                 stop_method : str=None):
+                 launch_method: str = None,
+                 stop_method: str = None):
 
         self.logger = logging.getLogger(__name__)
 

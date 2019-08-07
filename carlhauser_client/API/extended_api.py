@@ -5,22 +5,21 @@ import pathlib
 import time
 from typing import Dict, List
 
-import common.ImportExport.json_import_export as json_import_export
-from common.environment_variable import get_homedir
 import carlhauser_client.Helpers.dict_utilities as dict_utilities
+import common.ImportExport.json_import_export as json_import_export
 from carlhauser_client.API.simple_api import Simple_API
 from common.Graph.graph_datastructure import GraphDataStruct
+from common.environment_variable import get_homedir
 from common.environment_variable import load_client_logging_conf_file
-from pprint import pformat
 
 load_client_logging_conf_file()
 
 
 # ==================== ------ LAUNCHER ------- ====================
 class Extended_API(Simple_API):
-    '''
+    """
     Provides "Higher-level" API calls
-    '''
+    """
 
     def __init__(self, url, certificate_path):
         super().__init__(url, certificate_path)
@@ -139,12 +138,12 @@ class Extended_API(Simple_API):
     # ================= REQUEST PICTURES AND WAITING =================
 
     def request_one_picture_and_wait(self, image_path: pathlib.Path, max_time: int = 60) -> Dict:
-        '''
+        """
         Request similar picture of one picture to the server, wait for an answer.
         :param image_path: the path of the picture to request
         :param max_time: maximum allowed time to wait before timing out. By default -1 = No time out
         :return: the answer of the server. #TODO : Give an example of answer
-        '''
+        """
 
         # Starting count-down
         start = time.time()
@@ -179,12 +178,12 @@ class Extended_API(Simple_API):
             raise Exception("Error on request sending.")
 
     def request_many_pictures_and_wait_for_each(self, image_folder: pathlib.Path) -> (dict, int):
-        '''
+        """
         Request similar picture of all pictures of the provided folder to the server (direct children, not recursive)
         wait for each of them (one after the other) and store all the result in one unique list
         :param image_folder: path to the folder of pictures
         :return: A list of all answers, and the total number of pictures successfully requested
-        '''
+        """
 
         self.logger.debug(f"Requesting similar pictures of {image_folder} to the DB.")
         list_answers = []
@@ -209,12 +208,12 @@ class Extended_API(Simple_API):
         return list_answers, nb_pics_requested
 
     def request_many_pictures_and_wait_global(self, image_folder: pathlib.Path) -> (dict, int):
-        '''
+        """
         Request similar picture of all pictures of the provided folder to the server (direct children, not recursive)
         wait for them AS A BATCH (wait the last one only), fetch and store all the results in one unique list
         :param image_folder: path to the folder of pictures
         :return: A list of all answers, and the total number of pictures successfully requested
-        '''
+        """
 
         self.logger.debug(f"Requesting similar pictures of {image_folder} to the DB.")
         list_requests_id = []
@@ -250,10 +249,10 @@ class Extended_API(Simple_API):
     # ================= EXPORT AND DUMP =================
 
     def get_db_dump_as_graph(self) -> GraphDataStruct:
-        '''
+        """
         Ask the server a copy of the database, convert it as graphe and returns it
         :return: A graph datastructure of the server's storage
-        '''
+        """
 
         # Dump DB as graphe / clusters
         is_success, db = self.export_db_server()
@@ -269,11 +268,11 @@ class Extended_API(Simple_API):
     # ================= ALL =================
 
     def add_and_request_and_dump_pictures(self, image_folder: pathlib.Path) -> List:
-        '''
+        """
         Send pictures of a folder, request all pictures one by one, construct a list of results, revert the mapping to get back pictures names
         :param image_folder: The folder of images to send
         :return: The list of results
-        '''
+        """
 
         self.logger.info("Automated launch : add pictures from folder, request all, and dump graph / list of results")
 

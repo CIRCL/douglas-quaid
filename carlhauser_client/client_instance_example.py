@@ -19,9 +19,9 @@ class ClientInstanceExample:
         self.API = Extended_API.get_api()
 
     def launch(self):
-        '''
+        """
         Small example of adding, requesting, polling, adding, fetching, dumping ...
-        '''
+        """
 
         self.logger.info(f"Launching webservice ...")
         self.perform_ping_check()

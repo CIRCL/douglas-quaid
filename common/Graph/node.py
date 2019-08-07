@@ -22,9 +22,9 @@ class Node_Meta:
         return tmp_json
 
     @staticmethod
-    def load_from_dict(input):
+    def load_from_dict(tmp_input):
         tmp_meta = Node_Meta()
-        tmp_meta.labels = input["labels"]
+        tmp_meta.labels = tmp_input["labels"]
         return tmp_meta
 
 
@@ -33,9 +33,9 @@ class Node:
     Handle a node of the graph
     """
 
-    def __init__(self, label: str, id, image: str, metadata: Node_Meta = None):
+    def __init__(self, label: str, tmp_id, image: str, metadata: Node_Meta = None):
         self.label = label
-        self.id = id
+        self.id = tmp_id
 
         self.image = image  # Image path
         self.shape = "image"
@@ -68,7 +68,7 @@ class Node:
         if "metadata" in tmp_input.keys():
             tmp_metadata = Node_Meta.load_from_dict(tmp_input["metadata"])
 
-        tmp_node = Node(label=tmp_input.get("label", ""), id=tmp_input["id"], image=tmp_input["image"], metadata=tmp_metadata)
+        tmp_node = Node(label=tmp_input.get("label", ""), tmp_id=tmp_input["id"], image=tmp_input["image"], metadata=tmp_metadata)
         tmp_node.shape = tmp_input["shape"]
 
         return tmp_node
