@@ -165,7 +165,10 @@ class Calibrator:
         # For each possible algorithm, evaluate the algorithms
         # TODO : Restrict the algorithms list
         for to_calibrate_algo in default_feature_conf.list_algos:
-            self.logger.debug(f"Current algorithm calibration {to_calibrate_algo.algo_name} ... ")
+            self.logger.warning(f"Current algorithm calibration {to_calibrate_algo.algo_name} ... ")
+
+            if not to_calibrate_algo.is_enabled :
+                continue
 
             # Create the output folder for this algo
             tmp_output_folder_algo = (output_folder / to_calibrate_algo.algo_name)
@@ -357,13 +360,16 @@ class Calibrator:
             fe_conf.TLSH = to_calibrate_algo
         elif to_calibrate_algo.algo_name == "ORB":
             fe_conf.ORB = to_calibrate_algo
+        elif to_calibrate_algo.algo_name == "BOW_ORB":
+            fe_conf.BOW_ORB = to_calibrate_algo
         else:
             raise Exception("Unhandled algo name. Structural problem in threshold_calibrator")
 
         fe_conf.list_algos = [fe_conf.A_HASH, fe_conf.P_HASH, fe_conf.P_HASH_SIMPLE,
                               fe_conf.D_HASH, fe_conf.D_HASH_VERTICAL, fe_conf.W_HASH,
                               fe_conf.TLSH,
-                              fe_conf.ORB]
+                              fe_conf.ORB,
+                              fe_conf.BOW_ORB]
 
         # Reset distance and decision merging method
         fe_conf.DISTANCE_MERGING_METHOD = feature_extractor_conf.Distance_MergingMethod.MAX.name
