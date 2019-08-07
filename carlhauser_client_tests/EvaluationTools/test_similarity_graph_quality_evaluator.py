@@ -12,6 +12,7 @@ from common.Graph.metadata import Metadata, Source
 from common.Graph.node import Node
 from common.Calibrator.calibrator_conf import Default_calibrator_conf
 
+
 class TestClusterMatcher(unittest.TestCase):
     """Basic test cases."""
 
@@ -32,7 +33,7 @@ class TestClusterMatcher(unittest.TestCase):
 
     def test_compute_score_for_one_threshold(self):
         # Graph example. Please check documentation for more information
-        cal_conf =  Default_calibrator_conf()
+        cal_conf = Default_calibrator_conf()
         quality_evaluator = similarity_graph_quality_evaluator.similarity_graph_quality_evaluator(cal_conf)
 
         requests_results = [

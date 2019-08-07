@@ -135,9 +135,9 @@ class test_template(unittest.TestCase):
         mapping = {}
 
         # Create a graphe structure
-        if  VISJS :
+        if VISJS:
             tmp_meta = Metadata(Source.VISJS)
-        else :
+        else:
             tmp_meta = Metadata(Source.DBDUMP)
         tmp_graph = GraphDataStruct(tmp_meta)
 
@@ -157,7 +157,6 @@ class test_template(unittest.TestCase):
                 tmp_graph.add_edge(Edge(_from=cluster_id, _to=pic_id))
 
         return tmp_graph, mapping
-
 
     def test_get_clusters(self):
         tmp_graph = self.generate_basic_graph()
@@ -183,7 +182,7 @@ class test_template(unittest.TestCase):
 
     def test_graph_export(self):
 
-        '''
+        """
         # Create a graphe structure
         tmp_meta = Metadata(Source.DBDUMP)
         tmp_graph = GraphDataStruct(tmp_meta)
@@ -197,7 +196,7 @@ class test_template(unittest.TestCase):
                 # Label = picture score, here
                 tmp_graph.add_node(Node(label="picture name +" + pic_id, id=pic_id, image=""))
                 tmp_graph.add_edge(Edge(_from=cluster_id, _to=pic_id))
-        '''
+        """
 
         tmp_graph = self.generate_basic_graph()
         print("Exported dict : ")
@@ -208,7 +207,7 @@ class test_template(unittest.TestCase):
 
     def test_graph_import_export_consistency(self):
 
-        '''
+        """
         # Create a graphe structure
         tmp_meta = Metadata(Source.DBDUMP)
         tmp_graph = GraphDataStruct(tmp_meta)
@@ -222,7 +221,7 @@ class test_template(unittest.TestCase):
                 # Label = picture score, here
                 tmp_graph.add_node(Node(label="picture name +" + pic_id, id=pic_id, image=""))
                 tmp_graph.add_edge(Edge(_from=cluster_id, _to=pic_id))
-        '''
+        """
 
         tmp_graph = self.generate_basic_graph()
 
@@ -241,7 +240,7 @@ class test_template(unittest.TestCase):
 
     def test_graph_image_to_id_mapping_conversion(self):
 
-        '''
+        """
 
         mapping = {}
 
@@ -263,7 +262,7 @@ class test_template(unittest.TestCase):
                 # Label = picture score, here
                 tmp_graph.add_node(Node(label="picture name +" + pic_id, id=pic_id, image=pic_image))
                 tmp_graph.add_edge(Edge(_from=cluster_id, _to=pic_id))
-        '''
+        """
         tmp_graph, mapping = self.generate_basic_graph_with_mapping()
 
         print("Exported dict : ")
@@ -282,7 +281,7 @@ class test_template(unittest.TestCase):
         self.assertDictEqual(val, self.mappedexpected)
 
     def test_get_clusters_list(self):
-        '''
+        """
         # Create a graphe structure
         tmp_meta = Metadata(Source.DBDUMP)
         tmp_graph = GraphDataStruct(tmp_meta)
@@ -298,7 +297,7 @@ class test_template(unittest.TestCase):
                 # Label = picture score, here
                 tmp_graph.add_node(Node(label="picture name +" + pic_id, id=pic_id, image=pic_image))
                 tmp_graph.add_edge(Edge(_from=cluster_id, _to=pic_id))
-        '''
+        """
 
         tmp_graph, _ = self.generate_basic_graph_with_mapping()
 
@@ -328,7 +327,7 @@ class test_template(unittest.TestCase):
 
     def test_merge_graphs(self):
 
-        '''
+        """
         # Create a graphe structure
         tmp_meta = Metadata(Source.DBDUMP)
         tmp_graph = GraphDataStruct(tmp_meta)
@@ -344,7 +343,7 @@ class test_template(unittest.TestCase):
                 # Label = picture score, here
                 tmp_graph.add_node(Node(label="picture name +" + pic_id, id=pic_id, image=pic_image))
                 tmp_graph.add_edge(Edge(_from=cluster_id, _to=pic_id))
-        '''
+        """
         tmp_graph, _ = self.generate_basic_graph_with_mapping()
 
         tmp_graph_vis, _ = self.generate_basic_graph_with_mapping(VISJS=True)
@@ -368,7 +367,6 @@ class test_template(unittest.TestCase):
         cluster_mapping = [ClusterMatch(Cluster("", 0, ""), Cluster("", 0, "")),
                            ClusterMatch(Cluster("", 1, ""), Cluster("", 2, "")),
                            ClusterMatch(Cluster("", 2, ""), Cluster("", 1, ""))]
-
 
         print("Exported db dict : ")
         val = tmp_graph.export_as_dict()
@@ -449,7 +447,8 @@ class test_template(unittest.TestCase):
         self.assertTrue(edge_list[2].color, "orange")
         self.assertTrue(edge_list[3].color, "black")
 
-    def get_basic_graph(self):
+    @staticmethod
+    def get_basic_graph():
         graph_1 = graph_datastructure.GraphDataStruct(Metadata(Source.DBDUMP))
         graph_1.add_cluster(Cluster(label="cluster_1", tmp_id="c1", image="image_c1"))
         graph_1.add_cluster(Cluster(label="cluster_2", tmp_id="c2", image="image_c2"))
@@ -471,25 +470,25 @@ class test_template(unittest.TestCase):
 
         graph_1 = self.get_basic_graph()
 
-        self.assertTrue(graph_1.are_ids_in_same_cluster("n1","n4"))
-        self.assertFalse(graph_1.are_ids_in_same_cluster("n1","n2"))
-        self.assertTrue(graph_1.are_ids_in_same_cluster("n2","n2"))
-        self.assertFalse(graph_1.are_ids_in_same_cluster("n2","n4"))
+        self.assertTrue(graph_1.are_ids_in_same_cluster("n1", "n4"))
+        self.assertFalse(graph_1.are_ids_in_same_cluster("n1", "n2"))
+        self.assertTrue(graph_1.are_ids_in_same_cluster("n2", "n2"))
+        self.assertFalse(graph_1.are_ids_in_same_cluster("n2", "n4"))
 
     def test_are_names_in_same_cluster_with_label(self):
 
         graph_1 = self.get_basic_graph()
 
-        self.assertTrue(graph_1.are_names_in_same_cluster("node_1","node_4"))
-        self.assertFalse(graph_1.are_names_in_same_cluster("node_1","node_2"))
-        self.assertTrue(graph_1.are_names_in_same_cluster("node_2","node_2"))
-        self.assertFalse(graph_1.are_names_in_same_cluster("node_2","node_4"))
+        self.assertTrue(graph_1.are_names_in_same_cluster("node_1", "node_4"))
+        self.assertFalse(graph_1.are_names_in_same_cluster("node_1", "node_2"))
+        self.assertTrue(graph_1.are_names_in_same_cluster("node_2", "node_2"))
+        self.assertFalse(graph_1.are_names_in_same_cluster("node_2", "node_4"))
 
     def test_are_names_in_same_cluster_with_image(self):
 
         graph_1 = self.get_basic_graph()
 
-        self.assertTrue(graph_1.are_names_in_same_cluster("image_n1","image_n4"))
-        self.assertFalse(graph_1.are_names_in_same_cluster("image_n1","image_n2"))
-        self.assertTrue(graph_1.are_names_in_same_cluster("image_n2","image_n2"))
-        self.assertFalse(graph_1.are_names_in_same_cluster("image_n2","image_n4"))
+        self.assertTrue(graph_1.are_names_in_same_cluster("image_n1", "image_n4"))
+        self.assertFalse(graph_1.are_names_in_same_cluster("image_n1", "image_n2"))
+        self.assertTrue(graph_1.are_names_in_same_cluster("image_n2", "image_n2"))
+        self.assertFalse(graph_1.are_names_in_same_cluster("image_n2", "image_n4"))

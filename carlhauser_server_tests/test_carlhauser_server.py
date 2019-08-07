@@ -29,8 +29,7 @@ class testCarlHauserServer(unittest.TestCase):
         self.test_db_handler.tearDown()
 
     def test_db_worker_add_queue(self):
-
-        db_worker, test_db, queue_name, id_to_process, data_to_store = self.get_test_db_queue_id_data(True,True)
+        db_worker, test_db, queue_name, id_to_process, data_to_store = self.get_test_db_queue_id_data(True, True)
 
         '''
         # Construct a worker and get a link to redis db
@@ -60,8 +59,7 @@ class testCarlHauserServer(unittest.TestCase):
         # TODO : Please not that list in dict are not handled by pyredis
 
     def test_db_worker_get_from_queue(self):
-
-        db_worker, test_db, queue_name, id_to_process, data_to_store = self.get_test_db_queue_id_data(True,False)
+        db_worker, test_db, queue_name, id_to_process, data_to_store = self.get_test_db_queue_id_data(True, False)
 
         '''
         
@@ -91,9 +89,7 @@ class testCarlHauserServer(unittest.TestCase):
         self.assertEqual(tmp_id, id_to_process)
 
     def test_db_worker_set_get_queue_consistency(self):
-
-
-        db_worker, test_db, queue_name, id_to_process, data_to_store = self.get_test_db_queue_id_data(True,True)
+        db_worker, test_db, queue_name, id_to_process, data_to_store = self.get_test_db_queue_id_data(True, True)
 
         '''
         
@@ -118,7 +114,7 @@ class testCarlHauserServer(unittest.TestCase):
         self.assertEqual(tmp_dict, data_to_store)
         self.assertEqual(tmp_id, id_to_process)
 
-    def get_test_db_queue_id_data(self, decode : bool=False, add_to_queue=False) -> (database_worker.Database_Worker,redis.Redis,str,str,dict):
+    def get_test_db_queue_id_data(self, decode: bool = False, add_to_queue=False) -> (database_worker.Database_Worker, redis.Redis, str, str, dict):
         # Construct a worker and get a link to redis db
         db_worker = database_worker.Database_Worker(self.test_db_conf)
         test_db = redis.Redis(unix_socket_path=self.db_handler.get_socket_path('test'), decode_responses=decode)
@@ -136,8 +132,7 @@ class testCarlHauserServer(unittest.TestCase):
         # Use as : db_worker, test_db, queue_name, id_to_process, data_to_store = self.get_test_db_queue_id_data()
 
     def test_db_worker_add_queue_no_decode(self):
-
-        db_worker, test_db, queue_name, id_to_process, data_to_store = self.get_test_db_queue_id_data(False,True)
+        db_worker, test_db, queue_name, id_to_process, data_to_store = self.get_test_db_queue_id_data(False, True)
 
         '''
         # Construct a worker and get a link to redis db
@@ -171,9 +166,7 @@ class testCarlHauserServer(unittest.TestCase):
         # TODO : Please not that list in dict are not handled by pyredis
 
     def test_db_worker_get_from_queue_no_decode(self):
-
-
-        db_worker, test_db, queue_name, id_to_process, data_to_store = self.get_test_db_queue_id_data(False,False)
+        db_worker, test_db, queue_name, id_to_process, data_to_store = self.get_test_db_queue_id_data(False, False)
 
         '''
         # Construct a worker and get a link to redis db
@@ -205,8 +198,7 @@ class testCarlHauserServer(unittest.TestCase):
         self.assertEqual(tmp_id, id_to_process)
 
     def test_db_worker_set_get_queue_consistency_no_decode(self):
-
-        db_worker, test_db, queue_name, id_to_process, data_to_store = self.get_test_db_queue_id_data(False,True)
+        db_worker, test_db, queue_name, id_to_process, data_to_store = self.get_test_db_queue_id_data(False, True)
 
         '''
         # Construct a worker and get a link to redis db

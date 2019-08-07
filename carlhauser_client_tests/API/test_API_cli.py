@@ -2,13 +2,14 @@
 
 import logging
 import unittest
-from pprint import pformat
-import common.TestInstanceLauncher.one_db_instance_launcher as test_database_handler
-import common.TestInstanceLauncher.one_db_conf as test_database_only_conf
+
 import carlhauser_server.Configuration.distance_engine_conf as distance_engine_conf
 import carlhauser_server.Configuration.feature_extractor_conf as feature_extractor_conf
+import common.TestInstanceLauncher.one_db_conf as test_database_only_conf
+import common.TestInstanceLauncher.one_db_instance_launcher as test_database_handler
 from carlhauser_client.API.simple_api import Simple_API
 from common.environment_variable import get_homedir
+
 
 class TestClusterMatcher(unittest.TestCase):
     """Basic test cases."""
@@ -16,7 +17,7 @@ class TestClusterMatcher(unittest.TestCase):
     def setUp(self):
         self.logger = logging.getLogger()
         # self.conf = .Default_configuration()
-        self.test_path = get_homedir() / "carlhauser_client_tests" / "API" / "API_pictures"
+        self.test_path = get_homedir() / "datasets" / "TEST_DATASETS" / "API_pictures"
 
         # Create configurations
         self.db_conf = test_database_only_conf.TestInstance_database_conf()
@@ -34,6 +35,7 @@ class TestClusterMatcher(unittest.TestCase):
 
     def test_absolute_truth_and_meaning(self):
         self.assertTrue(True)
+
 
 if __name__ == '__main__':
     unittest.main()

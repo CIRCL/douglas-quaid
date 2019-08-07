@@ -3,7 +3,6 @@
 
 
 import logging
-import pathlib
 import time
 import unittest
 
@@ -29,7 +28,7 @@ class testDBAdder(unittest.TestCase):
     def setUp(self):
 
         self.logger = logging.getLogger()
-        self.test_file_path = get_homedir() / pathlib.Path("carlhauser_server_tests/test_DistanceEngine/")
+        self.test_file_path = get_homedir() / "datasets" / "TEST_DATASETS" / "test_DistanceEngine"
 
         # Create configurations
         self.test_db_conf = test_database_only_conf.TestInstance_database_conf()
@@ -93,7 +92,7 @@ class testDBAdder(unittest.TestCase):
         tmp_list = self.db_adder.db_utils.get_cluster_list()
         self.assertEqual(len(tmp_list), 1)
         self.logger.debug(tmp_list)
-        self.assertEqual(set([cluster_name_1]).issubset(tmp_list), True)
+        self.assertEqual({cluster_name_1}.issubset(tmp_list), True)
 
         # Add cluster
         self.db_adder.db_utils.add_cluster(cluster_name_2)
@@ -321,18 +320,18 @@ class testDBAdder(unittest.TestCase):
         self.assertTrue(val)
 
     def stop_workers(self):
-        '''
+        """
         self.test_db_handler.core_launcher.stop(with_database=False)
-        '''
+        """
         self.test_db_handler.core_launcher.db_startstop.request_workers_shutdown()
         self.test_db_handler.core_launcher.stop_webservice()
         self.test_db_handler.core_launcher.flush_workers()
 
     def start_back_workers(self):
 
-        '''
+        """
         self.test_db_handler.core_launcher.launch(with_database=False)
-        '''
+        """
         self.test_db_handler.core_launcher.prevent_workers_shutdown()
 
         self.test_db_handler.core_launcher.start_adder_workers()

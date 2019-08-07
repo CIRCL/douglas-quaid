@@ -55,7 +55,6 @@ class testSingleton(unittest.TestCase):
         self.assertEqual(classe3.get_value_shared(), 2)
         self.assertEqual(classe3.get_myvalue(), 2)
 
-
     def test_singleton_instance_equality(self):
         classe1 = self.Derived()
         classe2 = self.Derived()

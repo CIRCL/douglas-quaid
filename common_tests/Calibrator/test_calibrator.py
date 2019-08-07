@@ -20,9 +20,9 @@ class test_calibrator(unittest.TestCase):
         # self.test_file_path = pathlib.Path.cwd() / pathlib.Path("tests/test_files")
         self.calibrator_instance = Calibrator()
 
-        self.micro_dataset_input_path = get_homedir() / "common_tests" / "Calibrator" / "Calibrator_tests" / "MICRO_DATASET"
-        self.micro_dataset_gt_path = get_homedir() / "common_tests" / "Calibrator" / "Calibrator_tests" / "MICRO_DATASET_VISJS.json"
-        self.micro_dataset_output_path = get_homedir() / "common_tests" / "Calibrator" / "Calibrator_tests" / "OUTPUT"
+        self.micro_dataset_input_path = get_homedir() / "datasets" / "TEST_DATASETS" / "Calibrator_tests" / "MICRO_DATASET"
+        self.micro_dataset_gt_path = get_homedir() / "datasets" / "TEST_DATASETS" / "Calibrator_tests" / "MICRO_DATASET_VISJS.json"
+        self.micro_dataset_output_path = get_homedir() / "datasets" / "TEST_DATASETS" / "Calibrator_tests" / "OUTPUT"
 
     def tearDown(self):
         pass
@@ -44,7 +44,7 @@ class test_calibrator(unittest.TestCase):
         self.calibrator_instance.set_calibrator_conf(tmp_calibrator_conf=new_calibrator_conf)
         list_algos = self.calibrator_instance.calibrate_douglas_quaid(folder_of_pictures=self.micro_dataset_input_path,
                                                                       ground_truth_file=self.micro_dataset_gt_path,
-                                                                      output_folder=self.micro_dataset_output_path/ "TNTP")
+                                                                      output_folder=self.micro_dataset_output_path / "TNTP")
         for algo in list_algos:
             self.assertTrue(algo.threshold_yes_to_maybe <= algo.threshold_maybe_to_no)
 
@@ -62,7 +62,7 @@ class test_calibrator(unittest.TestCase):
         self.calibrator_instance.set_calibrator_conf(tmp_calibrator_conf=new_calibrator_conf)
         list_algos = self.calibrator_instance.calibrate_douglas_quaid(folder_of_pictures=self.micro_dataset_input_path,
                                                                       ground_truth_file=self.micro_dataset_gt_path,
-                                                                      output_folder=self.micro_dataset_output_path/ "TNFN")
+                                                                      output_folder=self.micro_dataset_output_path / "TNFN")
         for algo in list_algos:
             self.assertTrue(algo.threshold_yes_to_maybe <= algo.threshold_maybe_to_no)
 
@@ -98,7 +98,7 @@ class test_calibrator(unittest.TestCase):
         self.calibrator_instance.set_calibrator_conf(tmp_calibrator_conf=new_calibrator_conf)
         list_algos = self.calibrator_instance.calibrate_douglas_quaid(folder_of_pictures=self.micro_dataset_input_path,
                                                                       ground_truth_file=self.micro_dataset_gt_path,
-                                                                      output_folder=self.micro_dataset_output_path/ "FPFN")
+                                                                      output_folder=self.micro_dataset_output_path / "FPFN")
         for algo in list_algos:
             self.assertTrue(algo.threshold_yes_to_maybe <= algo.threshold_maybe_to_no)
 

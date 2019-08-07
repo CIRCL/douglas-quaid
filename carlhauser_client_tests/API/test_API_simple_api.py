@@ -10,13 +10,14 @@ import carlhauser_server.Configuration.feature_extractor_conf as feature_extract
 from carlhauser_client.API.simple_api import Simple_API
 from common.environment_variable import get_homedir
 
+
 class TestClusterMatcher(unittest.TestCase):
     """Basic test cases."""
 
     def setUp(self):
         self.logger = logging.getLogger()
         # self.conf = .Default_configuration()
-        self.test_path = get_homedir() / "carlhauser_client_tests" / "API" / "API_pictures"
+        self.test_path = get_homedir() / "datasets" / "TEST_DATASETS" / "API_pictures"
 
         # Create configurations
         self.db_conf = test_database_only_conf.TestInstance_database_conf()
@@ -127,13 +128,13 @@ class TestClusterMatcher(unittest.TestCase):
         self.logger.info(pformat(results))
 
         awaited_result = [{'cluster_id': 'cluster|28bd1119-fc64-451d-b489-dc69f3a4d18c',
-                    'decision': 'YES',
-                    'distance': 0.031919642857142855,
-                    'image_id': '8114519b-044f-5800-9a81-2fc5f6a20220'},
-                   {'cluster_id': 'cluster|06759547-d359-4aac-b6a7-f537d778c754',
-                    'decision': 'MAYBE',
-                    'distance': 0.3788783482142857,
-                    'image_id': 'ce75e7ba-eb4d-5421-a80c-326cce54afd1'}]
+                           'decision': 'YES',
+                           'distance': 0.031919642857142855,
+                           'image_id': '8114519b-044f-5800-9a81-2fc5f6a20220'},
+                          {'cluster_id': 'cluster|06759547-d359-4aac-b6a7-f537d778c754',
+                           'decision': 'MAYBE',
+                           'distance': 0.3788783482142857,
+                           'image_id': 'ce75e7ba-eb4d-5421-a80c-326cce54afd1'}]
 
         self.assertEqual(results["list_pictures"][0]["image_id"], pic_id_yes)
         self.assertEqual(results["list_pictures"][0]["decision"], "YES")

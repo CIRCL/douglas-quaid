@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 import logging
-import pathlib
 import unittest
 from pprint import pformat
 
@@ -17,7 +16,7 @@ class TestClusterMatchingQualityEvaluator(unittest.TestCase):
     def setUp(self):
         self.logger = logging.getLogger()
         # self.conf = .Default_configuration()
-        self.test_file_path = get_homedir() / pathlib.Path("carlhauser_client_tests/test_Helpers/id_generator")
+        self.test_file_path = get_homedir() / "datasets" / "TEST_DATASETS" / "id_generator"
         self.perf = performance_evaluation.ClusterMatchingQualityEvaluator()
 
     def test_absolute_truth_and_meaning(self):

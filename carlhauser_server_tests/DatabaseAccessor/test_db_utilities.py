@@ -3,33 +3,26 @@
 
 
 import logging
-import pathlib
-import time
 import unittest
 from pprint import pformat
-import cv2
+
 import redis
 
 import carlhauser_server.Configuration.distance_engine_conf as distance_engine_conf
 import carlhauser_server.Configuration.feature_extractor_conf as feature_extractor_conf
-import carlhauser_server.DatabaseAccessor.database_adder as database_adder
-import carlhauser_server.DistanceEngine.distance_engine as distance_engine
-import carlhauser_server.FeatureExtractor.picture_hasher as picture_hasher
-import carlhauser_server.FeatureExtractor.picture_orber as picture_orber
 import common.TestInstanceLauncher.one_db_conf as test_database_only_conf
 import common.TestInstanceLauncher.one_db_instance_launcher as test_database_handler
-from carlhauser_server.Configuration.algo_conf import Algo_conf
-from common.environment_variable import QueueNames
-from common.environment_variable import get_homedir
-from carlhauser_server.DatabaseAccessor.database_utilities import DBUtilities
 from carlhauser_client.API.extended_api import Extended_API
+from carlhauser_server.DatabaseAccessor.database_utilities import DBUtilities
+from common.environment_variable import get_homedir
+
 
 class testDBAdder(unittest.TestCase):
     """Basic test cases."""
 
     def setUp(self):
         self.logger = logging.getLogger()
-        self.test_file_path = get_homedir() / pathlib.Path("carlhauser_server_tests/DatabaseAccessor/DBUtils")
+        self.test_file_path = get_homedir() / "datasets" / "TEST_DATASETS" / "DBUtils"
 
         # Create configurations
         self.test_db_conf = test_database_only_conf.TestInstance_database_conf()
@@ -58,7 +51,7 @@ class testDBAdder(unittest.TestCase):
 
     def test_get_nb_stored_pictures_a_lot(self):
         api = Extended_API.get_api()
-        mapping, nb_pics_sent = api.add_many_pictures_and_wait_global(image_folder =  self.test_file_path / "MINI_DATASET_DEDUPLICATED")
+        mapping, nb_pics_sent = api.add_many_pictures_and_wait_global(image_folder=self.test_file_path / "MINI_DATASET_DEDUPLICATED")
 
         nb = self.db_utils.get_nb_stored_pictures()
 
@@ -69,7 +62,7 @@ class testDBAdder(unittest.TestCase):
 
     def test_get_nb_stored_pictures_a_lot_handle_duplicates(self):
         api = Extended_API.get_api()
-        mapping, nb_pics_sent = api.add_many_pictures_and_wait_global(image_folder =  self.test_file_path / "MINI_DATASET")
+        mapping, nb_pics_sent = api.add_many_pictures_and_wait_global(image_folder=self.test_file_path / "MINI_DATASET")
 
         nb = self.db_utils.get_nb_stored_pictures()
 

@@ -7,6 +7,7 @@ from shutil import rmtree
 
 from common.DataTurksAlgos.pictures_exporter import PicturesExporter
 from common.ImportExport.json_import_export import load_json
+from common.environment_variable import get_homedir
 
 
 class test_template(unittest.TestCase):
@@ -14,9 +15,10 @@ class test_template(unittest.TestCase):
 
     def setUp(self):
         self.logger = logging.getLogger()
-        self.base_folder = pathlib.Path("./DataTurksAlgo/DataTurks_tests").resolve()
+        self.base_folder = get_homedir() / "datasets" / "TEST_DATASETS" / "DataTurks_tests"
 
-    def create_sorted(self, base_path: pathlib.Path) -> PicturesExporter:
+    @staticmethod
+    def create_sorted(base_path: pathlib.Path) -> PicturesExporter:
         """
         Load the provided configuration file and create back the Configuration Object
         :return: Nothing
@@ -93,6 +95,6 @@ class test_template(unittest.TestCase):
 
         labels_0 = load_json(test_path / "output" / "labels_0.json")
         self.assertEqual(len(labels_0), 10)
-        for i in labels_0.values() :
+        for i in labels_0.values():
             self.assertFalse(i[0] == "to_delete")
         self.assertFalse((test_path / "output" / "labels_1.json").exists())
