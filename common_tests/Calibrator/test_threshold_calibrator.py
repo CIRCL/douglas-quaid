@@ -19,7 +19,7 @@ class TestPerformanceEvaluator(unittest.TestCase):
     def setUp(self):
         self.logger = logging.getLogger()
         # self.conf = .Default_configuration()
-        self.output_folder = get_homedir() / "datasets" / "TEST_DATASETS" / "Calibrator_conf_test"
+        self.output_folder = get_homedir() / "datasets" / "douglas-quaid-tests" / "Calibrator_conf_test"
         self.quality_evaluator = threshold_calibrator.Calibrator()
         self.plotmaker = TwoDimensionsPlot()
 

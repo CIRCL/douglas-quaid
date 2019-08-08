@@ -16,7 +16,7 @@ class TestClusterMatchingQualityEvaluator(unittest.TestCase):
     def setUp(self):
         self.logger = logging.getLogger()
         # self.conf = .Default_configuration()
-        self.test_file_path = get_homedir() / "datasets" / "TEST_DATASETS" / "id_generator"
+        self.test_file_path = get_homedir() / "datasets" / "douglas-quaid-tests" / "id_generator"
         self.perf = performance_evaluation.ClusterMatchingQualityEvaluator()
 
     def test_absolute_truth_and_meaning(self):

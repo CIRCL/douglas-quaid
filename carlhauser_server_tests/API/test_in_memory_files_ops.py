@@ -13,7 +13,7 @@ class TestInMemoryOperations(unittest.TestCase):
 
     def setUp(self):
         self.logger = logging.getLogger()
-        self.test_file_path = get_homedir() / "datasets" / "TEST_DATASETS" / "id_generator"
+        self.test_file_path = get_homedir() / "datasets" / "douglas-quaid-tests" / "id_generator"
 
     def test_absolute_truth_and_meaning(self):
         self.assertTrue(True)

@@ -17,7 +17,7 @@ class TestClusterMatcher(unittest.TestCase):
     def setUp(self):
         self.logger = logging.getLogger()
         # self.conf = .Default_configuration()
-        self.test_path = get_homedir() / "datasets" / "TEST_DATASETS" / "API_pictures"
+        self.test_path = get_homedir() / "datasets" / "douglas-quaid-tests" / "API_pictures"
 
         # Create configurations
         self.db_conf = test_database_only_conf.TestInstance_database_conf()

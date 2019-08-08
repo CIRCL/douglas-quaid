@@ -244,6 +244,11 @@ class Simple_API:
         :return: boolean, True if request is ready, False if not
         """
 
+        # If the request id is not set, alert and continue
+        if type(request_id) is None :
+            self.logger.error("None request id tried to be polled. Structural problem detected.")
+            return True
+
         # Starting count-down
         start_time = time.time()
         self.logger.info(f"Checking if {request_id} is ready. Start polling ...")

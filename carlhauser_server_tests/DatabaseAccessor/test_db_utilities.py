@@ -22,7 +22,7 @@ class testDBAdder(unittest.TestCase):
 
     def setUp(self):
         self.logger = logging.getLogger()
-        self.test_file_path = get_homedir() / "datasets" / "TEST_DATASETS" / "DBUtils"
+        self.test_file_path = get_homedir() / "datasets" / "douglas-quaid-tests" / "DBUtils"
 
         # Create configurations
         self.test_db_conf = test_database_only_conf.TestInstance_database_conf()

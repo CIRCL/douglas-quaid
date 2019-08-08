@@ -14,7 +14,7 @@ class testBowOrbVocabularCreator(unittest.TestCase):
 
     def setUp(self):
         self.logger = logging.getLogger()
-        self.test_path = get_homedir() / "datasets" / "TEST_DATASETS" / "BowOrbVocabulary"
+        self.test_path = get_homedir() / "datasets" / "douglas-quaid-tests" / "BowOrbVocabulary"
 
     def test_absolute_truth_and_meaning(self):
         self.assertTrue(True)

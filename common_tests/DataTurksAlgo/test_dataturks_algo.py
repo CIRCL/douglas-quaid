@@ -15,7 +15,7 @@ class test_template(unittest.TestCase):
 
     def setUp(self):
         self.logger = logging.getLogger()
-        self.base_folder = get_homedir() / "datasets" / "TEST_DATASETS" / "DataTurks_tests"
+        self.base_folder = get_homedir() / "datasets" / "douglas-quaid-tests" / "DataTurks_tests"
 
     @staticmethod
     def create_sorted(base_path: pathlib.Path) -> PicturesExporter:

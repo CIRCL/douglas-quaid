@@ -20,9 +20,9 @@ class test_calibrator(unittest.TestCase):
         # self.test_file_path = pathlib.Path.cwd() / pathlib.Path("tests/test_files")
         self.calibrator_instance = Calibrator()
 
-        self.micro_dataset_input_path = get_homedir() / "datasets" / "TEST_DATASETS" / "Calibrator_tests" / "MICRO_DATASET"
-        self.micro_dataset_gt_path = get_homedir() / "datasets" / "TEST_DATASETS" / "Calibrator_tests" / "MICRO_DATASET_VISJS.json"
-        self.micro_dataset_output_path = get_homedir() / "datasets" / "TEST_DATASETS" / "Calibrator_tests" / "OUTPUT"
+        self.micro_dataset_input_path = get_homedir() / "datasets" / "douglas-quaid-tests" / "Calibrator_tests" / "MICRO_DATASET"
+        self.micro_dataset_gt_path = get_homedir() / "datasets" / "douglas-quaid-tests" / "Calibrator_tests" / "MICRO_DATASET_VISJS.json"
+        self.micro_dataset_output_path = get_homedir() / "datasets" / "douglas-quaid-tests" / "Calibrator_tests" / "OUTPUT"
 
     def tearDown(self):
         pass

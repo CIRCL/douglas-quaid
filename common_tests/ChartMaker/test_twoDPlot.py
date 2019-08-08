@@ -15,7 +15,7 @@ class TestClusterMatcher(unittest.TestCase):
     def setUp(self):
         self.logger = logging.getLogger()
         # self.conf = .Default_configuration()
-        self.test_path = get_homedir() / "datasets" / "TEST_DATASETS" / "TwoDPlot"
+        self.test_path = get_homedir() / "datasets" / "douglas-quaid-tests" / "TwoDPlot"
         self.matrix_gen = two_dimensions_plot.TwoDimensionsPlot()
 
     def test_absolute_truth_and_meaning(self):
