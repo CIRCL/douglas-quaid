@@ -236,9 +236,11 @@ class Extended_API(Simple_API):
                 except Exception as e:
                     self.logger.error(f"Error occurred during {image_path.name} request : {e}.")
 
-        if len(list_requests_id) >= 1 :
-            # Wait until last requested picture is
-            _ = self.poll_until_result_ready(list_requests_id[len(list_requests_id) - 1], max_time=-1)
+        # if len(list_requests_id) >= 1 :
+        #     # Wait until last requested picture is # ! Not enough if many workers in parrallel ! Wait for all of them !
+        #     _ = self.poll_until_result_ready(list_requests_id[len(list_requests_id) - 1], max_time=-1)
+        for request_id in list_requests_id :
+            _ = self.poll_until_result_ready(request_id, max_time=-1)
 
         for request_id in list_requests_id:
             is_success, results = self.get_results(request_id)

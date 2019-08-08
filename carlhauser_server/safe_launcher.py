@@ -31,7 +31,7 @@ class SafeLauncher:
         self.launch_method: str = launch_method
         self.stop_method: str = stop_method
 
-    def launch(self):
+    def launch(self, auto_stop = False):
         try:
             # Setting SIGINT handler
             # original_sigint = signal.getsignal(signal.SIGINT)  # Storing original
@@ -43,8 +43,9 @@ class SafeLauncher:
 
             do_stop = False
 
-            while not do_stop:
+            while not do_stop and not auto_stop:
                 print("Press any key to stop ... ")
+
                 input()
                 print("Are you sure you want to stop ? [yes/no] ")
                 value = input()

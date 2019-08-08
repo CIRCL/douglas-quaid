@@ -14,7 +14,7 @@ class testJSONImportExport(unittest.TestCase):
     def setUp(self):
         self.logger = logging.getLogger()
         # self.conf = .Default_configuration()
-        self.test_file_path = get_homedir() / pathlib.Path("carlhauser_server_tests/test_Helpers/json_import_export")
+        self.test_file_path = get_homedir() / "datasets" / "TEST_DATASETS" / "json_import_export"
 
         self.simple_object = {"myobjectname": "ThisIsMyObject",
                               "MyObjectList": ["value1", "value2", "value3", "value4"]}

@@ -148,7 +148,10 @@ class TestAPIExtendedAPI(unittest.TestCase):
         tmp_dict = {}
         for i in list_answers:
             print(i)
-            tmp_dict[i["request_id"]] = i
+            try :
+                tmp_dict[i["request_id"]] = i
+            except Exception as e :
+                self.logger.critical(f"Error during fetching request id in result list : {e}")
 
         self.assertEqual(tmp_dict["729f3e02-c138-5ccd-ad08-2b7f56206e1d"]["list_pictures"][0]["image_id"], '729f3e02-c138-5ccd-ad08-2b7f56206e1d')
         self.assertEqual(tmp_dict["aab51a4c-cd7a-58c7-934a-7c00e9673d1e"]["list_pictures"][0]["image_id"], 'aab51a4c-cd7a-58c7-934a-7c00e9673d1e')

@@ -14,7 +14,7 @@ class testPICTUREImportExport(unittest.TestCase):
     def setUp(self):
         self.logger = logging.getLogger()
         # self.conf = .Default_configuration()
-        self.test_file_path = get_homedir() / pathlib.Path("carlhauser_server_tests/test_Helpers/picture_import_export")
+        self.test_file_path = get_homedir() / "datasets" / "TEST_DATASETS" / "picture_import_export"
 
     def tearDown(self):
 

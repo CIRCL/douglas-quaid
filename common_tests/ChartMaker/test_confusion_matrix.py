@@ -16,7 +16,7 @@ class TestClusterMatcher(unittest.TestCase):
     def setUp(self):
         self.logger = logging.getLogger()
         # self.conf = .Default_configuration()
-        self.test_file_path = get_homedir() / pathlib.Path("carlhauser_client_tests/EvaluationTools/evaluator/confusion_matrix")
+        self.test_file_path = get_homedir() / "datasets" / "TEST_DATASETS" / "confusion_matrix"
         self.matrix_gen = confusion_matrix_generator.ConfusionMatrixGenerator()
 
     def test_absolute_truth_and_meaning(self):

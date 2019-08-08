@@ -186,20 +186,11 @@ class Calibrator:
 
             self.logger.debug(f"Calibrated algorithm {to_calibrate_algo.algo_name} with : {calibrated_algo} ")
 
-            # Save storage graph
-            self.save_storage_graph(tmp_output_folder_algo)
 
             # Keeping the best configuration for this algorithm
             list_calibrated_algos.append(calibrated_algo)
 
         return list_calibrated_algos
-
-    def save_storage_graph(self, output_folder: pathlib.Path):
-
-        db_dump = self.ext_api.get_db_dump_as_graph()
-        db_dump_dict = db_dump.export_as_dict()
-        save_path_json = output_folder / "storage_graph_dump.json"
-        json_import_export.save_json(db_dump_dict, save_path_json)
 
     def calibrate_std_algo_set(self, folder_of_pictures: pathlib.Path,
                                ground_truth_file: pathlib.Path,
@@ -239,6 +230,13 @@ class Calibrator:
         self.ORB_KEYPOINTS_NB = 500
     '''
 
+    def save_storage_graph(self, output_folder: pathlib.Path):
+
+        db_dump = self.ext_api.get_db_dump_as_graph()
+        db_dump_dict = db_dump.export_as_dict()
+        save_path_json = output_folder / "storage_graph_dump.json"
+        json_import_export.save_json(db_dump_dict, save_path_json)
+
     def create_instance_and_calibrate(self,
                                       db_conf: Default_database_conf,
                                       fe_conf: Default_feature_extractor_conf,
@@ -269,6 +267,9 @@ class Calibrator:
                                                                    visjs_json_path=ground_truth_file,
                                                                    output_path=output_folder,
                                                                    cal_conf=self.cal_conf)
+
+        # Save storage graph
+        self.save_storage_graph(output_folder)
 
         # Kill server instance
         self.logger.debug(f"Shutting down Redis test instance")

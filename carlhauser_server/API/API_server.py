@@ -46,7 +46,7 @@ class EndpointAction(object):
 
         # DEBUG FOR TEST PURPOSES # self.response = flask.Response("Welcome to carl-hauser", status=200, headers={})
 
-    def __call__(self, *argss):
+    def __call__(self, *args):
         """
         Standard method that effectively perform the stored action of this endpoint.
         :param args: Arguments to give to the stored function
@@ -138,7 +138,7 @@ class FlaskAppWrapper(object):
 
     # ==================== ------ API Calls ------- ====================
 
-    def ping(self, *argss) -> Dict:
+    def ping(self, *args) -> Dict:
         """
         Handle a ping request on server side. Creates a pong answer
         :param args: None is required

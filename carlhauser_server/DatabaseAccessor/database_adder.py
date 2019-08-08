@@ -92,9 +92,7 @@ class Database_Adder(database_common.Database_Common):
                 return curr_cluster.cluster_id
             else:
                 self.logger.error(
-                    f"Cluster : {curr_cluster.cluster_id} not matches enough. Discarded. {curr_cluster.decision} {scoring_datastrutures.DecisionTypes.YES.name} {curr_cluster.distance} {self.dist_conf.MAX_DIST_FOR_NEW_CLUSTER} {type(
-                        curr_cluster.distance)} {type(self.dist_conf.MAX_DIST_FOR_NEW_CLUSTER)} {type(curr_cluster.decision)} {type(
-                        scoring_datastrutures.DecisionTypes.YES.name)} {curr_cluster.decision == scoring_datastrutures.DecisionTypes.YES.name} {curr_cluster.distance <= self.dist_conf.MAX_DIST_FOR_NEW_CLUSTER}")
+                    f"Cluster : {curr_cluster.cluster_id} not matches enough. Discarded.")
 
         return None
 

@@ -44,7 +44,7 @@ class testCarlHauserServer(unittest.TestCase):
 
         # TODO : Find a way to kill the process ? See if it clean up behind him ?
 
-        sf.launch()
+        sf.launch(auto_stop=True)
 
         sf.stop()
 
