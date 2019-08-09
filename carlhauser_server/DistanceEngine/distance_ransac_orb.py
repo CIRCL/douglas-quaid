@@ -98,9 +98,9 @@ class Distance_RANSAC_ORB:
         """
 
         descriptors_1 = pic_package_from["ORB_DESCRIPTORS"]
-        keypoints_1 = pic_package_from["ORB_KEYPOINTS"]  # TODO : To verify if good name
+        keypoints_1 = pic_package_from["ORB_KEYPOINTS"]
         descriptors_2 = pic_package_to["ORB_DESCRIPTORS"]
-        keypoints_2 = pic_package_to["ORB_KEYPOINTS"]  # TODO : To verify if good name
+        keypoints_2 = pic_package_to["ORB_KEYPOINTS"]
 
         if descriptors_1 is None and descriptors_2 is None:
             # Both pictures don't have descriptors : the same !
@@ -203,8 +203,8 @@ class Distance_RANSAC_ORB:
         self.logger.debug(f"Zero determinant distance : {dist_zero}")
         self.logger.debug(f"Orientation distance : {dist_orient} ")
         # TODO : self.logger.debug(f"SVD distance : {dist_svd} ")
-        list_dist.append(dist_zero)
-        list_dist.append(dist_orient)
+        if dist_zero is not None : list_dist.append(dist_zero)
+        if dist_orient is not None : list_dist.append(dist_orient)
         # TODO : list_dist.append(dist_svd)
 
         try:
@@ -215,8 +215,8 @@ class Distance_RANSAC_ORB:
 
                 self.logger.debug(f"Homography distance : {dist_homo} ")
                 self.logger.debug(f"Order from homography distance : {dist_order_homo} ")
-                list_dist.append(dist_homo)
-                list_dist.append(dist_order_homo)
+                if dist_homo is not None : list_dist.append(dist_homo)
+                if dist_order_homo is not None : list_dist.append(dist_order_homo)
 
         except Exception as e:
             self.logger.error(f"Inverting RANSAC transformation matrix impossible due to : {e}")
@@ -229,8 +229,8 @@ class Distance_RANSAC_ORB:
 
                 self.logger.debug(f"Affine distance : {dist_affine} ")
                 self.logger.debug(f"Order from homography distance : {dist_order_affine} ")
-                list_dist.append(dist_affine)
-                list_dist.append(dist_order_affine)
+                if dist_affine is not None : list_dist.append(dist_affine)
+                if dist_order_affine is not None : list_dist.append(dist_order_affine)
 
         except Exception as e:
             self.logger.error(f"Inverting RANSAC transformation matrix impossible due to : {e}")

@@ -53,32 +53,33 @@ class Picture_BoW_Orber:
         answer = {}
         self.logger.info("BoW-Orbing picture ... ")
 
-        # Convert from cv's BRG default color order to RGB
-        # image = cv2.imread(str(path))
-        # image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-        self.logger.debug(f"Original type {type(curr_picture)}")
-        arr = np.asarray(bytearray(curr_picture), dtype=np.uint8)
-        orb_pic = cv2.imdecode(arr, -1)
-        self.logger.debug(f"Picture converted to CV2 UMAT {type(orb_pic)}")
-
-        # Get keypoints from orb dictionnary OR compute it if not present
-        key_points = orb_dict.get("ORB_KEYPOINTS", None)
-        if key_points is None or key_points == []:
-            self.logger.warning(f"No Keypoints in provided ORB dictionnary.")
-            try:
-                self.logger.info(f"Computing Orb Keypoints in BoW-orber.")
-
-                # Compute keypoints by itself
-                key_points, _ = self.algo.detectAndCompute(orb_pic, None)
-
-                if key_points is None or key_points == []:
-                    raise Exception("NO KEYPOINTS")
-
-            except Exception as e:
-                self.logger.error(f"Impossible to compute keypoints in BoW-Orber for provided picture : {e}")
-                raise e
-
         if self.fe_conf.BOW_ORB.get("is_enabled", False):
+
+            # Convert from cv's BRG default color order to RGB
+            # image = cv2.imread(str(path))
+            # image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+            self.logger.debug(f"Original type {type(curr_picture)}")
+            arr = np.asarray(bytearray(curr_picture), dtype=np.uint8)
+            orb_pic = cv2.imdecode(arr, -1)
+            self.logger.debug(f"Picture converted to CV2 UMAT {type(orb_pic)}")
+
+            # Get keypoints from orb dictionnary OR compute it if not present
+            key_points = orb_dict.get("ORB_KEYPOINTS", None)
+            if key_points is None or key_points == []:
+                self.logger.warning(f"No Keypoints in provided ORB dictionnary.")
+                try:
+                    self.logger.info(f"Computing Orb Keypoints in BoW-orber.")
+
+                    # Compute keypoints by itself
+                    key_points, _ = self.algo.detectAndCompute(orb_pic, None)
+
+                    if key_points is None or key_points == []:
+                        raise Exception("NO KEYPOINTS")
+
+                except Exception as e:
+                    self.logger.error(f"Impossible to compute keypoints in BoW-Orber for provided picture : {e}")
+                    raise e
+
             try:
                 description = self.bow_descriptor.compute(orb_pic, key_points)
                 self.logger.warning(f"TYPE descriptor : {type(description)}")

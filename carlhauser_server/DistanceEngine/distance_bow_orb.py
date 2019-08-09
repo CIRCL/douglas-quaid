@@ -45,7 +45,7 @@ class Distance_BoW_ORB:
         # Verify if what is needed to compute it is present
         if pic_package_from.get("BOW_ORB_DESCRIPTOR", None) is None \
                 or pic_package_to.get("BOW_ORB_DESCRIPTOR", None) is None:
-            self.logger.warning(f"BoW-ORB descriptors are NOT presents in the results : {pic_package_from} {pic_package_to}")
+            self.logger.warning(f"BoW-ORB descriptors are NOT presents in the results")
             raise AlgoFeatureNotPresentError("None BoW-ORB descriptors in orb distance.")
 
         # Add result for enabled algorithms
