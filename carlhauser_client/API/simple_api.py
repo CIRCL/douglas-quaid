@@ -245,7 +245,7 @@ class Simple_API:
         """
 
         # If the request id is not set, alert and continue
-        if type(request_id) is None :
+        if type(request_id) is None or request_id is None:
             self.logger.error("None request id tried to be polled. Structural problem detected.")
             return True
 

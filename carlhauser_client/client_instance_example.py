@@ -25,22 +25,22 @@ class ClientInstanceExample:
 
         self.logger.info(f"Launching webservice ...")
         self.perform_ping_check()
-        self.perform_upload(get_homedir() / "datasets" / "simple_pictures" / "image.jpg")
+        self.perform_upload(get_homedir() / "datasets" / "douglas-quaid-tests" / "API_pictures" / "image.jpg")
 
         self.logger.info(f"Add ? ")
         input()
-        self.perform_upload(get_homedir() / "datasets" / "simple_pictures" / "image.png")
+        self.perform_upload(get_homedir() / "datasets" / "douglas-quaid-tests" / "API_pictures" / "image.png")
 
         self.logger.info(f"Request ? ")
         input()
-        request_id = self.perform_request(get_homedir() / "datasets" / "simple_pictures" / "image.bmp")
+        request_id = self.perform_request(get_homedir() / "datasets" / "douglas-quaid-tests" / "API_pictures" / "image.bmp")
 
         self.logger.info(f"Polling ... ")
         self.poll_until_result_ready(request_id)
 
         self.logger.info(f"Add ? ")
         input()
-        self.perform_upload(get_homedir() / "datasets" / "simple_pictures" / "image.bmp")
+        self.perform_upload(get_homedir() / "datasets" / "douglas-quaid-tests" / "API_pictures" / "image.bmp")
 
         self.logger.info(f"Fetch result ? ")
         input()

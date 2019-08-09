@@ -77,16 +77,14 @@ class GraphExtractor:
         """
 
         # Get distance results for each picture
-        # list_results = self.ext_api.add_and_request_and_dump_pictures(image_folder)
+        list_results = self.ext_api.add_and_request_and_dump_pictures(image_folder)
 
         # Save to file
-        # json_import_export.save_json(list_results, output_path / "requests_result.json")
-        # DEBUG IF FAILURE FOR MANUAL RECOVERY #
-        list_results = json_import_export.load_json(output_path / "requests_result.json")
+        json_import_export.save_json(list_results, output_path / "requests_result.json")
+        # DEBUG IF FAILURE FOR MANUAL RECOVERY #list_results = json_import_export.load_json(output_path / "requests_result.json")
         self.logger.debug(f"Results raw json saved.")
 
-        #  DEBUG IF FAILURE FOR MANUAL RECOVERY #
-        list_results = [r for r in list_results if r is not None and r.get("request_id", None) is not None]
+        #  DEBUG IF FAILURE FOR MANUAL RECOVERY #list_results = [r for r in list_results if r is not None and r.get("request_id", None) is not None]
 
         # Extract tmp_graph and save as graphs
         tmp_graph = self.get_proximity_graph_from_list_result(list_results, output_path)

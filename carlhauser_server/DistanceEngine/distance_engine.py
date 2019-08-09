@@ -62,7 +62,7 @@ class Distance_Engine:
             self.logger.debug(f"Computed hashes distance : {hash_dict}")
             merged_dict.update(hash_dict)
         except AlgoFeatureNotPresentError as e:
-            self.logger.warning(f"No feature present for hashing algorithms : {e}")
+            self.logger.warning(f"No feature present for hashing algorithms. Normal if HASHES is not activated in configuration. Error : {e}")
 
         # Get ORB distances
         try:
@@ -70,7 +70,7 @@ class Distance_Engine:
             self.logger.debug(f"Computed orb distance : {orb_dict}")
             merged_dict.update(orb_dict)
         except AlgoFeatureNotPresentError as e:
-            self.logger.warning(f"No feature present for orbing algorithms : {e}")
+            self.logger.warning(f"No feature present for orbing algorithms. Normal if ORB is not activated in configuration. Error : {e}")
 
         # Get BoW-ORB distances
         try:
@@ -78,7 +78,7 @@ class Distance_Engine:
             self.logger.debug(f"Computed BoW-orb distance : {bow_orb_dict}")
             merged_dict.update(bow_orb_dict)
         except AlgoFeatureNotPresentError as e:
-            self.logger.warning(f"No feature present for orbing algorithms : {e}")
+            self.logger.warning(f"No feature present for bow-orbing algorithms.Normal if BOW-ORB is not activated in configuration. Error : {e}")
 
         self.logger.debug(f"Distance dict : {merged_dict}")
         return merged_dict

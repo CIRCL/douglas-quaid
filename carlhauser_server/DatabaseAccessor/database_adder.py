@@ -47,8 +47,8 @@ class Database_Adder(database_common.Database_Common):
         # Get top matching pictures in clusters
         top_matching_pictures, list_matching_clusters = self.get_top_matching_pictures(fetched_dict)
 
-        self.logger.critical(f"list_matching_clusters {pformat(list_matching_clusters)}")
-        self.logger.critical(f"top_matching_pictures {pformat(top_matching_pictures)}")
+        self.logger.debug(f"list_matching_clusters {pformat(list_matching_clusters)}")
+        self.logger.debug(f"top_matching_pictures {pformat(top_matching_pictures)}")
 
         # Depending on the quality of the match ...
         # if self.is_good_match(top_matching_pictures):
@@ -67,7 +67,7 @@ class Database_Adder(database_common.Database_Common):
             self.logger.info(f"Picture added in existing cluster : {cluster_id}")
 
         else:
-            self.logger.error(f"Match not good enough, with any cluster")
+            self.logger.info(f"Match not good enough, with any cluster")
             # Add picture to it's own cluster
             # First picture is "alone" and so central (score=0)
             cluster_id = self.db_utils.add_picture_to_new_cluster(fetched_id, score=0)
