@@ -3,9 +3,9 @@
 
 import argparse
 import hashlib
-import json
 import pathlib
 from typing import Dict
+
 from common.ImportExport.json_import_export import save_json
 
 
@@ -33,8 +33,8 @@ class Referencer:
         print(f"Done. {len(files)} hashed and stored in.")
 
     @staticmethod
-    def check_correctness(name:str):
-        if " " in name :
+    def check_correctness(name: str):
+        if " " in name:
             print("WARNING : space detected in namespace. Are you sure you renamed file correctly ?")
 
     @staticmethod

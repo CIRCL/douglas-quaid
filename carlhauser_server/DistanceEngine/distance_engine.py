@@ -12,6 +12,7 @@ import carlhauser_server.DatabaseAccessor.database_worker as database_worker
 import carlhauser_server.DistanceEngine.distance_hash as distance_hash
 import carlhauser_server.DistanceEngine.distance_orb as distance_orb
 import carlhauser_server.DistanceEngine.distance_bow_orb as distance_bow_orb
+import carlhauser_server.DistanceEngine.distance_ransac_orb as distance_ransac_orb
 import carlhauser_server.DistanceEngine.merging_engine as merging_engine
 import carlhauser_server.DistanceEngine.scoring_datastrutures as scoring_datastrutures
 from common.CustomException import AlgoFeatureNotPresentError
@@ -43,6 +44,9 @@ class Distance_Engine:
         self.distance_hash = distance_hash.Distance_Hash(db_conf, dist_conf, fe_conf)
         self.distance_orb = distance_orb.Distance_ORB(db_conf, dist_conf, fe_conf)
         self.distance_bow_orb = distance_bow_orb.Distance_BoW_ORB(db_conf, dist_conf, fe_conf)
+        self.distance_ransac_orb = distance_ransac_orb.Distance_RANSAC_ORB(db_conf, dist_conf, fe_conf)
+
+        # Create merging engine
         self.merging_engine = merging_engine.Merging_Engine(db_conf, dist_conf, fe_conf)
 
     # ==================== ------ INTER ALGO DISTANCE ------- ====================
@@ -62,7 +66,7 @@ class Distance_Engine:
             self.logger.debug(f"Computed hashes distance : {hash_dict}")
             merged_dict.update(hash_dict)
         except AlgoFeatureNotPresentError as e:
-            self.logger.warning(f"No feature present for hashing algorithms : {e}")
+            self.logger.warning(f"No feature present for hashing algorithms. Normal if HASHES is not activated in configuration. Error : {e}")
 
         # Get ORB distances
         try:
@@ -70,7 +74,7 @@ class Distance_Engine:
             self.logger.debug(f"Computed orb distance : {orb_dict}")
             merged_dict.update(orb_dict)
         except AlgoFeatureNotPresentError as e:
-            self.logger.warning(f"No feature present for orbing algorithms : {e}")
+            self.logger.warning(f"No feature present for orbing algorithms. Normal if ORB is not activated in configuration. Error : {e}")
 
         # Get BoW-ORB distances
         try:
@@ -78,7 +82,15 @@ class Distance_Engine:
             self.logger.debug(f"Computed BoW-orb distance : {bow_orb_dict}")
             merged_dict.update(bow_orb_dict)
         except AlgoFeatureNotPresentError as e:
-            self.logger.warning(f"No feature present for orbing algorithms : {e}")
+            self.logger.warning(f"No feature present for bow-orbing algorithms.Normal if BOW-ORB is not activated in configuration. Error : {e}")
+
+        # Get RANSAC-ORB distances
+        try:
+            ransac_orb_dict = self.distance_ransac_orb.ransac_orb_distance(pic_package_from, pic_package_to)
+            self.logger.debug(f"Computed RANSAC-orb distance : {ransac_orb_dict}")
+            merged_dict.update(ransac_orb_dict)
+        except AlgoFeatureNotPresentError as e:
+            self.logger.warning(f"No feature present for RANSAC-orbing algorithms. Normal if RANSAC-ORB is not activated in configuration. Error : {e}")
 
         self.logger.debug(f"Distance dict : {merged_dict}")
         return merged_dict

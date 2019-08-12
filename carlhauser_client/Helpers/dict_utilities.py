@@ -9,13 +9,13 @@ load_client_logging_conf_file()
 
 
 def copy_id_to_image(dict_to_modify: Dict, with_extension=False) -> Dict:
-    '''
+    """
     From a dict of pictures/graphe json,
     copy ids of cluster and pictures to their 'picture' attribute
     Useful to have a visjs-classificator readable graph
     :param dict_to_modify: original dictionnary of pictures/clusters/edges ..
     :return: modified and readable by visjs-classificator graph
-    '''
+    """
     for i in dict_to_modify['clusters']:
         i["image"] = "anchor.png"
         i["shape"] = "icon"
@@ -29,35 +29,35 @@ def copy_id_to_image(dict_to_modify: Dict, with_extension=False) -> Dict:
 
 
 def revert_mapping(mapping: Dict) -> Dict:
-    '''
+    """
     Revert the value/keys of a dictionnary.
     Ex : transform X->Y to Y->X for all values of a dict
     :param mapping: X -> Y dict
     :return: The reversed dict
-    '''
+    """
     return {v: k for k, v in mapping.items()}
 
 
 def apply_mapping(dict_to_modify: Dict, mapping: Dict) -> Dict:
-    '''
+    """
     Modify all occurences in dict_to_modify of keys-values in mapping, by their value
     Ex : {"toto":"tata"}, {"tata":"new"} ==> {"toto":"new"}
     :param dict_to_modify: The original dict
     :param mapping: dict of (values to be replaces) -> (new values)
     :return: the modified dict
-    '''
+    """
     return update_values_dict(dict_to_modify, {}, mapping)
 
 
 def apply_revert_mapping(dict_to_modify, mapping_to_revert: Dict):  # -> Dict or List or value ...
-    '''
+    """
     Revert the value/keys of a dictionnary and apply it to all
     occurences in dict_to_modify of keys-values in mapping, by their value
     Ex : {"toto":"tata"}, {"new":"tata"} ==> {"toto":"new"}
     :param dict_to_modify: The original dict
     :param mapping_to_revert: mapping from name to name, to be reverted before application
     :return: Original dict modified with applied reversed dict
-    '''
+    """
     # old_name -> id 
     reverted_mapping = revert_mapping(mapping_to_revert)
     # id -> old name
@@ -67,7 +67,7 @@ def apply_revert_mapping(dict_to_modify, mapping_to_revert: Dict):  # -> Dict or
 
 
 def update_values_dict(original_dict: Dict, future_dict: Dict, new_mapping: Dict) -> Dict:
-    '''
+    """
     Recursively updates values of a nested dict by performing recursive calls
     Replace in <original_dict> all keys elements present in <new_mapping> by their value in <new_mapping>
     Ex : {"toto":"tata"}, {"tata":"new"} ==> {"toto":"new"}
@@ -75,7 +75,7 @@ def update_values_dict(original_dict: Dict, future_dict: Dict, new_mapping: Dict
     :param future_dict: The dict were the result will be stored (needed, because recursive calls)
     :param new_mapping: dict of (values to be replaces) -> (new values)
     :return: the modified dict
-    '''
+    """
 
     if isinstance(original_dict, Dict):
         # It's a dict
@@ -95,11 +95,11 @@ def update_values_dict(original_dict: Dict, future_dict: Dict, new_mapping: Dict
 
 
 def get_clear_matches(request):
-    '''
+    """
     Extract a clean list of matches from a request : remove the picture itself from the matches
     :param request: result of a request, a dict
     :return: a clean list of matches (wihtout the picture itself)
-    '''
+    """
 
     # We remove the picture "itself" from the matches
     tmp_clean_matches = []

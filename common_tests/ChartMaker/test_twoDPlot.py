@@ -1,13 +1,12 @@
 # -*- coding: utf-8 -*-
 
-import unittest
 import logging
-import pathlib
-import common.Scalability_evaluator.scalability_evaluator as se
-from common.environment_variable import get_homedir
+import unittest
 
 import common.ChartMaker.two_dimensions_plot as two_dimensions_plot
+import common.Scalability_evaluator.scalability_evaluator as se
 from common.Scalability_evaluator.scalability_evaluator import ScalabilityData, ComputationTime
+from common.environment_variable import get_homedir
 
 
 class TestClusterMatcher(unittest.TestCase):
@@ -16,15 +15,14 @@ class TestClusterMatcher(unittest.TestCase):
     def setUp(self):
         self.logger = logging.getLogger()
         # self.conf = .Default_configuration()
-        self.test_path = get_homedir() / "common_tests" / "ChartMaker" / "TwoDPlot"
+        self.test_path = get_homedir() / "datasets" / "douglas-quaid-tests" / "TwoDPlot"
         self.matrix_gen = two_dimensions_plot.TwoDimensionsPlot()
 
     def test_absolute_truth_and_meaning(self):
         self.assertTrue(True)
 
     def test_print_Scalability_Data(self):
-
-        '''
+        """
 
         +-----------------------------X------+         +--------------------------------+
     500 |                             X      |     1000|                               X|
@@ -43,7 +41,7 @@ class TestClusterMatcher(unittest.TestCase):
            0         10          30        50            0      10       100      1000
 
         :return:
-        '''
+        """
         t1 = ComputationTime()
         t1.adding_time = 100
         t1.nb_picture_added = 100
@@ -79,6 +77,7 @@ class TestClusterMatcher(unittest.TestCase):
         tmp_se.print_data(s, self.test_path, file_name="scalability1.png")
 
         # TO VERIFY MANUALLY
+
 
 if __name__ == '__main__':
     unittest.main()

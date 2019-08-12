@@ -18,9 +18,9 @@ load_server_logging_conf_file()
 
 # ==================== ------ LAUNCHER ------- ====================
 class ParameterExplorer:
-    '''
+    """
     Extract parameters and quality of the storage graph. TODO : Should be reviewed and modified.
-    '''
+    """
 
     def __init__(self):
         self.logger = logging.getLogger(__name__)

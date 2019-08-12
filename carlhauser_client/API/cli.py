@@ -17,9 +17,9 @@ load_client_logging_conf_file()
 # ==================== ------ LAUNCHER ------- ====================
 
 class CLI:
-    '''
+    """
     Command line interface for client side
-    '''
+    """
 
     def __init__(self):
         self.ext_api = Extended_API.get_api()

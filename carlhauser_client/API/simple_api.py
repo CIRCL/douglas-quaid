@@ -16,9 +16,9 @@ load_client_logging_conf_file()
 
 # ==================== ------ SERVER Flask API CALLER ------- ====================
 class Simple_API:
-    '''
+    """
     Provides "Low-level" API calls
-    '''
+    """
 
     def __init__(self, url, certificate_path):
         self.server_url = url
@@ -27,10 +27,10 @@ class Simple_API:
 
     @staticmethod
     def get_api():
-        '''
+        """
         Static method that return an instance of the API (SimpleAPI type)
         :return: Simple API instance
-        '''
+        """
         return Simple_API.get_custom_api(Simple_API)
 
     @staticmethod
@@ -46,11 +46,11 @@ class Simple_API:
 
     # ================= UTILITIES =================
     def utility_extract_and_log_response(self, r: requests.Response) -> Dict:
-        '''
+        """
         Extract the json version of the provided response (r), log it and return the data
         :param r: response of server
         :return: json format of the response
-        '''
+        """
         data = r.json()  # Check the JSON Response Content documentation below
         self.logger.info(f"Response data : {data}")
         self.logger.info(f"Response content : {r.content}")
@@ -71,10 +71,10 @@ class Simple_API:
 
     # ================= PING =================
     def ping_server(self) -> bool:
-        '''
+        """
         Ping the server to check if he is alive with both GET and POST requests.
         :return: True if the server is alive (for GET and POST), False if the server is not
-        '''
+        """
         r_get = self.ping_server_get()
         data_get = self.utility_extract_and_log_response(r_get)
 
@@ -84,19 +84,19 @@ class Simple_API:
         return data_get.get("Called_function", False) == "ping" and data_post.get("Called_function", False) == "ping"
 
     def ping_server_get(self) -> requests.Response:
-        '''
+        """
         Ping the server to check if he is alive with GET request
         :return: the response from the server
-        '''
+        """
         r = requests.get(url=self.server_url, verify=self.cert)
         self.logger.info(f"GET request => {r.status_code} {r.reason} {r.text}")
         return r
 
     def ping_server_post(self) -> requests.Response:
-        '''
+        """
         Ping the server to check if he is alive with POST request
         :return: the response from the server
-        '''
+        """
         r = requests.post(url=self.server_url, verify=self.cert)
         self.logger.info(f"POST request => {r.status_code} {r.reason} {r.text}")
         return r
@@ -104,11 +104,11 @@ class Simple_API:
     # ================= ADD PICTURES =================
 
     def add_one_picture(self, file_path: pathlib.Path) -> (bool, str):
-        '''
+        """
         Add one picture to the server
         :param file_path: the path of the picture to add
         :return: success or failure boolean, and the id of the added picture
-        '''
+        """
 
         file_path = resolve_path(file_path)
 
@@ -130,17 +130,17 @@ class Simple_API:
                 # Check the JSON Response Content documentation below
                 data = self.utility_extract_and_log_response(r)
 
-                return data.get("Status",False) == "Success", data.get("id",None) # picture_id
+                return data.get("Status", False) == "Success", data.get("id", None)  # picture_id
 
     # ================= ADD PICTURES - WAITING =================
 
     def poll_until_adding_done(self, max_time: int = -1) -> bool:
-        '''
+        """
         Regularly ask the server if the adding of a picture had been performed
         Returns when ready or when timeout
         :param max_time: maximum allowed time to wait before timing out. By default -1 = No time out
         :return: boolean, True if adding done, False if not
-        '''
+        """
 
         # Starting count-down
         start_time = time.time()
@@ -165,10 +165,10 @@ class Simple_API:
         return True
 
     def is_adding_done(self) -> (bool, bool):
-        '''
+        """
         Ask the server if the adding had been performed
         :return: 2 booleans. First : True if the server answered, False otherwise. Second : True if the request is ready, False otherwise
-        '''
+        """
         # Set the endpoint
         target_url = self.server_url + EndPoints.WAIT_FOR_ADD
 
@@ -179,16 +179,16 @@ class Simple_API:
             # Check the JSON Response Content documentation below
             data = self.utility_extract_and_log_response(r)
 
-            return data.get("Status",False) == "Success", data.get("are_empty",None)
+            return data.get("Status", False) == "Success", data.get("are_empty", None)
 
     # ================= REQUEST PICTURES =================
 
     def request_similar(self, file_path: pathlib.Path) -> (bool, str):
-        '''
+        """
         Request similar picture of one picture to the server
         :param file_path: the path of the picture to request
         :return: success or failure boolean, and the id of the request picture
-        '''
+        """
 
         file_path = resolve_path(file_path)
 
@@ -208,14 +208,14 @@ class Simple_API:
                 # Check the JSON Response Content documentation below
                 data = self.utility_extract_and_log_response(r)
 
-                return data.get("Status",False) == "Success", data.get("id", None) # request_id
+                return data.get("Status", False) == "Success", data.get("id", None)  # request_id
 
     def get_results(self, request_id: str) -> (bool, Dict):
-        '''
+        """
         Fetch the results of a request previously sent.
         :param request_id: the previously made request id
         :return: the answer of the server. #TODO : Give an example of answer
-        '''
+        """
 
         # Set the endpoint
         target_url = self.server_url + EndPoints.GET_REQUEST_RESULT
@@ -231,18 +231,23 @@ class Simple_API:
             data = r.json()  # Check the JSON Response Content documentation below
             self.logger.info(data)
 
-            return data.get("Status",False) == "Success", data.get("results",None)
+            return data.get("Status", False) == "Success", data.get("results", None)
 
     # ================= REQUEST PICTURES - WAITING =================
 
     def poll_until_result_ready(self, request_id: str, max_time: int = -1) -> bool:
-        '''
+        """
         Regularly ask the server if the results of the provided (request_id) are ready.
         Returns when ready or when timeout
         :param request_id: request_id response to wait for
         :param max_time: maximum allowed time to wait before timing out. By default -1 = No time out
         :return: boolean, True if request is ready, False if not
-        '''
+        """
+
+        # If the request id is not set, alert and continue
+        if type(request_id) is None or request_id is None:
+            self.logger.error("None request id tried to be polled. Structural problem detected.")
+            return True
 
         # Starting count-down
         start_time = time.time()
@@ -267,11 +272,11 @@ class Simple_API:
         return True
 
     def is_result_ready(self, request_id) -> (bool, bool):
-        '''
+        """
         Ask the server if the results of the provided (request_id) is ready.
         :param request_id: request_id response to ask for
         :return: 2 booleans. First : True if the server answered, False otherwise. Second : True if the request is ready, False otherwise
-        '''
+        """
         # Set the endpoint
         target_url = self.server_url + EndPoints.WAIT_FOR_REQUEST
 
@@ -285,15 +290,15 @@ class Simple_API:
             # Check the JSON Response Content documentation below
             data = self.utility_extract_and_log_response(r)
 
-            return data.get("Status",False) == "Success", data.get("is_ready",None)
+            return data.get("Status", False) == "Success", data.get("is_ready", None)
 
     # ================= EXPORT AND DUMP =================
 
     def export_db_server(self) -> (bool, Dict):
-        '''
+        """
         Ask the server a copy of the database
         :return: Boolean (True if server answered) and copy of the DB
-        '''
+        """
         # Set the endpoint
         target_url = self.server_url + EndPoints.REQUEST_DB
 
@@ -304,4 +309,4 @@ class Simple_API:
             # Check the JSON Response Content documentation below
             data = self.utility_extract_and_log_response(r)
 
-            return data.get("Status",False) == "Success", data.get("db",None)
+            return data.get("Status", False) == "Success", data.get("db", None)

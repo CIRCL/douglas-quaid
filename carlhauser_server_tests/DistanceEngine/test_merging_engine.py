@@ -41,7 +41,7 @@ class testDistanceEngine(unittest.TestCase):
         self.merging_engine.fe_conf.ORB.decision_weight = 5
 
     @staticmethod
-    def get_CCC(choice_1 : dt, choice_2 : dt, choice_3 : dt):
+    def get_CCC(choice_1: dt, choice_2: dt, choice_3: dt):
         dict_matches = {
             "A_HASH": sd.AlgoMatch(name="A_HASH", distance=0.0, decision=choice_1),
             "P_HASH": sd.AlgoMatch(name="P_HASH", distance=0.0, decision=choice_2),
@@ -50,7 +50,7 @@ class testDistanceEngine(unittest.TestCase):
         return dict_matches
 
     @staticmethod
-    def get_CCCCC(choice_1 : dt, choice_2 : dt, choice_3 : dt, choice_4 : dt, choice_5 : dt):
+    def get_CCCCC(choice_1: dt, choice_2: dt, choice_3: dt, choice_4: dt, choice_5: dt):
         dict_matches = {
             "A_HASH": sd.AlgoMatch(name="A_HASH", distance=0.0, decision=choice_1),
             "P_HASH": sd.AlgoMatch(name="P_HASH", distance=0.0, decision=choice_2),
@@ -304,7 +304,7 @@ class testDistanceEngine(unittest.TestCase):
             "ORB": sd.AlgoMatch(name="ORB", distance=0.0, decision=sd.DecisionTypes.NO),
         }
         '''
-        answer = self.merging_engine.get_weighted_majority_decision(self.get_CCCCC(dt.YES,dt.YES,dt.YES,dt.YES,dt.NO))
+        answer = self.merging_engine.get_weighted_majority_decision(self.get_CCCCC(dt.YES, dt.YES, dt.YES, dt.YES, dt.NO))
         self.logger.info(f"Majority YYYYN with ORB NO {answer}")
         self.assertEqual(answer, sd.DecisionTypes.NO)
 
@@ -400,7 +400,7 @@ class testDistanceEngine(unittest.TestCase):
             "ORB": sd.AlgoMatch(name="ORB", distance=0.0, decision=sd.DecisionTypes.NO),
         }
         '''
-        answer = self.merging_engine.get_pyramid_decision(self.get_CCCCC(dt.YES,dt.YES,dt.YES,dt.YES,dt.NO))
+        answer = self.merging_engine.get_pyramid_decision(self.get_CCCCC(dt.YES, dt.YES, dt.YES, dt.YES, dt.NO))
         self.logger.info(f"Pyramid YYYYN with ORB NO {answer}")
         self.assertEqual(answer, sd.DecisionTypes.NO)
 
@@ -422,7 +422,7 @@ class testDistanceEngine(unittest.TestCase):
             "ORB": sd.AlgoMatch(name="ORB", distance=0.0, decision=sd.DecisionTypes.MAYBE),
         }
                 '''
-        answer = self.merging_engine.get_pyramid_decision(self.get_CCCCC(dt.YES,dt.YES,dt.MAYBE,dt.MAYBE,dt.MAYBE))
+        answer = self.merging_engine.get_pyramid_decision(self.get_CCCCC(dt.YES, dt.YES, dt.MAYBE, dt.MAYBE, dt.MAYBE))
         self.logger.info(f"Pyramid YYMMM with ORB MAYBE {answer}")
         self.assertEqual(answer, sd.DecisionTypes.YES)
 

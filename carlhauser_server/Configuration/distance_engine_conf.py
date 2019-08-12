@@ -1,11 +1,16 @@
-from collections import namedtuple
+from enum import Enum, auto
 
 from common.environment_variable import JSON_parsable_Dict
 from common.environment_variable import JSON_parsable_Enum
-from enum import Enum, auto
 
 
 class BOW_CMP_HIST(JSON_parsable_Enum, Enum):
+    CORREL = auto()  # Standard
+    BHATTACHARYYA = auto()
+
+
+
+class RANSAC_METHOD(JSON_parsable_Enum, Enum):
     CORREL = auto()  # Standard
     BHATTACHARYYA = auto()
 
@@ -24,8 +29,12 @@ class Default_distance_engine_conf(JSON_parsable_Dict):
         # ORB PARAMETERS
         self.CROSSCHECK: bool = True
 
-        # Bow_ORB PARAMETERS
+        # BOW_ORB PARAMETERS
         self.BOW_CMP_HIST = BOW_CMP_HIST.CORREL.name
+
+        # RANSAC_ORB
+        self.MATCHES_THRESHOLD_TO_ACCELERATE = 0.65
+        self.MIN_NB_MATCHES_TO_FIND_HOMOGRAPHY = 10
 
 
 def parse_from_dict(conf):

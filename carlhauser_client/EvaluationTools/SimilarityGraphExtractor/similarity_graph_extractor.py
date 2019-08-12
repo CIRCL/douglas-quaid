@@ -77,16 +77,14 @@ class GraphExtractor:
         """
 
         # Get distance results for each picture
-        # list_results = self.ext_api.add_and_request_and_dump_pictures(image_folder)
+        list_results = self.ext_api.add_and_request_and_dump_pictures(image_folder)
 
         # Save to file
-        # json_import_export.save_json(list_results, output_path / "requests_result.json")
-        # DEBUG IF FAILURE FOR MANUAL RECOVERY #
-        list_results = json_import_export.load_json(output_path / "requests_result.json")
+        json_import_export.save_json(list_results, output_path / "requests_result.json")
+        # DEBUG IF FAILURE FOR MANUAL RECOVERY #list_results = json_import_export.load_json(output_path / "requests_result.json")
         self.logger.debug(f"Results raw json saved.")
 
-        #  DEBUG IF FAILURE FOR MANUAL RECOVERY #
-        list_results = [r for r in list_results if r is not None and r.get("request_id", None) is not None]
+        #  DEBUG IF FAILURE FOR MANUAL RECOVERY #list_results = [r for r in list_results if r is not None and r.get("request_id", None) is not None]
 
         # Extract tmp_graph and save as graphs
         tmp_graph = self.get_proximity_graph_from_list_result(list_results, output_path)
@@ -108,8 +106,7 @@ class GraphExtractor:
         '''
         return list_results, tmp_graph
 
-
-    def get_proximity_graph_from_list_result(self, list_results : List[Dict], output_path : pathlib.Path) -> GraphDataStruct:
+    def get_proximity_graph_from_list_result(self, list_results: List[Dict], output_path: pathlib.Path) -> GraphDataStruct:
 
         # Construct graph from the list of distance results
         tmp_graph = self.results_list_to_graph(list_results, nb_match=2)
@@ -162,7 +159,7 @@ class GraphExtractor:
             req_id = curr_req_1.get("request_id", None)
 
             # Requested picture => add a node
-            graph.add_node(Node(label=req_id, id=req_id, image=req_id))
+            graph.add_node(Node(label=req_id, tmp_id=req_id, image=req_id))
 
         # For each request
         for curr_req_2 in requests_list:
@@ -227,11 +224,11 @@ class GraphExtractor:
 
 
 def test():
-    evaluator = GraphExtractor()
+    tmp_evaluator = GraphExtractor()
     # image_folder = get_homedir() / "datasets" / "MINI_DATASET"
     image_folder = get_homedir() / "datasets" / "raw_phishing_full"
     output_path = get_homedir() / "carlhauser_client"
-    evaluator.get_proximity_graph(image_folder, output_path)
+    tmp_evaluator.get_proximity_graph(image_folder, output_path)
 
     # if __name__ == "__main__":
     #     test()

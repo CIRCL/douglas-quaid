@@ -210,14 +210,14 @@ class DBUtilities:
 
         # For each cluster, fetch all pictures and store it
         for cluster_id in cluster_list:
-            tmp_graph.add_cluster(Cluster(label="", id=cluster_id, image=""))
+            tmp_graph.add_cluster(Cluster(label="", tmp_id=cluster_id, image=""))
 
             picture_list = self.get_pictures_of_cluster(cluster_id, with_score=True)
             self.logger.info(f"Picture list : {picture_list}")
 
             for picture in picture_list:
                 # Label = picture score, here
-                tmp_graph.add_node(Node(label=picture[1], id=picture[0], image=""))
+                tmp_graph.add_node(Node(label=picture[1], tmp_id=picture[0], image=""))
                 tmp_graph.add_edge(Edge(_from=cluster_id, _to=picture[0]))
 
         return tmp_graph

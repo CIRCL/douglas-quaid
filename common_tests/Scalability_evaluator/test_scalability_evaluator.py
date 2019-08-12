@@ -3,7 +3,6 @@
 import logging
 import unittest
 
-from common.Scalability_evaluator.scalability_conf import Default_scalability_conf
 from common.Scalability_evaluator.scalability_evaluator import ScalabilityEvaluator
 
 
@@ -18,8 +17,7 @@ class test_scalability_conf(unittest.TestCase):
         self.assertTrue(True)
 
     def test_biner(self):
-
-        potential_pictures = {str(i) for i in range(0,35)}
+        potential_pictures = {str(i) for i in range(0, 35)}
         potential_pictures, bin_set = self.scalability_eval.biner(potential_pictures, 10)
 
         self.logger.info(potential_pictures)

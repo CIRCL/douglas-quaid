@@ -82,11 +82,11 @@ class Worker_StartStop(object, metaclass=Singleton):
         """
         Add <nb> workers to the <list_to_add> workers lists, by launching <worker_path>
         as a subprocess and giving <XX_conf> as parameters (many at once is possible)
+        :param worker_type: type of work to launch
         :param db_conf: configuration file
         :param dist_conf: configuration file
         :param fe_conf: configuration file
         :param ws_conf: configuration file
-        :param mode:  configuration element
         :param nb: Number of worker of this type to launch
         :return: Nothing
         """
@@ -128,7 +128,6 @@ class Worker_StartStop(object, metaclass=Singleton):
             # Store its reference (as new member of the list of the good type)
             self.mapping.get(worker_type).append(tmp_worker_process)
 
-
     def stop_list_worker(self, worker_type: WorkerTypes) -> bool:
         """
         Stop the worker of the provided type
@@ -162,7 +161,7 @@ class Worker_StartStop(object, metaclass=Singleton):
                 pinged = api.ping_server()
             except Exception as e:
                 # Not ready yet, wait a bit
-                self.logger.info(f"Webservice worker not online yet, waiting ...")
+                self.logger.info(f"Webservice worker not online yet, waiting ...{e}")
                 time.sleep(2)
 
             # Compute if we are already in time out

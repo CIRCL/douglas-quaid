@@ -91,11 +91,11 @@ class FlaskAppWrapper(object):
             self.logger.error(f"Provided CERT OR KEY file not found :  {self.ws_conf.CERT_FILE} and {self.ws_conf.KEY_FILE}")
             ## Replaced with below code to run it using waitress
             # serve(self.app, host=self.ws_conf.ip, port=self.ws_conf.port, ssl_context='adhoc')
-            self.app.run( ssl_context='adhoc')
+            self.app.run(ssl_context='adhoc')
         else:
             self.logger.info(f"Provided CERT OR KEY file used : {self.ws_conf.CERT_FILE} and {self.ws_conf.KEY_FILE}")
             ## Replaced with below code to run it using waitress
-            self.app.run( ssl_context=(str(self.ws_conf.CERT_FILE), str(self.ws_conf.KEY_FILE)))  # ssl_context='adhoc')
+            self.app.run(ssl_context=(str(self.ws_conf.CERT_FILE), str(self.ws_conf.KEY_FILE)))  # ssl_context='adhoc')
             # serve(self.app, host=self.ws_conf.ip, port=self.ws_conf.port, ssl_context=(str(self.ws_conf.CERT_FILE), str(self.ws_conf.KEY_FILE)))
 
             self.logger.critical(f"Server running on {self.ws_conf.ip}:{self.ws_conf.port} ... ")
@@ -323,7 +323,7 @@ class FlaskAppWrapper(object):
         Handle a check of a add readiness
         :return: The result json (status of the request, etc.)
         """
-        #TODO : Specify one id. For now, just check the "emptiness" of all pipelines
+        # TODO : Specify one id. For now, just check the "emptiness" of all pipelines
 
         return self.are_pipelines_empty()
         # Test it with curl 127.0.0.1:5000/wait_for_add

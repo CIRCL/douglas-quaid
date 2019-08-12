@@ -1,23 +1,19 @@
 # -*- coding: utf-8 -*-
 import logging
-import unittest
-
-import redis
-
-import carlhauser_server.DatabaseAccessor.database_worker as database_worker
-import common.TestInstanceLauncher.one_db_conf as test_database_only_conf
-import common.TestInstanceLauncher.one_db_instance_launcher as test_database_handler
 import time
+import unittest
 
 from carlhauser_server.safe_launcher import SafeLauncher
 
-class InfiniteLooper():
+
+class InfiniteLooper:
 
     def __init__(self):
         self.test = None
         self.safe_stopped = False
 
-    def start(self):
+    @staticmethod
+    def start():
         n = 0
         while n < 5 :
             print("test")
@@ -48,7 +44,7 @@ class testCarlHauserServer(unittest.TestCase):
 
         # TODO : Find a way to kill the process ? See if it clean up behind him ?
 
-        sf.launch()
+        sf.launch(auto_stop=True)
 
         sf.stop()
 

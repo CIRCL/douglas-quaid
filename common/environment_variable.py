@@ -8,8 +8,8 @@ import pathlib
 import logging
 import logging.config
 
+
 # ==================== ------ PERSONAL LIBRARIES ------- ====================
- 
 
 
 # ============================ HOME DIR GETTER ============================
@@ -20,10 +20,13 @@ def get_homedir() -> pathlib.Path:
         raise Exception(f"CARLHAUSER_HOME is missing. Run the following command (assuming you run the code from the cloned repository):\nexport CARLHAUSER_HOME='{guessed_home}'")
     return pathlib.Path(os.environ['CARLHAUSER_HOME'])
 
+
 def load_client_logging_conf_file():
     # load the logging configuration
     logconfig_path = (get_homedir() / pathlib.Path("carlhauser_client", "logging.ini")).resolve()
     logging.config.fileConfig(str(logconfig_path))
+
+
 # FORMATTER = logging.Formatter('%(asctime)s - + %(relativeCreated)d - %(name)s - %(levelname)s - %(message)s')
 
 def load_server_logging_conf_file():
@@ -31,8 +34,10 @@ def load_server_logging_conf_file():
     logconfig_path = (get_homedir() / pathlib.Path("carlhauser_server", "logging.ini")).resolve()
     logging.config.fileConfig(str(logconfig_path))
 
+
 def make_big_line():
     return "======================================================================================="
+
 
 def make_small_line():
     return "---------------------------------------------------------------------------------------"
@@ -48,11 +53,11 @@ def dir_path(path):
 
 
 def resolve_path(file_path: pathlib.Path) -> pathlib.Path:
-    '''
+    """
     If the provided path is not absolute, resolve it. Otherwise, do nothing
     :param file_path: the filepath to resolve
     :return: the absolute path
-    '''
+    """
     # Solve the file path
     if not file_path.is_absolute():
         file_path = file_path.resolve()
@@ -88,4 +93,3 @@ class EndPoints(JSON_parsable_Dict):
 
     REQUEST_DB = "export_db"
     EMPTY_PIPELINE = "are_pipelines_empty"
-

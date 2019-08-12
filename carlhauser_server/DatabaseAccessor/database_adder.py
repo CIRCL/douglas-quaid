@@ -47,12 +47,12 @@ class Database_Adder(database_common.Database_Common):
         # Get top matching pictures in clusters
         top_matching_pictures, list_matching_clusters = self.get_top_matching_pictures(fetched_dict)
 
-        self.logger.critical(f"list_matching_clusters {pformat(list_matching_clusters)}")
-        self.logger.critical(f"top_matching_pictures {pformat(top_matching_pictures)}")
+        self.logger.debug(f"list_matching_clusters {pformat(list_matching_clusters)}")
+        self.logger.debug(f"top_matching_pictures {pformat(top_matching_pictures)}")
 
         # Depending on the quality of the match ...
         # if self.is_good_match(top_matching_pictures):
-        #TODO : TO VERIFY WHICH TO PICK
+        # TODO : TO VERIFY WHICH TO PICK
         cluster_id = self.choose_cluster_from_cluster_matches(list_matching_clusters)
         # cluster_id = self.choose_cluster_from_pics_matches(top_matching_pictures)
         if cluster_id is not None:
@@ -67,7 +67,7 @@ class Database_Adder(database_common.Database_Common):
             self.logger.info(f"Picture added in existing cluster : {cluster_id}")
 
         else:
-            self.logger.error(f"Match not good enough, with any cluster")
+            self.logger.info(f"Match not good enough, with any cluster")
             # Add picture to it's own cluster
             # First picture is "alone" and so central (score=0)
             cluster_id = self.db_utils.add_picture_to_new_cluster(fetched_id, score=0)
@@ -79,10 +79,10 @@ class Database_Adder(database_common.Database_Common):
         print(make_small_line())
         print("Adder Worker ready to accept more queries.")
 
-    def choose_cluster_from_cluster_matches(self, list_matching_clusters : List[scoring_datastrutures.ClusterMatch]) -> str:
+    def choose_cluster_from_cluster_matches(self, list_matching_clusters: List[scoring_datastrutures.ClusterMatch]) -> str:
 
         # For each picture that has matched
-        for curr_cluster in list_matching_clusters :
+        for curr_cluster in list_matching_clusters:
 
             # normalized_dist = cur_pic.distance
             if curr_cluster.decision.name == scoring_datastrutures.DecisionTypes.YES.name and \
@@ -90,15 +90,16 @@ class Database_Adder(database_common.Database_Common):
                 self.logger.error(f"Cluster : {curr_cluster.cluster_id} matches enough. Kept")
 
                 return curr_cluster.cluster_id
-            else :
-                self.logger.error(f"Cluster : {curr_cluster.cluster_id} not matches enough. Discarded. {curr_cluster.decision} {scoring_datastrutures.DecisionTypes.YES.name} {curr_cluster.distance} {self.dist_conf.MAX_DIST_FOR_NEW_CLUSTER} {type(curr_cluster.distance)} {type(self.dist_conf.MAX_DIST_FOR_NEW_CLUSTER)} {type(curr_cluster.decision)} {type(scoring_datastrutures.DecisionTypes.YES.name)} {curr_cluster.decision == scoring_datastrutures.DecisionTypes.YES.name} {curr_cluster.distance <= self.dist_conf.MAX_DIST_FOR_NEW_CLUSTER}")
+            else:
+                self.logger.error(
+                    f"Cluster : {curr_cluster.cluster_id} not matches enough. Discarded.")
 
         return None
 
-    def choose_cluster_from_pics_matches(self, top_matching_pictures : List[scoring_datastrutures.ImageMatch]) -> str:
+    def choose_cluster_from_pics_matches(self, top_matching_pictures: List[scoring_datastrutures.ImageMatch]) -> str:
 
         new_top_matching_list = []
-        for cur_pic in top_matching_pictures :
+        for cur_pic in top_matching_pictures:
             normalized_dist = self.get_ponderated_distance(cur_pic)
             cur_pic.distance = normalized_dist
             new_top_matching_list.append(cur_pic)
@@ -106,7 +107,7 @@ class Database_Adder(database_common.Database_Common):
         new_top_matching_list.sort(key=lambda x: x.distance)
 
         # For each picture that has matched
-        for cur_pic in new_top_matching_list :
+        for cur_pic in new_top_matching_list:
 
             # normalized_dist = cur_pic.distance
             if cur_pic.decision.name == scoring_datastrutures.DecisionTypes.YES.name and cur_pic.distance <= self.dist_conf.MAX_DIST_FOR_NEW_CLUSTER:
@@ -114,7 +115,7 @@ class Database_Adder(database_common.Database_Common):
 
         return None
 
-    def get_ponderated_distance(self, picture : scoring_datastrutures.ImageMatch):
+    def get_ponderated_distance(self, picture: scoring_datastrutures.ImageMatch):
 
         # dist = real dist + majoration/minoration depending on the % difference between expected cluster size and normal size
         target_cluster_size = math.sqrt(self.db_utils.get_nb_stored_pictures())

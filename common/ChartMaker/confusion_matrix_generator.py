@@ -28,13 +28,13 @@ class ConfusionMatrixGenerator:
     def create_and_export_confusion_matrix(self, original: List[Cluster],
                                            candidate: List[Cluster],
                                            save_path: pathlib.Path = None):
-        '''
+        """
         Create and export a confusion matrix from two list of clusters. The confusion matrix display the number of pictures in common between any pair of two cluster, taken in both lists.
         :param original: a List of cluster with their members
         :param candidate: a List of cluster with their members
         :param save_path: the path to which the matrix PDF) will be stored
         :return: Nothing
-        '''
+        """
 
         self.logger.debug(f"Create and export confusion matrix, inputs : original = {original} ; candidate = {candidate}")
 
@@ -76,11 +76,11 @@ class ConfusionMatrixGenerator:
         self.values = np.array(values)
 
     def save_matrix(self, output_file: pathlib.Path):
-        '''
+        """
         Create a matrix (a picture/chart) with specific size, etc.
         :param output_file: The path where to save the matrix picture.
         :return: Nothing
-        '''
+        """
         fig, ax = plt.subplots(figsize=(20, 14), dpi=200)
 
         im, cbar = self.heatmap(self.values, self.ord, self.abs, ax=ax,

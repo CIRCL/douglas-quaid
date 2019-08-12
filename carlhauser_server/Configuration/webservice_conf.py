@@ -1,7 +1,7 @@
 import pathlib
-from collections import namedtuple
 
 from common.environment_variable import get_homedir, JSON_parsable_Dict
+
 
 class Default_webservice_conf(JSON_parsable_Dict):
     def __init__(self):

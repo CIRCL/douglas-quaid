@@ -18,17 +18,12 @@ class TestInMemoryOperations(unittest.TestCase):
         self.assertTrue(True)
 
     def test_calibrated_algos_to_conf_file(self):
-        list_algo_conf = []
+        list_algo_conf = [Algo_conf("A_HASH", False, 0.0, 0.3, distance_weight=1), Algo_conf("P_HASH", True, 0.1, 0.4, distance_weight=2),
+                          Algo_conf("P_HASH_SIMPLE", False, 0.2, 0.5, distance_weight=3), Algo_conf("D_HASH", True, 0.3, 0.6, distance_weight=4),
+                          Algo_conf("D_HASH_VERTICAL", False, 0.4, 0.7, distance_weight=5), Algo_conf("W_HASH", False, 0.5, 0.8, distance_weight=6),
+                          Algo_conf("TLSH", True, 0.6, 0.9, distance_weight=7), Algo_conf("ORB", True, 0.7, 1.0, distance_weight=8)]
 
         # Create list of algo conf
-        list_algo_conf.append(Algo_conf("A_HASH", False, 0.0, 0.3, distance_weight=1))
-        list_algo_conf.append(Algo_conf("P_HASH", True, 0.1, 0.4, distance_weight=2))
-        list_algo_conf.append(Algo_conf("P_HASH_SIMPLE", False, 0.2, 0.5, distance_weight=3))
-        list_algo_conf.append(Algo_conf("D_HASH", True, 0.3, 0.6, distance_weight=4))
-        list_algo_conf.append(Algo_conf("D_HASH_VERTICAL", False, 0.4, 0.7, distance_weight=5))
-        list_algo_conf.append(Algo_conf("W_HASH", False, 0.5, 0.8, distance_weight=6))
-        list_algo_conf.append(Algo_conf("TLSH", True, 0.6, 0.9, distance_weight=7))
-        list_algo_conf.append(Algo_conf("ORB", True, 0.7, 1.0, distance_weight=8))
 
         # Generate conf file from algo_conf list
         fe_conf = feature_extractor_conf.calibrated_algos_to_conf_file(list_algo_conf)

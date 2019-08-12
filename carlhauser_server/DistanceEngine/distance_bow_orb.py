@@ -4,7 +4,7 @@
 
 import logging
 import traceback
-from typing import Dict, List
+from typing import Dict
 
 import cv2
 
@@ -13,8 +13,8 @@ import carlhauser_server.Configuration.distance_engine_conf as distance_engine_c
 import carlhauser_server.Configuration.feature_extractor_conf as feature_extractor_conf
 import carlhauser_server.DistanceEngine.scoring_datastrutures as sd
 from carlhauser_server.Configuration.algo_conf import Algo_conf
-from common.CustomException import AlgoFeatureNotPresentError
 from carlhauser_server.DistanceEngine.distance_hash import Distance_Hash as dist_hash
+from common.CustomException import AlgoFeatureNotPresentError
 
 
 class Distance_BoW_ORB:
@@ -45,13 +45,13 @@ class Distance_BoW_ORB:
         # Verify if what is needed to compute it is present
         if pic_package_from.get("BOW_ORB_DESCRIPTOR", None) is None \
                 or pic_package_to.get("BOW_ORB_DESCRIPTOR", None) is None:
-            self.logger.warning(f"BoW-ORB descriptors are NOT presents in the results.")
+            self.logger.warning(f"BoW-ORB descriptors are NOT presents in the results")
             raise AlgoFeatureNotPresentError("None BoW-ORB descriptors in orb distance.")
 
         # Add result for enabled algorithms
         try:
             if self.fe_conf.BOW_ORB.get("is_enabled", False):
-                answer = self.add_results(self.fe_conf.ORB, pic_package_from, pic_package_to, answer)
+                answer = self.add_results(self.fe_conf.BOW_ORB, pic_package_from, pic_package_to, answer)
 
         except Exception as e:
             self.logger.error(traceback.print_tb(e.__traceback__))
@@ -73,7 +73,8 @@ class Distance_BoW_ORB:
         algo_name = algo_conf.get('algo_name')
 
         # Depending on the type of
-        # self.logger.debug(f"Comparison for BOW : {self.dist_conf.BOW_CMP_HIST} of {type(self.dist_conf.BOW_CMP_HIST)} " and {distance_engine_conf.BOW_CMP_HIST.CORREL.name} of {type(distance_engine_conf.BOW_CMP_HIST.CORREL.name)}")
+        # self.logger.debug(f"Comparison for BOW : {self.dist_conf.BOW_CMP_HIST} of {type(self.dist_conf.BOW_CMP_HIST)} "
+        # and {distance_engine_conf.BOW_CMP_HIST.CORREL.name} of {type(distance_engine_conf.BOW_CMP_HIST.CORREL.name)}")
 
         if self.dist_conf.BOW_CMP_HIST == distance_engine_conf.BOW_CMP_HIST.CORREL.name:
             tmp_dist = 1 - cv2.compareHist(pic_package_from["BOW_ORB_DESCRIPTOR"],

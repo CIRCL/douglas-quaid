@@ -66,7 +66,7 @@ class Pathobject(pathlib.PosixPath):
         return True
 
 
-class PathlibSet():
+class PathlibSet:
     def __init__(self, myset: Set):
         self.set = myset
 

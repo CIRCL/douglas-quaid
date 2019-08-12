@@ -12,13 +12,14 @@ from carlhauser_client.API.extended_api import Extended_API
 from common.environment_variable import get_homedir
 from common.Graph.graph_datastructure import GraphDataStruct
 
+
 class TestAPIExtendedAPI(unittest.TestCase):
     """Basic test cases."""
 
     def setUp(self):
         self.logger = logging.getLogger()
         # self.conf = .Default_configuration()
-        self.test_path = get_homedir() / "carlhauser_client_tests" / "API" / "API_pictures"
+        self.test_path = get_homedir() / "datasets" / "douglas-quaid-tests" / "API_pictures"
 
         # Create configurations
         self.db_conf = test_database_only_conf.TestInstance_database_conf()
@@ -46,9 +47,9 @@ class TestAPIExtendedAPI(unittest.TestCase):
         mapping_filename_to_id, nb_pics_sent = self.api.add_many_pictures_no_wait(self.test_path)
 
         expected_mapping = {'image.bmp': '729f3e02-c138-5ccd-ad08-2b7f56206e1d',
-         'image.jpg': 'aab51a4c-cd7a-58c7-934a-7c00e9673d1e',
-         'image.png': '8114519b-044f-5800-9a81-2fc5f6a20220',
-         'very_different.png': 'ce75e7ba-eb4d-5421-a80c-326cce54afd1'}
+                            'image.jpg': 'aab51a4c-cd7a-58c7-934a-7c00e9673d1e',
+                            'image.png': '8114519b-044f-5800-9a81-2fc5f6a20220',
+                            'very_different.png': 'ce75e7ba-eb4d-5421-a80c-326cce54afd1'}
 
         self.assertEqual(nb_pics_sent, 4)
 
@@ -62,9 +63,9 @@ class TestAPIExtendedAPI(unittest.TestCase):
         self.assertEqual(nb_pics_sent, 4)
 
         expected_mapping = {'image.bmp': '729f3e02-c138-5ccd-ad08-2b7f56206e1d',
-         'image.jpg': 'aab51a4c-cd7a-58c7-934a-7c00e9673d1e',
-         'image.png': '8114519b-044f-5800-9a81-2fc5f6a20220',
-         'very_different.png': 'ce75e7ba-eb4d-5421-a80c-326cce54afd1'}
+                            'image.jpg': 'aab51a4c-cd7a-58c7-934a-7c00e9673d1e',
+                            'image.png': '8114519b-044f-5800-9a81-2fc5f6a20220',
+                            'very_different.png': 'ce75e7ba-eb4d-5421-a80c-326cce54afd1'}
 
         # UUID v5 of SHA1 of the picture. Deterministic ;)
         self.logger.info("Result fetched")
@@ -83,7 +84,6 @@ class TestAPIExtendedAPI(unittest.TestCase):
         self.logger.info(pformat(results))
         self.assertEqual(results["list_pictures"][0]["image_id"], '8114519b-044f-5800-9a81-2fc5f6a20220')
 
-
     def test_request_many_pictures_and_wait_for_each(self):
         mapping_filename_to_id, nb_pics_sent = self.api.add_many_picture_and_wait_for_each(self.test_path)
         # UUID v5 of SHA1 of the picture. Deterministic ;)
@@ -92,9 +92,9 @@ class TestAPIExtendedAPI(unittest.TestCase):
         self.assertEqual(nb_pics_sent, 4)
 
         expected_mapping = {'image.bmp': '729f3e02-c138-5ccd-ad08-2b7f56206e1d',
-         'image.jpg': 'aab51a4c-cd7a-58c7-934a-7c00e9673d1e',
-         'image.png': '8114519b-044f-5800-9a81-2fc5f6a20220',
-         'very_different.png': 'ce75e7ba-eb4d-5421-a80c-326cce54afd1'}
+                            'image.jpg': 'aab51a4c-cd7a-58c7-934a-7c00e9673d1e',
+                            'image.png': '8114519b-044f-5800-9a81-2fc5f6a20220',
+                            'very_different.png': 'ce75e7ba-eb4d-5421-a80c-326cce54afd1'}
         self.assertDictEqual(expected_mapping, mapping_filename_to_id)
 
         list_answers, nb_pics_requested = self.api.request_many_pictures_and_wait_for_each(self.test_path)
@@ -103,7 +103,7 @@ class TestAPIExtendedAPI(unittest.TestCase):
 
         # Do mapping
         tmp_dict = {}
-        for i in list_answers :
+        for i in list_answers:
             tmp_dict[i["request_id"]] = i
 
         self.assertEqual(tmp_dict["729f3e02-c138-5ccd-ad08-2b7f56206e1d"]["list_pictures"][0]["image_id"], '729f3e02-c138-5ccd-ad08-2b7f56206e1d')
@@ -146,9 +146,12 @@ class TestAPIExtendedAPI(unittest.TestCase):
         # Do mapping
         print(pformat(list_answers))
         tmp_dict = {}
-        for i in list_answers :
+        for i in list_answers:
             print(i)
-            tmp_dict[i["request_id"]] = i
+            try :
+                tmp_dict[i["request_id"]] = i
+            except Exception as e :
+                self.logger.critical(f"Error during fetching request id in result list : {e}")
 
         self.assertEqual(tmp_dict["729f3e02-c138-5ccd-ad08-2b7f56206e1d"]["list_pictures"][0]["image_id"], '729f3e02-c138-5ccd-ad08-2b7f56206e1d')
         self.assertEqual(tmp_dict["aab51a4c-cd7a-58c7-934a-7c00e9673d1e"]["list_pictures"][0]["image_id"], 'aab51a4c-cd7a-58c7-934a-7c00e9673d1e')
@@ -165,7 +168,7 @@ class TestAPIExtendedAPI(unittest.TestCase):
         self.logger.info(pformat(mapping_filename_to_id))
         self.assertEqual(nb_pics_sent, 4)
 
-        graph : GraphDataStruct = self.api.get_db_dump_as_graph()
+        graph: GraphDataStruct = self.api.get_db_dump_as_graph()
         self.logger.info("Graph ")
         self.logger.info(pformat(graph.export_as_dict()))
 
@@ -179,7 +182,7 @@ class TestAPIExtendedAPI(unittest.TestCase):
 
         # Do mapping
         tmp_dict = {}
-        for i in results_list :
+        for i in results_list:
             print(i)
             tmp_dict[i["request_id"]] = i
 
@@ -187,6 +190,7 @@ class TestAPIExtendedAPI(unittest.TestCase):
         self.assertEqual(tmp_dict["image.jpg"]["list_pictures"][0]["image_id"], 'image.jpg')
         self.assertEqual(tmp_dict["image.png"]["list_pictures"][0]["image_id"], 'image.png')
         self.assertEqual(tmp_dict["very_different.png"]["list_pictures"][0]["image_id"], 'very_different.png')
+
 
 if __name__ == '__main__':
     unittest.main()

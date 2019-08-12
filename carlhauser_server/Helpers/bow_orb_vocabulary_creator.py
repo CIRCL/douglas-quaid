@@ -13,7 +13,7 @@ import numpy as np
 
 # load_server_logging_conf_file()
 
-class BoWOrb_Vocabulary_Creator():
+class BoWOrb_Vocabulary_Creator:
 
     def __init__(self):
         self.logger = logging.getLogger(__name__)
@@ -47,12 +47,12 @@ class BoWOrb_Vocabulary_Creator():
 
             key_points, descriptors = algo.detectAndCompute(orb_pic, None)
 
-            if descriptors is not None :
+            if descriptors is not None:
                 bow_trainer.add(np.float32(descriptors))
                 nb_corr_pictures += 1
-                if nb_corr_pictures % 20 == 0 :
+                if nb_corr_pictures % 20 == 0:
                     print(f"Working on pictures {nb_corr_pictures} out of {len(files_list)}")
-            else :
+            else:
                 print(f"Descriptors not usables for pictures : {curr_img_path} are {descriptors}")
 
         print(f"Nb Pictures processed : {nb_corr_pictures}")
@@ -64,7 +64,7 @@ class BoWOrb_Vocabulary_Creator():
         return vocab
 
     @staticmethod
-    def save_vocab_to_file(vocab : np.ndarray, out_folder: pathlib.Path, file_name : str = "vocab.npy"):
+    def save_vocab_to_file(vocab: np.ndarray, out_folder: pathlib.Path, file_name: str = "vocab.npy"):
         print(f"Saving vocabulary ...")
 
         print(type(vocab))
@@ -76,6 +76,7 @@ class BoWOrb_Vocabulary_Creator():
     def load_vocab_from_file(in_file: pathlib.Path) -> np.ndarray:
         print(f"Loading vocabulary ...")
         return np.load(in_file)
+
 
 def dir_path(path):
     if pathlib.Path(path).exists():
@@ -98,4 +99,4 @@ if __name__ == '__main__':
     out_folder_path = pathlib.Path(args.output_folder)
 
     vocab_creator = BoWOrb_Vocabulary_Creator()
-    vocab_creator.create_dict_from_folder(in_folder_path, out_folder_path, int(args.nbwords), 500) # 500 to 500 000
+    vocab_creator.create_dict_from_folder(in_folder_path, out_folder_path, int(args.nbwords), 500)  # 500 to 500 000

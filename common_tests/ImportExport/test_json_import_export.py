@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 
+import logging
+import pathlib
 import unittest
 
 import common.ImportExport.json_import_export as json_import_export
-import logging
-import pathlib
 from common.environment_variable import get_homedir
-from carlhauser_server.Configuration.feature_extractor_conf import Default_feature_extractor_conf
+
 
 class testJSONImportExport(unittest.TestCase):
     """Basic test cases."""
@@ -14,7 +14,7 @@ class testJSONImportExport(unittest.TestCase):
     def setUp(self):
         self.logger = logging.getLogger()
         # self.conf = .Default_configuration()
-        self.test_file_path = get_homedir() / pathlib.Path("carlhauser_server_tests/test_Helpers/json_import_export")
+        self.test_file_path = get_homedir() / "datasets" / "douglas-quaid-tests" / "json_import_export"
 
         self.simple_object = {"myobjectname": "ThisIsMyObject",
                               "MyObjectList": ["value1", "value2", "value3", "value4"]}
@@ -90,7 +90,6 @@ class testJSONImportExport(unittest.TestCase):
 
     # def test_configuration_file_cycles(self):
     #     # Test if a configuration can be loaded and unloaded many times in a row
-
 
 
 if __name__ == '__main__':

@@ -41,14 +41,14 @@ class similarity_graph_quality_evaluator:
     def get_perf_list(self, list_results: List,
                       gt_graph: GraphDataStruct,
                       output_folder: pathlib.Path = None) -> List[perf_datastruct.Perf]:
-        '''
+        """
         Extract a list of performance datastructure from a list of results (list_results)
         compared to a ground truth file (gt_graph). Can store provided list and ground truth results if a (output_folder) is given.
         :param list_results: The list of results extracted from server (one result for each node of the graph)
         :param gt_graph: The ground truth file that serves as reference
         :param output_folder: Faculatative output folder to save inputs
         :return: a list of performance datastructure, each having a threshold and a stats datastructure. This means that for each computed threshold, we know the quality of the graph.
-        '''
+        """
 
         # DEBUG purposes / Display arguments
         self.logger.debug("Received requests results :")
@@ -71,8 +71,8 @@ class similarity_graph_quality_evaluator:
         return perfs_list
 
     def get_perf_list_decision(self, list_results: List,
-                      gt_graph: GraphDataStruct,
-                      output_folder: pathlib.Path):
+                               gt_graph: GraphDataStruct,
+                               output_folder: pathlib.Path):
 
         # Build 4 list, each filtering out all except one decision type
         self.build_list_and_evaluate_and_save_chart(list_results, gt_graph,
@@ -85,9 +85,9 @@ class similarity_graph_quality_evaluator:
         self.build_list_and_evaluate_and_save_chart(list_results, gt_graph,
                                                     [scoring_datastrutures.DecisionTypes.NO], output_folder)
 
-    def build_list_and_evaluate_and_save_chart(self , list_results : List,
+    def build_list_and_evaluate_and_save_chart(self, list_results: List,
                                                gt_graph: GraphDataStruct,
-                                               only_decisions : List[scoring_datastrutures.DecisionTypes],
+                                               only_decisions: List[scoring_datastrutures.DecisionTypes],
                                                output_folder: pathlib.Path):
 
         # Generate name of the list
@@ -102,7 +102,7 @@ class similarity_graph_quality_evaluator:
         twoDplot = two_dimensions_plot.TwoDimensionsPlot()
         twoDplot.print_graph(perfs_list_filtered, output_folder, file_name=(generated_name + ".png"))
 
-    def _compute_perfs_list(self, list_results : List, gt_graph: GraphDataStruct):
+    def _compute_perfs_list(self, list_results: List, gt_graph: GraphDataStruct):
         # Init a void performance list
         perfs_list: List[perf_datastruct.Perf] = []
 
@@ -127,7 +127,7 @@ class similarity_graph_quality_evaluator:
         return perfs_list
 
     @staticmethod
-    def filter_out_request_result(request : Dict, only_decisions : List[scoring_datastrutures.DecisionTypes]):
+    def filter_out_request_result(request: Dict, only_decisions: List[scoring_datastrutures.DecisionTypes]):
         # DOES NOT MODIFY REQUEST OBJECT ANY LONGER !
 
         filtered_matches = []
@@ -155,22 +155,22 @@ class similarity_graph_quality_evaluator:
 
     @staticmethod
     def is_correct(result: Dict):
-        '''
+        """
         Checks if a request result is valid to be evaluated.
         Check if it has enough matches, if correctly formatted ...
         :param result: One request result from server
         :return: True if correct, Error if problem
-        '''
+        """
 
         if result.get("request_id", None) is None:
             print(pformat(result))
             raise Exception("Request id not set in requests result. Please review data set ?")
         elif result.get("list_pictures", None) is None:
 
-            if result.get("status",None) == "matches_not_found" :
+            if result.get("status", None) == "matches_not_found":
                 # No pictures matched :
                 return False
-            else :
+            else:
                 print(pformat(result))
                 raise Exception("No matched list of picture in requests result.")
 
@@ -185,14 +185,14 @@ class similarity_graph_quality_evaluator:
     def compute_score_for_one_threshold(self, list_results: List,
                                         gt_graph: GraphDataStruct,
                                         dist_threshold: float) -> stats_datastruct.Stats_datastruct:
-        '''
+        """
         Compute stats about the quality of a result (requests_result), given a specific threshold (dist_threshold)
         and compared to a ground truth graph (gt_graph)
         :param list_results: Result of a similarity request to server
         :param gt_graph: Ground truth file to provide to compute if matches are good or not
         :param dist_threshold: threshold to apply to the results to compare to ground truth graph
         :return: stats about the quality of a result
-        '''
+        """
 
         # Create ready to go (with 0 valued) score object
         tmp_score = stats_datastruct.Stats_datastruct()
@@ -225,39 +225,38 @@ class similarity_graph_quality_evaluator:
                     if curr_matched_node.get("distance") <= dist_threshold:
                         # Even if it's request_id, it the current name of the file.
                         if gt_graph.are_names_in_same_cluster(curr_result.get("request_id"), curr_matched_node.get("image_id")):
-                            tmp_score.TP += 1   # Match but good
-                            tmp_score.P += 1    # Should be good
+                            tmp_score.TP += 1  # Match but good
+                            tmp_score.P += 1  # Should be good
 
                         else:
-                            tmp_score.FP += 1   # No match but not good
-                            tmp_score.N += 1    # Should be not good
+                            tmp_score.FP += 1  # No match but not good
+                            tmp_score.N += 1  # Should be not good
 
                     elif curr_matched_node.get("distance") > dist_threshold:
 
                         # Even if it's request_id, it the current name of the file.
                         if gt_graph.are_names_in_same_cluster(curr_result.get("request_id"), curr_matched_node.get("image_id")):
-                            tmp_score.FN += 1   # No match but not good
-                            tmp_score.P += 1    # Should be good
+                            tmp_score.FN += 1  # No match but not good
+                            tmp_score.P += 1  # Should be good
 
                         else:
-                            tmp_score.TN += 1   # No match but good
-                            tmp_score.N += 1    # Should be not good
+                            tmp_score.TN += 1  # No match but good
+                            tmp_score.N += 1  # Should be not good
 
-            else :
+            else:
                 cluster = gt_graph.get_clusters_of(curr_result.get("request_id"))
 
                 if cluster is None or len(cluster.members) <= 1:
                     # this picture has no cluster OR Only one element in the cluster,
                     # so it's the node = Good if no match
-                    tmp_score.TN += 1   # No match but good
-                    tmp_score.N += 1    # Should be not good
+                    tmp_score.TN += 1  # No match but good
+                    tmp_score.N += 1  # Should be not good
                 else:
                     # No matches, but not alone in the cluster, so should have been one.
-                    tmp_score.FN += 1   # No match but not good
-                    tmp_score.P += 1    # Should be good
+                    tmp_score.FN += 1  # No match but not good
+                    tmp_score.P += 1  # Should be good
 
             tmp_score.total_nb_elements = tmp_score.P + tmp_score.N
             tmp_score.compute_in_good_order()
 
         return tmp_score
-
