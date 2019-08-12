@@ -93,3 +93,5 @@ class EndPoints(JSON_parsable_Dict):
 
     REQUEST_DB = "export_db"
     EMPTY_PIPELINE = "are_pipelines_empty"
+
+    FLUSH_DB = "flush_db"

@@ -27,7 +27,7 @@ class TestClusterMatcher(unittest.TestCase):
         self.test_db_handler = test_database_handler.TestInstanceLauncher()
         self.test_db_handler.create_full_instance(db_conf=self.db_conf, dist_conf=self.dist_conf, fe_conf=self.fe_conf)
 
-        self.api = Simple_API.get_api()
+        self.api: Simple_API = Simple_API.get_api()
 
     def tearDown(self):
         # Launch shutdown AND FLUSH script
@@ -209,6 +209,32 @@ class TestClusterMatcher(unittest.TestCase):
             'label': 0.0,
             'shape': 'image'}]}
         '''
+
+    def test_flush_db_server(self):
+        pic_id_yes = self.api.add_one_picture(self.test_path / "image.png")
+        pic_id_no = self.api.add_one_picture(self.test_path / "very_different.png")
+        self.logger.info("Added pictures")
+
+        r = self.api.poll_until_adding_done(-1)
+        self.assertEqual(r, True)
+
+        success, dbBefore = self.api.export_db_server()
+        self.assertEqual(success, True)
+        self.logger.info("db fetched")
+        self.logger.info(pformat(dbBefore))
+
+        success = self.api.flush_db_server()
+        self.assertEqual(success, True)
+
+        success, dbAfter = self.api.export_db_server()
+        self.assertEqual(success, True)
+        self.logger.info("db fetched")
+        self.logger.info(pformat(dbAfter))
+
+        self.assertEqual(len(dbAfter['clusters']), 0)
+        self.assertEqual(len(dbAfter['edges']), 0)
+        self.assertEqual(len(dbAfter['nodes']), 0)
+        self.assertEqual(len(dbAfter['meta']), 0)
 
 
 if __name__ == '__main__':

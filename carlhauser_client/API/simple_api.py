@@ -310,3 +310,20 @@ class Simple_API:
             data = self.utility_extract_and_log_response(r)
 
             return data.get("Status", False) == "Success", data.get("db", None)
+
+    def flush_db_server(self) -> (bool, Dict):
+        """
+        Ask the server to flush its databases
+        :return: Boolean (True if server answered) and copy of the DB
+        """
+        # Set the endpoint
+        target_url = self.server_url + EndPoints.FLUSH_DB
+
+        with requests.Session() as s:
+            r = s.get(url=target_url, verify=self.cert)
+            self.logger.info(f"GET request results => {r.status_code} {r.reason} {r.text}")
+
+            # Check the JSON Response Content documentation below
+            data = self.utility_extract_and_log_response(r)
+
+            return data.get("Status", False) == "Success"

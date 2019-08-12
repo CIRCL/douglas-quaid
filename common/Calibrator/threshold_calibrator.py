@@ -371,6 +371,8 @@ class Calibrator:
             fe_conf.ORB = to_calibrate_algo
         elif to_calibrate_algo.algo_name == "BOW_ORB":
             fe_conf.BOW_ORB = to_calibrate_algo
+        elif to_calibrate_algo.algo_name == "RANSAC_ORB":
+            fe_conf.RANSAC_ORB = to_calibrate_algo
         else:
             raise Exception("Unhandled algo name. Structural problem in threshold_calibrator")
 
