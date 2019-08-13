@@ -239,7 +239,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Launch an upload and an evaluation of a list of picture given a ground truth file.')
     parser.add_argument("-s", '--source_path', dest="src", required=True, type=dir_path, action='store',
                         help='Source path of folder of pictures to evaluate. Should be a subset of your production data.')
-    parser.add_argument("-gt", '--ground_truth', dest="gt", required=True, type=dir_path, action='store',
+    parser.add_argument("-gt", '--ground_truth', dest="gt", required=False, type=dir_path, action='store',
                         help='Ground truth file path which has clustered version of the provided data. Very important as it is on what the optimization will based its calculations !')
     parser.add_argument("-d", '--dest_path', dest="dest", required=True, type=dir_path, action='store',
                         help='Destination path to store results of the evaluation (configuration files generated, etc.)')
@@ -247,4 +247,9 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     evaluator = GraphExtractor()
-    evaluator.get_proximity_graph_and_evaluate(pathlib.Path(args.src), pathlib.Path(args.dest), pathlib.Path(args.gt))
+    if args.gt :
+        print("Ground truth file detected.")
+        evaluator.get_proximity_graph_and_evaluate(pathlib.Path(args.src), pathlib.Path(args.dest), pathlib.Path(args.gt))
+    else :
+        print("Ground truth file not detected.")
+        evaluator.get_proximity_graph(pathlib.Path(args.src), pathlib.Path(args.dest))
