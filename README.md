@@ -216,6 +216,9 @@ Performance (quality and time) is served by improvements and design choices on t
 
 ## Configuration and Tweaking
 
+#### What to do with the library
+![Working paths you can take](./docs/images/HOWTO.svg)
+
 #### Must known
 
 The library is storing pictures within clusters of somewhat-similar pictures.   
