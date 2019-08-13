@@ -25,7 +25,7 @@ from carlhauser_server.Helpers import arg_parser
 from common.environment_variable import QueueNames, EndPoints
 from common.environment_variable import get_homedir
 from common.environment_variable import load_server_logging_conf_file
-
+from carlhauser_server.Singletons import database_start_stop
 load_server_logging_conf_file()
 
 
@@ -80,6 +80,7 @@ class FlaskAppWrapper(object):
         # An accessor to push stuff in queues, mainly
         self.database_worker: database_worker.Database_Worker = database_worker.Database_Worker(tmp_db_conf=tmp_db_conf)
         self.db_utils: db_utils.DBUtilities = None
+        self.db_startstop = database_start_stop.Database_StartStop(db_conf=tmp_db_conf)
 
     def run(self):
         """
@@ -125,6 +126,8 @@ class FlaskAppWrapper(object):
         self.add_endpoint(endpoint=tmp_ep_name, endpoint_name=tmp_ep_name, handler=self.get_results)
         tmp_ep_name = "/" + EndPoints.REQUEST_DB
         self.add_endpoint(endpoint=tmp_ep_name, endpoint_name=tmp_ep_name, handler=self.export_db_as_graphe)
+        tmp_ep_name = "/" + EndPoints.FLUSH_DB
+        self.add_endpoint(endpoint=tmp_ep_name, endpoint_name=tmp_ep_name, handler=self.flush_databases)
 
     def add_endpoint(self, endpoint=None, endpoint_name=None, handler=None):
         """
@@ -353,6 +356,34 @@ class FlaskAppWrapper(object):
 
                 result_json["Status"] = "Success"
                 result_json["db"] = graph_dict
+            except Exception as e:
+                self.logger.error(f"Error during GET handling {e}")
+                result_json["Status"] = "Failure"
+                result_json["Error"] = "Error during db exportation to file"
+        else:
+            result_json = self.add_bad_method_info(result_json, good_method_instead="GET")
+
+        return result_json
+        # Test it with curl 127.0.0.1:5000
+
+    # ================= FLUSH =================
+
+    def flush_databases(self) -> Dict:
+        """
+        Handle a flush of the database request
+        :return: The result json (status of the request, etc.)
+        """
+
+        result_json = {}
+        result_json["Called_function"] = EndPoints.FLUSH_DB
+        result_json = self.add_std_info(result_json)
+
+        # Answer to PUT HTTP request
+        if flask.request.method == 'GET':
+            try:
+                self.db_startstop.flush_all_redis()
+                result_json["Status"] = "Success"
+
             except Exception as e:
                 self.logger.error(f"Error during GET handling {e}")
                 result_json["Status"] = "Failure"

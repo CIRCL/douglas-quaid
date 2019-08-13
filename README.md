@@ -70,12 +70,12 @@ Please follow 'detailed installation instruction' if you meet any issue.
 ###### Installation
 
 ```bash
-pipenv install              # Create a virtual environment with needed dependencies
-pipenv shell                # Get into the virtual environment
-chmod +x ./tlsh_install.sh  # Make the TLSH script runnable
-sudo ./tlsh_install.sh      # Install TLSH
-sudo apt-get install redis  # Install redis
-./setup_env_vars.sh         # Setup environment variable automatically
+pipenv install                              # Create a virtual environment with needed dependencies
+pipenv shell                                # Get into the virtual environment
+chmod +x ./tlsh_install.sh                  # Make the TLSH script runnable
+sudo ./tlsh_install.sh                      # Install TLSH
+sudo apt-get install redis                  # Install redis
+source ./scripts/export_env_variables.sh    # Setup environment variable automatically
 ```
 
 ###### Server side launch
@@ -195,15 +195,88 @@ list_answers = api.add_and_request_and_dump_pictures(get_homedir() / "datasets" 
 ```
         
 
-### Prerequisites
+### Advanced usages
 
-See requirements.txt
+Setup environement variables with a .env file to prevent launchng environement variable setup before each launch.
+```bash
+PYTHONPATH="/home/user/Desktop/douglas-quaid"
+CARLHAUSER_HOME='/home/user/Desktop/douglas-quaid'
+```
+        
+At some point, you need a sample of your production dataset. A script is provided. Put in in the folder where your files are, and create a "SAMPLED" folder on level upper. Execute the script as many time as needed to sample random pictures from the folder to the SAMPLED folder.
+```bash
+cp ./douglas-quaid/script/sampler.sh ./dataset/you-fascinating-dataset/
+mkdir ./dataset/SAMPLED
+./dataset/you-fascinating-dataset/sampler.sh (as many times as needed)
+```
 
-(...)
+You may want to visualize your results with VisJS-Classificator. You can install it with
+```bash
+git clone https://github.com/Vincent-CIRCL/visjs_classificator.git
+npm install
+npm install visjs-network
+node server.js -i <Your folder of picture> -t /TMP -o ./TMP -j <optional json file to load>
+```
+                
+If you need to create a ground truth file, install VisJSClassificator and cluster pictures following : 
+```bash
+# Dataset Ground truth (visjs) creation
+node server.js -i ./../SAMPLED/ -t ./TMP -o ./TMP
+# Cluster all pictures (even if alone in the cluster, with C)
+```
+
+You can launch a configuration calibraiton on your own dataset with your own ground truth file. Default settings are valid for screenshots (it seems at least). Be aware that the calibration only calibrate activated algorithms and copy the default configuration for the others.
+```bash
+# Douglas Quaid calibration from sampled dataset and ground truth
+
+python3 ./threshold_calibrator.py from_cmd_args -s ./../../../SAMPLED -gt ./../../../SAMPLED_dict.json -d ./
+
+python3 ./threshold_calibrator.py -s ./../../../SAMPLED/ -gt ./../../../SAMPLED_dict.json -d ./RESULTS/ from_cmd_args -AFPR 0.1 -AFNR 0.1
+
+# Only for activated algorithms in configuration file ! 
+```
+        
+After calibration, you have to manually copy values from one file to the configuration file used by the server. thresholds are the most important thing to copy.
+```bash
+# Transfer of configuration
+Copy paste
+```
+        
+You can extract the similarity graph (the graph of distances between added pictures) from Douglas-Quaid. It could be useful to load it into VisJS to have a broad overview of what the quality of the library is. You can provide a ground truth file to get a quality evaluation of the extract graph. The mapping file is the mapping of original names to uuid given by the server to pictures sent. It is created at adding time and needed for every other extraction if you want the original name to be displayed in output's files. (and so being able to load the pictures in VisJS). Loadable in VisJS.
+```bash
+# Similarity graph
+
+# TODO : NO GROUND TRUTH ? 
+python3 ./EvaluationTools/SimilarityGraphExtractor/similarity_graph_extractor.py -h
+python3 ./EvaluationTools/SimilarityGraphExtractor/similarity_graph_extractor.py -s SRC -gt GT -d DEST
+
+node server.js -i ./../SAMPLED -t ./TMP -o ./TMP -j ./../douglas-quaid/carlhauser_client/EvaluationTools/SimilarityGraphExtractor/distance_graph.json
+node server.js -i ./../SAMPLED -t ./TMP -o ./TMP -j ./../douglas-quaid/carlhauser_client/EvaluationTools/SimilarityGraphExtractor/distance_graph_yes_maybe_no.json
+
+```
+
+For debugging purposes, you can extract the storage graph. It represents the way all pictures are stored in the database. Loadable in VisJS.
+```bash
+# Storage graph
+python3 ./API/cli.py dump -o dbdumpfile.json -m ./mapping.json
+```
+
+You can also launch a scalability test, to see if the operations complexity of the library is linear, surlinear or sublinear. This may take quite some time to compute. Two version are available : one version that evaluates the library as-is (with configuration files) and the one showed in the next code-blocks, which iterates over threshold (between creating a new cluster or putting pictures in the same cluster, for storage only) to compute performances. The last argument is the number of threshold to test. More details in the configuration file in the same folder.
+```bash
+mkdir OUTPUT_SCALABILITY
+python3 ./common/Scalability_evaluator/scalability_with_threshold_evaluator.py  -h
+python3 ./common/Scalability_evaluator/scalability_with_threshold_evaluator.py -s ./../PHISHING-DATASET/ -d ./OUTPUT_SCALABILITY/ -n 10
+```
+
+If you messed up, you can reset the library : it will flush databases, kill workers, etc. If you hard-stopped the server or filled it with junk, launch this.
+```bash
+./scripts/wipe_databases.sh 
+```
 
 ## Running the tests
 
-(...)
+Please be sure to download [tests files](https://github.com/Vincent-CIRCL/douglas-quaid-tests) before launching tests.
+Tests are quite long to be performed, and you should do so only for devlopement purposes.
 
 ## Behind the scene
 
@@ -215,6 +288,9 @@ Current library is a step behind [Carl-Hauser](https://github.com/CIRCL/carl-hau
 Performance (quality and time) is served by improvements and design choices on top of these algorithms.
 
 ## Configuration and Tweaking
+
+#### What to do with the library
+![Working paths you can take](./docs/images/HOWTO.svg)
 
 #### Must known
 
@@ -307,7 +383,9 @@ The library therefore only needs:
 
 The calibration algorithm will seek to optimize the internal parameters of Douglas-Quaid with these inputs. The main advantage is therefore the absence of obscure parameters (example: a threshold between 0 and 1) to be provided without knowledge of the internal functioning of the library.
 
+<p  align="center" float="center">
 <img src="./docs/images/calibratorscheme.svg" alt="Action" height="400"/>
+</p>
 
 Internally, the calibration algorithm will send pictures to the database, extract the similarity graph and evaluate this similarity graph in comparison of the ground truth clusterisation provided. As a comparision between a graph and a list of cluster of pictures is not trivial, we prune the graph (of distances) with a threshold. Then, we can convert the graph into clusters and compare clusters to ground truth clusters. This give us a bunch of metrics (True Positive rate, False Positive rate, etc.) for this specific threshold. We can then find the best threshold that optimize this or that metric (e.g. 10% and no more False positive, etc.). 
 If the original graph had been generated from a configuration enabling only one algorithm, we then have extracted two thresholds for this specific algorithm. If more than one algorithm were activated, we then have two thresholds for the whole output of the library. This is not used and not relevant in our setting. So, the calibration algorithm extract only per-algorithm thresholds to build the future configuration file of the server.
@@ -327,6 +405,16 @@ More details are given in [Documentation PDF version](./SOTA/Core_doc.pdf)
 <img src="./docs/images/queue1.svg" alt="How queues are working" height="100"/>
 <img src="./docs/images/queue2.svg" alt="How queues are working" height="100"/>
 </p>
+
+You want to see how to add a new algorithm to the library ? 
+Get a look at [this commit](https://github.com/CIRCL/douglas-quaid/commit/9942a004f87d79c0b7cecc177dd165de1f3514c4) or [this commit](https://github.com/CIRCL/douglas-quaid/commit/364898911d9171edaf6b8403427302ca528993a3). These should act as nice commits that show you what to add and where.
+
+Roughly, steps are : 
+-   Create a picture_YOUR_NEW_ALGO file that computes the features from one picture
+-   Edit feature worker to call this new picture_X computation
+-   Create a distance_YOUR_NEW_ALGO file that computes the distance between two set of features
+-   Edit distance engine to call this new distance_X computation
+-   Edit configuration files to store what you need/can be modified. If an option is obviously better than an other one, hardcode it and do not put it in configuration file.
 
 ## Deployment and Test procedure
 

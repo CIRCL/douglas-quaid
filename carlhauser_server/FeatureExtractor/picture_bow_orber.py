@@ -22,8 +22,14 @@ class Picture_BoW_Orber:
         self.algo = cv2.ORB_create(nfeatures=fe_conf.ORB_KEYPOINTS_NB)
         # TODO : Dictionnary path / Vocabulary
         self.bow_descriptor = cv2.BOWImgDescriptorExtractor(self.algo, cv2.BFMatcher(cv2.NORM_HAMMING))
-        vocab = BoWOrb_Vocabulary_Creator.load_vocab_from_file(fe_conf.BOW_VOCAB_PATH)
-        self.bow_descriptor.setVocabulary(vocab)
+        self.vocab_loaded = False
+        try :
+            vocab = BoWOrb_Vocabulary_Creator.load_vocab_from_file(fe_conf.BOW_VOCAB_PATH)
+            self.bow_descriptor.setVocabulary(vocab)
+            self.vocab_loaded = True
+        except Exception as e :
+            self.logger.error(f"No vocabulary file provided. Not possible to use Bow-ORB : {e}")
+
 
     '''
     def create_dict_from_folder(self, folder_path: pathlib.Path()):
@@ -53,7 +59,7 @@ class Picture_BoW_Orber:
         answer = {}
         self.logger.info("BoW-Orbing picture ... ")
 
-        if self.fe_conf.BOW_ORB.get("is_enabled", False):
+        if self.fe_conf.BOW_ORB.get("is_enabled", False) and self.vocab_loaded:
 
             # Convert from cv's BRG default color order to RGB
             # image = cv2.imread(str(path))

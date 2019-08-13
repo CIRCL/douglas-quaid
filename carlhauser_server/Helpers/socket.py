@@ -32,7 +32,7 @@ class Socket:
         # Run/Flush/Stop scripts
         self.launch_script_path = script_folder_path / "run.sh"
         self.shutdown_script_path = script_folder_path / "shutdown.sh"
-        self.flush_script_path = script_folder_path / "flush.sh"
+        self.flush_script_path = script_folder_path / "flush_only.sh"
 
     def launch(self):
         """

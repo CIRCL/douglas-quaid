@@ -10,7 +10,7 @@ from carlhauser_client.API.extended_api import Extended_API
 from carlhauser_client.Helpers.dict_utilities import apply_revert_mapping
 from common.ImportExport.json_import_export import save_json, load_json
 from common.environment_variable import load_client_logging_conf_file
-
+from carlhauser_client.Helpers.dict_utilities import copy_id_to_image
 load_client_logging_conf_file()
 
 
@@ -22,7 +22,7 @@ class CLI:
     """
 
     def __init__(self):
-        self.ext_api = Extended_API.get_api()
+        self.ext_api :Extended_API = Extended_API.get_api()
 
     def ping(self, args) -> bool:
         '''
@@ -89,8 +89,9 @@ class CLI:
         # If Copy_ids is true, we copy the value of the picture's ids
         # to their image and shape attributes
         if args.copyids:
+            print(args.copyids)
             print(f"ID to image copy option detected. Copying ... ")
-            db = self.ext_api.copy_id_to_image(db)
+            db = copy_id_to_image(db)
             # TODO : graphe_struct.copy_ids_to_image() # Cleaner
 
         save_json(db, args.dbfile)
