@@ -331,6 +331,16 @@ More details are given in [Documentation PDF version](./SOTA/Core_doc.pdf)
 <img src="./docs/images/queue2.svg" alt="How queues are working" height="100"/>
 </p>
 
+You want to see how to add a new algorithm to the library ? 
+Get a look at [this commit](https://github.com/CIRCL/douglas-quaid/commit/9942a004f87d79c0b7cecc177dd165de1f3514c4) or [this commit](https://github.com/CIRCL/douglas-quaid/commit/364898911d9171edaf6b8403427302ca528993a3). These should act as nice commits that show you what to add and where.
+
+Roughly, steps are : 
+-   Create a picture_YOUR_NEW_ALGO file that computes the features from one picture
+-   Edit feature worker to call this new picture_X computation
+-   Create a distance_YOUR_NEW_ALGO file that computes the distance between two set of features
+-   Edit distance engine to call this new distance_X computation
+-   Edit configuration files to store what you need/can be modified. If an option is obviously better than an other one, hardcode it and do not put it in configuration file.
+
 ## Deployment and Test procedure
 
 Process to follow, after installation.
