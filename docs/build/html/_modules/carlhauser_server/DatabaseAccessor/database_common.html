@@ -1,0 +1,139 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>carlhauser_server.DatabaseAccessor.database_common &#8212; Douglas-Quaid 0.0.4 documentation</title>
+    <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for carlhauser_server.DatabaseAccessor.database_common</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span>
+
+<span class="kn">import</span> <span class="nn">carlhauser_server.Configuration.database_conf</span> <span class="k">as</span> <span class="nn">database_conf</span>
+<span class="kn">import</span> <span class="nn">carlhauser_server.Configuration.distance_engine_conf</span> <span class="k">as</span> <span class="nn">distance_engine_conf</span>
+<span class="kn">import</span> <span class="nn">carlhauser_server.Configuration.feature_extractor_conf</span> <span class="k">as</span> <span class="nn">feature_extractor_conf</span>
+<span class="kn">import</span> <span class="nn">carlhauser_server.DatabaseAccessor.database_utilities</span> <span class="k">as</span> <span class="nn">db_utils</span>
+<span class="kn">import</span> <span class="nn">carlhauser_server.DatabaseAccessor.database_worker</span> <span class="k">as</span> <span class="nn">database_accessor</span>
+<span class="kn">import</span> <span class="nn">carlhauser_server.DistanceEngine.distance_engine</span> <span class="k">as</span> <span class="nn">distance_engine</span>
+<span class="kn">import</span> <span class="nn">carlhauser_server.DistanceEngine.scoring_datastrutures</span> <span class="k">as</span> <span class="nn">scoring_datastrutures</span>
+<span class="kn">from</span> <span class="nn">common.environment_variable</span> <span class="k">import</span> <span class="n">load_server_logging_conf_file</span>
+
+<span class="n">load_server_logging_conf_file</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="Database_Common"><a class="viewcode-back" href="../../../carlhauser_server.DatabaseAccessor.html#carlhauser_server.DatabaseAccessor.database_common.Database_Common">[docs]</a><span class="k">class</span> <span class="nc">Database_Common</span><span class="p">(</span><span class="n">database_accessor</span><span class="o">.</span><span class="n">Database_Worker</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tmp_db_conf</span><span class="p">:</span> <span class="n">database_conf</span><span class="o">.</span><span class="n">Default_database_conf</span><span class="p">,</span> <span class="n">dist_conf</span><span class="p">:</span> <span class="n">distance_engine_conf</span><span class="o">.</span><span class="n">Default_distance_engine_conf</span><span class="p">,</span> <span class="n">fe_conf</span><span class="p">:</span> <span class="n">feature_extractor_conf</span><span class="o">.</span><span class="n">Default_feature_extractor_conf</span><span class="p">):</span>
+        <span class="c1"># STD attributes</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">tmp_db_conf</span><span class="p">)</span>
+
+        <span class="c1"># Store configuration</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dist_conf</span> <span class="o">=</span> <span class="n">dist_conf</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fe_conf</span> <span class="o">=</span> <span class="n">fe_conf</span>
+
+        <span class="c1"># Distance engine</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">de</span> <span class="o">=</span> <span class="n">distance_engine</span><span class="o">.</span><span class="n">Distance_Engine</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tmp_db_conf</span><span class="p">,</span> <span class="n">dist_conf</span><span class="p">,</span> <span class="n">fe_conf</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db_utils</span> <span class="o">=</span> <span class="n">db_utils</span><span class="o">.</span><span class="n">DBUtilities</span><span class="p">(</span><span class="n">db_access_decode</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">storage_db_decode</span><span class="p">,</span> <span class="n">db_access_no_decode</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">storage_db_no_decode</span><span class="p">)</span>
+
+    <span class="c1"># ==== COMMON ACTION OF BOTH ADDER AND REQUESTER ====</span>
+
+<div class="viewcode-block" id="Database_Common.get_top_matching_pictures"><a class="viewcode-back" href="../../../carlhauser_server.DatabaseAccessor.html#carlhauser_server.DatabaseAccessor.database_common.Database_Common.get_top_matching_pictures">[docs]</a>    <span class="k">def</span> <span class="nf">get_top_matching_pictures</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fetched_dict</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="n">List</span><span class="p">[</span><span class="n">scoring_datastrutures</span><span class="o">.</span><span class="n">ImageMatch</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="n">scoring_datastrutures</span><span class="o">.</span><span class="n">ClusterMatch</span><span class="p">]):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Extract the list of top matching pictures and the list of top matching clusters from a result dict.</span>
+<span class="sd">        :param fetched_dict: the result (raw) dict</span>
+<span class="sd">        :return: the List of top matching picture and the list of top matching clusters</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Get top matching clusters</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Get top matching clusters for this picture&quot;</span><span class="p">)</span>
+        <span class="n">cluster_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_utils</span><span class="o">.</span><span class="n">get_cluster_list</span><span class="p">()</span>  <span class="c1"># DECODE</span>
+
+        <span class="c1"># List[scoring_datastrutures.ClusterMatch]</span>
+        <span class="n">list_matching_clusters</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">de</span><span class="o">.</span><span class="n">get_top_matching_clusters</span><span class="p">(</span><span class="n">cluster_list</span><span class="p">,</span> <span class="n">fetched_dict</span><span class="p">)</span>
+        <span class="n">list_cluster_id</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span><span class="o">.</span><span class="n">cluster_id</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">list_matching_clusters</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Top matching clusters : </span><span class="si">{list_cluster_id}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Get top matching pictures in these clusters</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Get top matching pictures within these clusters&quot;</span><span class="p">)</span>
+        <span class="n">top_matching_pictures</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">de</span><span class="o">.</span><span class="n">get_top_matching_pictures_from_clusters</span><span class="p">(</span><span class="n">list_cluster_id</span><span class="p">,</span> <span class="n">fetched_dict</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Top matching pictures : </span><span class="si">{top_matching_pictures}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">top_matching_pictures</span><span class="p">,</span> <span class="n">list_matching_clusters</span></div>
+
+<div class="viewcode-block" id="Database_Common.is_good_match"><a class="viewcode-back" href="../../../carlhauser_server.DatabaseAccessor.html#carlhauser_server.DatabaseAccessor.database_common.Database_Common.is_good_match">[docs]</a>    <span class="k">def</span> <span class="nf">is_good_match</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">top_matching_pictures</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">scoring_datastrutures</span><span class="o">.</span><span class="n">ImageMatch</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check if a match is good enough (at least one match, not None ..)</span>
+<span class="sd">        :param top_matching_pictures: list of top matching picture</span>
+<span class="sd">        :return: True if correct (at least a match etc.), False otherwise</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">top_matching_pictures</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">de</span><span class="o">.</span><span class="n">match_enough</span><span class="p">(</span><span class="n">top_matching_pictures</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, Vincent FALCONIERI.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.2.
+    </div>
+  </body>
+</html>

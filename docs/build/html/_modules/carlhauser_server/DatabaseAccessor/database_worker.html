@@ -1,0 +1,487 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>carlhauser_server.DatabaseAccessor.database_worker &#8212; Douglas-Quaid 0.0.4 documentation</title>
+    <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for carlhauser_server.DatabaseAccessor.database_worker</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+
+<span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">pprint</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">traceback</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Dict</span>
+
+<span class="kn">import</span> <span class="nn">objsize</span>
+<span class="kn">import</span> <span class="nn">redis</span>
+
+<span class="kn">import</span> <span class="nn">carlhauser_server.Configuration.database_conf</span> <span class="k">as</span> <span class="nn">database_conf</span>
+<span class="kn">import</span> <span class="nn">carlhauser_server.Singletons.database_start_stop</span> <span class="k">as</span> <span class="nn">database_start_stop</span>
+<span class="kn">import</span> <span class="nn">common.ImportExport.pickle_import_export</span> <span class="k">as</span> <span class="nn">pickle_import_export</span>
+<span class="kn">from</span> <span class="nn">carlhauser_server.Helpers</span> <span class="k">import</span> <span class="n">arg_parser</span>
+<span class="kn">from</span> <span class="nn">common.ImportExport.json_import_export</span> <span class="k">import</span> <span class="n">Custom_JSON_Encoder</span>
+<span class="kn">from</span> <span class="nn">common.environment_variable</span> <span class="k">import</span> <span class="n">QueueNames</span>
+<span class="kn">from</span> <span class="nn">common.environment_variable</span> <span class="k">import</span> <span class="n">get_homedir</span>
+<span class="kn">from</span> <span class="nn">common.environment_variable</span> <span class="k">import</span> <span class="n">load_server_logging_conf_file</span>
+
+<span class="n">load_server_logging_conf_file</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="Database_Worker"><a class="viewcode-back" href="../../../carlhauser_server.DatabaseAccessor.html#carlhauser_server.DatabaseAccessor.database_worker.Database_Worker">[docs]</a><span class="k">class</span> <span class="nc">Database_Worker</span><span class="p">:</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tmp_db_conf</span><span class="p">:</span> <span class="n">database_conf</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Creation of a Database Accessor Worker&quot;</span><span class="p">)</span>
+
+        <span class="c1"># STD attributes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db_conf</span> <span class="o">=</span> <span class="n">tmp_db_conf</span>
+        <span class="n">json_encoder</span> <span class="o">=</span> <span class="n">Custom_JSON_Encoder</span><span class="p">()</span>
+
+        <span class="c1"># Print configuration</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Configuration db_conf (db worker) : {pprint.pformat(json_encoder.encode(self.db_conf))}&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Specific</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_queue</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ouput_queue</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># Specific attributes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">redis_cache</span> <span class="o">=</span> <span class="n">get_homedir</span><span class="p">()</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_conf</span><span class="o">.</span><span class="n">DB_DATA_PATH</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">redis_storage</span> <span class="o">=</span> <span class="n">get_homedir</span><span class="p">()</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_conf</span><span class="o">.</span><span class="n">DB_DATA_PATH</span>
+
+        <span class="c1"># Get sockets</span>
+        <span class="n">tmp_db_handler</span> <span class="o">=</span> <span class="n">database_start_stop</span><span class="o">.</span><span class="n">Database_StartStop</span><span class="p">(</span><span class="n">db_conf</span><span class="o">=</span><span class="n">tmp_db_conf</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cache_db_decode</span> <span class="o">=</span> <span class="n">redis</span><span class="o">.</span><span class="n">Redis</span><span class="p">(</span><span class="n">unix_socket_path</span><span class="o">=</span><span class="n">tmp_db_handler</span><span class="o">.</span><span class="n">get_socket_path</span><span class="p">(</span><span class="s1">&#39;cache&#39;</span><span class="p">),</span> <span class="n">decode_responses</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cache_db_no_decode</span> <span class="o">=</span> <span class="n">redis</span><span class="o">.</span><span class="n">Redis</span><span class="p">(</span><span class="n">unix_socket_path</span><span class="o">=</span><span class="n">tmp_db_handler</span><span class="o">.</span><span class="n">get_socket_path</span><span class="p">(</span><span class="s1">&#39;cache&#39;</span><span class="p">),</span> <span class="n">decode_responses</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">storage_db_decode</span> <span class="o">=</span> <span class="n">redis</span><span class="o">.</span><span class="n">Redis</span><span class="p">(</span><span class="n">unix_socket_path</span><span class="o">=</span><span class="n">tmp_db_handler</span><span class="o">.</span><span class="n">get_socket_path</span><span class="p">(</span><span class="s1">&#39;storage&#39;</span><span class="p">),</span> <span class="n">decode_responses</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">storage_db_no_decode</span> <span class="o">=</span> <span class="n">redis</span><span class="o">.</span><span class="n">Redis</span><span class="p">(</span><span class="n">unix_socket_path</span><span class="o">=</span><span class="n">tmp_db_handler</span><span class="o">.</span><span class="n">get_socket_path</span><span class="p">(</span><span class="s1">&#39;storage&#39;</span><span class="p">),</span> <span class="n">decode_responses</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="c1"># Pickler with patches</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pickler</span> <span class="o">=</span> <span class="n">pickle_import_export</span><span class="o">.</span><span class="n">Pickler</span><span class="p">()</span>
+
+        <span class="c1"># Imposible to connect =&gt; Shutdown</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">failure_nb</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">FAILURE_THRESHOLD</span> <span class="o">=</span> <span class="mi">10</span>
+
+    <span class="c1"># ==================== ------ GET/SET QUEUE ------- ====================</span>
+
+<div class="viewcode-block" id="Database_Worker.add_to_queue"><a class="viewcode-back" href="../../../carlhauser_server.DatabaseAccessor.html#carlhauser_server.DatabaseAccessor.database_worker.Database_Worker.add_to_queue">[docs]</a>    <span class="k">def</span> <span class="nf">add_to_queue</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">storage</span><span class="p">:</span> <span class="n">redis</span><span class="o">.</span><span class="n">Redis</span><span class="p">,</span> <span class="n">queue_name</span><span class="p">:</span> <span class="n">QueueNames</span><span class="p">,</span> <span class="n">input_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">dict_to_store</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">pickle</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Push data to a specified queue, with a specific id. Wrapper to handle queuing of id(s) and separated storage of data linked to this id(s).</span>
+<span class="sd">        Transparent way to push data to a queue</span>
+<span class="sd">        :param storage: Redis storage to use</span>
+<span class="sd">        :param queue_name: Target queue name</span>
+<span class="sd">        :param input_id: id under which the dictionary will be stored</span>
+<span class="sd">        :param dict_to_store: dictionary to store in the queue</span>
+<span class="sd">        :param pickle: Do pickle the pushed data. Turn to &#39;False&#39; if the data has bytes_array, even nested.</span>
+<span class="sd">        :return: (void)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Do stuff</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Worker trying to add stuff to queue=</span><span class="si">{queue_name}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># Create tmp_id for this queue</span>
+            <span class="n">tmp_id</span> <span class="o">=</span> <span class="s1">&#39;|&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">queue_name</span><span class="p">,</span> <span class="n">input_id</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;About to add id = </span><span class="si">{tmp_id}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="c1"># Store the dict</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_dict_to_key</span><span class="p">(</span><span class="n">storage</span><span class="p">,</span> <span class="n">tmp_id</span><span class="p">,</span> <span class="n">dict_to_store</span><span class="p">,</span> <span class="n">pickle</span><span class="p">)</span>
+
+            <span class="c1"># Set an expire date</span>
+            <span class="n">storage</span><span class="o">.</span><span class="n">expire</span><span class="p">(</span><span class="n">tmp_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_conf</span><span class="o">.</span><span class="n">REQUEST_EXPIRATION</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Stored= </span><span class="si">{tmp_id}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="c1"># Add id to the queue, to be processed</span>
+            <span class="n">storage</span><span class="o">.</span><span class="n">rpush</span><span class="p">(</span><span class="n">queue_name</span><span class="p">,</span> <span class="n">tmp_id</span><span class="p">)</span>  <span class="c1"># Add the id to the queue</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Unable to add dict and hash to </span><span class="si">{queue_name}</span><span class="s2"> queue : </span><span class="si">{e}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Database_Worker.get_from_queue"><a class="viewcode-back" href="../../../carlhauser_server.DatabaseAccessor.html#carlhauser_server.DatabaseAccessor.database_worker.Database_Worker.get_from_queue">[docs]</a>    <span class="k">def</span> <span class="nf">get_from_queue</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">storage</span><span class="p">:</span> <span class="n">redis</span><span class="o">.</span><span class="n">Redis</span><span class="p">,</span> <span class="n">queue_name</span><span class="p">:</span> <span class="n">QueueNames</span><span class="p">,</span> <span class="n">pickle</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Fetch data from a specified queue. Wrapper to handle queuing of id(s) and separated storage of data linked to this id(s).</span>
+<span class="sd">        Transparent way to pull data from a queue</span>
+<span class="sd">        :param storage: Redis storage to use</span>
+<span class="sd">        :param queue_name: Source queue name</span>
+<span class="sd">        :param pickle: Do unpickle the fetched data. Turn to &#39;False&#39; if the data has bytes_array, even nested.</span>
+<span class="sd">        :return: The fetched id of the item in the queue and the dict fetched from queue</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># self.logger.debug(f&quot;Worker trying to remove stuff from queue={queue_name}&quot;)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># Get the next value in queue</span>
+            <span class="n">tmp_id</span> <span class="o">=</span> <span class="n">storage</span><span class="o">.</span><span class="n">lpop</span><span class="p">(</span><span class="n">queue_name</span><span class="p">)</span>
+            <span class="c1"># self.logger.debug(f&quot;Fetch from queue {tmp_id} of type {type(tmp_id)}&quot;)</span>
+
+            <span class="k">if</span> <span class="n">tmp_id</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;An ID had been fetched : </span><span class="si">{tmp_id}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+                <span class="c1"># Get the stored dict</span>
+                <span class="n">fetched_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_dict_from_key</span><span class="p">(</span><span class="n">storage</span><span class="p">,</span> <span class="n">tmp_id</span><span class="p">,</span> <span class="n">pickle</span><span class="p">)</span>
+
+                <span class="c1"># Extract info from key (Be aware that it can be bytes, and so need to be decoded)</span>
+                <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">tmp_id</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span><span class="p">:</span>
+                    <span class="c1"># Already string, so no need to change anything</span>
+                    <span class="n">to_split</span> <span class="o">=</span> <span class="n">tmp_id</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># Raw, other than string, so needs to be decoded</span>
+                    <span class="n">to_split</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">tmp_id</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">))</span>
+
+                <span class="n">stored_queue_name</span><span class="p">,</span> <span class="n">stored_id</span> <span class="o">=</span> <span class="n">to_split</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;|&quot;</span><span class="p">)</span>
+                <span class="c1"># TODO : Handle removal ? self.cache_db.delete(tmp_id) ==&gt; Already expire time (24H)</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Stuff had been fetched from queue=</span><span class="si">{queue_name}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+                <span class="k">return</span> <span class="n">stored_id</span><span class="p">,</span> <span class="n">fetched_dict</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Unable to get dict and hash from </span><span class="si">{queue_name}</span><span class="s2"> queue : </span><span class="si">{e}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+    <span class="c1"># ==================== ------ GET/SET DICT ------- ====================</span>
+
+<div class="viewcode-block" id="Database_Worker.set_dict_to_key"><a class="viewcode-back" href="../../../carlhauser_server.DatabaseAccessor.html#carlhauser_server.DatabaseAccessor.database_worker.Database_Worker.set_dict_to_key">[docs]</a>    <span class="k">def</span> <span class="nf">set_dict_to_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">storage</span><span class="p">:</span> <span class="n">redis</span><span class="o">.</span><span class="n">Redis</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">dict_to_store</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">pickle</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">expire_time</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set a dict of values, pickled or not, to a key</span>
+<span class="sd">        :param expire_time: The time after which the dict will be deleted (to prevent always-growing database), default = no expire</span>
+<span class="sd">        :param dict_to_store: the dictionnary of values to store</span>
+<span class="sd">        :param storage: storage to which dictionary should be stored</span>
+<span class="sd">        :param key: The key to which the dict is linked</span>
+<span class="sd">        :param pickle: boolean to notify if the value to store should be pickled</span>
+<span class="sd">        :return: boolean, True if correctly stored, False if not.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Retrieve a dict, pickled or not</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Setting key : </span><span class="si">{key}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">pickle</span><span class="p">:</span>
+            <span class="c1"># Pickling the dict</span>
+            <span class="n">pickled_object</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pickler</span><span class="o">.</span><span class="n">get_pickle_from_object</span><span class="p">(</span><span class="n">dict_to_store</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Size of storage object : {objsize.get_deep_size(pickled_object)}&quot;</span><span class="p">)</span>
+            <span class="n">answer</span> <span class="o">=</span> <span class="n">storage</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">pickled_object</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Store the dict</span>
+            <span class="n">answer</span> <span class="o">=</span> <span class="n">storage</span><span class="o">.</span><span class="n">hmset</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">dict_to_store</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">expire_time</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># Set an expire date</span>
+            <span class="n">storage</span><span class="o">.</span><span class="n">expire</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">expire_time</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">answer</span></div>
+
+<div class="viewcode-block" id="Database_Worker.get_dict_from_key"><a class="viewcode-back" href="../../../carlhauser_server.DatabaseAccessor.html#carlhauser_server.DatabaseAccessor.database_worker.Database_Worker.get_dict_from_key">[docs]</a>    <span class="k">def</span> <span class="nf">get_dict_from_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">storage</span><span class="p">:</span> <span class="n">redis</span><span class="o">.</span><span class="n">Redis</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">pickle</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieve a dict of values, pickled or not, from a key</span>
+<span class="sd">        :param storage: storage from which dictionary should be picked</span>
+<span class="sd">        :param key: The key to which the dict is linked</span>
+<span class="sd">        :param pickle: boolean to notify if the value to get is pickled</span>
+<span class="sd">        :return: The fetched dictionary (as an object)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Store a dict, pickled or not</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Fetching key : </span><span class="si">{key}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">pickle</span><span class="p">:</span>
+            <span class="c1"># fetch data linked to the key</span>
+            <span class="n">pickled_object</span> <span class="o">=</span> <span class="n">storage</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+
+            <span class="c1"># Unpickling the dict</span>
+            <span class="n">fetched_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pickler</span><span class="o">.</span><span class="n">get_object_from_pickle</span><span class="p">(</span><span class="n">pickled_object</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># fetch data linked to the key</span>
+            <span class="n">fetched_dict</span> <span class="o">=</span> <span class="n">storage</span><span class="o">.</span><span class="n">hgetall</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Fetched dictionary : {fetched_dict.keys()}&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">fetched_dict</span></div>
+
+    <span class="c1"># ==================== ------ GET/SET IMAGES ------- ====================</span>
+
+<div class="viewcode-block" id="Database_Worker.add_picture_to_storage"><a class="viewcode-back" href="../../../carlhauser_server.DatabaseAccessor.html#carlhauser_server.DatabaseAccessor.database_worker.Database_Worker.add_picture_to_storage">[docs]</a>    <span class="k">def</span> <span class="nf">add_picture_to_storage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">storage</span><span class="p">:</span> <span class="n">redis</span><span class="o">.</span><span class="n">Redis</span><span class="p">,</span> <span class="n">input_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">image_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Store images as pickled dict in the provided storage</span>
+<span class="sd">        :param storage: storage to which dictionary should be stored</span>
+<span class="sd">        :param input_id: The key to which the picture is linked</span>
+<span class="sd">        :param image_dict: the picture to store (as a dict)</span>
+<span class="sd">        :return: Boolean (True = success, False = failure)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Store the dictionary of hashvalues in Redis under the given id</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">set_dict_to_key</span><span class="p">(</span><span class="n">storage</span><span class="p">,</span> <span class="n">input_id</span><span class="p">,</span> <span class="n">image_dict</span><span class="p">,</span> <span class="n">pickle</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Database_Worker.get_picture_from_storage"><a class="viewcode-back" href="../../../carlhauser_server.DatabaseAccessor.html#carlhauser_server.DatabaseAccessor.database_worker.Database_Worker.get_picture_from_storage">[docs]</a>    <span class="k">def</span> <span class="nf">get_picture_from_storage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">storage</span><span class="p">:</span> <span class="n">redis</span><span class="o">.</span><span class="n">Redis</span><span class="p">,</span> <span class="n">input_id</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieve images as pickled dict in the provided storage</span>
+<span class="sd">        :param storage: storage from which picture (dict) should be stored</span>
+<span class="sd">        :param input_id: The key to which the dict is linked</span>
+<span class="sd">        :return: the picture (as a dict)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_dict_from_key</span><span class="p">(</span><span class="n">storage</span><span class="p">,</span> <span class="n">input_id</span><span class="p">,</span> <span class="n">pickle</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+    <span class="c1"># ==================== ------ GET/SET REQUEST ------- ====================</span>
+<div class="viewcode-block" id="Database_Worker.set_request_result"><a class="viewcode-back" href="../../../carlhauser_server.DatabaseAccessor.html#carlhauser_server.DatabaseAccessor.database_worker.Database_Worker.set_request_result">[docs]</a>    <span class="k">def</span> <span class="nf">set_request_result</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">storage</span><span class="p">:</span> <span class="n">redis</span><span class="o">.</span><span class="n">Redis</span><span class="p">,</span> <span class="n">input_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">image_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Store results as pickled dict in the provided storage with a configuration-defined expiration time</span>
+<span class="sd">        :param storage: storage to which result dictionary should be stored</span>
+<span class="sd">        :param input_id: The key to which the results is linked (modified inside)</span>
+<span class="sd">        :param image_dict: the picture to store (as a dict)</span>
+<span class="sd">        :return: Boolean (True = success, False = failure)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Create tmp_id for this queue</span>
+        <span class="n">tmp_id</span> <span class="o">=</span> <span class="s1">&#39;|&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">input_id</span><span class="p">,</span> <span class="s2">&quot;result&quot;</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">set_dict_to_key</span><span class="p">(</span><span class="n">storage</span><span class="p">,</span> <span class="n">tmp_id</span><span class="p">,</span> <span class="n">image_dict</span><span class="p">,</span> <span class="n">pickle</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">expire_time</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">db_conf</span><span class="o">.</span><span class="n">ANSWER_EXPIRATION</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Database_Worker.get_request_result"><a class="viewcode-back" href="../../../carlhauser_server.DatabaseAccessor.html#carlhauser_server.DatabaseAccessor.database_worker.Database_Worker.get_request_result">[docs]</a>    <span class="k">def</span> <span class="nf">get_request_result</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">storage</span><span class="p">:</span> <span class="n">redis</span><span class="o">.</span><span class="n">Redis</span><span class="p">,</span> <span class="n">input_id</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieve results as pickled dict in the provided storage</span>
+<span class="sd">        :param storage: storage from which results (dict) should be stored</span>
+<span class="sd">        :param input_id: The key to which the dict is linked</span>
+<span class="sd">        :return: the picture (as a dict)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Create tmp_id for this queue</span>
+        <span class="n">tmp_id</span> <span class="o">=</span> <span class="s1">&#39;|&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">input_id</span><span class="p">,</span> <span class="s2">&quot;result&quot;</span><span class="p">])</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_dict_from_key</span><span class="p">(</span><span class="n">storage</span><span class="p">,</span> <span class="n">tmp_id</span><span class="p">,</span> <span class="n">pickle</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+    <span class="c1"># ==================== ------ CHECK QUEUE EMPTINESS ------- ====================</span>
+
+<div class="viewcode-block" id="Database_Worker.are_all_queues_empty"><a class="viewcode-back" href="../../../carlhauser_server.DatabaseAccessor.html#carlhauser_server.DatabaseAccessor.database_worker.Database_Worker.are_all_queues_empty">[docs]</a>    <span class="k">def</span> <span class="nf">are_all_queues_empty</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check if all queues (TO ADD, TO REQUEST, etc.) are empty</span>
+<span class="sd">        :return: True if all are empty, False otherwise</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_queue_empty</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cache_db_no_decode</span><span class="p">,</span> <span class="n">QueueNames</span><span class="o">.</span><span class="n">DB_TO_ADD</span><span class="p">)</span> <span class="ow">and</span> \
+                <span class="bp">self</span><span class="o">.</span><span class="n">is_queue_empty</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cache_db_no_decode</span><span class="p">,</span> <span class="n">QueueNames</span><span class="o">.</span><span class="n">DB_TO_REQUEST</span><span class="p">)</span> <span class="ow">and</span> \
+                <span class="bp">self</span><span class="o">.</span><span class="n">is_queue_empty</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cache_db_no_decode</span><span class="p">,</span> <span class="n">QueueNames</span><span class="o">.</span><span class="n">FEATURE_TO_ADD</span><span class="p">)</span> <span class="ow">and</span> \
+                <span class="bp">self</span><span class="o">.</span><span class="n">is_queue_empty</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cache_db_no_decode</span><span class="p">,</span> <span class="n">QueueNames</span><span class="o">.</span><span class="n">FEATURE_TO_REQUEST</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="Database_Worker.is_queue_empty"><a class="viewcode-back" href="../../../carlhauser_server.DatabaseAccessor.html#carlhauser_server.DatabaseAccessor.database_worker.Database_Worker.is_queue_empty">[docs]</a>    <span class="k">def</span> <span class="nf">is_queue_empty</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">storage</span><span class="p">:</span> <span class="n">redis</span><span class="o">.</span><span class="n">Redis</span><span class="p">,</span> <span class="n">list_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check if the specified Queue in the specified storage is empty</span>
+<span class="sd">        :param storage: the storage in which the queue exist</span>
+<span class="sd">        :param list_name: the queue name to check</span>
+<span class="sd">        :return: True if the queue is empty, False otherwise, Exception if Queue does not exist</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">val</span> <span class="o">=</span> <span class="n">storage</span><span class="o">.</span><span class="n">llen</span><span class="p">(</span><span class="n">list_name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">val</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Queue </span><span class="si">{list_name}</span><span class="s2"> is not accessible !&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Length of </span><span class="si">{list_name}</span><span class="s2"> queue : </span><span class="si">{val}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">val</span> <span class="o">==</span> <span class="mi">0</span></div>
+
+<div class="viewcode-block" id="Database_Worker.print_storage_view"><a class="viewcode-back" href="../../../carlhauser_server.DatabaseAccessor.html#carlhauser_server.DatabaseAccessor.database_worker.Database_Worker.print_storage_view">[docs]</a>    <span class="k">def</span> <span class="nf">print_storage_view</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Print all keys of the storage</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Printing REDIS Storage view&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">storage_db_decode</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span></div>
+
+    <span class="c1"># ==================== ------ RUNNABLE WORKER ------- ====================</span>
+
+<div class="viewcode-block" id="Database_Worker.is_halt_requested"><a class="viewcode-back" href="../../../carlhauser_server.DatabaseAccessor.html#carlhauser_server.DatabaseAccessor.database_worker.Database_Worker.is_halt_requested">[docs]</a>    <span class="k">def</span> <span class="nf">is_halt_requested</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check if a halt had been requested</span>
+<span class="sd">        :return: True if halt requested (or unknown for too long), False otherwise</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache_db_decode</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;halt&quot;</span><span class="p">)</span>
+            <span class="c1"># DEBUG # self.logger.debug(f&quot;HALT key : {value} &quot;)</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">value</span> <span class="ow">or</span> <span class="n">value</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">failure_nb</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="k">return</span> <span class="kc">False</span>
+            <span class="k">else</span><span class="p">:</span>  <span class="c1"># The key has been set to something, &quot;Now&quot;,&quot;Yes&quot;, ...</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;HALT key detected. Worker received stop signal ... &quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Impossible to know if the worker has to halt : </span><span class="si">{e}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">failure_nb</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">failure_nb</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">FAILURE_THRESHOLD</span><span class="p">:</span>
+                <span class="c1"># There was to many failure, we stop the worker as we can&#39;t connect to DB</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Too many failures to connect to the DB. Stopping worker&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">True</span>
+            <span class="k">return</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="Database_Worker.run"><a class="viewcode-back" href="../../../carlhauser_server.DatabaseAccessor.html#carlhauser_server.DatabaseAccessor.database_worker.Database_Worker.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sleep_in_sec</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Run indefinitely except if the worker have received a stop signal.</span>
+<span class="sd">        :param sleep_in_sec: time between two check for something to do</span>
+<span class="sd">        :return: Nothing</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;Launching </span><span class="si">{self.__class__.__name__}</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_queue</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;No input queue set for current worker. Impossible to fetch work to do. Worker aborted.&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_halt_requested</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;Halt detected even before worker launch in Redis. Aborting worker launch ... &#39;</span><span class="p">)</span>
+
+            <span class="k">while</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_halt_requested</span><span class="p">():</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_to_run_forever</span><span class="p">()</span>
+                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;Something went terribly wrong in </span><span class="si">{self.__class__.__name__}</span><span class="s1"> : </span><span class="si">{e.__class__}</span><span class="s1"> </span><span class="si">{e}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">long_sleep</span><span class="p">(</span><span class="n">sleep_in_sec</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;Halt detected in db worker. Exiting worker execution ... &#39;</span><span class="p">)</span>
+                    <span class="k">break</span>
+
+        <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Interruption detected&#39;</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;DB Worker stopped brutally. You should not do that :( ...&#39;</span><span class="p">)</span>
+                <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">SystemExit</span><span class="p">:</span>
+                <span class="n">traceback</span><span class="o">.</span><span class="n">print_exc</span><span class="p">(</span><span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;Shutting down </span><span class="si">{self.__class__.__name__}</span><span class="s1">&#39;</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_to_run_forever</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Method called infinitely, in loop. Specified from the parent version. Fetch from database queue and call a process function on it.</span>
+<span class="sd">        :return: Nothing</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Trying to fetch from queue (from parameters)</span>
+        <span class="n">fetched_id</span><span class="p">,</span> <span class="n">fetched_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fetch_from_queue</span><span class="p">()</span>
+
+        <span class="c1"># If there is nothing fetched</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">fetched_id</span><span class="p">:</span>
+            <span class="c1"># Nothing to do</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
+        <span class="k">else</span> <span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">process_fetched_data</span><span class="p">(</span><span class="n">fetched_id</span><span class="p">,</span> <span class="n">fetched_dict</span><span class="p">)</span>
+
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Error in database worker (DB adder, db Request or FeatureExtractor or ... ) : </span><span class="si">{e}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">traceback</span><span class="o">.</span><span class="n">print_tb</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">__traceback__</span><span class="p">))</span>
+
+<div class="viewcode-block" id="Database_Worker.fetch_from_queue"><a class="viewcode-back" href="../../../carlhauser_server.DatabaseAccessor.html#carlhauser_server.DatabaseAccessor.database_worker.Database_Worker.fetch_from_queue">[docs]</a>    <span class="k">def</span> <span class="nf">fetch_from_queue</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_from_queue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cache_db_no_decode</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_queue</span><span class="p">,</span> <span class="n">pickle</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Database_Worker.process_fetched_data"><a class="viewcode-back" href="../../../carlhauser_server.DatabaseAccessor.html#carlhauser_server.DatabaseAccessor.database_worker.Database_Worker.process_fetched_data">[docs]</a>    <span class="k">def</span> <span class="nf">process_fetched_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fetched_id</span><span class="p">,</span> <span class="n">fetched_dict</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Method to overwrite to specify the worker. Called each time something is fetched from queue</span>
+<span class="sd">        :param fetched_id: id to process</span>
+<span class="sd">        :param fetched_dict: data to process</span>
+<span class="sd">        :return: Nothing (or to be defined)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="s2">&quot;YOU SHOULD OVERWRITE &#39;process_fetched_data&#39; of the database_worker class. This worker is actually doing NOTHING !&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Database_Worker.long_sleep"><a class="viewcode-back" href="../../../carlhauser_server.DatabaseAccessor.html#carlhauser_server.DatabaseAccessor.database_worker.Database_Worker.long_sleep">[docs]</a>    <span class="k">def</span> <span class="nf">long_sleep</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sleep_in_sec</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">shutdown_check</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Wait a &quot;long&quot; time before returning, while keep checking if the worker has to stop.</span>
+<span class="sd">        :param sleep_in_sec: time before wake-up = exit of the function</span>
+<span class="sd">        :param shutdown_check: time between each shutdown request check.</span>
+<span class="sd">        :return: True if no halt request had been detected, True otherwise</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Check shutdown at least as fast as sleep waiting time</span>
+        <span class="k">if</span> <span class="n">shutdown_check</span> <span class="o">&gt;</span> <span class="n">sleep_in_sec</span><span class="p">:</span>
+            <span class="n">shutdown_check</span> <span class="o">=</span> <span class="n">sleep_in_sec</span>
+
+        <span class="c1"># We have the date to which we should wake up</span>
+        <span class="n">sleep_until</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span> <span class="o">+</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="n">sleep_in_sec</span><span class="p">)</span>
+
+        <span class="c1"># We periodically check if the worker must shutdown</span>
+        <span class="k">while</span> <span class="n">sleep_until</span> <span class="o">&gt;</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">():</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">shutdown_check</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_halt_requested</span><span class="p">():</span>
+                <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="kc">True</span></div></div>
+
+
+<span class="c1"># Launcher for this worker. Launch this file to launch a worker</span>
+<span class="c1"># NOTE THIS WORKER WON&#39;T PERFORM ANY ACTION !</span>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s1">&#39;Launch a worker for a specific task : unspecified&#39;</span><span class="p">)</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">arg_parser</span><span class="o">.</span><span class="n">add_arg_db_conf</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>
+
+    <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+
+    <span class="n">db_conf</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">arg_parser</span><span class="o">.</span><span class="n">parse_conf_files</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+
+    <span class="c1"># Create the Database Accessor and run it</span>
+    <span class="n">db_accessor</span> <span class="o">=</span> <span class="n">Database_Worker</span><span class="p">(</span><span class="n">db_conf</span><span class="p">)</span>
+    <span class="n">db_accessor</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">sleep_in_sec</span><span class="o">=</span><span class="n">db_conf</span><span class="o">.</span><span class="n">ADDER_WAIT_SEC</span><span class="p">)</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, Vincent FALCONIERI.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.2.
+    </div>
+  </body>
+</html>

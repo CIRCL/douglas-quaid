@@ -1,0 +1,271 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>carlhauser_server_tests.test_carlhauser_server &#8212; Douglas-Quaid 0.0.4 documentation</title>
+    <link rel="stylesheet" href="../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for carlhauser_server_tests.test_carlhauser_server</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">unittest</span>
+
+<span class="kn">import</span> <span class="nn">redis</span>
+
+<span class="kn">import</span> <span class="nn">carlhauser_server.DatabaseAccessor.database_worker</span> <span class="k">as</span> <span class="nn">database_worker</span>
+<span class="kn">import</span> <span class="nn">common.TestInstanceLauncher.one_db_conf</span> <span class="k">as</span> <span class="nn">test_database_only_conf</span>
+<span class="kn">import</span> <span class="nn">common.TestInstanceLauncher.one_db_instance_launcher</span> <span class="k">as</span> <span class="nn">test_database_handler</span>
+
+
+<div class="viewcode-block" id="testCarlHauserServer"><a class="viewcode-back" href="../../carlhauser_server_tests.html#carlhauser_server_tests.test_carlhauser_server.testCarlHauserServer">[docs]</a><span class="k">class</span> <span class="nc">testCarlHauserServer</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Basic test cases.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="testCarlHauserServer.setUp"><a class="viewcode-back" href="../../carlhauser_server_tests.html#carlhauser_server_tests.test_carlhauser_server.testCarlHauserServer.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span>
+
+        <span class="c1"># Create configurations</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_db_conf</span> <span class="o">=</span> <span class="n">test_database_only_conf</span><span class="o">.</span><span class="n">TestInstance_database_conf</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_db_handler</span> <span class="o">=</span> <span class="n">test_database_handler</span><span class="o">.</span><span class="n">TestInstanceLauncher</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_db_handler</span><span class="o">.</span><span class="n">create_full_instance</span><span class="p">(</span><span class="n">db_conf</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">test_db_conf</span><span class="p">)</span>
+
+        <span class="c1"># Create database handler from test instance</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db_handler</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">test_db_handler</span><span class="o">.</span><span class="n">db_handler</span></div>
+
+<div class="viewcode-block" id="testCarlHauserServer.tearDown"><a class="viewcode-back" href="../../carlhauser_server_tests.html#carlhauser_server_tests.test_carlhauser_server.testCarlHauserServer.tearDown">[docs]</a>    <span class="k">def</span> <span class="nf">tearDown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Launch shutdown AND FLUSH script</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_db_handler</span><span class="o">.</span><span class="n">tearDown</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="testCarlHauserServer.test_db_worker_add_queue"><a class="viewcode-back" href="../../carlhauser_server_tests.html#carlhauser_server_tests.test_carlhauser_server.testCarlHauserServer.test_db_worker_add_queue">[docs]</a>    <span class="k">def</span> <span class="nf">test_db_worker_add_queue</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Construct a worker and get a link to redis db</span>
+        <span class="n">db_worker</span> <span class="o">=</span> <span class="n">database_worker</span><span class="o">.</span><span class="n">Database_Worker</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">test_db_conf</span><span class="p">)</span>
+        <span class="n">test_db</span> <span class="o">=</span> <span class="n">redis</span><span class="o">.</span><span class="n">Redis</span><span class="p">(</span><span class="n">unix_socket_path</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">db_handler</span><span class="o">.</span><span class="n">get_socket_path</span><span class="p">(</span><span class="s1">&#39;test&#39;</span><span class="p">),</span> <span class="n">decode_responses</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="c1"># Create data</span>
+        <span class="n">queue_name</span> <span class="o">=</span> <span class="s2">&quot;test&quot;</span>
+        <span class="n">id_to_process</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+        <span class="n">data_to_store</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;img&quot;</span><span class="p">:</span> <span class="s2">&quot;MyPerfectPicture&quot;</span><span class="p">,</span> <span class="s2">&quot;test&quot;</span><span class="p">:</span> <span class="s2">&quot;test_value&quot;</span><span class="p">}</span>
+
+        <span class="c1"># try to store it</span>
+        <span class="n">db_worker</span><span class="o">.</span><span class="n">add_to_queue</span><span class="p">(</span><span class="n">test_db</span><span class="p">,</span> <span class="n">queue_name</span><span class="p">,</span> <span class="n">id_to_process</span><span class="p">,</span> <span class="n">data_to_store</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Data stored id :&quot;</span><span class="p">,</span> <span class="n">id_to_process</span><span class="p">,</span> <span class="s2">&quot; data : &quot;</span><span class="p">,</span> <span class="n">data_to_store</span><span class="p">)</span>
+
+        <span class="c1"># Verify if the data had been stored</span>
+        <span class="n">id_hashset</span> <span class="o">=</span> <span class="n">test_db</span><span class="o">.</span><span class="n">lrange</span><span class="p">(</span><span class="n">queue_name</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Queue_list&quot;</span><span class="p">,</span> <span class="n">id_hashset</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">id_hashset</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">tmp_dict</span> <span class="o">=</span> <span class="n">test_db</span><span class="o">.</span><span class="n">hgetall</span><span class="p">(</span><span class="n">id_hashset</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Stored values&quot;</span><span class="p">,</span> <span class="n">tmp_dict</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">tmp_dict</span><span class="p">),</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">tmp_dict</span><span class="p">,</span> <span class="n">data_to_store</span><span class="p">)</span>
+
+        <span class="n">data_to_store</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;img&quot;</span><span class="p">:</span> <span class="s2">&quot;MyPerfectPicture&quot;</span><span class="p">,</span> <span class="s2">&quot;test&quot;</span><span class="p">:</span> <span class="s2">&quot;test_value&quot;</span><span class="p">,</span> <span class="s2">&quot;list&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;value1&quot;</span><span class="p">,</span> <span class="s2">&quot;value2&quot;</span><span class="p">]}</span></div>
+        <span class="c1"># TODO : Please not that list in dict are not handled by pyredis</span>
+
+<div class="viewcode-block" id="testCarlHauserServer.test_db_worker_get_from_queue"><a class="viewcode-back" href="../../carlhauser_server_tests.html#carlhauser_server_tests.test_carlhauser_server.testCarlHauserServer.test_db_worker_get_from_queue">[docs]</a>    <span class="k">def</span> <span class="nf">test_db_worker_get_from_queue</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Construct a worker and get a link to redis db</span>
+        <span class="n">db_worker</span> <span class="o">=</span> <span class="n">database_worker</span><span class="o">.</span><span class="n">Database_Worker</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">test_db_conf</span><span class="p">)</span>
+        <span class="n">test_db</span> <span class="o">=</span> <span class="n">redis</span><span class="o">.</span><span class="n">Redis</span><span class="p">(</span><span class="n">unix_socket_path</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">db_handler</span><span class="o">.</span><span class="n">get_socket_path</span><span class="p">(</span><span class="s1">&#39;test&#39;</span><span class="p">),</span> <span class="n">decode_responses</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="c1"># Create data</span>
+        <span class="n">queue_name</span> <span class="o">=</span> <span class="s2">&quot;test&quot;</span>
+        <span class="n">id_to_process</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+        <span class="n">data_to_store</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;img&quot;</span><span class="p">:</span> <span class="s2">&quot;MyPerfectPicture&quot;</span><span class="p">,</span> <span class="s2">&quot;test&quot;</span><span class="p">:</span> <span class="s2">&quot;test_value&quot;</span><span class="p">}</span>
+
+        <span class="c1"># try to store it</span>
+        <span class="n">tmp_id_to_store</span> <span class="o">=</span> <span class="s1">&#39;|&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">queue_name</span><span class="p">,</span> <span class="n">id_to_process</span><span class="p">])</span>  <span class="c1"># create the key</span>
+        <span class="n">test_db</span><span class="o">.</span><span class="n">hmset</span><span class="p">(</span><span class="n">tmp_id_to_store</span><span class="p">,</span> <span class="n">data_to_store</span><span class="p">)</span>
+        <span class="n">test_db</span><span class="o">.</span><span class="n">rpush</span><span class="p">(</span><span class="n">queue_name</span><span class="p">,</span> <span class="n">tmp_id_to_store</span><span class="p">)</span>  <span class="c1"># Add the id to the queue</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Data stored, data : &quot;</span><span class="p">,</span> <span class="n">data_to_store</span><span class="p">,</span> <span class="s2">&quot; in (variable) &quot;</span><span class="p">,</span> <span class="n">tmp_id_to_store</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Data stored, data : &quot;</span><span class="p">,</span> <span class="n">tmp_id_to_store</span><span class="p">,</span> <span class="s2">&quot; in (queue) &quot;</span><span class="p">,</span> <span class="n">queue_name</span><span class="p">)</span>
+
+        <span class="c1"># Verify if the data had been stored</span>
+        <span class="n">tmp_id</span><span class="p">,</span> <span class="n">tmp_dict</span> <span class="o">=</span> <span class="n">db_worker</span><span class="o">.</span><span class="n">get_from_queue</span><span class="p">(</span><span class="n">test_db</span><span class="p">,</span> <span class="n">queue_name</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Stored values, id : &quot;</span><span class="p">,</span> <span class="n">tmp_id</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Stored values, dict : &quot;</span><span class="p">,</span> <span class="n">tmp_dict</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">tmp_dict</span><span class="p">),</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">tmp_dict</span><span class="p">,</span> <span class="n">data_to_store</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">tmp_id</span><span class="p">,</span> <span class="n">id_to_process</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="testCarlHauserServer.test_db_worker_set_get_queue_consistency"><a class="viewcode-back" href="../../carlhauser_server_tests.html#carlhauser_server_tests.test_carlhauser_server.testCarlHauserServer.test_db_worker_set_get_queue_consistency">[docs]</a>    <span class="k">def</span> <span class="nf">test_db_worker_set_get_queue_consistency</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Construct a worker and get a link to redis db</span>
+        <span class="n">db_worker</span> <span class="o">=</span> <span class="n">database_worker</span><span class="o">.</span><span class="n">Database_Worker</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">test_db_conf</span><span class="p">)</span>
+        <span class="n">test_db</span> <span class="o">=</span> <span class="n">redis</span><span class="o">.</span><span class="n">Redis</span><span class="p">(</span><span class="n">unix_socket_path</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">db_handler</span><span class="o">.</span><span class="n">get_socket_path</span><span class="p">(</span><span class="s1">&#39;test&#39;</span><span class="p">),</span> <span class="n">decode_responses</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="c1"># Create data</span>
+        <span class="n">queue_name</span> <span class="o">=</span> <span class="s2">&quot;test&quot;</span>
+        <span class="n">id_to_process</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+        <span class="n">data_to_store</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;img&quot;</span><span class="p">:</span> <span class="s2">&quot;MyPerfectPicture&quot;</span><span class="p">,</span> <span class="s2">&quot;test&quot;</span><span class="p">:</span> <span class="s2">&quot;test_value&quot;</span><span class="p">}</span>
+
+        <span class="c1"># try to store it</span>
+        <span class="n">db_worker</span><span class="o">.</span><span class="n">add_to_queue</span><span class="p">(</span><span class="n">test_db</span><span class="p">,</span> <span class="n">queue_name</span><span class="p">,</span> <span class="n">id_to_process</span><span class="p">,</span> <span class="n">data_to_store</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Data stored id :&quot;</span><span class="p">,</span> <span class="n">id_to_process</span><span class="p">,</span> <span class="s2">&quot; data : &quot;</span><span class="p">,</span> <span class="n">data_to_store</span><span class="p">)</span>
+
+        <span class="c1"># Verify if the data had been stored</span>
+        <span class="n">tmp_id</span><span class="p">,</span> <span class="n">tmp_dict</span> <span class="o">=</span> <span class="n">db_worker</span><span class="o">.</span><span class="n">get_from_queue</span><span class="p">(</span><span class="n">test_db</span><span class="p">,</span> <span class="n">queue_name</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Stored values, id : &quot;</span><span class="p">,</span> <span class="n">tmp_id</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Stored values, dict : &quot;</span><span class="p">,</span> <span class="n">tmp_dict</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">tmp_dict</span><span class="p">),</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">tmp_dict</span><span class="p">,</span> <span class="n">data_to_store</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">tmp_id</span><span class="p">,</span> <span class="n">id_to_process</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="testCarlHauserServer.test_db_worker_add_queue_no_decode"><a class="viewcode-back" href="../../carlhauser_server_tests.html#carlhauser_server_tests.test_carlhauser_server.testCarlHauserServer.test_db_worker_add_queue_no_decode">[docs]</a>    <span class="k">def</span> <span class="nf">test_db_worker_add_queue_no_decode</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Construct a worker and get a link to redis db</span>
+        <span class="n">db_worker</span> <span class="o">=</span> <span class="n">database_worker</span><span class="o">.</span><span class="n">Database_Worker</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">test_db_conf</span><span class="p">)</span>
+        <span class="n">test_db</span> <span class="o">=</span> <span class="n">redis</span><span class="o">.</span><span class="n">Redis</span><span class="p">(</span><span class="n">unix_socket_path</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">db_handler</span><span class="o">.</span><span class="n">get_socket_path</span><span class="p">(</span><span class="s1">&#39;test&#39;</span><span class="p">),</span> <span class="n">decode_responses</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="c1"># Create data</span>
+        <span class="n">queue_name</span> <span class="o">=</span> <span class="s2">&quot;test&quot;</span>
+        <span class="n">id_to_process</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+        <span class="n">data_to_store</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;img&quot;</span><span class="p">:</span> <span class="s2">&quot;MyPerfectPicture&quot;</span><span class="p">,</span> <span class="s2">&quot;test&quot;</span><span class="p">:</span> <span class="s2">&quot;test_value&quot;</span><span class="p">}</span>
+
+        <span class="c1"># try to store it</span>
+        <span class="n">db_worker</span><span class="o">.</span><span class="n">add_to_queue</span><span class="p">(</span><span class="n">test_db</span><span class="p">,</span> <span class="n">queue_name</span><span class="p">,</span> <span class="n">id_to_process</span><span class="p">,</span> <span class="n">data_to_store</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Data stored id :&quot;</span><span class="p">,</span> <span class="n">id_to_process</span><span class="p">,</span> <span class="s2">&quot; data : &quot;</span><span class="p">,</span> <span class="n">data_to_store</span><span class="p">)</span>
+
+        <span class="c1"># Verify if the data had been stored</span>
+        <span class="n">id_hashset</span> <span class="o">=</span> <span class="n">test_db</span><span class="o">.</span><span class="n">lrange</span><span class="p">(</span><span class="n">queue_name</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Queue_list&quot;</span><span class="p">,</span> <span class="n">id_hashset</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">id_hashset</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">tmp_dict</span> <span class="o">=</span> <span class="n">test_db</span><span class="o">.</span><span class="n">hgetall</span><span class="p">(</span><span class="n">id_hashset</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+        <span class="c1"># Manual decode</span>
+        <span class="n">tmp_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">key</span><span class="o">.</span><span class="n">decode</span><span class="p">():</span> <span class="n">val</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">tmp_dict</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Stored values&quot;</span><span class="p">,</span> <span class="n">tmp_dict</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">tmp_dict</span><span class="p">),</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">tmp_dict</span><span class="p">,</span> <span class="n">data_to_store</span><span class="p">)</span>
+
+        <span class="n">data_to_store</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;img&quot;</span><span class="p">:</span> <span class="s2">&quot;MyPerfectPicture&quot;</span><span class="p">,</span> <span class="s2">&quot;test&quot;</span><span class="p">:</span> <span class="s2">&quot;test_value&quot;</span><span class="p">,</span> <span class="s2">&quot;list&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;value1&quot;</span><span class="p">,</span> <span class="s2">&quot;value2&quot;</span><span class="p">]}</span></div>
+        <span class="c1"># TODO : Please not that list in dict are not handled by pyredis</span>
+
+<div class="viewcode-block" id="testCarlHauserServer.test_db_worker_get_from_queue_no_decode"><a class="viewcode-back" href="../../carlhauser_server_tests.html#carlhauser_server_tests.test_carlhauser_server.testCarlHauserServer.test_db_worker_get_from_queue_no_decode">[docs]</a>    <span class="k">def</span> <span class="nf">test_db_worker_get_from_queue_no_decode</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Construct a worker and get a link to redis db</span>
+        <span class="n">db_worker</span> <span class="o">=</span> <span class="n">database_worker</span><span class="o">.</span><span class="n">Database_Worker</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">test_db_conf</span><span class="p">)</span>
+        <span class="n">test_db</span> <span class="o">=</span> <span class="n">redis</span><span class="o">.</span><span class="n">Redis</span><span class="p">(</span><span class="n">unix_socket_path</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">db_handler</span><span class="o">.</span><span class="n">get_socket_path</span><span class="p">(</span><span class="s1">&#39;test&#39;</span><span class="p">),</span> <span class="n">decode_responses</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="c1"># Create data</span>
+        <span class="n">queue_name</span> <span class="o">=</span> <span class="s2">&quot;test&quot;</span>
+        <span class="n">id_to_process</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+        <span class="n">data_to_store</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;img&quot;</span><span class="p">:</span> <span class="s2">&quot;MyPerfectPicture&quot;</span><span class="p">,</span> <span class="s2">&quot;test&quot;</span><span class="p">:</span> <span class="s2">&quot;test_value&quot;</span><span class="p">}</span>
+
+        <span class="c1"># try to store it</span>
+        <span class="n">tmp_id_to_store</span> <span class="o">=</span> <span class="s1">&#39;|&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">queue_name</span><span class="p">,</span> <span class="n">id_to_process</span><span class="p">])</span>  <span class="c1"># create the key</span>
+        <span class="n">test_db</span><span class="o">.</span><span class="n">hmset</span><span class="p">(</span><span class="n">tmp_id_to_store</span><span class="p">,</span> <span class="n">data_to_store</span><span class="p">)</span>
+        <span class="n">test_db</span><span class="o">.</span><span class="n">rpush</span><span class="p">(</span><span class="n">queue_name</span><span class="p">,</span> <span class="n">tmp_id_to_store</span><span class="p">)</span>  <span class="c1"># Add the id to the queue</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Data stored, data : &quot;</span><span class="p">,</span> <span class="n">data_to_store</span><span class="p">,</span> <span class="s2">&quot; in (variable) &quot;</span><span class="p">,</span> <span class="n">tmp_id_to_store</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Data stored, data : &quot;</span><span class="p">,</span> <span class="n">tmp_id_to_store</span><span class="p">,</span> <span class="s2">&quot; in (queue) &quot;</span><span class="p">,</span> <span class="n">queue_name</span><span class="p">)</span>
+
+        <span class="c1"># Verify if the data had been stored</span>
+        <span class="n">tmp_id</span><span class="p">,</span> <span class="n">tmp_dict</span> <span class="o">=</span> <span class="n">db_worker</span><span class="o">.</span><span class="n">get_from_queue</span><span class="p">(</span><span class="n">test_db</span><span class="p">,</span> <span class="n">queue_name</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Stored values, id : &quot;</span><span class="p">,</span> <span class="n">tmp_id</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Stored values, dict : &quot;</span><span class="p">,</span> <span class="n">tmp_dict</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">tmp_dict</span><span class="p">),</span> <span class="mi">2</span><span class="p">)</span>
+
+        <span class="c1"># Manual decode</span>
+        <span class="n">tmp_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">key</span><span class="o">.</span><span class="n">decode</span><span class="p">():</span> <span class="n">val</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">tmp_dict</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">tmp_dict</span><span class="p">,</span> <span class="n">data_to_store</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">tmp_id</span><span class="p">,</span> <span class="n">id_to_process</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="testCarlHauserServer.test_db_worker_set_get_queue_consistency_no_decode"><a class="viewcode-back" href="../../carlhauser_server_tests.html#carlhauser_server_tests.test_carlhauser_server.testCarlHauserServer.test_db_worker_set_get_queue_consistency_no_decode">[docs]</a>    <span class="k">def</span> <span class="nf">test_db_worker_set_get_queue_consistency_no_decode</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Construct a worker and get a link to redis db</span>
+        <span class="n">db_worker</span> <span class="o">=</span> <span class="n">database_worker</span><span class="o">.</span><span class="n">Database_Worker</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">test_db_conf</span><span class="p">)</span>
+        <span class="n">test_db</span> <span class="o">=</span> <span class="n">redis</span><span class="o">.</span><span class="n">Redis</span><span class="p">(</span><span class="n">unix_socket_path</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">db_handler</span><span class="o">.</span><span class="n">get_socket_path</span><span class="p">(</span><span class="s1">&#39;test&#39;</span><span class="p">),</span> <span class="n">decode_responses</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="c1"># Create data</span>
+        <span class="n">queue_name</span> <span class="o">=</span> <span class="s2">&quot;test&quot;</span>
+        <span class="n">id_to_process</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+        <span class="n">data_to_store</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;img&quot;</span><span class="p">:</span> <span class="s2">&quot;MyPerfectPicture&quot;</span><span class="p">,</span> <span class="s2">&quot;test&quot;</span><span class="p">:</span> <span class="s2">&quot;test_value&quot;</span><span class="p">}</span>
+
+        <span class="c1"># try to store it</span>
+        <span class="n">db_worker</span><span class="o">.</span><span class="n">add_to_queue</span><span class="p">(</span><span class="n">test_db</span><span class="p">,</span> <span class="n">queue_name</span><span class="p">,</span> <span class="n">id_to_process</span><span class="p">,</span> <span class="n">data_to_store</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Data stored id :&quot;</span><span class="p">,</span> <span class="n">id_to_process</span><span class="p">,</span> <span class="s2">&quot; data : &quot;</span><span class="p">,</span> <span class="n">data_to_store</span><span class="p">)</span>
+
+        <span class="c1"># Verify if the data had been stored</span>
+        <span class="n">tmp_id</span><span class="p">,</span> <span class="n">tmp_dict</span> <span class="o">=</span> <span class="n">db_worker</span><span class="o">.</span><span class="n">get_from_queue</span><span class="p">(</span><span class="n">test_db</span><span class="p">,</span> <span class="n">queue_name</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Stored values, id : &quot;</span><span class="p">,</span> <span class="n">tmp_id</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Stored values, dict : &quot;</span><span class="p">,</span> <span class="n">tmp_dict</span><span class="p">)</span>
+
+        <span class="c1"># Manual decode</span>
+        <span class="n">tmp_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">key</span><span class="o">.</span><span class="n">decode</span><span class="p">():</span> <span class="n">val</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">tmp_dict</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">tmp_dict</span><span class="p">),</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">tmp_dict</span><span class="p">,</span> <span class="n">data_to_store</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">tmp_id</span><span class="p">,</span> <span class="n">id_to_process</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="testCarlHauserServer.test_absolute_truth_and_meaning"><a class="viewcode-back" href="../../carlhauser_server_tests.html#carlhauser_server_tests.test_carlhauser_server.testCarlHauserServer.test_absolute_truth_and_meaning">[docs]</a>    <span class="k">def</span> <span class="nf">test_absolute_truth_and_meaning</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span></div></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">unittest</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, Vincent FALCONIERI.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.2.
+    </div>
+  </body>
+</html>

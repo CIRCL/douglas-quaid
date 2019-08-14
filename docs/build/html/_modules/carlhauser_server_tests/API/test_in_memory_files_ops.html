@@ -1,0 +1,156 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>carlhauser_server_tests.API.test_in_memory_files_ops &#8212; Douglas-Quaid 0.0.4 documentation</title>
+    <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for carlhauser_server_tests.API.test_in_memory_files_ops</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">import</span> <span class="nn">unittest</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">pathlib</span>
+
+<span class="kn">from</span> <span class="nn">common.environment_variable</span> <span class="k">import</span> <span class="n">get_homedir</span>
+<span class="kn">import</span> <span class="nn">carlhauser_server.API.in_memory_files_ops</span> <span class="k">as</span> <span class="nn">id_generator</span>
+
+
+<div class="viewcode-block" id="TestInMemoryOperations"><a class="viewcode-back" href="../../../carlhauser_server_tests.API.html#carlhauser_server_tests.API.test_in_memory_files_ops.TestInMemoryOperations">[docs]</a><span class="k">class</span> <span class="nc">TestInMemoryOperations</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Basic test cases.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="TestInMemoryOperations.setUp"><a class="viewcode-back" href="../../../carlhauser_server_tests.API.html#carlhauser_server_tests.API.test_in_memory_files_ops.TestInMemoryOperations.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_file_path</span> <span class="o">=</span> <span class="n">get_homedir</span><span class="p">()</span> <span class="o">/</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;carlhauser_server_tests/test_Helpers/id_generator&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestInMemoryOperations.test_absolute_truth_and_meaning"><a class="viewcode-back" href="../../../carlhauser_server_tests.API.html#carlhauser_server_tests.API.test_in_memory_files_ops.TestInMemoryOperations.test_absolute_truth_and_meaning">[docs]</a>    <span class="k">def</span> <span class="nf">test_absolute_truth_and_meaning</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestInMemoryOperations.test_exif_and_hash"><a class="viewcode-back" href="../../../carlhauser_server_tests.API.html#carlhauser_server_tests.API.test_in_memory_files_ops.TestInMemoryOperations.test_exif_and_hash">[docs]</a>    <span class="k">def</span> <span class="nf">test_exif_and_hash</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Verify if two pictures which are equal, but with different EXIF data, have the same hash or not </span><span class="se">\n</span><span class="s2"> Expected result : they do not have the same hash value&quot;</span><span class="p">)</span>
+        <span class="c1"># TODO : Modify SHA1 function to handle same hash value of &quot;true picture&quot;</span>
+
+        <span class="n">file_path_1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">test_file_path</span> <span class="o">/</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="s1">&#39;original.jpg&#39;</span><span class="p">)</span>
+        <span class="n">file_path_2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">test_file_path</span> <span class="o">/</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="s1">&#39;modified.jpg&#39;</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">file_path_1</span><span class="p">),</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">img1</span><span class="p">:</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">file_path_2</span><span class="p">),</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">img2</span><span class="p">:</span>
+                <span class="c1"># Compute hashes</span>
+                <span class="n">hash_1</span> <span class="o">=</span> <span class="n">id_generator</span><span class="o">.</span><span class="n">get_SHA1</span><span class="p">(</span><span class="n">img1</span><span class="p">)</span>
+                <span class="n">hash_2</span> <span class="o">=</span> <span class="n">id_generator</span><span class="o">.</span><span class="n">get_SHA1</span><span class="p">(</span><span class="n">img2</span><span class="p">)</span>
+
+                <span class="c1"># Print</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Original picture hash : &quot;</span> <span class="o">+</span> <span class="n">hash_1</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Modified (exif) picture hash : &quot;</span> <span class="o">+</span> <span class="n">hash_2</span><span class="p">)</span>
+
+                <span class="c1"># Verify if EXIF metadat change does not change the hash</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">assertNotEqual</span><span class="p">(</span><span class="n">hash_1</span><span class="p">,</span> <span class="n">hash_2</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">hash_1</span><span class="p">,</span> <span class="s2">&quot;1305a22ac12deedd5cd712a7649ce37f47ae9aed&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">hash_2</span><span class="p">,</span> <span class="s2">&quot;049210fca5ceb266c1a12e8afa9646e85febe121&quot;</span><span class="p">)</span></div>
+
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Note that all files have different hashes, depending on their original format</span>
+<span class="sd">    4eaaa80c7e1568f89b530ec7114d5bac  ./OUTPUT.jpg.bmp</span>
+<span class="sd">    a198d87db3640032acb687c322e48077  ./OUTPUT.bmp.bmp</span>
+<span class="sd">    c142cb5838a74aaf4e9bde5b6b26168e  ./OUTPUT.eps.bmp</span>
+<span class="sd">    3da1cc3ff2445e010112b6ff480c9880  ./OUTPUT.gif.bmp</span>
+<span class="sd">    f2fb0c7c4509d3a5a4bfea142d9e6558  ./OUTPUT.ico.bmp</span>
+<span class="sd">    d9d02647dcf276885df8cb6d15c89d2c  ./OUTPUT.png.bmp</span>
+<span class="sd">    3d7f5d36f549375535ae65121c887d11  ./OUTPUT.tga.bmp</span>
+<span class="sd">    b4b6ced60c7ed7f575ab74e4121ee55a  ./OUTPUT.tiff.bmp</span>
+<span class="sd">    9275b0e01add0617022c94f941a64cb3  ./OUTPUT.webp.bmp</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+<div class="viewcode-block" id="TestInMemoryOperations.test_bmp_conversion"><a class="viewcode-back" href="../../../carlhauser_server_tests.API.html#carlhauser_server_tests.API.test_in_memory_files_ops.TestInMemoryOperations.test_bmp_conversion">[docs]</a>    <span class="k">def</span> <span class="nf">test_bmp_conversion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Verify if BMP conversion does work&quot;</span><span class="p">)</span>
+
+        <span class="n">file_path_1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">test_file_path</span> <span class="o">/</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="s1">&#39;original.jpg&#39;</span><span class="p">)</span>
+        <span class="n">output_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">test_file_path</span> <span class="o">/</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="s1">&#39;OUTPUT.txt&#39;</span><span class="p">)</span>
+
+        <span class="c1"># TODO : Missing wbmp, svg, exr</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;.jpg&quot;</span><span class="p">,</span> <span class="s2">&quot;.ico&quot;</span><span class="p">,</span> <span class="s2">&quot;.gif&quot;</span><span class="p">,</span> <span class="s2">&quot;.png&quot;</span><span class="p">,</span> <span class="s2">&quot;.tga&quot;</span><span class="p">,</span> <span class="s2">&quot;.tiff&quot;</span><span class="p">,</span> <span class="s2">&quot;.webp&quot;</span><span class="p">,</span> <span class="s2">&quot;.bmp&quot;</span><span class="p">,</span> <span class="s2">&quot;.eps&quot;</span><span class="p">]:</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">file_path_tmp</span> <span class="o">=</span> <span class="n">file_path_1</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+                <span class="n">output_path_tmp</span> <span class="o">=</span> <span class="n">output_path</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="s2">&quot;.bmp&quot;</span><span class="p">)</span>
+
+                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">file_path_tmp</span><span class="p">),</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">img1</span><span class="p">:</span>
+                    <span class="n">img_bmp</span> <span class="o">=</span> <span class="n">id_generator</span><span class="o">.</span><span class="n">convert_to_bmp</span><span class="p">(</span><span class="n">img1</span><span class="p">)</span>
+                    <span class="c1"># DEBUG / Write to file / id_generator.write_to_file(img_bmp, output_path_tmp)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span></div></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">unittest</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, Vincent FALCONIERI.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.2.
+    </div>
+  </body>
+</html>

@@ -13,6 +13,7 @@ Subpackages
    common_tests.ImportExport
    common_tests.ParametersExplorer
    common_tests.PerformanceDatastructs
+   common_tests.Scalability_evaluator
    common_tests.TestInstanceLauncher
 
 Submodules

@@ -1,0 +1,300 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>carlhauser_client.API.extended_api &#8212; Douglas-Quaid 0.0.4 documentation</title>
+    <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for carlhauser_client.API.extended_api</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">import</span> <span class="nn">pathlib</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span>
+
+<span class="kn">import</span> <span class="nn">carlhauser_client.Helpers.dict_utilities</span> <span class="k">as</span> <span class="nn">dict_utilities</span>
+<span class="kn">from</span> <span class="nn">carlhauser_client.API.simple_api</span> <span class="k">import</span> <span class="n">Simple_API</span>
+<span class="kn">from</span> <span class="nn">common.Graph.graph_datastructure</span> <span class="k">import</span> <span class="n">GraphDataStruct</span>
+<span class="kn">from</span> <span class="nn">common.environment_variable</span> <span class="k">import</span> <span class="n">load_client_logging_conf_file</span>
+
+<span class="n">load_client_logging_conf_file</span><span class="p">()</span>
+
+
+<span class="c1"># ==================== ------ LAUNCHER ------- ====================</span>
+<div class="viewcode-block" id="Extended_API"><a class="viewcode-back" href="../../../carlhauser_client.API.html#carlhauser_client.API.extended_api.Extended_API">[docs]</a><span class="k">class</span> <span class="nc">Extended_API</span><span class="p">(</span><span class="n">Simple_API</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Provides &quot;Higher-level&quot; API calls</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">certificate_path</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">certificate_path</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Extended_API.get_api"><a class="viewcode-back" href="../../../carlhauser_client.API.html#carlhauser_client.API.extended_api.Extended_API.get_api">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_api</span><span class="p">():</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Static method that return an instance of the API (ExtendedAPI type)</span>
+<span class="sd">        :return: Extended API instance</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="n">Extended_API</span><span class="o">.</span><span class="n">get_custom_api</span><span class="p">(</span><span class="n">Extended_API</span><span class="p">)</span></div>
+
+    <span class="c1"># ========= UTILITIES =============</span>
+
+    <span class="c1"># ================= ADD PICTURES =================</span>
+
+<div class="viewcode-block" id="Extended_API.add_one_picture_and_wait"><a class="viewcode-back" href="../../../carlhauser_client.API.html#carlhauser_client.API.extended_api.Extended_API.add_one_picture_and_wait">[docs]</a>    <span class="k">def</span> <span class="nf">add_one_picture_and_wait</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">image_path</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">,</span> <span class="n">max_time</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">60</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Add a picture to the server, wait for the adding to be performed.</span>
+<span class="sd">        :param image_path: the path of the picture to add</span>
+<span class="sd">        :param max_time: maximum allowed time to wait before timing out. By default -1 = No time out</span>
+<span class="sd">        :return: boolean : True if the picture had successfuly been added, False otherwise , and the server_id of the sent picture</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="c1"># Starting count-down</span>
+        <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+        <span class="c1"># Requesting the result</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Adding picture </span><span class="si">{image_path}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">is_success</span><span class="p">,</span> <span class="n">img_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_one_picture</span><span class="p">(</span><span class="n">image_path</span><span class="p">)</span>
+
+        <span class="c1"># Managing the answer</span>
+        <span class="k">if</span> <span class="n">is_success</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Adding successful. Waiting for adding to complete.&quot;</span><span class="p">)</span>
+            <span class="n">is_success</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">poll_until_adding_done</span><span class="p">(</span><span class="n">max_time</span><span class="o">=</span><span class="n">max_time</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">is_success</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Adding executed in : {time.time() - start}s&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">img_id</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Error on adding status polling.&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Error on adding status polling.&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Error on adding sending.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Error on adding sending.&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Extended_API.add_many_pictures_no_wait"><a class="viewcode-back" href="../../../carlhauser_client.API.html#carlhauser_client.API.extended_api.Extended_API.add_many_pictures_no_wait">[docs]</a>    <span class="k">def</span> <span class="nf">add_many_pictures_no_wait</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">image_folder</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Add all the pictures of the provided folder to the server (direct children, not recursive)</span>
+<span class="sd">        :param image_folder: path to the folder of pictures</span>
+<span class="sd">        :return: Mapping (filename-&gt; ID provided by server) and the number of pictures successfuly uploaded</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_many_pictures_with</span><span class="p">(</span><span class="n">image_folder</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_one_picture</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Extended_API.add_many_pictures_and_wait"><a class="viewcode-back" href="../../../carlhauser_client.API.html#carlhauser_client.API.extended_api.Extended_API.add_many_pictures_and_wait">[docs]</a>    <span class="k">def</span> <span class="nf">add_many_pictures_and_wait</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">image_folder</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Add all the pictures of the provided folder to the server (direct children, not recursive)</span>
+<span class="sd">        wait for each of them to be added (one after the other)</span>
+<span class="sd">        :param image_folder: path to the folder of pictures</span>
+<span class="sd">        :return: Mapping (filename-&gt; ID provided by server) and the number of pictures successfuly uploaded</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_many_pictures_with</span><span class="p">(</span><span class="n">image_folder</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_one_picture_and_wait</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_add_many_pictures_with</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">image_folder</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">,</span> <span class="n">function</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Generic function to send pictures calling the &quot;function&quot;. Internal use for factorization</span>
+<span class="sd">        :param image_folder: path to the folder of pictures</span>
+<span class="sd">        :param function: Mapping (filename-&gt; ID provided by server) and the number of pictures successfuly uploaded</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Sending pictures of </span><span class="si">{image_folder}</span><span class="s2"> in the DB.&quot;</span><span class="p">)</span>
+        <span class="n">mapping_filename_to_id</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">nb_pics_sent</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="c1"># For all pictures (direct children of the folder)</span>
+        <span class="k">for</span> <span class="n">image_path</span> <span class="ow">in</span> <span class="n">image_folder</span><span class="o">.</span><span class="n">iterdir</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">image_path</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Found picture to be send : </span><span class="si">{image_path}</span><span class="s2">.&quot;</span><span class="p">)</span>
+
+                <span class="c1"># Upload the image to db</span>
+                <span class="n">res</span> <span class="o">=</span> <span class="n">function</span><span class="p">(</span><span class="n">image_path</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+                    <span class="c1"># The upload had been successful</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Mapping from </span><span class="si">{image_path.name}</span><span class="s2"> to </span><span class="si">{res[1]}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="n">mapping_filename_to_id</span><span class="p">[</span><span class="n">image_path</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">res</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                    <span class="n">nb_pics_sent</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Error during upload of </span><span class="si">{image_path.name}</span><span class="s2"> : </span><span class="si">{res[1]}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">mapping_filename_to_id</span><span class="p">,</span> <span class="n">nb_pics_sent</span>
+
+    <span class="c1"># ================= REQUEST PICTURES AND WAITING =================</span>
+
+<div class="viewcode-block" id="Extended_API.request_one_picture_and_wait"><a class="viewcode-back" href="../../../carlhauser_client.API.html#carlhauser_client.API.extended_api.Extended_API.request_one_picture_and_wait">[docs]</a>    <span class="k">def</span> <span class="nf">request_one_picture_and_wait</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">image_path</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">,</span> <span class="n">max_time</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">60</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Request similar picture of one picture to the server, wait for an answer.</span>
+<span class="sd">        :param image_path: the path of the picture to request</span>
+<span class="sd">        :param max_time: maximum allowed time to wait before timing out. By default -1 = No time out</span>
+<span class="sd">        :return: the answer of the server. #TODO : Give an example of answer</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="c1"># Starting count-down</span>
+        <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+        <span class="c1"># Requesting the result</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Requesting similar pictures to </span><span class="si">{image_path}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">is_success</span><span class="p">,</span> <span class="n">request_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">request_similar</span><span class="p">(</span><span class="n">image_path</span><span class="p">)</span>
+
+        <span class="c1"># Managing the answer</span>
+        <span class="k">if</span> <span class="n">is_success</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Request successful. Waiting for results.&quot;</span><span class="p">)</span>
+            <span class="n">is_success</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">poll_until_result_ready</span><span class="p">(</span><span class="n">request_id</span><span class="p">,</span> <span class="n">max_time</span><span class="o">=</span><span class="n">max_time</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">is_success</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Request executed. Fetching results.&quot;</span><span class="p">)</span>
+                <span class="n">is_success</span><span class="p">,</span> <span class="n">results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_results</span><span class="p">(</span><span class="n">request_id</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">is_success</span><span class="p">:</span>
+                    <span class="n">results</span><span class="p">[</span><span class="s2">&quot;request_time&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Request answered in : </span><span class="si">{results[&#39;request_time&#39;]}</span><span class="s2">s&quot;</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="n">results</span>
+
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Error on results retrieval.&quot;</span><span class="p">)</span>
+                    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Error on results retrieval.&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Error on results polling.&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Error on results polling.&quot;</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Error on request sending.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Error on request sending.&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Extended_API.request_many_pictures"><a class="viewcode-back" href="../../../carlhauser_client.API.html#carlhauser_client.API.extended_api.Extended_API.request_many_pictures">[docs]</a>    <span class="k">def</span> <span class="nf">request_many_pictures</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">image_folder</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="nb">dict</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Request similar picture of all pictures of the provided folder to the server (direct children, not recursive)</span>
+<span class="sd">        wait for each of them (one after the other) and store all the result in one unique list</span>
+<span class="sd">        :param image_folder: path to the folder of pictures</span>
+<span class="sd">        :return: A list of all answers, and the total number of pictures successfully requested</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Requesting similar pictures of </span><span class="si">{image_folder}</span><span class="s2"> to the DB.&quot;</span><span class="p">)</span>
+        <span class="n">list_answers</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">nb_pics_requested</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="c1"># Iterate over all picture directly child of the folder</span>
+        <span class="k">for</span> <span class="n">image_path</span> <span class="ow">in</span> <span class="n">image_folder</span><span class="o">.</span><span class="n">iterdir</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">image_path</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
+                <span class="c1"># Got one image to upload and wait for result</span>
+
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Working on picture #</span><span class="si">{nb_pics_requested}</span><span class="s2">.&quot;</span><span class="p">)</span>
+                    <span class="n">results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">request_one_picture_and_wait</span><span class="p">(</span><span class="n">image_path</span><span class="p">)</span>
+
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Successfully requested </span><span class="si">{image_path.name}</span><span class="s2">.&quot;</span><span class="p">)</span>
+                    <span class="n">list_answers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
+                    <span class="n">nb_pics_requested</span> <span class="o">+=</span> <span class="mi">1</span>
+
+                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Error occurred during </span><span class="si">{image_path.name}</span><span class="s2"> request : </span><span class="si">{e}</span><span class="s2">.&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">list_answers</span><span class="p">,</span> <span class="n">nb_pics_requested</span></div>
+
+    <span class="c1"># ================= EXPORT AND DUMP =================</span>
+
+<div class="viewcode-block" id="Extended_API.get_db_dump_as_graph"><a class="viewcode-back" href="../../../carlhauser_client.API.html#carlhauser_client.API.extended_api.Extended_API.get_db_dump_as_graph">[docs]</a>    <span class="k">def</span> <span class="nf">get_db_dump_as_graph</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GraphDataStruct</span><span class="p">:</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Ask the server a copy of the database, convert it as graphe and returns it</span>
+<span class="sd">        :return: A graph datastructure of the server&#39;s storage</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="c1"># Dump DB as graphe / clusters</span>
+        <span class="n">is_success</span><span class="p">,</span> <span class="n">db</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">export_db_server</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">is_success</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Database fetched successfully.&quot;</span><span class="p">)</span>
+            <span class="c1"># The upload had been successful</span>
+            <span class="n">graphe_struct</span> <span class="o">=</span> <span class="n">GraphDataStruct</span><span class="o">.</span><span class="n">load_from_dict</span><span class="p">(</span><span class="n">db</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">graphe_struct</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Error during db dump of </span><span class="si">{db}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+    <span class="c1"># ================= ALL =================</span>
+
+<div class="viewcode-block" id="Extended_API.add_request_dump_pictures"><a class="viewcode-back" href="../../../carlhauser_client.API.html#carlhauser_client.API.extended_api.Extended_API.add_request_dump_pictures">[docs]</a>    <span class="k">def</span> <span class="nf">add_request_dump_pictures</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">image_folder</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">:</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Send pictures of a folder, request all pictures one by one, construct a list of results, revert the mapping to get back pictures names</span>
+<span class="sd">        :param image_folder: The folder of images to send</span>
+<span class="sd">        :return: The list of results</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="c1"># 1-  Send pictures to DB and get id mapping</span>
+        <span class="n">mapping_old_filename_to_new_id</span><span class="p">,</span> <span class="n">nb_pictures</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_many_pictures_and_wait</span><span class="p">(</span><span class="n">image_folder</span><span class="p">)</span>
+
+        <span class="c1"># 2 - Get a DB dump</span>
+        <span class="n">list_results</span><span class="p">,</span> <span class="n">nb_pictures</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">request_many_pictures</span><span class="p">(</span><span class="n">image_folder</span><span class="p">)</span>
+        <span class="n">list_results</span> <span class="o">=</span> <span class="n">dict_utilities</span><span class="o">.</span><span class="n">apply_revert_mapping</span><span class="p">(</span><span class="n">list_results</span><span class="p">,</span> <span class="n">mapping_old_filename_to_new_id</span><span class="p">)</span>
+        <span class="c1"># TODO : do it with graphes ? graphe_struct.replace_id_from_mapping(mapping)</span>
+
+        <span class="k">return</span> <span class="n">list_results</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, Vincent FALCONIERI.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.2.
+    </div>
+  </body>
+</html>

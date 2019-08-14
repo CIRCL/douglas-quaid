@@ -1,0 +1,514 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>carlhauser_server.API.API_server &#8212; Douglas-Quaid 0.0.4 documentation</title>
+    <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for carlhauser_server.API.API_server</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="c1"># Not that this could use : flask/bin/python</span>
+<span class="c1"># Inspired from : https://github.com/D4-project/IPASN-History/blob/master/website/web/__init__.py</span>
+<span class="c1"># If you are derouted by the lack of decorator, go there : https://stackoverflow.com/questions/17129573/can-i-use-external-methods-as-route-decorators-in-python-flask</span>
+
+<span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">uuid</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Dict</span>
+
+<span class="kn">import</span> <span class="nn">flask</span>
+<span class="kn">import</span> <span class="nn">werkzeug.datastructures</span> <span class="k">as</span> <span class="nn">datastructures</span>
+
+<span class="kn">import</span> <span class="nn">carlhauser_server.API.in_memory_files_ops</span> <span class="k">as</span> <span class="nn">id_generator</span>
+<span class="kn">import</span> <span class="nn">carlhauser_server.Configuration.database_conf</span> <span class="k">as</span> <span class="nn">database_conf</span>
+<span class="kn">import</span> <span class="nn">carlhauser_server.Configuration.webservice_conf</span> <span class="k">as</span> <span class="nn">webservice_conf</span>
+<span class="kn">import</span> <span class="nn">carlhauser_server.DatabaseAccessor.database_utilities</span> <span class="k">as</span> <span class="nn">db_utils</span>
+<span class="kn">import</span> <span class="nn">carlhauser_server.DatabaseAccessor.database_worker</span> <span class="k">as</span> <span class="nn">database_worker</span>
+<span class="kn">import</span> <span class="nn">common.ImportExport.json_import_export</span> <span class="k">as</span> <span class="nn">json_import_export</span>
+<span class="kn">import</span> <span class="nn">common.ImportExport.picture_import_export</span> <span class="k">as</span> <span class="nn">picture_import_export</span>
+<span class="kn">from</span> <span class="nn">carlhauser_server.Helpers</span> <span class="k">import</span> <span class="n">arg_parser</span>
+<span class="kn">from</span> <span class="nn">common.environment_variable</span> <span class="k">import</span> <span class="n">QueueNames</span><span class="p">,</span> <span class="n">EndPoints</span>
+<span class="kn">from</span> <span class="nn">common.environment_variable</span> <span class="k">import</span> <span class="n">get_homedir</span>
+<span class="kn">from</span> <span class="nn">common.environment_variable</span> <span class="k">import</span> <span class="n">load_server_logging_conf_file</span>
+
+<span class="n">load_server_logging_conf_file</span><span class="p">()</span>
+
+
+<span class="c1"># ==================== ------ SERVER Flask API definition ------- ====================</span>
+
+<div class="viewcode-block" id="EndpointAction"><a class="viewcode-back" href="../../../carlhauser_server.API.html#carlhauser_server.API.API_server.EndpointAction">[docs]</a><span class="k">class</span> <span class="nc">EndpointAction</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Defines an Endpoint for a specific action for any client.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">action</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create the endpoint by specifying which action we want the endpoint to perform, at each call</span>
+<span class="sd">        :param action: The function to execute on endpoint call</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Defines which action (which function) should be called</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">action</span> <span class="o">=</span> <span class="n">action</span>
+
+        <span class="c1"># DEBUG FOR TEST PURPOSES # self.response = flask.Response(&quot;Welcome to carl-hauser&quot;, status=200, headers={})</span>
+
+    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Standard method that effectively perform the stored action of this endpoint.</span>
+<span class="sd">        :param args: Arguments to give to the stored function</span>
+<span class="sd">        :return: The response, which is a jsonified version of the function returned value</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Perform the action</span>
+        <span class="n">answer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">action</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
+
+        <span class="c1"># Create the answer (bundle it in a correctly formatted HTTP answer)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">answer</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="c1"># If it&#39;s a string, we bundle it has a HTML-like answer</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">response</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">Response</span><span class="p">(</span><span class="n">answer</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="p">{})</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># If it&#39;s something else (dict, ..) we jsonify and send it</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">response</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">jsonify</span><span class="p">(</span><span class="n">answer</span><span class="p">)</span>
+
+        <span class="c1"># Send it</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">response</span></div>
+
+
+<div class="viewcode-block" id="FlaskAppWrapper"><a class="viewcode-back" href="../../../carlhauser_server.API.html#carlhauser_server.API.API_server.FlaskAppWrapper">[docs]</a><span class="k">class</span> <span class="nc">FlaskAppWrapper</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">tmp_ws_conf</span><span class="p">:</span> <span class="n">webservice_conf</span><span class="p">,</span> <span class="n">tmp_db_conf</span><span class="p">:</span> <span class="n">database_conf</span><span class="p">):</span>
+        <span class="c1"># STD attributes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ws_conf</span> <span class="o">=</span> <span class="n">tmp_ws_conf</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+        <span class="c1"># Specific attributes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">app</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">Flask</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+
+        <span class="c1"># An accessor to push stuff in queues, mainly</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">database_worker</span><span class="p">:</span> <span class="n">database_worker</span><span class="o">.</span><span class="n">Database_Worker</span> <span class="o">=</span> <span class="n">database_worker</span><span class="o">.</span><span class="n">Database_Worker</span><span class="p">(</span><span class="n">tmp_db_conf</span><span class="o">=</span><span class="n">tmp_db_conf</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db_utils</span><span class="p">:</span> <span class="n">db_utils</span><span class="o">.</span><span class="n">DBUtilities</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="FlaskAppWrapper.run"><a class="viewcode-back" href="../../../carlhauser_server.API.html#carlhauser_server.API.API_server.FlaskAppWrapper.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Final action to call to run the flask process, which generate endpoints, and so.</span>
+<span class="sd">        Handle SLL Certificate, if they are provided = use them, else = self sign a certificate on the fly</span>
+<span class="sd">        :return: no return (continuously executing. Return error code if stopped and so)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ws_conf</span><span class="o">.</span><span class="n">CERT_FILE</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">ws_conf</span><span class="o">.</span><span class="n">KEY_FILE</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Provided CERT OR KEY file not found :  </span><span class="si">{self.ws_conf.CERT_FILE}</span><span class="s2"> and </span><span class="si">{self.ws_conf.KEY_FILE}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">ssl_context</span><span class="o">=</span><span class="s1">&#39;adhoc&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Provided CERT OR KEY file used : </span><span class="si">{self.ws_conf.CERT_FILE}</span><span class="s2"> and </span><span class="si">{self.ws_conf.KEY_FILE}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">ssl_context</span><span class="o">=</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ws_conf</span><span class="o">.</span><span class="n">CERT_FILE</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ws_conf</span><span class="o">.</span><span class="n">KEY_FILE</span><span class="p">)))</span>  <span class="c1"># ssl_context=&#39;adhoc&#39;)</span></div>
+
+<div class="viewcode-block" id="FlaskAppWrapper.add_all_endpoints"><a class="viewcode-back" href="../../../carlhauser_server.API.html#carlhauser_server.API.API_server.FlaskAppWrapper.add_all_endpoints">[docs]</a>    <span class="k">def</span> <span class="nf">add_all_endpoints</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add all endpoints = all callable URL of the API, and link them to the good functions</span>
+<span class="sd">        :return: Nothing</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Add root endpoint</span>
+        <span class="n">tmp_ep_name</span> <span class="o">=</span> <span class="s2">&quot;/&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_endpoint</span><span class="p">(</span><span class="n">endpoint</span><span class="o">=</span><span class="n">tmp_ep_name</span><span class="p">,</span> <span class="n">endpoint_name</span><span class="o">=</span><span class="n">tmp_ep_name</span><span class="p">,</span> <span class="n">handler</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ping</span><span class="p">)</span>
+
+        <span class="c1"># Add action endpoints</span>
+        <span class="n">tmp_ep_name</span> <span class="o">=</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">EndPoints</span><span class="o">.</span><span class="n">ADD_PICTURE</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_endpoint</span><span class="p">(</span><span class="n">endpoint</span><span class="o">=</span><span class="n">tmp_ep_name</span><span class="p">,</span> <span class="n">endpoint_name</span><span class="o">=</span><span class="n">tmp_ep_name</span><span class="p">,</span> <span class="n">handler</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">add_picture</span><span class="p">)</span>
+        <span class="n">tmp_ep_name</span> <span class="o">=</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">EndPoints</span><span class="o">.</span><span class="n">REQUEST_PICTURE</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_endpoint</span><span class="p">(</span><span class="n">endpoint</span><span class="o">=</span><span class="n">tmp_ep_name</span><span class="p">,</span> <span class="n">endpoint_name</span><span class="o">=</span><span class="n">tmp_ep_name</span><span class="p">,</span> <span class="n">handler</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">request_similar_picture</span><span class="p">)</span>
+        <span class="n">tmp_ep_name</span> <span class="o">=</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">EndPoints</span><span class="o">.</span><span class="n">WAIT_FOR_REQUEST</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_endpoint</span><span class="p">(</span><span class="n">endpoint</span><span class="o">=</span><span class="n">tmp_ep_name</span><span class="p">,</span> <span class="n">endpoint_name</span><span class="o">=</span><span class="n">tmp_ep_name</span><span class="p">,</span> <span class="n">handler</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">is_ready</span><span class="p">)</span>
+        <span class="n">tmp_ep_name</span> <span class="o">=</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">EndPoints</span><span class="o">.</span><span class="n">GET_REQUEST_RESULT</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_endpoint</span><span class="p">(</span><span class="n">endpoint</span><span class="o">=</span><span class="n">tmp_ep_name</span><span class="p">,</span> <span class="n">endpoint_name</span><span class="o">=</span><span class="n">tmp_ep_name</span><span class="p">,</span> <span class="n">handler</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_results</span><span class="p">)</span>
+        <span class="n">tmp_ep_name</span> <span class="o">=</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">EndPoints</span><span class="o">.</span><span class="n">REQUEST_DB</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_endpoint</span><span class="p">(</span><span class="n">endpoint</span><span class="o">=</span><span class="n">tmp_ep_name</span><span class="p">,</span> <span class="n">endpoint_name</span><span class="o">=</span><span class="n">tmp_ep_name</span><span class="p">,</span> <span class="n">handler</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">export_db_as_graphe</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="FlaskAppWrapper.add_endpoint"><a class="viewcode-back" href="../../../carlhauser_server.API.html#carlhauser_server.API.API_server.FlaskAppWrapper.add_endpoint">[docs]</a>    <span class="k">def</span> <span class="nf">add_endpoint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">endpoint_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">handler</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add one endpoint to the flask application. Accept GET, POST and PUT.</span>
+<span class="sd">        :param endpoint: Callable URL.</span>
+<span class="sd">        :param endpoint_name: Name of the Endpoint</span>
+<span class="sd">        :param handler: function to execute on call on the URL</span>
+<span class="sd">        :return: Nothing</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">add_url_rule</span><span class="p">(</span><span class="n">endpoint</span><span class="p">,</span> <span class="n">endpoint_name</span><span class="p">,</span> <span class="n">EndpointAction</span><span class="p">(</span><span class="n">handler</span><span class="p">),</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">,</span> <span class="s1">&#39;POST&#39;</span><span class="p">,</span> <span class="s1">&#39;PUT&#39;</span><span class="p">])</span></div>
+
+    <span class="c1"># ==================== ------ API Calls ------- ====================</span>
+
+<div class="viewcode-block" id="FlaskAppWrapper.ping"><a class="viewcode-back" href="../../../carlhauser_server.API.html#carlhauser_server.API.API_server.FlaskAppWrapper.ping">[docs]</a>    <span class="k">def</span> <span class="nf">ping</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Handle a ping request on server side. Creates a pong answer</span>
+<span class="sd">        :param args: None is required</span>
+<span class="sd">        :return: The result json (pong)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">result_json</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">result_json</span><span class="p">[</span><span class="s2">&quot;Called_function&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;ping&quot;</span>
+        <span class="n">result_json</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_std_info</span><span class="p">(</span><span class="n">result_json</span><span class="p">)</span>
+
+        <span class="n">result_json</span><span class="p">[</span><span class="s2">&quot;Status&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;The API is ALIVE :)&quot;</span>
+        <span class="c1"># Note that &quot;flask.request&quot; is a global object, but is linked to the local context by flask. No worries :)</span>
+
+        <span class="k">return</span> <span class="n">result_json</span></div>
+        <span class="c1"># Test it with curl 127.0.0.1:5000</span>
+
+    <span class="c1"># ================= ADD PICTURES =================</span>
+<div class="viewcode-block" id="FlaskAppWrapper.add_picture"><a class="viewcode-back" href="../../../carlhauser_server.API.html#carlhauser_server.API.API_server.FlaskAppWrapper.add_picture">[docs]</a>    <span class="k">def</span> <span class="nf">add_picture</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Handle an adding of a picture request on server side.</span>
+<span class="sd">        :return: The result json (status of the request, etc.)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">result_json</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">result_json</span><span class="p">[</span><span class="s2">&quot;Called_function&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">EndPoints</span><span class="o">.</span><span class="n">ADD_PICTURE</span>
+        <span class="n">result_json</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_std_info</span><span class="p">(</span><span class="n">result_json</span><span class="p">)</span>
+
+        <span class="c1"># Answer ONLY to PUT HTTP request</span>
+        <span class="k">if</span> <span class="n">flask</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;PUT&#39;</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="c1"># Received : werkzeug.datastructures.FileStorage. Should use &quot;.read()&quot; to get picture&#39;s value</span>
+                <span class="n">f</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">files</span><span class="p">[</span><span class="s1">&#39;image&#39;</span><span class="p">]</span>
+
+                <span class="c1"># Convert, save and send picture to server</span>
+                <span class="n">result_json</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">enqueue_and_save_picture</span><span class="p">(</span><span class="n">file</span><span class="o">=</span><span class="n">f</span><span class="p">,</span>
+                                                            <span class="n">result_json</span><span class="o">=</span><span class="n">result_json</span><span class="p">,</span>
+                                                            <span class="n">queue</span><span class="o">=</span><span class="n">QueueNames</span><span class="o">.</span><span class="n">FEATURE_TO_ADD</span><span class="p">)</span>
+
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Error during PUT handling </span><span class="si">{e}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">result_json</span><span class="p">[</span><span class="s2">&quot;Status&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Failure&quot;</span>
+                <span class="n">result_json</span><span class="p">[</span><span class="s2">&quot;Error&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Error during Hash computation or database adding&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">result_json</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_bad_method_info</span><span class="p">(</span><span class="n">result_json</span><span class="p">,</span> <span class="n">good_method_instead</span><span class="o">=</span><span class="s2">&quot;PUT&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">result_json</span></div>
+        <span class="c1"># Test it with curl 127.0.0.1:5000/add_pict</span>
+
+    <span class="c1"># ================= ADD PICTURES - WAITING =================</span>
+<div class="viewcode-block" id="FlaskAppWrapper.are_pipelines_empty"><a class="viewcode-back" href="../../../carlhauser_server.API.html#carlhauser_server.API.API_server.FlaskAppWrapper.are_pipelines_empty">[docs]</a>    <span class="k">def</span> <span class="nf">are_pipelines_empty</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Handle a check of emptiness on the pipelines (list of queues)</span>
+<span class="sd">        :return: The result json (status of the request, etc.)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">result_json</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">result_json</span><span class="p">[</span><span class="s2">&quot;Called_function&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;are_pipelines_empty&quot;</span>
+        <span class="n">result_json</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_std_info</span><span class="p">(</span><span class="n">result_json</span><span class="p">)</span>
+
+        <span class="c1"># Answer to PUT HTTP request</span>
+        <span class="k">if</span> <span class="n">flask</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;GET&#39;</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="c1"># Fetch results</span>
+                <span class="c1"># TODO : Special function for &quot;cleaner/more performant&quot; check ?</span>
+                <span class="n">result_json</span><span class="p">[</span><span class="s2">&quot;are_empty&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">database_worker</span><span class="o">.</span><span class="n">are_all_queues_empty</span><span class="p">()</span>
+                <span class="n">result_json</span><span class="p">[</span><span class="s2">&quot;Status&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Success&quot;</span>
+
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Normal error during GET handling (&#39;are_pipelines_empty&#39; request) </span><span class="si">{e}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">result_json</span><span class="p">[</span><span class="s2">&quot;Status&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Failure&quot;</span>
+                <span class="n">result_json</span><span class="p">[</span><span class="s2">&quot;Error&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Error during database request&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">result_json</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_bad_method_info</span><span class="p">(</span><span class="n">result_json</span><span class="p">,</span> <span class="n">good_method_instead</span><span class="o">=</span><span class="s2">&quot;GET&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">result_json</span></div>
+        <span class="c1"># Test it with curl 127.0.0.1:5000/are_pipelines_empty</span>
+
+    <span class="c1"># ================= REQUEST PICTURES =================</span>
+
+<div class="viewcode-block" id="FlaskAppWrapper.request_similar_picture"><a class="viewcode-back" href="../../../carlhauser_server.API.html#carlhauser_server.API.API_server.FlaskAppWrapper.request_similar_picture">[docs]</a>    <span class="k">def</span> <span class="nf">request_similar_picture</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Handle a request of one picture, to return a list of similar pictures</span>
+<span class="sd">        :return: The result json (status of the request, etc.)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">result_json</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">result_json</span><span class="p">[</span><span class="s2">&quot;Called_function&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;request_similar_picture&quot;</span>
+        <span class="n">result_json</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_std_info</span><span class="p">(</span><span class="n">result_json</span><span class="p">)</span>
+
+        <span class="c1"># Answer to PUT HTTP request</span>
+        <span class="k">if</span> <span class="n">flask</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;POST&#39;</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="c1"># Received : werkzeug.datastructures.FileStorage. Should use &quot;.read()&quot; to get picture&#39;s value</span>
+                <span class="n">f</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">files</span><span class="p">[</span><span class="s1">&#39;image&#39;</span><span class="p">]</span>
+
+                <span class="c1"># Convert, save and send picture to server</span>
+                <span class="n">result_json</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">enqueue_and_save_picture</span><span class="p">(</span><span class="n">file</span><span class="o">=</span><span class="n">f</span><span class="p">,</span>
+                                                            <span class="n">result_json</span><span class="o">=</span><span class="n">result_json</span><span class="p">,</span>
+                                                            <span class="n">queue</span><span class="o">=</span><span class="n">QueueNames</span><span class="o">.</span><span class="n">FEATURE_TO_REQUEST</span><span class="p">)</span>
+
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Error during PUT handling </span><span class="si">{e}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">result_json</span><span class="p">[</span><span class="s2">&quot;Status&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Failure&quot;</span>
+                <span class="n">result_json</span><span class="p">[</span><span class="s2">&quot;Error&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Error during Hash computation or database request&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">result_json</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_bad_method_info</span><span class="p">(</span><span class="n">result_json</span><span class="p">,</span> <span class="n">good_method_instead</span><span class="o">=</span><span class="s2">&quot;POST&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">result_json</span></div>
+        <span class="c1"># Test it with curl 127.0.0.1:5000/request_similar_picture</span>
+
+<div class="viewcode-block" id="FlaskAppWrapper.get_results"><a class="viewcode-back" href="../../../carlhauser_server.API.html#carlhauser_server.API.API_server.FlaskAppWrapper.get_results">[docs]</a>    <span class="k">def</span> <span class="nf">get_results</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Handle a retrieval of results</span>
+<span class="sd">        :return: The result json (status of the request, etc.)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">result_json</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">result_json</span><span class="p">[</span><span class="s2">&quot;Called_function&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;get_results&quot;</span>
+        <span class="n">result_json</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_std_info</span><span class="p">(</span><span class="n">result_json</span><span class="p">)</span>
+
+        <span class="c1"># Answer to PUT HTTP request</span>
+        <span class="k">if</span> <span class="n">flask</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;GET&#39;</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="c1"># Received : werkzeug.datastructures.FileStorage. Should use &quot;.read()&quot; to get picture&#39;s value</span>
+                <span class="n">tmp_id</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;request_id&#39;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Request ID to be answered in server : {type(tmp_id)} ==&gt; </span><span class="si">{tmp_id}</span><span class="s2"> &quot;</span><span class="p">)</span>  <span class="c1"># {f.read()}</span>
+
+                <span class="c1"># Fetch results</span>
+                <span class="n">result_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">database_worker</span><span class="o">.</span><span class="n">get_request_result</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">database_worker</span><span class="o">.</span><span class="n">cache_db_no_decode</span><span class="p">,</span> <span class="n">tmp_id</span><span class="p">)</span>
+
+                <span class="n">result_json</span><span class="p">[</span><span class="s2">&quot;Status&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Success&quot;</span>
+                <span class="n">result_json</span><span class="p">[</span><span class="s2">&quot;request_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tmp_id</span>
+                <span class="n">result_json</span><span class="p">[</span><span class="s2">&quot;results&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">result_dict</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Error during GET handling </span><span class="si">{e}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">result_json</span><span class="p">[</span><span class="s2">&quot;Status&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Failure&quot;</span>
+                <span class="n">result_json</span><span class="p">[</span><span class="s2">&quot;Error&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Error during Hash computation or database request&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">result_json</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_bad_method_info</span><span class="p">(</span><span class="n">result_json</span><span class="p">,</span> <span class="n">good_method_instead</span><span class="o">=</span><span class="s2">&quot;GET&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">result_json</span></div>
+        <span class="c1"># Test it with curl 127.0.0.1:5000/get_results</span>
+
+    <span class="c1"># ================= REQUEST PICTURES - WAITING =================</span>
+
+<div class="viewcode-block" id="FlaskAppWrapper.is_ready"><a class="viewcode-back" href="../../../carlhauser_server.API.html#carlhauser_server.API.API_server.FlaskAppWrapper.is_ready">[docs]</a>    <span class="k">def</span> <span class="nf">is_ready</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Handle a check of a request readiness</span>
+<span class="sd">        :return: The result json (status of the request, etc.)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">result_json</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">result_json</span><span class="p">[</span><span class="s2">&quot;Called_function&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;is_ready&quot;</span>
+        <span class="n">result_json</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_std_info</span><span class="p">(</span><span class="n">result_json</span><span class="p">)</span>
+
+        <span class="c1"># Answer to PUT HTTP request</span>
+        <span class="k">if</span> <span class="n">flask</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;GET&#39;</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="c1"># Received : werkzeug.datastructures.FileStorage. Should use &quot;.read()&quot; to get picture&#39;s value</span>
+                <span class="n">tmp_id</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;request_id&#39;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Request ID to be checked if ready in server : {type(tmp_id)} ==&gt; </span><span class="si">{tmp_id}</span><span class="s2"> &quot;</span><span class="p">)</span>  <span class="c1"># {f.read()}</span>
+
+                <span class="c1"># Fetch results</span>
+                <span class="c1"># TODO : Special function for &quot;cleaner/more performant&quot; check ?</span>
+                <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">database_worker</span><span class="o">.</span><span class="n">get_request_result</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">database_worker</span><span class="o">.</span><span class="n">cache_db_no_decode</span><span class="p">,</span> <span class="n">tmp_id</span><span class="p">)</span>
+
+                <span class="n">result_json</span><span class="p">[</span><span class="s2">&quot;Status&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Success&quot;</span>
+                <span class="n">result_json</span><span class="p">[</span><span class="s2">&quot;request_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tmp_id</span>
+                <span class="n">result_json</span><span class="p">[</span><span class="s2">&quot;is_ready&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Normal error during GET handling (&#39;is_ready&#39; request) </span><span class="si">{e}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">result_json</span><span class="p">[</span><span class="s2">&quot;Status&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Failure&quot;</span>
+                <span class="n">result_json</span><span class="p">[</span><span class="s2">&quot;Error&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Error during database request&quot;</span>
+                <span class="n">result_json</span><span class="p">[</span><span class="s2">&quot;is_ready&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">result_json</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_bad_method_info</span><span class="p">(</span><span class="n">result_json</span><span class="p">,</span> <span class="n">good_method_instead</span><span class="o">=</span><span class="s2">&quot;GET&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">result_json</span></div>
+        <span class="c1"># Test it with curl 127.0.0.1:5000/is_ready</span>
+
+    <span class="c1"># ================= EXPORT AND DUMP =================</span>
+
+<div class="viewcode-block" id="FlaskAppWrapper.export_db_as_graphe"><a class="viewcode-back" href="../../../carlhauser_server.API.html#carlhauser_server.API.API_server.FlaskAppWrapper.export_db_as_graphe">[docs]</a>    <span class="k">def</span> <span class="nf">export_db_as_graphe</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Handle a dump of the database request</span>
+<span class="sd">        :return: The result json (status of the request, etc.)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">result_json</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">result_json</span><span class="p">[</span><span class="s2">&quot;Called_function&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;export_db&quot;</span>
+        <span class="n">result_json</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_std_info</span><span class="p">(</span><span class="n">result_json</span><span class="p">)</span>
+
+        <span class="c1"># Answer to PUT HTTP request</span>
+        <span class="k">if</span> <span class="n">flask</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;GET&#39;</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="c1"># Request export of the database and save it as a json graph</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">db_utils</span> <span class="o">=</span> <span class="n">db_utils</span><span class="o">.</span><span class="n">DBUtilities</span><span class="p">(</span><span class="n">db_access_decode</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">database_worker</span><span class="o">.</span><span class="n">storage_db_decode</span><span class="p">,</span> <span class="n">db_access_no_decode</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">database_worker</span><span class="o">.</span><span class="n">storage_db_no_decode</span><span class="p">)</span>
+                <span class="n">graph</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_utils</span><span class="o">.</span><span class="n">get_storage_graph</span><span class="p">()</span>
+                <span class="n">graph_dict</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">export_as_dict</span><span class="p">()</span>
+
+                <span class="c1"># Save to file</span>
+                <span class="n">json_import_export</span><span class="o">.</span><span class="n">save_json</span><span class="p">(</span><span class="n">graph_dict</span><span class="p">,</span> <span class="n">get_homedir</span><span class="p">()</span> <span class="o">/</span> <span class="s2">&quot;export_folder&quot;</span> <span class="o">/</span> <span class="s2">&quot;db_graphe.json&quot;</span><span class="p">)</span>
+
+                <span class="n">result_json</span><span class="p">[</span><span class="s2">&quot;Status&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Success&quot;</span>
+                <span class="n">result_json</span><span class="p">[</span><span class="s2">&quot;db&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">graph_dict</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Error during GET handling </span><span class="si">{e}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">result_json</span><span class="p">[</span><span class="s2">&quot;Status&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Failure&quot;</span>
+                <span class="n">result_json</span><span class="p">[</span><span class="s2">&quot;Error&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Error during db exportation to file&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">result_json</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_bad_method_info</span><span class="p">(</span><span class="n">result_json</span><span class="p">,</span> <span class="n">good_method_instead</span><span class="o">=</span><span class="s2">&quot;GET&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">result_json</span></div>
+        <span class="c1"># Test it with curl 127.0.0.1:5000</span>
+
+    <span class="c1"># ================= UTILITIES =================</span>
+
+<div class="viewcode-block" id="FlaskAppWrapper.add_std_info"><a class="viewcode-back" href="../../../carlhauser_server.API.html#carlhauser_server.API.API_server.FlaskAppWrapper.add_std_info">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">add_std_info</span><span class="p">(</span><span class="n">result_json</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add standard information to the result_json</span>
+<span class="sd">        :param result_json: The result json/dict to which to add standard values</span>
+<span class="sd">        :return: the modified result_json</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">result_json</span><span class="p">[</span><span class="s2">&quot;Call_method&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">flask</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">method</span>  <span class="c1"># &#39;GET&#39; or &#39;POST&#39; ...</span>
+        <span class="n">result_json</span><span class="p">[</span><span class="s2">&quot;Call_time&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">ctime</span><span class="p">()</span>  <span class="c1"># &#39;GET&#39; or &#39;POST&#39; ...</span>
+
+        <span class="k">return</span> <span class="n">result_json</span></div>
+
+<div class="viewcode-block" id="FlaskAppWrapper.add_bad_method_info"><a class="viewcode-back" href="../../../carlhauser_server.API.html#carlhauser_server.API.API_server.FlaskAppWrapper.add_bad_method_info">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">add_bad_method_info</span><span class="p">(</span><span class="n">result_json</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">good_method_instead</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add error values to the result_json if method is bad</span>
+<span class="sd">        :param result_json: The result json/dict to which to add standard values</span>
+<span class="sd">        :param good_method_instead: the method that should be used by the resquest</span>
+<span class="sd">        :return: the modified result_json</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">result_json</span><span class="p">[</span><span class="s2">&quot;Status&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Failure&quot;</span>
+
+        <span class="c1"># Construct a message depending on the good method to use</span>
+        <span class="k">if</span> <span class="n">good_method_instead</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">result_json</span><span class="p">[</span><span class="s2">&quot;Error&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;BAD METHOD : use another method (GET, PUT, POST, ...).&quot;</span>
+
+        <span class="k">elif</span> <span class="n">good_method_instead</span> <span class="o">==</span> <span class="s2">&quot;POST&quot;</span><span class="p">:</span>
+            <span class="n">result_json</span><span class="p">[</span><span class="s2">&quot;Error&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;BAD METHOD : use POST instead of GET, PUT, ...&quot;</span>
+
+        <span class="k">elif</span> <span class="n">good_method_instead</span> <span class="o">==</span> <span class="s2">&quot;PUT&quot;</span><span class="p">:</span>
+            <span class="n">result_json</span><span class="p">[</span><span class="s2">&quot;Error&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;BAD METHOD : use PUT instead of GET, POST, ...&quot;</span>
+
+        <span class="k">elif</span> <span class="n">good_method_instead</span> <span class="o">==</span> <span class="s2">&quot;GET&quot;</span><span class="p">:</span>
+            <span class="n">result_json</span><span class="p">[</span><span class="s2">&quot;Error&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;BAD METHOD : use GET instead of POST, PUT, ...&quot;</span>
+
+        <span class="k">return</span> <span class="n">result_json</span></div>
+
+<div class="viewcode-block" id="FlaskAppWrapper.enqueue_and_save_picture"><a class="viewcode-back" href="../../../carlhauser_server.API.html#carlhauser_server.API.API_server.FlaskAppWrapper.enqueue_and_save_picture">[docs]</a>    <span class="k">def</span> <span class="nf">enqueue_and_save_picture</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file</span><span class="p">:</span> <span class="n">datastructures</span><span class="o">.</span><span class="n">FileStorage</span><span class="p">,</span> <span class="n">result_json</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">queue</span><span class="p">:</span> <span class="n">QueueNames</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Hash the picture, generate a BMP file, enqueue it, return the result_json with relevant values</span>
+<span class="sd">        :param queue: Queue to add the picture</span>
+<span class="sd">        :param file: the file provided by the client</span>
+<span class="sd">        :param result_json: The result json/dict to which to add standard values</span>
+<span class="sd">        :return: the modified result_json</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Received : werkzeug.datastructures.FileStorage. Should use &quot;.read()&quot; to get picture&#39;s value</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Image received in server : {type(file)} &quot;</span><span class="p">)</span>  <span class="c1"># {f.read()}</span>
+
+        <span class="c1"># Compute input picture hash and convert to BMP</span>
+        <span class="n">f_hash</span> <span class="o">=</span> <span class="n">id_generator</span><span class="o">.</span><span class="n">get_SHA1</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+        <span class="n">f_bmp</span> <span class="o">=</span> <span class="n">id_generator</span><span class="o">.</span><span class="n">convert_to_bmp</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>  <span class="c1"># Returns a bytes array</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Image transformed in BMP in server : {type(f_bmp)} &quot;</span><span class="p">)</span>  <span class="c1"># {f_bmp}</span>
+
+        <span class="c1"># Save received picture to disk</span>
+        <span class="n">picture_import_export</span><span class="o">.</span><span class="n">save_picture</span><span class="p">(</span><span class="n">f_bmp</span><span class="p">,</span> <span class="n">get_homedir</span><span class="p">()</span> <span class="o">/</span> <span class="s1">&#39;datasets&#39;</span> <span class="o">/</span> <span class="s1">&#39;received_pictures&#39;</span> <span class="o">/</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">f_hash</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;.bmp&#39;</span><span class="p">))</span>
+        <span class="c1"># If the filename need to be used : secure_filename(f.filename)</span>
+
+        <span class="c1"># Generate uuid from SHA-1 : # Done : Create request UUID ? Or keep image hash ?</span>
+        <span class="n">tmp_uuid</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid5</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">NAMESPACE_URL</span><span class="p">,</span> <span class="n">f_hash</span><span class="p">))</span>
+
+        <span class="c1"># Enqueue picture to processing</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Adding to feature queue : </span><span class="si">{f_hash}</span><span class="s2"> hash transformed into -&gt; </span><span class="si">{tmp_uuid}</span><span class="s2"> uuid v5&quot;</span><span class="p">)</span>  <span class="c1"># {f_bmp}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">database_worker</span><span class="o">.</span><span class="n">add_to_queue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">database_worker</span><span class="o">.</span><span class="n">cache_db_decode</span><span class="p">,</span>
+                                          <span class="n">queue_name</span><span class="o">=</span><span class="n">queue</span><span class="p">,</span>
+                                          <span class="n">input_id</span><span class="o">=</span><span class="n">tmp_uuid</span><span class="p">,</span>
+                                          <span class="n">dict_to_store</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;img&quot;</span><span class="p">:</span> <span class="n">f_bmp</span><span class="p">})</span>
+
+        <span class="n">result_json</span><span class="p">[</span><span class="s2">&quot;Status&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Success&quot;</span>
+        <span class="n">result_json</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tmp_uuid</span>
+
+        <span class="k">return</span> <span class="n">result_json</span></div></div>
+
+
+<span class="c1"># Launcher for this worker. Launch this file to launch a worker</span>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s1">&#39;Launch Flask API on server side&#39;</span><span class="p">)</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">arg_parser</span><span class="o">.</span><span class="n">add_arg_db_conf</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">arg_parser</span><span class="o">.</span><span class="n">add_arg_ws_conf</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>
+
+    <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+
+    <span class="n">db_conf</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">ws_conf</span> <span class="o">=</span> <span class="n">arg_parser</span><span class="o">.</span><span class="n">parse_conf_files</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+
+    <span class="c1"># Create the Flask API and run it</span>
+    <span class="c1"># Create Flask endpoint from configuration files</span>
+    <span class="n">api</span> <span class="o">=</span> <span class="n">FlaskAppWrapper</span><span class="p">(</span><span class="s1">&#39;api&#39;</span><span class="p">,</span> <span class="n">tmp_ws_conf</span><span class="o">=</span><span class="n">ws_conf</span><span class="p">,</span> <span class="n">tmp_db_conf</span><span class="o">=</span><span class="n">db_conf</span><span class="p">)</span>
+    <span class="n">api</span><span class="o">.</span><span class="n">add_all_endpoints</span><span class="p">()</span>
+
+    <span class="c1"># Run Flask API endpoint</span>
+    <span class="n">api</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>  <span class="c1"># debug=True</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, Vincent FALCONIERI.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.2.
+    </div>
+  </body>
+</html>

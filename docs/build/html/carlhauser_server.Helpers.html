@@ -13,7 +13,9 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="_static/language_data.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" /> 
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="carlhauser_server.Processus package" href="carlhauser_server.Processus.html" />
+    <link rel="prev" title="carlhauser_server.FeatureExtractor package" href="carlhauser_server.FeatureExtractor.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -24,7 +26,14 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li> 
+        <li class="right" >
+          <a href="carlhauser_server.Processus.html" title="carlhauser_server.Processus package"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="carlhauser_server.FeatureExtractor.html" title="carlhauser_server.FeatureExtractor package"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="carlhauser_server.html" accesskey="U">carlhauser_server package</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -38,187 +47,14 @@
 <div class="section" id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-carlhauser_server.Helpers.arg_parser">
-<span id="carlhauser-server-helpers-arg-parser-module"></span><h2>carlhauser_server.Helpers.arg_parser module<a class="headerlink" href="#module-carlhauser_server.Helpers.arg_parser" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
-<dt id="carlhauser_server.Helpers.arg_parser.ConfArgs">
-<em class="property">class </em><code class="sig-prename descclassname">carlhauser_server.Helpers.arg_parser.</code><code class="sig-name descname">ConfArgs</code><a class="reference internal" href="_modules/carlhauser_server/Helpers/arg_parser.html#ConfArgs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.Helpers.arg_parser.ConfArgs" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="common.html#common.environment_variable.JSON_parsable_Dict" title="common.environment_variable.JSON_parsable_Dict"><code class="xref py py-class docutils literal notranslate"><span class="pre">common.environment_variable.JSON_parsable_Dict</span></code></a></p>
-<p>Specify argument to use to launch workers</p>
-<dl class="attribute">
-<dt id="carlhauser_server.Helpers.arg_parser.ConfArgs.DB_CONF_ARG">
-<code class="sig-name descname">DB_CONF_ARG</code><em class="property"> = '-dbc'</em><a class="headerlink" href="#carlhauser_server.Helpers.arg_parser.ConfArgs.DB_CONF_ARG" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="carlhauser_server.Helpers.arg_parser.ConfArgs.DB_CONF_NAME">
-<code class="sig-name descname">DB_CONF_NAME</code><em class="property"> = 'db_conf'</em><a class="headerlink" href="#carlhauser_server.Helpers.arg_parser.ConfArgs.DB_CONF_NAME" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="carlhauser_server.Helpers.arg_parser.ConfArgs.DIST_CONF_ARG">
-<code class="sig-name descname">DIST_CONF_ARG</code><em class="property"> = '-distc'</em><a class="headerlink" href="#carlhauser_server.Helpers.arg_parser.ConfArgs.DIST_CONF_ARG" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="carlhauser_server.Helpers.arg_parser.ConfArgs.DIST_CONF_NAME">
-<code class="sig-name descname">DIST_CONF_NAME</code><em class="property"> = 'dist_conf'</em><a class="headerlink" href="#carlhauser_server.Helpers.arg_parser.ConfArgs.DIST_CONF_NAME" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="carlhauser_server.Helpers.arg_parser.ConfArgs.FE_CONF_ARG">
-<code class="sig-name descname">FE_CONF_ARG</code><em class="property"> = '-fec'</em><a class="headerlink" href="#carlhauser_server.Helpers.arg_parser.ConfArgs.FE_CONF_ARG" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="carlhauser_server.Helpers.arg_parser.ConfArgs.FE_CONF_NAME">
-<code class="sig-name descname">FE_CONF_NAME</code><em class="property"> = 'fe_conf'</em><a class="headerlink" href="#carlhauser_server.Helpers.arg_parser.ConfArgs.FE_CONF_NAME" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="carlhauser_server.Helpers.arg_parser.ConfArgs.MODE_ARG">
-<code class="sig-name descname">MODE_ARG</code><em class="property"> = '-m'</em><a class="headerlink" href="#carlhauser_server.Helpers.arg_parser.ConfArgs.MODE_ARG" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="carlhauser_server.Helpers.arg_parser.ConfArgs.MODE_NAME">
-<code class="sig-name descname">MODE_NAME</code><em class="property"> = 'mode'</em><a class="headerlink" href="#carlhauser_server.Helpers.arg_parser.ConfArgs.MODE_NAME" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="carlhauser_server.Helpers.arg_parser.ConfArgs.WS_CONF_ARG">
-<code class="sig-name descname">WS_CONF_ARG</code><em class="property"> = '-wsc'</em><a class="headerlink" href="#carlhauser_server.Helpers.arg_parser.ConfArgs.WS_CONF_ARG" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="carlhauser_server.Helpers.arg_parser.ConfArgs.WS_CONF_NAME">
-<code class="sig-name descname">WS_CONF_NAME</code><em class="property"> = 'ws_conf'</em><a class="headerlink" href="#carlhauser_server.Helpers.arg_parser.ConfArgs.WS_CONF_NAME" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="function">
-<dt id="carlhauser_server.Helpers.arg_parser.add_arg_db_conf">
-<code class="sig-prename descclassname">carlhauser_server.Helpers.arg_parser.</code><code class="sig-name descname">add_arg_db_conf</code><span class="sig-paren">(</span><em class="sig-param">parser: argparse.ArgumentParser</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/Helpers/arg_parser.html#add_arg_db_conf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.Helpers.arg_parser.add_arg_db_conf" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="carlhauser_server.Helpers.arg_parser.add_arg_dist_conf">
-<code class="sig-prename descclassname">carlhauser_server.Helpers.arg_parser.</code><code class="sig-name descname">add_arg_dist_conf</code><span class="sig-paren">(</span><em class="sig-param">parser: argparse.ArgumentParser</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/Helpers/arg_parser.html#add_arg_dist_conf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.Helpers.arg_parser.add_arg_dist_conf" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="carlhauser_server.Helpers.arg_parser.add_arg_fe_conf">
-<code class="sig-prename descclassname">carlhauser_server.Helpers.arg_parser.</code><code class="sig-name descname">add_arg_fe_conf</code><span class="sig-paren">(</span><em class="sig-param">parser: argparse.ArgumentParser</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/Helpers/arg_parser.html#add_arg_fe_conf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.Helpers.arg_parser.add_arg_fe_conf" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="carlhauser_server.Helpers.arg_parser.add_arg_ws_conf">
-<code class="sig-prename descclassname">carlhauser_server.Helpers.arg_parser.</code><code class="sig-name descname">add_arg_ws_conf</code><span class="sig-paren">(</span><em class="sig-param">parser: argparse.ArgumentParser</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/Helpers/arg_parser.html#add_arg_ws_conf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.Helpers.arg_parser.add_arg_ws_conf" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="carlhauser_server.Helpers.arg_parser.add_mode">
-<code class="sig-prename descclassname">carlhauser_server.Helpers.arg_parser.</code><code class="sig-name descname">add_mode</code><span class="sig-paren">(</span><em class="sig-param">parser: argparse.ArgumentParser</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/Helpers/arg_parser.html#add_mode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.Helpers.arg_parser.add_mode" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="carlhauser_server.Helpers.arg_parser.parse_conf_files">
-<code class="sig-prename descclassname">carlhauser_server.Helpers.arg_parser.</code><code class="sig-name descname">parse_conf_files</code><span class="sig-paren">(</span><em class="sig-param">args) -&gt; (&lt;class 'carlhauser_server.Configuration.database_conf.Default_database_conf'&gt;</em>, <em class="sig-param">&lt;class 'carlhauser_server.Configuration.distance_engine_conf.Default_distance_engine_conf'&gt;</em>, <em class="sig-param">&lt;class 'carlhauser_server.Configuration.feature_extractor_conf.Default_feature_extractor_conf'&gt;</em>, <em class="sig-param">&lt;class 'carlhauser_server.Configuration.webservice_conf.Default_webservice_conf'&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/Helpers/arg_parser.html#parse_conf_files"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.Helpers.arg_parser.parse_conf_files" title="Permalink to this definition">¶</a></dt>
-<dd><p>Parse args to configuration files, if they exist.
-Usage example : db_conf, dist_conf, fe_conf, ws_conf = arg_parser.parse_conf_files(args)
-:param args: parsed arguments from command line
-:return: db_conf, dist_conf, feature_conf, webservice_conf</p>
-</dd></dl>
-
+<div class="section" id="carlhauser-server-helpers-arg-parser-module">
+<h2>carlhauser_server.Helpers.arg_parser module<a class="headerlink" href="#carlhauser-server-helpers-arg-parser-module" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-carlhauser_server.Helpers.socket">
-<span id="carlhauser-server-helpers-socket-module"></span><h2>carlhauser_server.Helpers.socket module<a class="headerlink" href="#module-carlhauser_server.Helpers.socket" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
-<dt id="carlhauser_server.Helpers.socket.Socket">
-<em class="property">class </em><code class="sig-prename descclassname">carlhauser_server.Helpers.socket.</code><code class="sig-name descname">Socket</code><span class="sig-paren">(</span><em class="sig-param">socket_path: pathlib.Path</em>, <em class="sig-param">script_folder_path: pathlib.Path</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/Helpers/socket.html#Socket"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.Helpers.socket.Socket" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Socket handler to a redis database</p>
-<dl class="method">
-<dt id="carlhauser_server.Helpers.socket.Socket.flush">
-<code class="sig-name descname">flush</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/Helpers/socket.html#Socket.flush"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.Helpers.socket.Socket.flush" title="Permalink to this definition">¶</a></dt>
-<dd><p>Flush the database behind the given socket
-:return: Nothing</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="carlhauser_server.Helpers.socket.Socket.get_access">
-<code class="sig-name descname">get_access</code><span class="sig-paren">(</span><em class="sig-param">decode_responses=True</em><span class="sig-paren">)</span> &#x2192; redis.client.Redis<a class="reference internal" href="_modules/carlhauser_server/Helpers/socket.html#Socket.get_access"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.Helpers.socket.Socket.get_access" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get an access to the redis database behind the given socket
-:return: A redis object linked to a redis instance</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="carlhauser_server.Helpers.socket.Socket.is_running">
-<code class="sig-name descname">is_running</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="_modules/carlhauser_server/Helpers/socket.html#Socket.is_running"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.Helpers.socket.Socket.is_running" title="Permalink to this definition">¶</a></dt>
-<dd><p>Check if the database is running behind the given socket. Peform only one test
-:return: True if the behind instance is running, False otherwise</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="carlhauser_server.Helpers.socket.Socket.launch">
-<code class="sig-name descname">launch</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/Helpers/socket.html#Socket.launch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.Helpers.socket.Socket.launch" title="Permalink to this definition">¶</a></dt>
-<dd><p>Launch the database behind the given socket
-:return: Nothing</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="carlhauser_server.Helpers.socket.Socket.prevent_workers_stop">
-<code class="sig-name descname">prevent_workers_stop</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/Helpers/socket.html#Socket.prevent_workers_stop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.Helpers.socket.Socket.prevent_workers_stop" title="Permalink to this definition">¶</a></dt>
-<dd><p>Remove “Halt” key in database to prevent workers to stop on launch
-:return: nothing</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="carlhauser_server.Helpers.socket.Socket.run_script">
-<code class="sig-name descname">run_script</code><span class="sig-paren">(</span><em class="sig-param">script_path: pathlib.Path</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/Helpers/socket.html#Socket.run_script"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.Helpers.socket.Socket.run_script" title="Permalink to this definition">¶</a></dt>
-<dd><p>Run a given script file (bash)
-:param script_path: File of the script to run
-:return: Nothing</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="carlhauser_server.Helpers.socket.Socket.shutdown">
-<code class="sig-name descname">shutdown</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/Helpers/socket.html#Socket.shutdown"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.Helpers.socket.Socket.shutdown" title="Permalink to this definition">¶</a></dt>
-<dd><p>Stop the database behind the given socket
-:return: Nothing</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="carlhauser_server.Helpers.socket.Socket.stop_workers">
-<code class="sig-name descname">stop_workers</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/Helpers/socket.html#Socket.stop_workers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.Helpers.socket.Socket.stop_workers" title="Permalink to this definition">¶</a></dt>
-<dd><p>Put “Halt” key in database to notify workers to stop
-:return: nothing</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="carlhauser_server.Helpers.socket.Socket.wait_until_running">
-<code class="sig-name descname">wait_until_running</code><span class="sig-paren">(</span><em class="sig-param">timeout: int = 60</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="_modules/carlhauser_server/Helpers/socket.html#Socket.wait_until_running"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.Helpers.socket.Socket.wait_until_running" title="Permalink to this definition">¶</a></dt>
-<dd><p>Wait until the database behind the given socket is launched (= answer to a ping)
-Put timeout -1 if you don’t want to function to timeout
-:param timeout: The time after which we consider the database as down, without answer
-:return: True if the behind instance is running, False otherwise</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="carlhauser_server.Helpers.socket.Socket.wait_until_stopped">
-<code class="sig-name descname">wait_until_stopped</code><span class="sig-paren">(</span><em class="sig-param">timeout: int = 60</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="_modules/carlhauser_server/Helpers/socket.html#Socket.wait_until_stopped"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.Helpers.socket.Socket.wait_until_stopped" title="Permalink to this definition">¶</a></dt>
-<dd><p>Wait until the database is stopped (= does not answer to a ping)
-Put timeout -1 if you don’t want to function to timeout
-:param timeout: The time after which we consider the database as still up, without answer
-:return: True if the behind instance is stopped, False otherwise</p>
-</dd></dl>
-
-</dd></dl>
-
+<div class="section" id="carlhauser-server-helpers-socket-module">
+<h2>carlhauser_server.Helpers.socket module<a class="headerlink" href="#carlhauser-server-helpers-socket-module" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-carlhauser_server.Helpers">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-carlhauser_server.Helpers" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-contents">
+<h2>Module contents<a class="headerlink" href="#module-contents" title="Permalink to this headline">¶</a></h2>
 </div>
 </div>
 
@@ -232,13 +68,19 @@ Put timeout -1 if you don’t want to function to timeout
   <ul>
 <li><a class="reference internal" href="#">carlhauser_server.Helpers package</a><ul>
 <li><a class="reference internal" href="#submodules">Submodules</a></li>
-<li><a class="reference internal" href="#module-carlhauser_server.Helpers.arg_parser">carlhauser_server.Helpers.arg_parser module</a></li>
-<li><a class="reference internal" href="#module-carlhauser_server.Helpers.socket">carlhauser_server.Helpers.socket module</a></li>
-<li><a class="reference internal" href="#module-carlhauser_server.Helpers">Module contents</a></li>
+<li><a class="reference internal" href="#carlhauser-server-helpers-arg-parser-module">carlhauser_server.Helpers.arg_parser module</a></li>
+<li><a class="reference internal" href="#carlhauser-server-helpers-socket-module">carlhauser_server.Helpers.socket module</a></li>
+<li><a class="reference internal" href="#module-contents">Module contents</a></li>
 </ul>
 </li>
 </ul>
 
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="carlhauser_server.FeatureExtractor.html"
+                        title="previous chapter">carlhauser_server.FeatureExtractor package</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="carlhauser_server.Processus.html"
+                        title="next chapter">carlhauser_server.Processus package</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -269,7 +111,14 @@ Put timeout -1 if you don’t want to function to timeout
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li> 
+        <li class="right" >
+          <a href="carlhauser_server.Processus.html" title="carlhauser_server.Processus package"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="carlhauser_server.FeatureExtractor.html" title="carlhauser_server.FeatureExtractor package"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="carlhauser_server.html" >carlhauser_server package</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

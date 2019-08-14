@@ -12,18 +12,10 @@ carlhauser\_server.Processus.processus\_list module
    :undoc-members:
    :show-inheritance:
 
-carlhauser\_server.Processus.worker\_processus module
------------------------------------------------------
+carlhauser\_server.Processus.worker\_process module
+---------------------------------------------------
 
-.. automodule:: carlhauser_server.Processus.worker_processus
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-carlhauser\_server.Processus.worker\_types module
--------------------------------------------------
-
-.. automodule:: carlhauser_server.Processus.worker_types
+.. automodule:: carlhauser_server.Processus.worker_process
    :members:
    :undoc-members:
    :show-inheritance:

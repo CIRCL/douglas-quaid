@@ -1,0 +1,291 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>carlhauser_server.DistanceEngine.distance_engine &#8212; Douglas-Quaid 0.0.4 documentation</title>
+    <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for carlhauser_server.DistanceEngine.distance_engine</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span>
+
+<span class="kn">import</span> <span class="nn">carlhauser_server.Configuration.database_conf</span> <span class="k">as</span> <span class="nn">database_conf</span>
+<span class="kn">import</span> <span class="nn">carlhauser_server.Configuration.distance_engine_conf</span> <span class="k">as</span> <span class="nn">distance_engine_conf</span>
+<span class="kn">import</span> <span class="nn">carlhauser_server.Configuration.feature_extractor_conf</span> <span class="k">as</span> <span class="nn">feature_extractor_conf</span>
+<span class="kn">import</span> <span class="nn">carlhauser_server.DatabaseAccessor.database_worker</span> <span class="k">as</span> <span class="nn">database_worker</span>
+<span class="kn">import</span> <span class="nn">carlhauser_server.DistanceEngine.distance_hash</span> <span class="k">as</span> <span class="nn">distance_hash</span>
+<span class="kn">import</span> <span class="nn">carlhauser_server.DistanceEngine.distance_orb</span> <span class="k">as</span> <span class="nn">distance_orb</span>
+<span class="kn">import</span> <span class="nn">carlhauser_server.DistanceEngine.merging_engine</span> <span class="k">as</span> <span class="nn">merging_engine</span>
+<span class="kn">import</span> <span class="nn">carlhauser_server.DistanceEngine.scoring_datastrutures</span> <span class="k">as</span> <span class="nn">scoring_datastrutures</span>
+<span class="kn">from</span> <span class="nn">common.CustomException</span> <span class="k">import</span> <span class="n">AlgoFeatureNotPresentError</span>
+<span class="kn">from</span> <span class="nn">common.environment_variable</span> <span class="k">import</span> <span class="n">load_server_logging_conf_file</span>
+
+<span class="n">load_server_logging_conf_file</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="Distance_Engine"><a class="viewcode-back" href="../../../carlhauser_server.DistanceEngine.html#carlhauser_server.DistanceEngine.distance_engine.Distance_Engine">[docs]</a><span class="k">class</span> <span class="nc">Distance_Engine</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Handle distance computation between pictures and their representations.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">:</span> <span class="n">database_worker</span><span class="p">,</span> <span class="n">db_conf</span><span class="p">:</span> <span class="n">database_conf</span><span class="o">.</span><span class="n">Default_database_conf</span><span class="p">,</span> <span class="n">dist_conf</span><span class="p">:</span> <span class="n">distance_engine_conf</span><span class="o">.</span><span class="n">Default_distance_engine_conf</span><span class="p">,</span>
+                 <span class="n">fe_conf</span><span class="p">:</span> <span class="n">feature_extractor_conf</span><span class="o">.</span><span class="n">Default_feature_extractor_conf</span><span class="p">):</span>
+        <span class="c1"># STD attributes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;... which is a Distance Engine&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Save configuration</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db_conf</span> <span class="o">=</span> <span class="n">db_conf</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dist_conf</span> <span class="o">=</span> <span class="n">dist_conf</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fe_conf</span> <span class="o">=</span> <span class="n">fe_conf</span>
+
+        <span class="c1"># Reference to database worker parent to get accessors</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span> <span class="o">=</span> <span class="n">parent</span>
+
+        <span class="c1"># Create distance extractor</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">distance_hash</span> <span class="o">=</span> <span class="n">distance_hash</span><span class="o">.</span><span class="n">Distance_Hash</span><span class="p">(</span><span class="n">db_conf</span><span class="p">,</span> <span class="n">dist_conf</span><span class="p">,</span> <span class="n">fe_conf</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">distance_orb</span> <span class="o">=</span> <span class="n">distance_orb</span><span class="o">.</span><span class="n">Distance_ORB</span><span class="p">(</span><span class="n">db_conf</span><span class="p">,</span> <span class="n">dist_conf</span><span class="p">,</span> <span class="n">fe_conf</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">merging_engine</span> <span class="o">=</span> <span class="n">merging_engine</span><span class="o">.</span><span class="n">Merging_Engine</span><span class="p">(</span><span class="n">db_conf</span><span class="p">,</span> <span class="n">dist_conf</span><span class="p">,</span> <span class="n">fe_conf</span><span class="p">)</span>
+
+    <span class="c1"># ==================== ------ INTER ALGO DISTANCE ------- ====================</span>
+<div class="viewcode-block" id="Distance_Engine.get_dist_and_decision_algos_to_algos"><a class="viewcode-back" href="../../../carlhauser_server.DistanceEngine.html#carlhauser_server.DistanceEngine.distance_engine.Distance_Engine.get_dist_and_decision_algos_to_algos">[docs]</a>    <span class="k">def</span> <span class="nf">get_dist_and_decision_algos_to_algos</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pic_package_from</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">pic_package_to</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">scoring_datastrutures</span><span class="o">.</span><span class="n">AlgoMatch</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compute a list of distance and decision from two images representations, with activated (conf) algorithms.</span>
+<span class="sd">        :param pic_package_from: dict of one image features</span>
+<span class="sd">        :param pic_package_to: dict of one image features</span>
+<span class="sd">        :return: merged dict of distance and decision for each algorithm</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">merged_dict</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="c1"># Get hash distances</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">hash_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">distance_hash</span><span class="o">.</span><span class="n">hash_distance</span><span class="p">(</span><span class="n">pic_package_from</span><span class="p">,</span> <span class="n">pic_package_to</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Computed hashes distance : </span><span class="si">{hash_dict}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">merged_dict</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">hash_dict</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">AlgoFeatureNotPresentError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;No feature present for hashing algorithms : </span><span class="si">{e}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Get ORB distances</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">orb_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">distance_orb</span><span class="o">.</span><span class="n">orb_distance</span><span class="p">(</span><span class="n">pic_package_from</span><span class="p">,</span> <span class="n">pic_package_to</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Computed orb distance : </span><span class="si">{orb_dict}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">merged_dict</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">orb_dict</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">AlgoFeatureNotPresentError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;No feature present for orbing algorithms : </span><span class="si">{e}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Distance dict : </span><span class="si">{merged_dict}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">merged_dict</span></div>
+
+    <span class="c1"># ==================== ------ INTER IMAGE DISTANCE ------- ====================</span>
+<div class="viewcode-block" id="Distance_Engine.get_dist_and_decision_picture_to_picture"><a class="viewcode-back" href="../../../carlhauser_server.DistanceEngine.html#carlhauser_server.DistanceEngine.distance_engine.Distance_Engine.get_dist_and_decision_picture_to_picture">[docs]</a>    <span class="k">def</span> <span class="nf">get_dist_and_decision_picture_to_picture</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pic_package_from</span><span class="p">,</span> <span class="n">pic_package_to</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">scoring_datastrutures</span><span class="o">.</span><span class="n">DecisionTypes</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compare two pictures by their features, to return a one unique distance and a one unique decision. All activated algorithms are involved.</span>
+<span class="sd">        :param pic_package_from: dict of one image features</span>
+<span class="sd">        :param pic_package_to: dict of one image features</span>
+<span class="sd">        :return: distance and a decision</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># From distance between algos, obtain the distance between pictures</span>
+        <span class="n">merged_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_dist_and_decision_algos_to_algos</span><span class="p">(</span><span class="n">pic_package_from</span><span class="p">,</span> <span class="n">pic_package_to</span><span class="p">)</span>
+
+        <span class="n">dist</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">merging_engine</span><span class="o">.</span><span class="n">merge_algos_distance</span><span class="p">(</span><span class="n">merged_dict</span><span class="p">)</span>
+        <span class="n">decision</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">merging_engine</span><span class="o">.</span><span class="n">merge_algos_decision</span><span class="p">(</span><span class="n">merged_dict</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">dist</span><span class="p">,</span> <span class="n">decision</span></div>
+
+<div class="viewcode-block" id="Distance_Engine.match_enough"><a class="viewcode-back" href="../../../carlhauser_server.DistanceEngine.html#carlhauser_server.DistanceEngine.distance_engine.Distance_Engine.match_enough">[docs]</a>    <span class="k">def</span> <span class="nf">match_enough</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">matching_picture</span><span class="p">:</span> <span class="n">scoring_datastrutures</span><span class="o">.</span><span class="n">ImageMatch</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check if a match is good enough. Compare the distance between pictures with the threshold between clsuters. Usable for storage graph.</span>
+<span class="sd">        :param matching_picture: An ImageMatch object, which includes distance between pictures</span>
+<span class="sd">        :return: boolean, True if pictures are close enough, False otherwise.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Check if the matching pictures provided are &quot;close enough&quot; of the current picture.</span>
+
+        <span class="c1"># Check if the picture is too far or not</span>
+        <span class="k">if</span> <span class="n">matching_picture</span><span class="o">.</span><span class="n">distance</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dist_conf</span><span class="o">.</span><span class="n">MAX_DIST_FOR_NEW_CLUSTER</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="c1"># TODO : Use decision ?</span>
+
+        <span class="c1"># Picture is too &quot;far&quot;</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+    <span class="c1"># ==================== ------ PICTURE TO CLUSTER DISTANCE ------- ====================</span>
+
+<div class="viewcode-block" id="Distance_Engine.get_top_matching_clusters"><a class="viewcode-back" href="../../../carlhauser_server.DistanceEngine.html#carlhauser_server.DistanceEngine.distance_engine.Distance_Engine.get_top_matching_clusters">[docs]</a>    <span class="k">def</span> <span class="nf">get_top_matching_clusters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cluster_list</span><span class="p">:</span> <span class="n">List</span><span class="p">,</span> <span class="n">image_dict</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">scoring_datastrutures</span><span class="o">.</span><span class="n">ClusterMatch</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Evaluate the similarity between the given picture and each cluster&#39;s representative picture</span>
+<span class="sd">        Returns a list of the N closest clusters</span>
+<span class="sd">        :param cluster_list: The cluster list to iterate on, to check if the picture belongs to one of them</span>
+<span class="sd">        :param image_dict: the picture features to use to check if belonging to each cluster</span>
+<span class="sd">        :return: a top list of clusters with which the picture matches.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Finding top matching clusters for current picture in cluster list </span><span class="si">{cluster_list}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="n">top_n_storage</span> <span class="o">=</span> <span class="n">scoring_datastrutures</span><span class="o">.</span><span class="n">TopN</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dist_conf</span><span class="o">.</span><span class="n">TOP_N_CLUSTERS</span><span class="p">)</span>
+
+        <span class="c1"># Evaluate similarity to each cluster</span>
+        <span class="k">for</span> <span class="n">curr_cluster</span> <span class="ow">in</span> <span class="n">cluster_list</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Evaluating distance from current picture to cluster #</span><span class="si">{curr_cluster}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="c1"># Evaluate current distance to cluster</span>
+            <span class="n">tmp_dist</span><span class="p">,</span> <span class="n">tmp_decision</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_distance_picture_to_cluster</span><span class="p">(</span><span class="n">curr_cluster</span><span class="p">,</span> <span class="n">image_dict</span><span class="p">)</span>
+
+            <span class="c1"># Store in datastructure</span>
+            <span class="n">tmp_cluster_match</span> <span class="o">=</span> <span class="n">scoring_datastrutures</span><span class="o">.</span><span class="n">ClusterMatch</span><span class="p">(</span><span class="n">cluster_id</span><span class="o">=</span><span class="n">curr_cluster</span><span class="p">,</span>
+                                                                   <span class="n">distance</span><span class="o">=</span><span class="n">tmp_dist</span><span class="p">,</span>
+                                                                   <span class="n">decision</span><span class="o">=</span><span class="n">tmp_decision</span><span class="p">)</span>
+            <span class="n">top_n_storage</span><span class="o">.</span><span class="n">add_element</span><span class="p">(</span><span class="n">tmp_cluster_match</span><span class="p">)</span>
+
+        <span class="c1"># get top N clusters = Ask datastructure to return its top list</span>
+        <span class="k">return</span> <span class="n">top_n_storage</span><span class="o">.</span><span class="n">get_top_n</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Distance_Engine.get_distance_picture_to_cluster"><a class="viewcode-back" href="../../../carlhauser_server.DistanceEngine.html#carlhauser_server.DistanceEngine.distance_engine.Distance_Engine.get_distance_picture_to_cluster">[docs]</a>    <span class="k">def</span> <span class="nf">get_distance_picture_to_cluster</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cluster_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">image_dict</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">scoring_datastrutures</span><span class="o">.</span><span class="n">DecisionTypes</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Go through N first picture of given cluster, and test their distance to given image</span>
+<span class="sd">        Merge the results into one unified distance</span>
+<span class="sd">        :param cluster_id: the cluster id of the cluster to compare</span>
+<span class="sd">        :param image_dict: the image dict of the picture to compare</span>
+<span class="sd">        :return: a distance and a decision, from picture to the cluster</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Computing distance between cluster </span><span class="si">{cluster_id}</span><span class="s2"> and current picture&quot;</span><span class="p">)</span>
+
+        <span class="n">pict_to_test_per_cluster</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dist_conf</span><span class="o">.</span><span class="n">PICT_TO_TEST_PER_CLUSTER</span>
+
+        <span class="n">list_dist_decision</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">curr_picture_sorted_set</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">db_utils</span><span class="o">.</span><span class="n">get_pictures_of_cluster</span><span class="p">(</span><span class="n">cluster_id</span><span class="p">)</span>  <span class="c1"># DECODE</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Retrieved pictures of cluster #</span><span class="si">{cluster_id}</span><span class="s2"> are </span><span class="si">{curr_picture_sorted_set}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">curr_picture</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">curr_picture_sorted_set</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">pict_to_test_per_cluster</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Evaluating picture #</span><span class="si">{i}</span><span class="s2"> of current cluster&quot;</span><span class="p">)</span>
+                <span class="c1"># We still have pictures to test for this cluster</span>
+                <span class="c1"># Get picture dict</span>
+                <span class="n">curr_pic_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">get_dict_from_key</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">storage_db_no_decode</span><span class="p">,</span> <span class="n">curr_picture</span><span class="p">,</span> <span class="n">pickle</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+                <span class="c1"># Evaluate distance between actual picture and cluster&#39;s pictures</span>
+                <span class="n">list_dist_decision</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_dist_and_decision_picture_to_picture</span><span class="p">(</span><span class="n">curr_pic_dict</span><span class="p">,</span> <span class="n">image_dict</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># We have tested the N first pictures of the cluster and so stop here</span>
+                <span class="k">break</span>
+
+        <span class="c1"># Evaluation of the distance between pictures, and the decision</span>
+        <span class="n">dist_picture_to_cluster</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">merging_engine</span><span class="o">.</span><span class="n">merge_max_pictures_distance</span><span class="p">([</span><span class="n">i</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">list_dist_decision</span><span class="p">])</span>
+        <span class="n">decision_picture_to_cluster</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">merging_engine</span><span class="o">.</span><span class="n">merge_pictures_decisions</span><span class="p">([</span><span class="n">i</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">list_dist_decision</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="n">dist_picture_to_cluster</span><span class="p">,</span> <span class="n">decision_picture_to_cluster</span></div>
+
+    <span class="c1"># ==================== ------ PICTURE TO ALL PICTURES DISTANCE ------- ====================</span>
+
+<div class="viewcode-block" id="Distance_Engine.get_top_matching_pictures_from_clusters"><a class="viewcode-back" href="../../../carlhauser_server.DistanceEngine.html#carlhauser_server.DistanceEngine.distance_engine.Distance_Engine.get_top_matching_pictures_from_clusters">[docs]</a>    <span class="k">def</span> <span class="nf">get_top_matching_pictures_from_clusters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cluster_list</span><span class="p">:</span> <span class="n">List</span><span class="p">,</span> <span class="n">image_dict</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">scoring_datastrutures</span><span class="o">.</span><span class="n">ImageMatch</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Evaluate the similarity between the given picture and all pictures of cluster list.</span>
+<span class="sd">        Returns a list of the N closest pictures and cluster, with distance</span>
+<span class="sd">        :param cluster_list: The cluster list to iterate on, to check if the picture is near one of its picture</span>
+<span class="sd">        :param image_dict: the picture features to use to check if near any pictures of the cluster list</span>
+<span class="sd">        :return: List of Imagematch, undifferenciated of their origin cluster</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Finding top matching pictures for current picture in all pictures of all clusters of the list=</span><span class="si">{cluster_list}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="n">top_n_storage</span> <span class="o">=</span> <span class="n">scoring_datastrutures</span><span class="o">.</span><span class="n">TopN</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dist_conf</span><span class="o">.</span><span class="n">TOP_N_PICTURES</span><span class="p">)</span>
+
+        <span class="c1"># For each cluster, iterate over all pictures of this cluster</span>
+        <span class="k">for</span> <span class="n">curr_cluster</span> <span class="ow">in</span> <span class="n">cluster_list</span><span class="p">:</span>
+            <span class="n">curr_picture_set</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">db_utils</span><span class="o">.</span><span class="n">get_pictures_of_cluster</span><span class="p">(</span><span class="n">curr_cluster</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">curr_picture</span> <span class="ow">in</span> <span class="n">curr_picture_set</span><span class="p">:</span>
+                <span class="c1"># Get picture dict</span>
+                <span class="n">curr_pic_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">get_dict_from_key</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">storage_db_no_decode</span><span class="p">,</span> <span class="n">curr_picture</span><span class="p">,</span> <span class="n">pickle</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+                <span class="c1"># Evaluate distance between actual picture and cluster&#39;s pictures</span>
+                <span class="n">tmp_dist</span><span class="p">,</span> <span class="n">tmp_decision</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_dist_and_decision_picture_to_picture</span><span class="p">(</span><span class="n">curr_pic_dict</span><span class="p">,</span> <span class="n">image_dict</span><span class="p">)</span>
+
+                <span class="c1"># Keep only N best picture = Store in datastructure</span>
+                <span class="n">tmp_image_match</span> <span class="o">=</span> <span class="n">scoring_datastrutures</span><span class="o">.</span><span class="n">ImageMatch</span><span class="p">(</span><span class="n">image_id</span><span class="o">=</span><span class="n">curr_picture</span><span class="p">,</span> <span class="n">cluster_id</span><span class="o">=</span><span class="n">curr_cluster</span><span class="p">,</span> <span class="n">distance</span><span class="o">=</span><span class="n">tmp_dist</span><span class="p">,</span> <span class="n">decision</span><span class="o">=</span><span class="n">tmp_decision</span><span class="p">)</span>
+                <span class="n">top_n_storage</span><span class="o">.</span><span class="n">add_element</span><span class="p">(</span><span class="n">tmp_image_match</span><span class="p">)</span>
+
+        <span class="c1"># get top N pictures</span>
+        <span class="k">return</span> <span class="n">top_n_storage</span><span class="o">.</span><span class="n">get_top_n</span><span class="p">()</span></div>
+
+    <span class="c1"># ==================== ------ PICTURE TO ALL PICTURES DISTANCE ------- ====================</span>
+
+<div class="viewcode-block" id="Distance_Engine.get_best_n_pictures_of_cluster"><a class="viewcode-back" href="../../../carlhauser_server.DistanceEngine.html#carlhauser_server.DistanceEngine.distance_engine.Distance_Engine.get_best_n_pictures_of_cluster">[docs]</a>    <span class="k">def</span> <span class="nf">get_best_n_pictures_of_cluster</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cluster_id</span><span class="p">):</span>
+        <span class="c1"># Get N best pictures of the given cluster</span>
+        <span class="c1"># TODO : To complete with ZSET ...</span>
+        <span class="k">return</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, Vincent FALCONIERI.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.2.
+    </div>
+  </body>
+</html>

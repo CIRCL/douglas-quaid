@@ -1,0 +1,200 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>carlhauser_client_tests.Helpers.test_dict_utilities &#8212; Douglas-Quaid 0.0.4 documentation</title>
+    <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for carlhauser_client_tests.Helpers.test_dict_utilities</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">import</span> <span class="nn">unittest</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">pprint</span> <span class="k">import</span> <span class="n">pformat</span>
+<span class="kn">import</span> <span class="nn">carlhauser_client.Helpers.dict_utilities</span> <span class="k">as</span>  <span class="nn">dict_utilities</span>
+
+
+<div class="viewcode-block" id="TestClusterMatcher"><a class="viewcode-back" href="../../../carlhauser_client_tests.Helpers.html#carlhauser_client_tests.Helpers.test_dict_utilities.TestClusterMatcher">[docs]</a><span class="k">class</span> <span class="nc">TestClusterMatcher</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Basic test cases.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="TestClusterMatcher.setUp"><a class="viewcode-back" href="../../../carlhauser_client_tests.Helpers.html#carlhauser_client_tests.Helpers.test_dict_utilities.TestClusterMatcher.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span></div>
+        <span class="c1"># self.conf = .Default_configuration()</span>
+
+<div class="viewcode-block" id="TestClusterMatcher.test_absolute_truth_and_meaning"><a class="viewcode-back" href="../../../carlhauser_client_tests.Helpers.html#carlhauser_client_tests.Helpers.test_dict_utilities.TestClusterMatcher.test_absolute_truth_and_meaning">[docs]</a>    <span class="k">def</span> <span class="nf">test_absolute_truth_and_meaning</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestClusterMatcher.test_dict_update"><a class="viewcode-back" href="../../../carlhauser_client_tests.Helpers.html#carlhauser_client_tests.Helpers.test_dict_utilities.TestClusterMatcher.test_dict_update">[docs]</a>    <span class="k">def</span> <span class="nf">test_dict_update</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">ori_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;test&quot;</span><span class="p">:</span> <span class="s2">&quot;toto&quot;</span><span class="p">}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Original dict : {pformat(ori_dict)}&quot;</span><span class="p">)</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">dict_utilities</span><span class="o">.</span><span class="n">revert_mapping</span><span class="p">(</span><span class="n">ori_dict</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Reverted dict : {pformat(res)}&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertDictEqual</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;toto&#39;</span><span class="p">:</span> <span class="s1">&#39;test&#39;</span><span class="p">})</span></div>
+
+<div class="viewcode-block" id="TestClusterMatcher.test_dict_reverse"><a class="viewcode-back" href="../../../carlhauser_client_tests.Helpers.html#carlhauser_client_tests.Helpers.test_dict_utilities.TestClusterMatcher.test_dict_reverse">[docs]</a>    <span class="k">def</span> <span class="nf">test_dict_reverse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">ori_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;test&quot;</span><span class="p">:</span> <span class="s2">&quot;toto&quot;</span><span class="p">,</span> <span class="s2">&quot;aaa&quot;</span><span class="p">:</span> <span class="s2">&quot;ddddd&quot;</span><span class="p">,</span> <span class="s2">&quot;bbbb&quot;</span><span class="p">:</span> <span class="s2">&quot;old&quot;</span><span class="p">}</span>
+        <span class="n">futu_dict</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">old_value</span> <span class="o">=</span> <span class="s2">&quot;old&quot;</span>
+        <span class="n">new_value</span> <span class="o">=</span> <span class="s2">&quot;new&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Original dict : </span><span class="se">\n</span><span class="s2">{pformat(ori_dict)}&quot;</span><span class="p">)</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">dict_utilities</span><span class="o">.</span><span class="n">update_values_dict</span><span class="p">(</span><span class="n">ori_dict</span><span class="p">,</span> <span class="n">futu_dict</span><span class="p">,</span> <span class="p">{</span><span class="n">old_value</span><span class="p">:</span> <span class="n">new_value</span><span class="p">})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Replaced dict : </span><span class="se">\n</span><span class="s2">{pformat(res)}&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertDictEqual</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;test&#39;</span><span class="p">:</span> <span class="s1">&#39;toto&#39;</span><span class="p">,</span> <span class="s1">&#39;aaa&#39;</span><span class="p">:</span> <span class="s1">&#39;ddddd&#39;</span><span class="p">,</span> <span class="s1">&#39;bbbb&#39;</span><span class="p">:</span> <span class="s1">&#39;new&#39;</span><span class="p">})</span></div>
+
+<div class="viewcode-block" id="TestClusterMatcher.test_dict_reverse_hard"><a class="viewcode-back" href="../../../carlhauser_client_tests.Helpers.html#carlhauser_client_tests.Helpers.test_dict_utilities.TestClusterMatcher.test_dict_reverse_hard">[docs]</a>    <span class="k">def</span> <span class="nf">test_dict_reverse_hard</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">ori_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;test&quot;</span><span class="p">:</span> <span class="s2">&quot;toto&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;aaa&quot;</span><span class="p">:</span> <span class="s2">&quot;ddddd&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;bbbb&quot;</span><span class="p">:</span> <span class="s2">&quot;old&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;mylist&quot;</span><span class="p">:</span> <span class="p">[</span>
+                        <span class="s2">&quot;test&quot;</span><span class="p">,</span> <span class="s2">&quot;toto&quot;</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">,</span> <span class="s2">&quot;old&quot;</span><span class="p">,</span> <span class="s2">&quot;notold&quot;</span>
+                    <span class="p">],</span>
+                    <span class="s2">&quot;mysecondlist&quot;</span><span class="p">:</span>
+                        <span class="p">[</span>
+                            <span class="s2">&quot;minidict1&quot;</span><span class="p">]</span>
+                    <span class="p">}</span>
+        <span class="n">futu_dict</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">old_value</span> <span class="o">=</span> <span class="s2">&quot;old&quot;</span>
+        <span class="n">new_value</span> <span class="o">=</span> <span class="s2">&quot;new&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Original dict : </span><span class="se">\n</span><span class="s2">{pformat(ori_dict)}&quot;</span><span class="p">)</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">dict_utilities</span><span class="o">.</span><span class="n">update_values_dict</span><span class="p">(</span><span class="n">ori_dict</span><span class="p">,</span> <span class="n">futu_dict</span><span class="p">,</span> <span class="p">{</span><span class="n">old_value</span><span class="p">:</span> <span class="n">new_value</span><span class="p">})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Replaced dict : </span><span class="se">\n</span><span class="s2">{pformat(res)}&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertDictEqual</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;aaa&#39;</span><span class="p">:</span> <span class="s1">&#39;ddddd&#39;</span><span class="p">,</span>
+                                   <span class="s1">&#39;bbbb&#39;</span><span class="p">:</span> <span class="s1">&#39;new&#39;</span><span class="p">,</span>
+                                   <span class="s1">&#39;mylist&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="s1">&#39;toto&#39;</span><span class="p">,</span> <span class="s1">&#39;value&#39;</span><span class="p">,</span> <span class="s1">&#39;new&#39;</span><span class="p">,</span> <span class="s1">&#39;notold&#39;</span><span class="p">],</span>
+                                   <span class="s1">&#39;mysecondlist&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;minidict1&#39;</span><span class="p">],</span>
+                                   <span class="s1">&#39;test&#39;</span><span class="p">:</span> <span class="s1">&#39;toto&#39;</span><span class="p">})</span></div>
+
+<div class="viewcode-block" id="TestClusterMatcher.test_dict_reverse_realist"><a class="viewcode-back" href="../../../carlhauser_client_tests.Helpers.html#carlhauser_client_tests.Helpers.test_dict_utilities.TestClusterMatcher.test_dict_reverse_realist">[docs]</a>    <span class="k">def</span> <span class="nf">test_dict_reverse_realist</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">ori_dict</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;list_cluster&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="p">{</span>
+                    <span class="s2">&quot;cluster_id&quot;</span><span class="p">:</span> <span class="s2">&quot;cluster|fa7c7ff4-e831-4acd-8b39-f48ad9ff6aeb&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;distance&quot;</span><span class="p">:</span> <span class="mf">0.17232142857142857</span>
+                <span class="p">},</span>
+                <span class="p">{</span>
+                    <span class="s2">&quot;cluster_id&quot;</span><span class="p">:</span> <span class="s2">&quot;cluster|1627daed-2c7a-4965-a706-75e480b91842&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;distance&quot;</span><span class="p">:</span> <span class="mf">0.2330357142857143</span>
+                <span class="p">},</span>
+                <span class="p">{</span>
+                    <span class="s2">&quot;cluster_id&quot;</span><span class="p">:</span> <span class="s2">&quot;cluster|old&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;distance&quot;</span><span class="p">:</span> <span class="mf">0.2580357142857143</span>
+                <span class="p">}</span>
+            <span class="p">],</span>
+            <span class="s2">&quot;list_pictures&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="p">{</span>
+                    <span class="s2">&quot;cluster_id&quot;</span><span class="p">:</span> <span class="s2">&quot;cluster|fa7c7ff4-e831-4acd-8b39-f48ad9ff6aeb&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;distance&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+                    <span class="s2">&quot;image_id&quot;</span><span class="p">:</span> <span class="s2">&quot;old&quot;</span>
+                <span class="p">},</span>
+            <span class="p">]}</span>
+        <span class="n">futu_dict</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">old_value</span> <span class="o">=</span> <span class="s2">&quot;old&quot;</span>
+        <span class="n">new_value</span> <span class="o">=</span> <span class="s2">&quot;new&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Original dict : </span><span class="se">\n</span><span class="s2">{pformat(ori_dict)}&quot;</span><span class="p">)</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">dict_utilities</span><span class="o">.</span><span class="n">update_values_dict</span><span class="p">(</span><span class="n">ori_dict</span><span class="p">,</span> <span class="n">futu_dict</span><span class="p">,</span> <span class="p">{</span><span class="n">old_value</span><span class="p">:</span> <span class="n">new_value</span><span class="p">})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Replaced dict : </span><span class="se">\n</span><span class="s2">{pformat(res)}&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertDictEqual</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;list_cluster&#39;</span><span class="p">:</span> <span class="p">[{</span><span class="s1">&#39;cluster_id&#39;</span><span class="p">:</span> <span class="s1">&#39;cluster|fa7c7ff4-e831-4acd-8b39-f48ad9ff6aeb&#39;</span><span class="p">,</span>
+                                                     <span class="s1">&#39;distance&#39;</span><span class="p">:</span> <span class="mf">0.17232142857142857</span><span class="p">},</span>
+                                                    <span class="p">{</span><span class="s1">&#39;cluster_id&#39;</span><span class="p">:</span> <span class="s1">&#39;cluster|1627daed-2c7a-4965-a706-75e480b91842&#39;</span><span class="p">,</span>
+                                                     <span class="s1">&#39;distance&#39;</span><span class="p">:</span> <span class="mf">0.2330357142857143</span><span class="p">},</span>
+                                                    <span class="p">{</span><span class="s1">&#39;cluster_id&#39;</span><span class="p">:</span> <span class="s1">&#39;cluster|old&#39;</span><span class="p">,</span>
+                                                     <span class="s1">&#39;distance&#39;</span><span class="p">:</span> <span class="mf">0.2580357142857143</span><span class="p">}],</span>
+                                   <span class="s1">&#39;list_pictures&#39;</span><span class="p">:</span> <span class="p">[{</span><span class="s1">&#39;cluster_id&#39;</span><span class="p">:</span> <span class="s1">&#39;cluster|fa7c7ff4-e831-4acd-8b39-f48ad9ff6aeb&#39;</span><span class="p">,</span>
+                                                      <span class="s1">&#39;distance&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+                                                      <span class="s1">&#39;image_id&#39;</span><span class="p">:</span> <span class="s1">&#39;new&#39;</span><span class="p">}]})</span></div>
+
+    <span class="sd">&#39;&#39;&#39; </span>
+<span class="sd">    # TODO !</span>
+<span class="sd">    def test_copy_id_to_image(self):</span>
+<span class="sd">        pass</span>
+
+<span class="sd">    def test_revert_mapping(self):</span>
+<span class="sd">        pass</span>
+
+<span class="sd">    def test_apply_revert_mapping(self):</span>
+<span class="sd">        pass</span>
+
+<span class="sd">    def test_update_values_dict(self):</span>
+<span class="sd">        pass</span>
+<span class="sd">        </span>
+<span class="sd">    &#39;&#39;&#39;</span></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">unittest</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, Vincent FALCONIERI.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.2.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,227 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>carlhauser_client.API.cli &#8212; Douglas-Quaid 0.0.4 documentation</title>
+    <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for carlhauser_client.API.cli</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">import</span> <span class="nn">pathlib</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Dict</span>
+
+<span class="c1"># ==================== ------ PERSONAL LIBRARIES ------- ====================</span>
+<span class="kn">from</span> <span class="nn">carlhauser_client.API.extended_api</span> <span class="k">import</span> <span class="n">Extended_API</span>
+<span class="kn">from</span> <span class="nn">carlhauser_client.Helpers.dict_utilities</span> <span class="k">import</span> <span class="n">apply_revert_mapping</span>
+<span class="kn">from</span> <span class="nn">common.ImportExport.json_import_export</span> <span class="k">import</span> <span class="n">save_json</span><span class="p">,</span> <span class="n">load_json</span>
+<span class="kn">from</span> <span class="nn">common.environment_variable</span> <span class="k">import</span> <span class="n">load_client_logging_conf_file</span>
+
+<span class="n">load_client_logging_conf_file</span><span class="p">()</span>
+
+
+<span class="c1"># ==================== ------ LAUNCHER ------- ====================</span>
+
+<div class="viewcode-block" id="CLI"><a class="viewcode-back" href="../../../carlhauser_client.API.html#carlhauser_client.API.cli.CLI">[docs]</a><span class="k">class</span> <span class="nc">CLI</span><span class="p">:</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Command line interface for client side</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ext_api</span> <span class="o">=</span> <span class="n">Extended_API</span><span class="o">.</span><span class="n">get_api</span><span class="p">()</span>
+
+<div class="viewcode-block" id="CLI.ping"><a class="viewcode-back" href="../../../carlhauser_client.API.html#carlhauser_client.API.cli.CLI.ping">[docs]</a>    <span class="k">def</span> <span class="nf">ping</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Ping the server to check if he is alive.</span>
+<span class="sd">        :param args: Not needed</span>
+<span class="sd">        :return: True if the server is alive, False if the server is not</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ext_api</span><span class="o">.</span><span class="n">ping_server</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="CLI.upload"><a class="viewcode-back" href="../../../carlhauser_client.API.html#carlhauser_client.API.cli.CLI.upload">[docs]</a>    <span class="k">def</span> <span class="nf">upload</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Perform the upload of all picture in the provided folder (args.path)</span>
+<span class="sd">        and save the mapping (original_file_name)-&gt;(id_given_by_server)</span>
+<span class="sd">        in provided file (args.mapfile)</span>
+<span class="sd">        :param args: arguments as described</span>
+<span class="sd">        :return: Mapping filename to id</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Uploading pictures from </span><span class="si">{args.path}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">mapping</span><span class="p">,</span> <span class="n">nb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ext_api</span><span class="o">.</span><span class="n">add_many_pictures_no_wait</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;</span><span class="si">{nb}</span><span class="s2"> pictures uploaded.&quot;</span><span class="p">)</span>
+        <span class="n">save_json</span><span class="p">(</span><span class="n">mapping</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">mapfile</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Mapping file_name / Server ID saved to </span><span class="si">{args.mapfile}</span><span class="s2">.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">mapping</span></div>
+
+<div class="viewcode-block" id="CLI.request"><a class="viewcode-back" href="../../../carlhauser_client.API.html#carlhauser_client.API.cli.CLI.request">[docs]</a>    <span class="k">def</span> <span class="nf">request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Request the similar pictures of the provided picture (args.path)</span>
+<span class="sd">        if we get an answer before timeout (args.waittime). Translate back the provided ids</span>
+<span class="sd">        of the server with the filenames to id mapping saved previously (args.mapfile)</span>
+<span class="sd">        :param args: arguments as described</span>
+<span class="sd">        :return: A dict of results # TODO : Add an example of dict of results</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ext_api</span><span class="o">.</span><span class="n">request_one_picture_and_wait</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">waittime</span><span class="p">)</span>
+
+        <span class="c1"># If mapfile is provided, reverse the id. Otherwise, do nothing</span>
+        <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">mapfile</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Mapping file detected. Reversing the ids ... &quot;</span><span class="p">)</span>
+            <span class="n">mapping</span> <span class="o">=</span> <span class="n">load_json</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">mapfile</span><span class="p">)</span>
+            <span class="n">results</span> <span class="o">=</span> <span class="n">apply_revert_mapping</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="n">mapping</span><span class="p">)</span>
+
+        <span class="n">save_json</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">resultfile</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">results</span></div>
+
+<div class="viewcode-block" id="CLI.dump"><a class="viewcode-back" href="../../../carlhauser_client.API.html#carlhauser_client.API.cli.CLI.dump">[docs]</a>    <span class="k">def</span> <span class="nf">dump</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Dump the database and transmit it to the client, and save it in a file(args.dbfile)</span>
+<span class="sd">        Translate back the provided ids of the server with the filenames to id mapping</span>
+<span class="sd">        saved previously (args.mapfile). Can duplicate id of picture to their &quot;image&quot; and &quot;shape&quot; attributes. Allows to visualize the database with visjs-classificator (args.copyids)</span>
+<span class="sd">        :param args: arguments as described</span>
+<span class="sd">        :return: The database as a Dict of a graphe (visjs-classificator style)</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Requesting server to dump its database&quot;</span><span class="p">)</span>
+        <span class="n">graphe_struct</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ext_api</span><span class="o">.</span><span class="n">get_db_dump_as_graph</span><span class="p">()</span>
+        <span class="n">db</span> <span class="o">=</span> <span class="n">graphe_struct</span><span class="o">.</span><span class="n">export_as_dict</span><span class="p">()</span>
+
+        <span class="c1"># TODO : Handle it properly with graphe structure calls ? For now, only operation on dict</span>
+        <span class="c1"># If mapfile is provided, reverse the id. Otherwise, do nothing</span>
+        <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">mapfile</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Mapping file detected. Reversing the ids ... &quot;</span><span class="p">)</span>
+            <span class="n">mapping</span> <span class="o">=</span> <span class="n">load_json</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">mapfile</span><span class="p">)</span>
+            <span class="n">db</span> <span class="o">=</span> <span class="n">apply_revert_mapping</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">mapping</span><span class="p">)</span>
+            <span class="c1"># TODO : graphe_struct.replace_id_from_mapping(mapping) # Cleaner</span>
+
+        <span class="c1"># If Copy_ids is true, we copy the value of the picture&#39;s ids</span>
+        <span class="c1"># to their image and shape attributes</span>
+        <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">copyids</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;ID to image copy option detected. Copying ... &quot;</span><span class="p">)</span>
+            <span class="n">db</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ext_api</span><span class="o">.</span><span class="n">copy_id_to_image</span><span class="p">(</span><span class="n">db</span><span class="p">)</span>
+            <span class="c1"># TODO : graphe_struct.copy_ids_to_image() # Cleaner</span>
+
+        <span class="n">save_json</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">dbfile</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">db</span></div></div>
+
+
+<div class="viewcode-block" id="main"><a class="viewcode-back" href="../../../carlhauser_client.API.html#carlhauser_client.API.cli.main">[docs]</a><span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="c1"># Handle CLI calls. Define parameters for each calls, and the function to be called as reference.</span>
+    <span class="n">cli</span> <span class="o">=</span> <span class="n">CLI</span><span class="p">()</span>
+
+    <span class="c1"># Top level parser</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s1">&#39;CLI tool to interact with douglas-quaid server&#39;</span><span class="p">)</span>
+    <span class="n">subparsers</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_subparsers</span><span class="p">(</span><span class="n">help</span><span class="o">=</span><span class="s1">&#39;help for subcommands&#39;</span><span class="p">)</span>
+
+    <span class="c1"># create the parser for the &quot;ping&quot; command</span>
+    <span class="n">parser_ping</span> <span class="o">=</span> <span class="n">subparsers</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span><span class="s1">&#39;ping&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Ping server&#39;</span><span class="p">)</span>
+    <span class="n">parser_ping</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;ping&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">)</span>
+    <span class="n">parser_ping</span><span class="o">.</span><span class="n">set_defaults</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">cli</span><span class="o">.</span><span class="n">ping</span><span class="p">)</span>
+
+    <span class="c1"># create the parser for the &quot;upload&quot; command</span>
+    <span class="n">parser_upload</span> <span class="o">=</span> <span class="n">subparsers</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span><span class="s1">&#39;upload&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Upload pictures to server&#39;</span><span class="p">)</span>
+    <span class="n">parser_upload</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;upload&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">)</span>
+    <span class="n">parser_upload</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-p&#39;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;path&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">p</span><span class="p">)</span><span class="o">.</span><span class="n">absolute</span><span class="p">(),</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Pictures path&#39;</span><span class="p">)</span>
+    <span class="n">parser_upload</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-o&#39;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;mapfile&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">p</span><span class="p">)</span><span class="o">.</span><span class="n">absolute</span><span class="p">(),</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s1">&#39;./mapping&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Mapping file path (output)&#39;</span><span class="p">)</span>
+    <span class="n">parser_upload</span><span class="o">.</span><span class="n">set_defaults</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">cli</span><span class="o">.</span><span class="n">upload</span><span class="p">)</span>
+
+    <span class="c1"># create the parser for the &quot;request&quot; command</span>
+    <span class="n">parser_request</span> <span class="o">=</span> <span class="n">subparsers</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span><span class="s1">&#39;request&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Request similar pictures to server&#39;</span><span class="p">)</span>
+    <span class="n">parser_request</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;request&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">)</span>
+    <span class="n">parser_request</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-p&#39;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;path&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">p</span><span class="p">)</span><span class="o">.</span><span class="n">absolute</span><span class="p">(),</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Picture path&#39;</span><span class="p">)</span>
+    <span class="n">parser_request</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-t&#39;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;waittime&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s1">&#39;60&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Max waiting time for an answer&#39;</span><span class="p">)</span>
+    <span class="n">parser_request</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-m&#39;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;mapfile&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">p</span><span class="p">)</span><span class="o">.</span><span class="n">absolute</span><span class="p">(),</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Mapping file path (intput) for name conversion&#39;</span><span class="p">)</span>
+    <span class="n">parser_request</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-o&#39;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;resultfile&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">p</span><span class="p">)</span><span class="o">.</span><span class="n">absolute</span><span class="p">(),</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s1">&#39;./result&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Result file path (output)&#39;</span><span class="p">)</span>
+    <span class="n">parser_request</span><span class="o">.</span><span class="n">set_defaults</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">cli</span><span class="o">.</span><span class="n">request</span><span class="p">)</span>
+
+    <span class="c1"># create the parser for the &quot;dump&quot; command</span>
+    <span class="n">parser_dump</span> <span class="o">=</span> <span class="n">subparsers</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span><span class="s1">&#39;dump&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Ask server to dump its database&#39;</span><span class="p">)</span>
+    <span class="n">parser_dump</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;dump&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">)</span>
+    <span class="n">parser_dump</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-m&#39;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;mapfile&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">p</span><span class="p">)</span><span class="o">.</span><span class="n">absolute</span><span class="p">(),</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Mapping file path (intput) for name conversion&#39;</span><span class="p">)</span>
+    <span class="n">parser_dump</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-o&#39;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;dbfile&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">p</span><span class="p">)</span><span class="o">.</span><span class="n">absolute</span><span class="p">(),</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s1">&#39;./db_dump&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Database file path (output)&#39;</span><span class="p">)</span>
+    <span class="n">parser_dump</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-c&#39;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;copyids&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Copy ids in &quot;image&quot; field. Useful if mapping is used and ids are filenames.&#39;</span><span class="p">)</span>
+    <span class="n">parser_dump</span><span class="o">.</span><span class="n">set_defaults</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">cli</span><span class="o">.</span><span class="n">dump</span><span class="p">)</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--version&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;version&#39;</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="s1">&#39;douglas-quaid client cli </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="s2">&quot;1.0.0&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Parse argument, fetch the reference to the function to call, and call it</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">func</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">func</span>
+        <span class="n">func</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;too few arguments&quot;</span><span class="p">)</span></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, Vincent FALCONIERI.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.2.
+    </div>
+  </body>
+</html>

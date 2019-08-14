@@ -1,0 +1,231 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>common.HumanHash.humanizer &#8212; Douglas-Quaid 0.0.4 documentation</title>
+    <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for common.HumanHash.humanizer</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="c1"># PLEASE BE AWARE THIS IMPORT IS NOT IN THE PIPENV.</span>
+<span class="c1"># THIS IS NOT A DEPENDENCY AS IT IS NOT REQUIRED STRICTLY TO RUN THE LIBRARY.</span>
+<span class="c1"># PLEASE INSTALL BY YOURSELF IF YOU NEED TO RUN THIS SCRIPT !</span>
+<span class="c1"># Please see : https://pypi.org/project/codenamize/ and https://github.com/jjmontesl/codenamize</span>
+<span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">import</span> <span class="nn">hashlib</span>
+<span class="kn">import</span> <span class="nn">pathlib</span>
+<span class="kn">import</span> <span class="nn">pprint</span>
+<span class="kn">import</span> <span class="nn">shutil</span>
+
+<span class="kn">from</span> <span class="nn">codenamize</span> <span class="k">import</span> <span class="n">codenamize</span>
+
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">COLLISIONS CALCULATIONS</span>
+<span class="sd">3 adj (max 4 chars) = 962286000 combinations</span>
+<span class="sd">3 adj (max 5 chars) = 25471468750 combinations</span>
+<span class="sd">3 adj (max 6 chars) = 122636229513 combinations</span>
+<span class="sd">3 adj (max 7 chars) = 355283372136 combinations</span>
+<span class="sd">3 adj (max 0 chars) = 2119641566400 combinations &lt;= We choose this configuration :)</span>
+<span class="sd">TESTS</span>
+<span class="sd">  (*, 1 adj, max 3) =&gt; 1742 distinct results (space size is 2760)</span>
+<span class="sd">  (*, 2 adj, max 3) =&gt; 41855 distinct results (space size is 66240)</span>
+<span class="sd">  (*, 3 adj, max 3) =&gt; 1005353 distinct results (space size is 1589760)</span>
+
+<span class="sd">&#39;&#39;&#39;</span>
+
+
+<div class="viewcode-block" id="Humanizer"><a class="viewcode-back" href="../../../common.HumanHash.html#common.HumanHash.humanizer.Humanizer">[docs]</a><span class="k">class</span> <span class="nc">Humanizer</span><span class="p">:</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">already_generated</span> <span class="o">=</span> <span class="nb">set</span><span class="p">({})</span>
+
+<div class="viewcode-block" id="Humanizer.rename_all_files"><a class="viewcode-back" href="../../../common.HumanHash.html#common.HumanHash.humanizer.Humanizer.rename_all_files">[docs]</a>    <span class="k">def</span> <span class="nf">rename_all_files</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">,</span> <span class="n">output_path</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">):</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s1">&#39;**/*&#39;</span><span class="p">)</span>
+        <span class="n">files</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">p</span> <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">is_file</span><span class="p">()]</span>
+
+        <span class="n">tmp_leng</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">files</span><span class="p">)</span>
+        <span class="n">files</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>  <span class="c1"># To prevent System&#39;s way of sorting paths.</span>
+        <span class="c1"># Therefore, we are sure about the order of treatment on any machine (determinism)</span>
+        <span class="n">tmp_leng_after</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">files</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">tmp_leng</span> <span class="o">!=</span> <span class="n">tmp_leng_after</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Sorting removed files ! Aborting.&quot;</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Adding </span><span class="si">{f.name}</span><span class="s2"> to already seen file name list.&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">already_generated</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>  <span class="c1"># toto.png</span>
+        <span class="nb">input</span><span class="p">()</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Going to change names of : {pprint.pformat(files)} </span><span class="se">\n</span><span class="s2"> Are you sure you want to continue ?&quot;</span><span class="p">)</span>
+        <span class="nb">input</span><span class="p">()</span>
+
+        <span class="n">first</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
+
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">file</span><span class="p">),</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="nb">bytes</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>  <span class="c1"># read entire file as bytes</span>
+
+                <span class="n">new_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">humanize_name</span><span class="p">(</span><span class="nb">bytes</span><span class="p">,</span> <span class="n">file</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">file</span><span class="o">.</span><span class="n">suffix</span><span class="p">)</span>  <span class="c1"># toto.png -&gt;  tata.png</span>
+
+                <span class="k">if</span> <span class="n">first</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;The file </span><span class="si">{file.name}</span><span class="s2"> is going to be changed to </span><span class="si">{new_name}</span><span class="s2">. </span><span class="se">\n</span><span class="s2"> Do you want to continue ? (Automatically approved after this first warning)&quot;</span><span class="p">)</span>
+                    <span class="nb">input</span><span class="p">()</span>
+                    <span class="n">first</span> <span class="o">=</span> <span class="kc">False</span>
+
+                <span class="c1"># file.rename(file.parent / str(new_name))  # tata.png</span>
+                <span class="n">shutil</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">file</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">output_path</span> <span class="o">/</span> <span class="nb">str</span><span class="p">(</span><span class="n">new_name</span><span class="p">)))</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Done. {len(files)} modified.&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">sanity_check</span><span class="p">(</span><span class="n">output_path</span><span class="p">,</span> <span class="n">tmp_leng</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Humanizer.sanity_check"><a class="viewcode-back" href="../../../common.HumanHash.html#common.HumanHash.humanizer.Humanizer.sanity_check">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">sanity_check</span><span class="p">(</span><span class="n">output_path</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">,</span> <span class="n">previous_files_length</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Sanity check ... .&quot;</span><span class="p">)</span>
+        <span class="n">p_sanity</span> <span class="o">=</span> <span class="n">output_path</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s1">&#39;**/*&#39;</span><span class="p">)</span>
+        <span class="n">files_sanity</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">p_sanity</span> <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">is_file</span><span class="p">()]</span>
+        <span class="n">tmp_leng_after_sanity</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">files_sanity</span><span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;</span><span class="si">{previous_files_length}</span><span class="s2"> files before, </span><span class="si">{tmp_leng_after_sanity}</span><span class="s2"> after.&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">previous_files_length</span> <span class="o">!=</span> <span class="n">tmp_leng_after_sanity</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Files lost ! {previous_files_length - tmp_leng_after_sanity} files deleted ? &quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Same number of files before and after. All good.&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Humanizer.humanize_name"><a class="viewcode-back" href="../../../common.HumanHash.html#common.HumanHash.humanizer.Humanizer.humanize_name">[docs]</a>    <span class="k">def</span> <span class="nf">humanize_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">content</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">file_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">file_suffix</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">collision_removal</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>  <span class="c1"># toto.png</span>
+
+        <span class="c1"># Python program to find SHA256 hexadecimal hash string of a file</span>
+
+        <span class="c1"># new_name = codenamize(base64.b64encode(content), 3, 0) + file_suffix</span>
+        <span class="n">new_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_name</span><span class="p">(</span><span class="n">content</span><span class="p">,</span> <span class="n">file_suffix</span><span class="p">)</span>
+
+        <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">while</span> <span class="n">collision_removal</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_already_drawn</span><span class="p">(</span><span class="n">new_name</span><span class="p">):</span>  <span class="c1"># tata.png</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Collision found on filename </span><span class="si">{file_name}</span><span class="s2"> generating </span><span class="si">{new_name}</span><span class="s2">. Adding </span><span class="si">{i}</span><span class="s2"> to filename.&quot;</span><span class="p">)</span>
+            <span class="c1"># Modify/Create a new name</span>
+            <span class="n">tmp_content</span> <span class="o">=</span> <span class="n">content</span> <span class="o">+</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+
+            <span class="c1"># Redraw the new name</span>
+            <span class="c1"># new_name = codenamize(base64.b64encode(tmp_content), 3, 0) + file_suffix  # tata.png</span>
+            <span class="n">new_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_name</span><span class="p">(</span><span class="n">tmp_content</span><span class="p">,</span> <span class="n">file_suffix</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Collision handled by renaming </span><span class="si">{file_name}</span><span class="s2"> generating </span><span class="si">{new_name}</span><span class="s2">.&quot;</span><span class="p">)</span>
+            <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="c1"># Correct the name for eventual</span>
+        <span class="n">final_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">correct_name</span><span class="p">(</span><span class="n">new_name</span><span class="p">)</span>  <span class="c1"># tata.png</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">already_generated</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">final_name</span><span class="p">)</span>  <span class="c1"># tata.png</span>
+
+        <span class="k">return</span> <span class="n">final_name</span>  <span class="c1"># tata.png</span></div>
+
+<div class="viewcode-block" id="Humanizer.get_name"><a class="viewcode-back" href="../../../common.HumanHash.html#common.HumanHash.humanizer.Humanizer.get_name">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_name</span><span class="p">(</span><span class="n">content</span><span class="p">,</span> <span class="n">file_suffix</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">codenamize</span><span class="p">(</span><span class="n">hashlib</span><span class="o">.</span><span class="n">sha256</span><span class="p">(</span><span class="n">content</span><span class="p">)</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">(),</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="n">file_suffix</span></div>
+
+<div class="viewcode-block" id="Humanizer.correct_name"><a class="viewcode-back" href="../../../common.HumanHash.html#common.HumanHash.humanizer.Humanizer.correct_name">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">correct_name</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="c1"># Check for space in names, etc.</span>
+        <span class="n">final_name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot;&#39;&quot;</span><span class="p">]:</span>
+            <span class="n">final_name</span> <span class="o">=</span> <span class="n">final_name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">name</span> <span class="o">!=</span> <span class="n">final_name</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Name was corrected from </span><span class="si">{name}</span><span class="s2"> to </span><span class="si">{final_name}</span><span class="s2">.&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">final_name</span></div>
+
+<div class="viewcode-block" id="Humanizer.is_already_drawn"><a class="viewcode-back" href="../../../common.HumanHash.html#common.HumanHash.humanizer.Humanizer.is_already_drawn">[docs]</a>    <span class="k">def</span> <span class="nf">is_already_drawn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{</span><span class="n">new_name</span><span class="p">}</span><span class="o">.</span><span class="n">issubset</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">already_generated</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="main"><a class="viewcode-back" href="../../../common.HumanHash.html#common.HumanHash.humanizer.main">[docs]</a><span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="c1"># Usage example : python3 ./humanizer.py -p ./MINI_DATASET/</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s1">&#39;Rename all files in the given directory and subdirectory&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-p&#39;</span><span class="p">,</span> <span class="s1">&#39;--path&#39;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;path&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">p</span><span class="p">)</span><span class="o">.</span><span class="n">absolute</span><span class="p">(),</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;input path&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-o&#39;</span><span class="p">,</span> <span class="s1">&#39;--outpath&#39;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;outpath&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">p</span><span class="p">)</span><span class="o">.</span><span class="n">absolute</span><span class="p">(),</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;output path&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--version&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;version&#39;</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="s1">&#39;humanizer </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="s2">&quot;1.0.0&quot;</span><span class="p">)</span>
+
+    <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+    <span class="n">humanizer</span> <span class="o">=</span> <span class="n">Humanizer</span><span class="p">()</span>
+    <span class="n">humanizer</span><span class="o">.</span><span class="n">rename_all_files</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">outpath</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="test"><a class="viewcode-back" href="../../../common.HumanHash.html#common.HumanHash.humanizer.test">[docs]</a><span class="k">def</span> <span class="nf">test</span><span class="p">():</span>
+    <span class="n">humanizer</span> <span class="o">=</span> <span class="n">Humanizer</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">humanizer</span><span class="o">.</span><span class="n">correct_name</span><span class="p">(</span><span class="s2">&quot;toto is a test&quot;</span><span class="p">))</span></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, Vincent FALCONIERI.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.2.
+    </div>
+  </body>
+</html>

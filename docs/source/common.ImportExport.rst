@@ -12,6 +12,14 @@ common.ImportExport.json\_import\_export module
    :undoc-members:
    :show-inheritance:
 
+common.ImportExport.pickle\_import\_export module
+-------------------------------------------------
+
+.. automodule:: common.ImportExport.pickle_import_export
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 common.ImportExport.picture\_import\_export module
 --------------------------------------------------
 
