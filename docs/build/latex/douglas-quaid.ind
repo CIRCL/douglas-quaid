@@ -1,0 +1,428 @@
+\begin{sphinxtheindex}
+\let\bigletter\sphinxstyleindexlettergroup
+\let\spxpagem \sphinxstyleindexpagemain
+\let\spxentry \sphinxstyleindexentry
+\let\spxextra \sphinxstyleindexextra
+
+  \bigletter A
+  \item \spxentry{ADD\_PICTURE}\spxextra{common.environment\_variable.EndPoints attribute}, 
+		\hyperpage{17}
+  \item \spxentry{AlgoFeatureNotPresentError}, \hyperpage{17}
+  \item \spxentry{append()}\spxextra{carlhauser\_server.Processus.processus\_list.ProcessesList method}, 
+		\hyperpage{7}
+
+  \indexspace
+  \bigletter C
+  \item \spxentry{carlhauser\_client}\spxextra{module}, \hyperpage{2}
+  \item \spxentry{carlhauser\_client.API}\spxextra{module}, \hyperpage{2}
+  \item \spxentry{carlhauser\_client.EvaluationTools}\spxextra{module}, \hyperpage{2}
+  \item \spxentry{carlhauser\_client.EvaluationTools.SimilarityGraphExtractor}\spxextra{module}, 
+		\hyperpage{2}
+  \item \spxentry{carlhauser\_client.EvaluationTools.StorageGraphExtractor}\spxextra{module}, 
+		\hyperpage{2}
+  \item \spxentry{carlhauser\_client.Helpers}\spxextra{module}, \hyperpage{2}
+  \item \spxentry{carlhauser\_client\_tests}\spxextra{module}, \hyperpage{4}
+  \item \spxentry{carlhauser\_client\_tests.API}\spxextra{module}, \hyperpage{3}
+  \item \spxentry{carlhauser\_client\_tests.context}\spxextra{module}, \hyperpage{4}
+  \item \spxentry{carlhauser\_client\_tests.EvaluationTools}\spxextra{module}, \hyperpage{4}
+  \item \spxentry{carlhauser\_client\_tests.EvaluationTools.evaluator}\spxextra{module}, 
+		\hyperpage{4}
+  \item \spxentry{carlhauser\_client\_tests.EvaluationTools.evaluator.test\_similarity\_graph\_extractor}\spxextra{module}, 
+		\hyperpage{3}
+  \item \spxentry{carlhauser\_client\_tests.Helpers}\spxextra{module}, \hyperpage{4}
+  \item \spxentry{carlhauser\_client\_tests.Helpers.test\_dict\_utilities}\spxextra{module}, 
+		\hyperpage{4}
+  \item \spxentry{carlhauser\_server.Processus}\spxextra{module}, \hyperpage{8}
+  \item \spxentry{carlhauser\_server.Processus.processus\_list}\spxextra{module}, \hyperpage{6}
+  \item \spxentry{carlhauser\_server.Processus.worker\_process}\spxextra{module}, \hyperpage{7}
+  \item \spxentry{carlhauser\_server\_tests}\spxextra{module}, \hyperpage{12}
+  \item \spxentry{carlhauser\_server\_tests.API}\spxextra{module}, \hyperpage{11}
+  \item \spxentry{carlhauser\_server\_tests.API.test\_in\_memory\_files\_ops}\spxextra{module}, 
+		\hyperpage{9}
+  \item \spxentry{carlhauser\_server\_tests.Configuration}\spxextra{module}, \hyperpage{11}
+  \item \spxentry{carlhauser\_server\_tests.Data}\spxextra{module}, \hyperpage{11}
+  \item \spxentry{carlhauser\_server\_tests.DatabaseAccessor}\spxextra{module}, \hyperpage{11}
+  \item \spxentry{carlhauser\_server\_tests.DistanceEngine}\spxextra{module}, \hyperpage{11}
+  \item \spxentry{carlhauser\_server\_tests.FeatureExtractor}\spxextra{module}, \hyperpage{11}
+  \item \spxentry{carlhauser\_server\_tests.Helpers}\spxextra{module}, \hyperpage{11}
+  \item \spxentry{carlhauser\_server\_tests.Processus}\spxextra{module}, \hyperpage{11}
+  \item \spxentry{carlhauser\_server\_tests.Singletons}\spxextra{module}, \hyperpage{12}
+  \item \spxentry{carlhauser\_server\_tests.Singletons.test\_singleton}\spxextra{module}, 
+		\hyperpage{11}
+  \item \spxentry{carlhauser\_server\_tests.Singletons.test\_worker\_start\_stop}\spxextra{module}, 
+		\hyperpage{12}
+  \item \spxentry{check\_correctness()}\spxextra{common.HumanHash.urlifier.Referencer static method}, 
+		\hyperpage{15}
+  \item \spxentry{check\_size\_folder()}\spxextra{common\_tests.DataTurksAlgo.test\_dataturks\_algo.test\_template method}, 
+		\hyperpage{19}
+  \item \spxentry{check\_status()}\spxextra{carlhauser\_server.Processus.worker\_process.WorkerProcessus method}, 
+		\hyperpage{7}
+  \item \spxentry{clean\_folder()}\spxextra{common\_tests.DataTurksAlgo.test\_dataturks\_algo.test\_template method}, 
+		\hyperpage{19}
+  \item \spxentry{commit\_docker()}\spxextra{common.HumanHash.docker\_committer.DockerCommmiter method}, 
+		\hyperpage{14}
+  \item \spxentry{common}\spxextra{module}, \hyperpage{18}
+  \item \spxentry{common.Calibrator}\spxextra{module}, \hyperpage{13}
+  \item \spxentry{common.ChartMaker}\spxextra{module}, \hyperpage{13}
+  \item \spxentry{common.CustomException}\spxextra{module}, \hyperpage{17}
+  \item \spxentry{common.DataTurksAlgos}\spxextra{module}, \hyperpage{14}
+  \item \spxentry{common.DataTurksAlgos.pictures\_exporter}\spxextra{module}, \hyperpage{13}
+  \item \spxentry{common.environment\_variable}\spxextra{module}, \hyperpage{17}
+  \item \spxentry{common.Graph}\spxextra{module}, \hyperpage{14}
+  \item \spxentry{common.HumanHash}\spxextra{module}, \hyperpage{15}
+  \item \spxentry{common.HumanHash.docker\_committer}\spxextra{module}, \hyperpage{14}
+  \item \spxentry{common.HumanHash.humanizer}\spxextra{module}, \hyperpage{14}
+  \item \spxentry{common.HumanHash.urlifier}\spxextra{module}, \hyperpage{15}
+  \item \spxentry{common.ImportExport}\spxextra{module}, \hyperpage{16}
+  \item \spxentry{common.ImportExport.json\_import\_export}\spxextra{module}, \hyperpage{15}
+  \item \spxentry{common.ImportExport.pickle\_import\_export}\spxextra{module}, \hyperpage{16}
+  \item \spxentry{common.ImportExport.picture\_import\_export}\spxextra{module}, \hyperpage{16}
+  \item \spxentry{common.ParametersExplorer}\spxextra{module}, \hyperpage{17}
+  \item \spxentry{common.ParametersExplorer.parameter\_explorer}\spxextra{module}, \hyperpage{16}
+  \item \spxentry{common.PerformanceDatastructs}\spxextra{module}, \hyperpage{17}
+  \item \spxentry{common.TestInstanceLauncher}\spxextra{module}, \hyperpage{17}
+  \item \spxentry{common\_tests}\spxextra{module}, \hyperpage{22}
+  \item \spxentry{common\_tests.Calibrator}\spxextra{module}, \hyperpage{19}
+  \item \spxentry{common\_tests.ChartMaker}\spxextra{module}, \hyperpage{19}
+  \item \spxentry{common\_tests.DataTurksAlgo}\spxextra{module}, \hyperpage{20}
+  \item \spxentry{common\_tests.DataTurksAlgo.test\_dataturks\_algo}\spxextra{module}, 
+		\hyperpage{19}
+  \item \spxentry{common\_tests.Graph}\spxextra{module}, \hyperpage{20}
+  \item \spxentry{common\_tests.ImportExport}\spxextra{module}, \hyperpage{21}
+  \item \spxentry{common\_tests.ImportExport.test\_json\_import\_export}\spxextra{module}, 
+		\hyperpage{20}
+  \item \spxentry{common\_tests.ImportExport.test\_pickle\_import\_export}\spxextra{module}, 
+		\hyperpage{20}
+  \item \spxentry{common\_tests.ImportExport.test\_picture\_import\_export}\spxextra{module}, 
+		\hyperpage{21}
+  \item \spxentry{common\_tests.ParametersExplorer}\spxextra{module}, \hyperpage{21}
+  \item \spxentry{common\_tests.PerformanceDatastructs}\spxextra{module}, \hyperpage{22}
+  \item \spxentry{common\_tests.PerformanceDatastructs.test\_scores}\spxextra{module}, 
+		\hyperpage{21}
+  \item \spxentry{common\_tests.Scalability\_evaluator}\spxextra{module}, \hyperpage{22}
+  \item \spxentry{common\_tests.test\_environment\_variable}\spxextra{module}, \hyperpage{22}
+  \item \spxentry{common\_tests.TestInstanceLauncher}\spxextra{module}, \hyperpage{22}
+  \item \spxentry{common\_tests.TestInstanceLauncher.test\_instance\_launcher}\spxextra{module}, 
+		\hyperpage{22}
+  \item \spxentry{correct\_name()}\spxextra{common.HumanHash.humanizer.Humanizer static method}, 
+		\hyperpage{14}
+  \item \spxentry{create\_sorted()}\spxextra{common\_tests.DataTurksAlgo.test\_dataturks\_algo.test\_template method}, 
+		\hyperpage{19}
+  \item \spxentry{Custom\_JSON\_Encoder}\spxextra{class in common.ImportExport.json\_import\_export}, 
+		\hyperpage{15}
+
+  \indexspace
+  \bigletter D
+  \item \spxentry{DB\_TO\_ADD}\spxextra{common.environment\_variable.QueueNames attribute}, 
+		\hyperpage{18}
+  \item \spxentry{DB\_TO\_REQUEST}\spxextra{common.environment\_variable.QueueNames attribute}, 
+		\hyperpage{18}
+  \item \spxentry{default()}\spxextra{common.ImportExport.json\_import\_export.Custom\_JSON\_Encoder method}, 
+		\hyperpage{15}
+  \item \spxentry{dir\_path()}\spxextra{in module common.DataTurksAlgos.pictures\_exporter}, 
+		\hyperpage{14}
+  \item \spxentry{dir\_path()}\spxextra{in module common.environment\_variable}, \hyperpage{18}
+  \item \spxentry{DockerCommmiter}\spxextra{class in common.HumanHash.docker\_committer}, 
+		\hyperpage{14}
+
+  \indexspace
+  \bigletter E
+  \item \spxentry{EMPTY\_PIPELINE}\spxextra{common.environment\_variable.EndPoints attribute}, 
+		\hyperpage{17}
+  \item \spxentry{EndPoints}\spxextra{class in common.environment\_variable}, \hyperpage{17}
+  \item \spxentry{export\_dicts()}\spxextra{common.DataTurksAlgos.pictures\_exporter.PicturesExporter method}, 
+		\hyperpage{13}
+
+  \indexspace
+  \bigletter F
+  \item \spxentry{FEATURE\_TO\_ADD}\spxextra{common.environment\_variable.QueueNames attribute}, 
+		\hyperpage{18}
+  \item \spxentry{FEATURE\_TO\_REQUEST}\spxextra{common.environment\_variable.QueueNames attribute}, 
+		\hyperpage{18}
+  \item \spxentry{flush()}\spxextra{carlhauser\_server.Processus.processus\_list.ProcessesList method}, 
+		\hyperpage{7}
+  \item \spxentry{flush\_not\_running()}\spxextra{carlhauser\_server.Processus.processus\_list.ProcessesList method}, 
+		\hyperpage{7}
+
+  \indexspace
+  \bigletter G
+  \item \spxentry{get\_commit\_name()}\spxextra{common.HumanHash.docker\_committer.DockerCommmiter method}, 
+		\hyperpage{14}
+  \item \spxentry{get\_homedir()}\spxextra{in module common.environment\_variable}, \hyperpage{18}
+  \item \spxentry{get\_myvalue()}\spxextra{carlhauser\_server\_tests.Singletons.test\_singleton.testSingleton.Derived method}, 
+		\hyperpage{12}
+  \item \spxentry{get\_name()}\spxextra{common.HumanHash.humanizer.Humanizer static method}, 
+		\hyperpage{14}
+  \item \spxentry{get\_object\_from\_pickle()}\spxextra{common.ImportExport.pickle\_import\_export.Pickler static method}, 
+		\hyperpage{16}
+  \item \spxentry{get\_pickle\_from\_object()}\spxextra{common.ImportExport.pickle\_import\_export.Pickler static method}, 
+		\hyperpage{16}
+  \item \spxentry{GET\_REQUEST\_RESULT}\spxextra{common.environment\_variable.EndPoints attribute}, 
+		\hyperpage{17}
+  \item \spxentry{get\_running\_processus()}\spxextra{carlhauser\_server.Processus.processus\_list.ProcessesList method}, 
+		\hyperpage{7}
+  \item \spxentry{get\_str()}\spxextra{carlhauser\_server.Processus.worker\_process.WorkerProcessus method}, 
+		\hyperpage{7}
+  \item \spxentry{get\_value\_shared()}\spxextra{carlhauser\_server\_tests.Singletons.test\_singleton.testSingleton.Derived method}, 
+		\hyperpage{12}
+
+  \indexspace
+  \bigletter H
+  \item \spxentry{humanize\_name()}\spxextra{common.HumanHash.humanizer.Humanizer method}, 
+		\hyperpage{15}
+  \item \spxentry{Humanizer}\spxextra{class in common.HumanHash.humanizer}, \hyperpage{14}
+
+  \indexspace
+  \bigletter I
+  \item \spxentry{increment\_value()}\spxextra{carlhauser\_server\_tests.Singletons.test\_singleton.testSingleton.Derived method}, 
+		\hyperpage{12}
+  \item \spxentry{inifnite\_commit\_docker()}\spxextra{common.HumanHash.docker\_committer.DockerCommmiter method}, 
+		\hyperpage{14}
+  \item \spxentry{is\_already\_drawn()}\spxextra{common.HumanHash.humanizer.Humanizer method}, 
+		\hyperpage{15}
+  \item \spxentry{is\_running()}\spxextra{carlhauser\_server.Processus.worker\_process.WorkerProcessus method}, 
+		\hyperpage{7}
+  \item \spxentry{is\_there\_alive\_workers()}\spxextra{carlhauser\_server.Processus.processus\_list.ProcessesList method}, 
+		\hyperpage{7}
+  \item \spxentry{iterate\_over\_dataturks\_json()}\spxextra{common.DataTurksAlgos.pictures\_exporter.PicturesExporter method}, 
+		\hyperpage{13}
+
+  \indexspace
+  \bigletter J
+  \item \spxentry{JSON\_parsable\_Dict}\spxextra{class in common.environment\_variable}, 
+		\hyperpage{17}
+  \item \spxentry{JSON\_parsable\_Enum}\spxextra{class in common.environment\_variable}, 
+		\hyperpage{17}
+
+  \indexspace
+  \bigletter K
+  \item \spxentry{kill\_all\_processus()}\spxextra{carlhauser\_server.Processus.processus\_list.ProcessesList method}, 
+		\hyperpage{7}
+
+  \indexspace
+  \bigletter L
+  \item \spxentry{launch()}\spxextra{carlhauser\_server.Processus.worker\_process.WorkerProcessus method}, 
+		\hyperpage{7}
+  \item \spxentry{launch()}\spxextra{common.ParametersExplorer.parameter\_explorer.ParameterExplorer method}, 
+		\hyperpage{16}
+  \item \spxentry{launch\_copy()}\spxextra{common.DataTurksAlgos.pictures\_exporter.PicturesExporter method}, 
+		\hyperpage{13}
+  \item \spxentry{list\_to\_dict()}\spxextra{common.DataTurksAlgos.pictures\_exporter.PicturesExporter static method}, 
+		\hyperpage{13}
+  \item \spxentry{load\_client\_logging\_conf\_file()}\spxextra{in module common.environment\_variable}, 
+		\hyperpage{18}
+  \item \spxentry{load\_dataturks\_json()}\spxextra{common.DataTurksAlgos.pictures\_exporter.PicturesExporter method}, 
+		\hyperpage{13}
+  \item \spxentry{load\_files()}\spxextra{common.DataTurksAlgos.pictures\_exporter.PicturesExporter static method}, 
+		\hyperpage{13}
+  \item \spxentry{load\_json()}\spxextra{in module common.ImportExport.json\_import\_export}, 
+		\hyperpage{16}
+  \item \spxentry{load\_picture()}\spxextra{in module common.ImportExport.picture\_import\_export}, 
+		\hyperpage{16}
+  \item \spxentry{load\_pictures\_to\_copy()}\spxextra{common.DataTurksAlgos.pictures\_exporter.PicturesExporter method}, 
+		\hyperpage{14}
+  \item \spxentry{load\_pictures\_to\_not\_copy()}\spxextra{common.DataTurksAlgos.pictures\_exporter.PicturesExporter method}, 
+		\hyperpage{14}
+  \item \spxentry{load\_server\_logging\_conf\_file()}\spxextra{in module common.environment\_variable}, 
+		\hyperpage{18}
+
+  \indexspace
+  \bigletter M
+  \item \spxentry{main()}\spxextra{in module common.HumanHash.docker\_committer}, \hyperpage{14}
+  \item \spxentry{main()}\spxextra{in module common.HumanHash.humanizer}, \hyperpage{15}
+  \item \spxentry{main()}\spxextra{in module common.HumanHash.urlifier}, \hyperpage{15}
+  \item \spxentry{make\_big\_line()}\spxextra{in module common.environment\_variable}, 
+		\hyperpage{18}
+  \item \spxentry{make\_small\_line()}\spxextra{in module common.environment\_variable}, 
+		\hyperpage{18}
+
+  \indexspace
+  \bigletter P
+  \item \spxentry{ParameterExplorer}\spxextra{class in common.ParametersExplorer.parameter\_explorer}, 
+		\hyperpage{16}
+  \item \spxentry{patch\_Keypoint\_pickiling()}\spxextra{common.ImportExport.pickle\_import\_export.Pickler static method}, 
+		\hyperpage{16}
+  \item \spxentry{Pickler}\spxextra{class in common.ImportExport.pickle\_import\_export}, 
+		\hyperpage{16}
+  \item \spxentry{PicturesExporter}\spxextra{class in common.DataTurksAlgos.pictures\_exporter}, 
+		\hyperpage{13}
+  \item \spxentry{ProcessesList}\spxextra{class in carlhauser\_server.Processus.processus\_list}, 
+		\hyperpage{6}
+
+  \indexspace
+  \bigletter Q
+  \item \spxentry{QueueNames}\spxextra{class in common.environment\_variable}, \hyperpage{18}
+
+  \indexspace
+  \bigletter R
+  \item \spxentry{reference\_all\_files()}\spxextra{common.HumanHash.urlifier.Referencer method}, 
+		\hyperpage{15}
+  \item \spxentry{Referencer}\spxextra{class in common.HumanHash.urlifier}, \hyperpage{15}
+  \item \spxentry{remove\_too\_old\_images()}\spxextra{common.HumanHash.docker\_committer.DockerCommmiter method}, 
+		\hyperpage{14}
+  \item \spxentry{rename\_all\_files()}\spxextra{common.HumanHash.humanizer.Humanizer method}, 
+		\hyperpage{15}
+  \item \spxentry{REQUEST\_DB}\spxextra{common.environment\_variable.EndPoints attribute}, 
+		\hyperpage{17}
+  \item \spxentry{REQUEST\_PICTURE}\spxextra{common.environment\_variable.EndPoints attribute}, 
+		\hyperpage{17}
+  \item \spxentry{resolve\_path()}\spxextra{in module common.environment\_variable}, \hyperpage{18}
+
+  \indexspace
+  \bigletter S
+  \item \spxentry{sanity\_check()}\spxextra{common.HumanHash.humanizer.Humanizer static method}, 
+		\hyperpage{15}
+  \item \spxentry{save\_json()}\spxextra{in module common.ImportExport.json\_import\_export}, 
+		\hyperpage{16}
+  \item \spxentry{save\_picture()}\spxextra{in module common.ImportExport.picture\_import\_export}, 
+		\hyperpage{16}
+  \item \spxentry{save\_to\_text()}\spxextra{common.HumanHash.urlifier.Referencer static method}, 
+		\hyperpage{15}
+  \item \spxentry{setUp()}\spxextra{carlhauser\_client\_tests.EvaluationTools.evaluator.test\_similarity\_graph\_extractor.TestClusterMatcher method}, 
+		\hyperpage{3}
+  \item \spxentry{setUp()}\spxextra{carlhauser\_client\_tests.Helpers.test\_dict\_utilities.TestClusterMatcher method}, 
+		\hyperpage{4}
+  \item \spxentry{setUp()}\spxextra{carlhauser\_server\_tests.API.test\_in\_memory\_files\_ops.TestInMemoryOperations method}, 
+		\hyperpage{9}
+  \item \spxentry{setUp()}\spxextra{carlhauser\_server\_tests.Singletons.test\_singleton.testSingleton method}, 
+		\hyperpage{12}
+  \item \spxentry{setUp()}\spxextra{carlhauser\_server\_tests.Singletons.test\_worker\_start\_stop.testDistanceEngine method}, 
+		\hyperpage{12}
+  \item \spxentry{setUp()}\spxextra{common\_tests.DataTurksAlgo.test\_dataturks\_algo.test\_template method}, 
+		\hyperpage{19}
+  \item \spxentry{setUp()}\spxextra{common\_tests.ImportExport.test\_json\_import\_export.testJSONImportExport method}, 
+		\hyperpage{20}
+  \item \spxentry{setUp()}\spxextra{common\_tests.ImportExport.test\_pickle\_import\_export.testPICKLEImportExport method}, 
+		\hyperpage{20}
+  \item \spxentry{setUp()}\spxextra{common\_tests.ImportExport.test\_picture\_import\_export.testPICTUREImportExport method}, 
+		\hyperpage{21}
+  \item \spxentry{setUp()}\spxextra{common\_tests.PerformanceDatastructs.test\_scores.TestClusterMatcher method}, 
+		\hyperpage{21}
+  \item \spxentry{setUp()}\spxextra{common\_tests.test\_environment\_variable.TestEnvVariable method}, 
+		\hyperpage{22}
+  \item \spxentry{setUp()}\spxextra{common\_tests.TestInstanceLauncher.test\_instance\_launcher.test\_tests\_database\_launcher method}, 
+		\hyperpage{22}
+  \item \spxentry{shutdown()}\spxextra{carlhauser\_server.Processus.worker\_process.WorkerProcessus method}, 
+		\hyperpage{7}
+  \item \spxentry{store\_value()}\spxextra{common.HumanHash.urlifier.Referencer method}, 
+		\hyperpage{15}
+
+  \indexspace
+  \bigletter T
+  \item \spxentry{tearDown()}\spxextra{common\_tests.ImportExport.test\_json\_import\_export.testJSONImportExport method}, 
+		\hyperpage{20}
+  \item \spxentry{tearDown()}\spxextra{common\_tests.ImportExport.test\_picture\_import\_export.testPICTUREImportExport method}, 
+		\hyperpage{21}
+  \item \spxentry{test()}\spxextra{in module common.HumanHash.humanizer}, \hyperpage{15}
+  \item \spxentry{test\_absolute\_truth\_and\_meaning()}\spxextra{carlhauser\_client\_tests.EvaluationTools.evaluator.test\_similarity\_graph\_extractor.TestClusterMatcher method}, 
+		\hyperpage{3}
+  \item \spxentry{test\_absolute\_truth\_and\_meaning()}\spxextra{carlhauser\_client\_tests.Helpers.test\_dict\_utilities.TestClusterMatcher method}, 
+		\hyperpage{4}
+  \item \spxentry{test\_absolute\_truth\_and\_meaning()}\spxextra{carlhauser\_server\_tests.API.test\_in\_memory\_files\_ops.TestInMemoryOperations method}, 
+		\hyperpage{9}
+  \item \spxentry{test\_absolute\_truth\_and\_meaning()}\spxextra{carlhauser\_server\_tests.Singletons.test\_worker\_start\_stop.testDistanceEngine method}, 
+		\hyperpage{12}
+  \item \spxentry{test\_absolute\_truth\_and\_meaning()}\spxextra{common\_tests.ImportExport.test\_json\_import\_export.testJSONImportExport method}, 
+		\hyperpage{20}
+  \item \spxentry{test\_absolute\_truth\_and\_meaning()}\spxextra{common\_tests.ImportExport.test\_pickle\_import\_export.testPICKLEImportExport method}, 
+		\hyperpage{20}
+  \item \spxentry{test\_absolute\_truth\_and\_meaning()}\spxextra{common\_tests.ImportExport.test\_picture\_import\_export.testPICTUREImportExport method}, 
+		\hyperpage{21}
+  \item \spxentry{test\_absolute\_truth\_and\_meaning()}\spxextra{common\_tests.PerformanceDatastructs.test\_scores.TestClusterMatcher method}, 
+		\hyperpage{21}
+  \item \spxentry{test\_absolute\_truth\_and\_meaning()}\spxextra{common\_tests.test\_environment\_variable.TestEnvVariable method}, 
+		\hyperpage{22}
+  \item \spxentry{test\_absolute\_truth\_and\_meaning()}\spxextra{common\_tests.TestInstanceLauncher.test\_instance\_launcher.test\_tests\_database\_launcher method}, 
+		\hyperpage{22}
+  \item \spxentry{test\_already\_copied\_not\_recopied()}\spxextra{common\_tests.DataTurksAlgo.test\_dataturks\_algo.test\_template method}, 
+		\hyperpage{20}
+  \item \spxentry{test\_bmp\_conversion()}\spxextra{carlhauser\_server\_tests.API.test\_in\_memory\_files\_ops.TestInMemoryOperations method}, 
+		\hyperpage{9}
+  \item \spxentry{test\_compute\_score\_for\_one\_threshold()}\spxextra{common\_tests.TestInstanceLauncher.test\_instance\_launcher.test\_tests\_database\_launcher method}, 
+		\hyperpage{22}
+  \item \spxentry{test\_dict\_reverse()}\spxextra{carlhauser\_client\_tests.Helpers.test\_dict\_utilities.TestClusterMatcher method}, 
+		\hyperpage{4}
+  \item \spxentry{test\_dict\_reverse\_hard()}\spxextra{carlhauser\_client\_tests.Helpers.test\_dict\_utilities.TestClusterMatcher method}, 
+		\hyperpage{4}
+  \item \spxentry{test\_dict\_reverse\_realist()}\spxextra{carlhauser\_client\_tests.Helpers.test\_dict\_utilities.TestClusterMatcher method}, 
+		\hyperpage{4}
+  \item \spxentry{test\_dict\_update()}\spxextra{carlhauser\_client\_tests.Helpers.test\_dict\_utilities.TestClusterMatcher method}, 
+		\hyperpage{4}
+  \item \spxentry{test\_dir\_path()}\spxextra{common\_tests.test\_environment\_variable.TestEnvVariable method}, 
+		\hyperpage{22}
+  \item \spxentry{test\_env\_variable\_presence()}\spxextra{common\_tests.test\_environment\_variable.TestEnvVariable method}, 
+		\hyperpage{22}
+  \item \spxentry{test\_exif\_and\_hash()}\spxextra{carlhauser\_server\_tests.API.test\_in\_memory\_files\_ops.TestInMemoryOperations method}, 
+		\hyperpage{9}
+  \item \spxentry{test\_first\_copy\_packets\_size()}\spxextra{common\_tests.DataTurksAlgo.test\_dataturks\_algo.test\_template method}, 
+		\hyperpage{20}
+  \item \spxentry{test\_json\_export()}\spxextra{common\_tests.ImportExport.test\_json\_import\_export.testJSONImportExport method}, 
+		\hyperpage{20}
+  \item \spxentry{test\_json\_import()}\spxextra{common\_tests.ImportExport.test\_json\_import\_export.testJSONImportExport method}, 
+		\hyperpage{20}
+  \item \spxentry{test\_json\_import\_export\_consistency()}\spxextra{common\_tests.ImportExport.test\_json\_import\_export.testJSONImportExport method}, 
+		\hyperpage{20}
+  \item \spxentry{test\_merge\_scores()}\spxextra{common\_tests.PerformanceDatastructs.test\_scores.TestClusterMatcher method}, 
+		\hyperpage{21}
+  \item \spxentry{test\_pickle\_import\_export\_consistency()}\spxextra{common\_tests.ImportExport.test\_pickle\_import\_export.testPICKLEImportExport method}, 
+		\hyperpage{20}
+  \item \spxentry{test\_pickle\_import\_export\_ORB()}\spxextra{common\_tests.ImportExport.test\_pickle\_import\_export.testPICKLEImportExport method}, 
+		\hyperpage{20}
+  \item \spxentry{test\_picture\_export()}\spxextra{common\_tests.ImportExport.test\_picture\_import\_export.testPICTUREImportExport method}, 
+		\hyperpage{21}
+  \item \spxentry{test\_picture\_import()}\spxextra{common\_tests.ImportExport.test\_picture\_import\_export.testPICTUREImportExport method}, 
+		\hyperpage{21}
+  \item \spxentry{test\_picture\_import\_export\_consistency()}\spxextra{common\_tests.ImportExport.test\_picture\_import\_export.testPICTUREImportExport method}, 
+		\hyperpage{21}
+  \item \spxentry{test\_singleton()}\spxextra{carlhauser\_server\_tests.Singletons.test\_singleton.testSingleton method}, 
+		\hyperpage{12}
+  \item \spxentry{test\_singleton\_instance\_equality()}\spxextra{carlhauser\_server\_tests.Singletons.test\_singleton.testSingleton method}, 
+		\hyperpage{12}
+  \item \spxentry{test\_template}\spxextra{class in common\_tests.DataTurksAlgo.test\_dataturks\_algo}, 
+		\hyperpage{19}
+  \item \spxentry{test\_tests\_database\_launcher}\spxextra{class in common\_tests.TestInstanceLauncher.test\_instance\_launcher}, 
+		\hyperpage{22}
+  \item \spxentry{test\_to\_delete()}\spxextra{common\_tests.DataTurksAlgo.test\_dataturks\_algo.test\_template method}, 
+		\hyperpage{20}
+  \item \spxentry{TestClusterMatcher}\spxextra{class in carlhauser\_client\_tests.EvaluationTools.evaluator.test\_similarity\_graph\_extractor}, 
+		\hyperpage{3}
+  \item \spxentry{TestClusterMatcher}\spxextra{class in carlhauser\_client\_tests.Helpers.test\_dict\_utilities}, 
+		\hyperpage{4}
+  \item \spxentry{TestClusterMatcher}\spxextra{class in common\_tests.PerformanceDatastructs.test\_scores}, 
+		\hyperpage{21}
+  \item \spxentry{testDistanceEngine}\spxextra{class in carlhauser\_server\_tests.Singletons.test\_worker\_start\_stop}, 
+		\hyperpage{12}
+  \item \spxentry{TestEnvVariable}\spxextra{class in common\_tests.test\_environment\_variable}, 
+		\hyperpage{22}
+  \item \spxentry{TestInMemoryOperations}\spxextra{class in carlhauser\_server\_tests.API.test\_in\_memory\_files\_ops}, 
+		\hyperpage{9}
+  \item \spxentry{testJSONImportExport}\spxextra{class in common\_tests.ImportExport.test\_json\_import\_export}, 
+		\hyperpage{20}
+  \item \spxentry{testPICKLEImportExport}\spxextra{class in common\_tests.ImportExport.test\_pickle\_import\_export}, 
+		\hyperpage{20}
+  \item \spxentry{testPICTUREImportExport}\spxextra{class in common\_tests.ImportExport.test\_picture\_import\_export}, 
+		\hyperpage{21}
+  \item \spxentry{testSingleton}\spxextra{class in carlhauser\_server\_tests.Singletons.test\_singleton}, 
+		\hyperpage{11}
+  \item \spxentry{testSingleton.Derived}\spxextra{class in carlhauser\_server\_tests.Singletons.test\_singleton}, 
+		\hyperpage{12}
+
+  \indexspace
+  \bigletter V
+  \item \spxentry{value\_shared}\spxextra{carlhauser\_server\_tests.Singletons.test\_singleton.testSingleton.Derived attribute}, 
+		\hyperpage{12}
+
+  \indexspace
+  \bigletter W
+  \item \spxentry{WAIT\_FOR\_ADD}\spxextra{common.environment\_variable.EndPoints attribute}, 
+		\hyperpage{17}
+  \item \spxentry{WAIT\_FOR\_REQUEST}\spxextra{common.environment\_variable.EndPoints attribute}, 
+		\hyperpage{17}
+  \item \spxentry{wait\_until\_all\_stopped()}\spxextra{carlhauser\_server.Processus.processus\_list.ProcessesList method}, 
+		\hyperpage{7}
+  \item \spxentry{wait\_until\_stopped()}\spxextra{carlhauser\_server.Processus.worker\_process.WorkerProcessus method}, 
+		\hyperpage{7}
+  \item \spxentry{WorkerProcessus}\spxextra{class in carlhauser\_server.Processus.worker\_process}, 
+		\hyperpage{7}
+
+\end{sphinxtheindex}

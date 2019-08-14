@@ -1,0 +1,384 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>carlhauser_client.API.simple_api &#8212; Douglas-Quaid 0.0.4 documentation</title>
+    <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for carlhauser_client.API.simple_api</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">pathlib</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Dict</span>
+
+<span class="kn">import</span> <span class="nn">requests</span>
+
+<span class="kn">from</span> <span class="nn">common.environment_variable</span> <span class="k">import</span> <span class="n">get_homedir</span><span class="p">,</span> <span class="n">resolve_path</span><span class="p">,</span> <span class="n">EndPoints</span>
+<span class="kn">from</span> <span class="nn">common.environment_variable</span> <span class="k">import</span> <span class="n">load_client_logging_conf_file</span>
+
+<span class="n">load_client_logging_conf_file</span><span class="p">()</span>
+
+
+<span class="c1"># ==================== ------ SERVER Flask API CALLER ------- ====================</span>
+<div class="viewcode-block" id="Simple_API"><a class="viewcode-back" href="../../../carlhauser_client.API.html#carlhauser_client.API.simple_api.Simple_API">[docs]</a><span class="k">class</span> <span class="nc">Simple_API</span><span class="p">:</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Provides &quot;Low-level&quot; API calls</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">certificate_path</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">server_url</span> <span class="o">=</span> <span class="n">url</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cert</span> <span class="o">=</span> <span class="n">certificate_path</span>
+
+<div class="viewcode-block" id="Simple_API.get_api"><a class="viewcode-back" href="../../../carlhauser_client.API.html#carlhauser_client.API.simple_api.Simple_API.get_api">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_api</span><span class="p">():</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Static method that return an instance of the API (SimpleAPI type)</span>
+<span class="sd">        :return: Simple API instance</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="n">Simple_API</span><span class="o">.</span><span class="n">get_custom_api</span><span class="p">(</span><span class="n">Simple_API</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Simple_API.get_custom_api"><a class="viewcode-back" href="../../../carlhauser_client.API.html#carlhauser_client.API.simple_api.Simple_API.get_custom_api">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_custom_api</span><span class="p">(</span><span class="n">api_class</span><span class="p">):</span>
+        <span class="c1"># Generate the API access point link to the hardcoded server</span>
+        <span class="n">cert</span> <span class="o">=</span> <span class="p">(</span><span class="n">get_homedir</span><span class="p">()</span> <span class="o">/</span> <span class="s2">&quot;carlhauser_client&quot;</span> <span class="o">/</span> <span class="s2">&quot;cert.pem&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+
+        <span class="c1"># See : https://stackoverflow.com/questions/10667960/python-requests-throwing-sslerror</span>
+        <span class="c1"># To create : openssl req -x509 -newkey rsa:4096 -nodes -out cert.pem -keyout key.pem -days 365</span>
+        <span class="n">api</span> <span class="o">=</span> <span class="n">api_class</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;https://localhost:5000/&#39;</span><span class="p">,</span> <span class="n">certificate_path</span><span class="o">=</span><span class="n">cert</span><span class="p">)</span>  <span class="c1"># TODO : Should be =cert</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">captureWarnings</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># TODO : Remove</span>
+        <span class="k">return</span> <span class="n">api</span></div>
+
+    <span class="c1"># ================= UTILITIES =================</span>
+<div class="viewcode-block" id="Simple_API.utility_extract_and_log_response"><a class="viewcode-back" href="../../../carlhauser_client.API.html#carlhauser_client.API.simple_api.Simple_API.utility_extract_and_log_response">[docs]</a>    <span class="k">def</span> <span class="nf">utility_extract_and_log_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r</span><span class="p">:</span> <span class="n">requests</span><span class="o">.</span><span class="n">Response</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Extract the json version of the provided response (r), log it and return the data</span>
+<span class="sd">        :param r: response of server</span>
+<span class="sd">        :return: json format of the response</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>  <span class="c1"># Check the JSON Response Content documentation below</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Response data : </span><span class="si">{data}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Response content : </span><span class="si">{r.content}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">data</span></div>
+
+<div class="viewcode-block" id="Simple_API.utility_image_to_HTTP_payload"><a class="viewcode-back" href="../../../carlhauser_client.API.html#carlhauser_client.API.simple_api.Simple_API.utility_image_to_HTTP_payload">[docs]</a>    <span class="k">def</span> <span class="nf">utility_image_to_HTTP_payload</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">,</span> <span class="n">img</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+        <span class="c1"># Construct the files attribute of the put request</span>
+        <span class="n">files</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;image&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">file_path</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">img</span><span class="p">,</span> <span class="s1">&#39;multipart/form-data&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;Expires&#39;</span><span class="p">:</span> <span class="s1">&#39;0&#39;</span><span class="p">})}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Ready to send picture in client : {type(img)} </span><span class="si">{img}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">files</span></div>
+
+<div class="viewcode-block" id="Simple_API.utility_request_id_to_HTTP_payload"><a class="viewcode-back" href="../../../carlhauser_client.API.html#carlhauser_client.API.simple_api.Simple_API.utility_request_id_to_HTTP_payload">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">utility_request_id_to_HTTP_payload</span><span class="p">(</span><span class="n">request_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+        <span class="c1"># Construct the files attribute of the put request</span>
+        <span class="c1"># Construct the HTTP payload of the get request</span>
+        <span class="n">payload</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;request_id&#39;</span><span class="p">:</span> <span class="n">request_id</span><span class="p">}</span>
+        <span class="k">return</span> <span class="n">payload</span></div>
+
+    <span class="c1"># ================= PING =================</span>
+<div class="viewcode-block" id="Simple_API.ping_server"><a class="viewcode-back" href="../../../carlhauser_client.API.html#carlhauser_client.API.simple_api.Simple_API.ping_server">[docs]</a>    <span class="k">def</span> <span class="nf">ping_server</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Ping the server to check if he is alive with both GET and POST requests.</span>
+<span class="sd">        :return: True if the server is alive (for GET and POST), False if the server is not</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">r_get</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ping_server_get</span><span class="p">()</span>
+        <span class="n">data_get</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">utility_extract_and_log_response</span><span class="p">(</span><span class="n">r_get</span><span class="p">)</span>
+
+        <span class="n">r_post</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ping_server_post</span><span class="p">()</span>
+        <span class="n">data_post</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">utility_extract_and_log_response</span><span class="p">(</span><span class="n">r_post</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">data_get</span><span class="p">[</span><span class="s2">&quot;Called_function&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;ping&quot;</span> <span class="ow">and</span> <span class="n">data_post</span><span class="p">[</span><span class="s2">&quot;Called_function&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;ping&quot;</span></div>
+
+<div class="viewcode-block" id="Simple_API.ping_server_get"><a class="viewcode-back" href="../../../carlhauser_client.API.html#carlhauser_client.API.simple_api.Simple_API.ping_server_get">[docs]</a>    <span class="k">def</span> <span class="nf">ping_server_get</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">requests</span><span class="o">.</span><span class="n">Response</span><span class="p">:</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Ping the server to check if he is alive with GET request</span>
+<span class="sd">        :return: the response from the server</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">server_url</span><span class="p">,</span> <span class="n">verify</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cert</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;GET request =&gt; </span><span class="si">{r.status_code}</span><span class="s2"> </span><span class="si">{r.reason}</span><span class="s2"> </span><span class="si">{r.text}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">r</span></div>
+
+<div class="viewcode-block" id="Simple_API.ping_server_post"><a class="viewcode-back" href="../../../carlhauser_client.API.html#carlhauser_client.API.simple_api.Simple_API.ping_server_post">[docs]</a>    <span class="k">def</span> <span class="nf">ping_server_post</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">requests</span><span class="o">.</span><span class="n">Response</span><span class="p">:</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Ping the server to check if he is alive with POST request</span>
+<span class="sd">        :return: the response from the server</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">server_url</span><span class="p">,</span> <span class="n">verify</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cert</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;POST request =&gt; </span><span class="si">{r.status_code}</span><span class="s2"> </span><span class="si">{r.reason}</span><span class="s2"> </span><span class="si">{r.text}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">r</span></div>
+
+    <span class="c1"># ================= ADD PICTURES =================</span>
+
+<div class="viewcode-block" id="Simple_API.add_one_picture"><a class="viewcode-back" href="../../../carlhauser_client.API.html#carlhauser_client.API.simple_api.Simple_API.add_one_picture">[docs]</a>    <span class="k">def</span> <span class="nf">add_one_picture</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Add one picture to the server</span>
+<span class="sd">        :param file_path: the path of the picture to add</span>
+<span class="sd">        :return: success or failure boolean, and the id of the added picture</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="n">file_path</span> <span class="o">=</span> <span class="n">resolve_path</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
+
+        <span class="c1"># Set the endpoint</span>
+        <span class="n">target_url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">server_url</span> <span class="o">+</span> <span class="n">EndPoints</span><span class="o">.</span><span class="n">ADD_PICTURE</span>
+
+        <span class="c1"># Send the picture</span>
+        <span class="c1"># rb = Open a file for reading only in binary format. Starts reading from beginning of file.</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">file_path</span><span class="p">),</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">img</span><span class="p">:</span>
+            <span class="c1"># Construct the files attribute of the put request</span>
+            <span class="n">files</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">utility_image_to_HTTP_payload</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">img</span><span class="p">)</span>
+
+            <span class="c1"># Create a session to send the &quot;big file&quot;</span>
+            <span class="k">with</span> <span class="n">requests</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span> <span class="k">as</span> <span class="n">s</span><span class="p">:</span>
+                <span class="c1"># Execute the put request</span>
+                <span class="n">r</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">target_url</span><span class="p">,</span> <span class="n">files</span><span class="o">=</span><span class="n">files</span><span class="p">,</span> <span class="n">verify</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cert</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;PUT picture =&gt; </span><span class="si">{r.status_code}</span><span class="s2"> </span><span class="si">{r.reason}</span><span class="s2"> </span><span class="si">{r.text}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+                <span class="c1"># Check the JSON Response Content documentation below</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">utility_extract_and_log_response</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+
+                <span class="k">return</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;Status&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;Success&quot;</span><span class="p">,</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span> <span class="c1"># picture_id</span></div>
+
+    <span class="c1"># ================= ADD PICTURES - WAITING =================</span>
+
+<div class="viewcode-block" id="Simple_API.poll_until_adding_done"><a class="viewcode-back" href="../../../carlhauser_client.API.html#carlhauser_client.API.simple_api.Simple_API.poll_until_adding_done">[docs]</a>    <span class="k">def</span> <span class="nf">poll_until_adding_done</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">max_time</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Regularly ask the server if the adding of a picture had been performed</span>
+<span class="sd">        Returns when ready or when timeout</span>
+<span class="sd">        :param max_time: maximum allowed time to wait before timing out. By default -1 = No time out</span>
+<span class="sd">        :return: boolean, True if adding done, False if not</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="c1"># Starting count-down</span>
+        <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Checking if adding had been performed. Start polling ...&quot;</span><span class="p">)</span>
+
+        <span class="c1"># While the answer is not ready or we haven&#39;t timed-out</span>
+        <span class="n">time_out</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">while</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_adding_done</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">time_out</span><span class="p">:</span>
+            <span class="c1"># Not ready yet, wait a bit</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Adding not performed yet, waiting ...&quot;</span><span class="p">)</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+
+            <span class="c1"># Compute if we are already in time out</span>
+            <span class="n">time_out</span> <span class="o">=</span> <span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">max_time</span> <span class="ow">and</span> <span class="n">max_time</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">time_out</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Adding has still not been performed. Time out ! ...&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="c1"># Ready !</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Adding had been performed.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="Simple_API.is_adding_done"><a class="viewcode-back" href="../../../carlhauser_client.API.html#carlhauser_client.API.simple_api.Simple_API.is_adding_done">[docs]</a>    <span class="k">def</span> <span class="nf">is_adding_done</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Ask the server if the adding had been performed</span>
+<span class="sd">        :return: 2 booleans. First : True if the server answered, False otherwise. Second : True if the request is ready, False otherwise</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="c1"># Set the endpoint</span>
+        <span class="n">target_url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">server_url</span> <span class="o">+</span> <span class="n">EndPoints</span><span class="o">.</span><span class="n">WAIT_FOR_ADD</span>
+
+        <span class="k">with</span> <span class="n">requests</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span> <span class="k">as</span> <span class="n">s</span><span class="p">:</span>
+            <span class="n">r</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">target_url</span><span class="p">,</span> <span class="n">verify</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cert</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;GET request is_ready =&gt; </span><span class="si">{r.status_code}</span><span class="s2"> </span><span class="si">{r.reason}</span><span class="s2"> </span><span class="si">{r.text}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="c1"># Check the JSON Response Content documentation below</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">utility_extract_and_log_response</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;Status&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;Success&quot;</span><span class="p">,</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;is_ready&quot;</span><span class="p">]</span></div>
+
+    <span class="c1"># ================= REQUEST PICTURES =================</span>
+
+<div class="viewcode-block" id="Simple_API.request_similar"><a class="viewcode-back" href="../../../carlhauser_client.API.html#carlhauser_client.API.simple_api.Simple_API.request_similar">[docs]</a>    <span class="k">def</span> <span class="nf">request_similar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Request similar picture of one picture to the server</span>
+<span class="sd">        :param file_path: the path of the picture to request</span>
+<span class="sd">        :return: success or failure boolean, and the id of the request picture</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="n">file_path</span> <span class="o">=</span> <span class="n">resolve_path</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
+
+        <span class="c1"># Set the endpoint</span>
+        <span class="n">target_url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">server_url</span> <span class="o">+</span> <span class="n">EndPoints</span><span class="o">.</span><span class="n">REQUEST_PICTURE</span>
+
+        <span class="c1"># Send the picture</span>
+        <span class="c1"># rb = Open a file for reading only in binary format. Starts reading from beginning of file.</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">file_path</span><span class="p">),</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">img</span><span class="p">:</span>
+            <span class="c1"># Construct the files attribute of the put request</span>
+            <span class="n">files</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">utility_image_to_HTTP_payload</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">img</span><span class="p">)</span>
+
+            <span class="k">with</span> <span class="n">requests</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span> <span class="k">as</span> <span class="n">s</span><span class="p">:</span>
+                <span class="n">r</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">target_url</span><span class="p">,</span> <span class="n">files</span><span class="o">=</span><span class="n">files</span><span class="p">,</span> <span class="n">verify</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cert</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;POST picture request =&gt; </span><span class="si">{r.status_code}</span><span class="s2"> </span><span class="si">{r.reason}</span><span class="s2"> </span><span class="si">{r.text}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+                <span class="c1"># Check the JSON Response Content documentation below</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">utility_extract_and_log_response</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+
+                <span class="k">return</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;Status&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;Success&quot;</span><span class="p">,</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span> <span class="c1"># request_id</span></div>
+
+<div class="viewcode-block" id="Simple_API.get_results"><a class="viewcode-back" href="../../../carlhauser_client.API.html#carlhauser_client.API.simple_api.Simple_API.get_results">[docs]</a>    <span class="k">def</span> <span class="nf">get_results</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="nb">bool</span><span class="p">,</span> <span class="n">Dict</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Fetch the results of a request previously sent.</span>
+<span class="sd">        :param request_id: the previously made request id</span>
+<span class="sd">        :return: the answer of the server. #TODO : Give an example of answer</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="c1"># Set the endpoint</span>
+        <span class="n">target_url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">server_url</span> <span class="o">+</span> <span class="n">EndPoints</span><span class="o">.</span><span class="n">GET_REQUEST_RESULT</span>
+
+        <span class="c1"># Construct the HTTP payload of the request</span>
+        <span class="n">payload</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">utility_request_id_to_HTTP_payload</span><span class="p">(</span><span class="n">request_id</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="n">requests</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span> <span class="k">as</span> <span class="n">s</span><span class="p">:</span>
+            <span class="n">r</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">target_url</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">payload</span><span class="p">,</span> <span class="n">verify</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cert</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;GET request results =&gt; </span><span class="si">{r.status_code}</span><span class="s2"> </span><span class="si">{r.reason}</span><span class="s2"> </span><span class="si">{r.text}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">content</span><span class="p">)</span>
+
+            <span class="n">data</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>  <span class="c1"># Check the JSON Response Content documentation below</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;Status&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;Success&quot;</span><span class="p">,</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;results&quot;</span><span class="p">]</span></div>
+
+    <span class="c1"># ================= REQUEST PICTURES - WAITING =================</span>
+
+<div class="viewcode-block" id="Simple_API.poll_until_result_ready"><a class="viewcode-back" href="../../../carlhauser_client.API.html#carlhauser_client.API.simple_api.Simple_API.poll_until_result_ready">[docs]</a>    <span class="k">def</span> <span class="nf">poll_until_result_ready</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">max_time</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Regularly ask the server if the results of the provided (request_id) are ready.</span>
+<span class="sd">        Returns when ready or when timeout</span>
+<span class="sd">        :param request_id: request_id response to wait for</span>
+<span class="sd">        :param max_time: maximum allowed time to wait before timing out. By default -1 = No time out</span>
+<span class="sd">        :return: boolean, True if request is ready, False if not</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="c1"># Starting count-down</span>
+        <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Checking if </span><span class="si">{request_id}</span><span class="s2"> is ready. Start polling ...&quot;</span><span class="p">)</span>
+
+        <span class="c1"># While the answer is not ready or we haven&#39;t timed-out</span>
+        <span class="n">time_out</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">while</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_result_ready</span><span class="p">(</span><span class="n">request_id</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">time_out</span><span class="p">:</span>
+            <span class="c1"># Not ready yet, wait a bit</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;</span><span class="si">{request_id}</span><span class="s2"> not ready yet, waiting ...&quot;</span><span class="p">)</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+
+            <span class="c1"># Compute if we are already in time out</span>
+            <span class="n">time_out</span> <span class="o">=</span> <span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">max_time</span> <span class="ow">and</span> <span class="n">max_time</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">time_out</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;</span><span class="si">{request_id}</span><span class="s2"> has still no answer. Time out ! ...&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="c1"># Ready !</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;</span><span class="si">{request_id}</span><span class="s2"> got an answer.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="Simple_API.is_result_ready"><a class="viewcode-back" href="../../../carlhauser_client.API.html#carlhauser_client.API.simple_api.Simple_API.is_result_ready">[docs]</a>    <span class="k">def</span> <span class="nf">is_result_ready</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request_id</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Ask the server if the results of the provided (request_id) is ready.</span>
+<span class="sd">        :param request_id: request_id response to ask for</span>
+<span class="sd">        :return: 2 booleans. First : True if the server answered, False otherwise. Second : True if the request is ready, False otherwise</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="c1"># Set the endpoint</span>
+        <span class="n">target_url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">server_url</span> <span class="o">+</span> <span class="n">EndPoints</span><span class="o">.</span><span class="n">WAIT_FOR_REQUEST</span>
+
+        <span class="c1"># Construct the HTTP payload of the request</span>
+        <span class="n">payload</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">utility_request_id_to_HTTP_payload</span><span class="p">(</span><span class="n">request_id</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="n">requests</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span> <span class="k">as</span> <span class="n">s</span><span class="p">:</span>
+            <span class="n">r</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">target_url</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">payload</span><span class="p">,</span> <span class="n">verify</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cert</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;GET request is_ready =&gt; </span><span class="si">{r.status_code}</span><span class="s2"> </span><span class="si">{r.reason}</span><span class="s2"> </span><span class="si">{r.text}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="c1"># Check the JSON Response Content documentation below</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">utility_extract_and_log_response</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;Status&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;Success&quot;</span><span class="p">,</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;is_ready&quot;</span><span class="p">]</span></div>
+
+    <span class="c1"># ================= EXPORT AND DUMP =================</span>
+
+<div class="viewcode-block" id="Simple_API.export_db_server"><a class="viewcode-back" href="../../../carlhauser_client.API.html#carlhauser_client.API.simple_api.Simple_API.export_db_server">[docs]</a>    <span class="k">def</span> <span class="nf">export_db_server</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="nb">bool</span><span class="p">,</span> <span class="n">Dict</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Ask the server a copy of the database</span>
+<span class="sd">        :return: Boolean (True if server answered) and copy of the DB</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="c1"># Set the endpoint</span>
+        <span class="n">target_url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">server_url</span> <span class="o">+</span> <span class="n">EndPoints</span><span class="o">.</span><span class="n">REQUEST_DB</span>
+
+        <span class="k">with</span> <span class="n">requests</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span> <span class="k">as</span> <span class="n">s</span><span class="p">:</span>
+            <span class="n">r</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">target_url</span><span class="p">,</span> <span class="n">verify</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cert</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;GET request results =&gt; </span><span class="si">{r.status_code}</span><span class="s2"> </span><span class="si">{r.reason}</span><span class="s2"> </span><span class="si">{r.text}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="c1"># Check the JSON Response Content documentation below</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">utility_extract_and_log_response</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;Status&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;Success&quot;</span><span class="p">,</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;db&quot;</span><span class="p">]</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, Vincent FALCONIERI.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.2.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,175 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>carlhauser_client.client_instance_example &#8212; Douglas-Quaid 0.0.4 documentation</title>
+    <link rel="stylesheet" href="../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for carlhauser_client.client_instance_example</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">import</span> <span class="nn">logging.config</span>
+<span class="kn">import</span> <span class="nn">pathlib</span>
+
+<span class="kn">from</span> <span class="nn">carlhauser_client.API.extended_api</span> <span class="k">import</span> <span class="n">Extended_API</span>
+<span class="kn">from</span> <span class="nn">carlhauser_client.API.simple_api</span> <span class="k">import</span> <span class="n">Simple_API</span>
+<span class="kn">from</span> <span class="nn">common.environment_variable</span> <span class="k">import</span> <span class="n">get_homedir</span>
+<span class="kn">from</span> <span class="nn">common.environment_variable</span> <span class="k">import</span> <span class="n">load_client_logging_conf_file</span>
+
+<span class="n">load_client_logging_conf_file</span><span class="p">()</span>
+
+
+<span class="c1"># ==================== ------ LAUNCHER ------- ====================</span>
+<div class="viewcode-block" id="ClientInstanceExample"><a class="viewcode-back" href="../../carlhauser_client.html#carlhauser_client.client_instance_example.ClientInstanceExample">[docs]</a><span class="k">class</span> <span class="nc">ClientInstanceExample</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">API</span> <span class="o">=</span> <span class="n">Extended_API</span><span class="o">.</span><span class="n">get_api</span><span class="p">()</span>
+
+<div class="viewcode-block" id="ClientInstanceExample.launch"><a class="viewcode-back" href="../../carlhauser_client.html#carlhauser_client.client_instance_example.ClientInstanceExample.launch">[docs]</a>    <span class="k">def</span> <span class="nf">launch</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Small example of adding, requesting, polling, adding, fetching, dumping ...</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Launching webservice ...&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">perform_ping_check</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">perform_upload</span><span class="p">(</span><span class="n">get_homedir</span><span class="p">()</span> <span class="o">/</span> <span class="s2">&quot;datasets&quot;</span> <span class="o">/</span> <span class="s2">&quot;simple_pictures&quot;</span> <span class="o">/</span> <span class="s2">&quot;image.jpg&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Add ? &quot;</span><span class="p">)</span>
+        <span class="nb">input</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">perform_upload</span><span class="p">(</span><span class="n">get_homedir</span><span class="p">()</span> <span class="o">/</span> <span class="s2">&quot;datasets&quot;</span> <span class="o">/</span> <span class="s2">&quot;simple_pictures&quot;</span> <span class="o">/</span> <span class="s2">&quot;image.png&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Request ? &quot;</span><span class="p">)</span>
+        <span class="nb">input</span><span class="p">()</span>
+        <span class="n">request_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">perform_request</span><span class="p">(</span><span class="n">get_homedir</span><span class="p">()</span> <span class="o">/</span> <span class="s2">&quot;datasets&quot;</span> <span class="o">/</span> <span class="s2">&quot;simple_pictures&quot;</span> <span class="o">/</span> <span class="s2">&quot;image.bmp&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Polling ... &quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">poll_until_result_ready</span><span class="p">(</span><span class="n">request_id</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Add ? &quot;</span><span class="p">)</span>
+        <span class="nb">input</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">perform_upload</span><span class="p">(</span><span class="n">get_homedir</span><span class="p">()</span> <span class="o">/</span> <span class="s2">&quot;datasets&quot;</span> <span class="o">/</span> <span class="s2">&quot;simple_pictures&quot;</span> <span class="o">/</span> <span class="s2">&quot;image.bmp&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Fetch result ? &quot;</span><span class="p">)</span>
+        <span class="nb">input</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">retrieve_request_results</span><span class="p">(</span><span class="n">request_id</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Dump DB ? &quot;</span><span class="p">)</span>
+        <span class="nb">input</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">export_db_server</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="ClientInstanceExample.perform_ping_check"><a class="viewcode-back" href="../../carlhauser_client.html#carlhauser_client.client_instance_example.ClientInstanceExample.perform_ping_check">[docs]</a>    <span class="k">def</span> <span class="nf">perform_ping_check</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">API</span><span class="o">.</span><span class="n">ping_server</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="ClientInstanceExample.perform_upload"><a class="viewcode-back" href="../../carlhauser_client.html#carlhauser_client.client_instance_example.ClientInstanceExample.perform_upload">[docs]</a>    <span class="k">def</span> <span class="nf">perform_upload</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">API</span><span class="o">.</span><span class="n">add_one_picture</span><span class="p">(</span><span class="n">path</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ClientInstanceExample.perform_request"><a class="viewcode-back" href="../../carlhauser_client.html#carlhauser_client.client_instance_example.ClientInstanceExample.perform_request">[docs]</a>    <span class="k">def</span> <span class="nf">perform_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">API</span><span class="o">.</span><span class="n">request_similar</span><span class="p">(</span><span class="n">path</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="ClientInstanceExample.poll_until_result_ready"><a class="viewcode-back" href="../../carlhauser_client.html#carlhauser_client.client_instance_example.ClientInstanceExample.poll_until_result_ready">[docs]</a>    <span class="k">def</span> <span class="nf">poll_until_result_ready</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request_id</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">API</span><span class="o">.</span><span class="n">poll_until_result_ready</span><span class="p">(</span><span class="n">request_id</span><span class="p">,</span> <span class="n">max_time</span><span class="o">=</span><span class="mi">60</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ClientInstanceExample.retrieve_request_results"><a class="viewcode-back" href="../../carlhauser_client.html#carlhauser_client.client_instance_example.ClientInstanceExample.retrieve_request_results">[docs]</a>    <span class="k">def</span> <span class="nf">retrieve_request_results</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request_id</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">API</span><span class="o">.</span><span class="n">get_results</span><span class="p">(</span><span class="n">request_id</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="ClientInstanceExample.export_db_server"><a class="viewcode-back" href="../../carlhauser_client.html#carlhauser_client.client_instance_example.ClientInstanceExample.export_db_server">[docs]</a>    <span class="k">def</span> <span class="nf">export_db_server</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">API</span><span class="o">.</span><span class="n">export_db_server</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="ClientInstanceExample.example"><a class="viewcode-back" href="../../carlhauser_client.html#carlhauser_client.client_instance_example.ClientInstanceExample.example">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">example</span><span class="p">():</span>
+        <span class="c1"># Generate the API access point link to the hardcoded server</span>
+        <span class="n">cert</span> <span class="o">=</span> <span class="p">(</span><span class="n">get_homedir</span><span class="p">()</span> <span class="o">/</span> <span class="s2">&quot;carlhauser_client&quot;</span> <span class="o">/</span> <span class="s2">&quot;cert.pem&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+        <span class="n">api</span> <span class="o">=</span> <span class="n">Simple_API</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s1">&#39;https://localhost:5000/&#39;</span><span class="p">,</span> <span class="n">certificate_path</span><span class="o">=</span><span class="n">cert</span><span class="p">)</span>
+
+        <span class="c1"># Ping server, and perform uploads</span>
+        <span class="n">api</span><span class="o">.</span><span class="n">ping_server</span><span class="p">()</span>
+        <span class="n">api</span><span class="o">.</span><span class="n">add_one_picture</span><span class="p">(</span><span class="n">get_homedir</span><span class="p">()</span> <span class="o">/</span> <span class="s2">&quot;datasets&quot;</span> <span class="o">/</span> <span class="s2">&quot;simple_pictures&quot;</span> <span class="o">/</span> <span class="s2">&quot;image.jpg&quot;</span><span class="p">)</span>
+        <span class="c1"># (...)</span>
+
+        <span class="c1"># Request a picture matches</span>
+        <span class="n">request_id</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">request_similar</span><span class="p">(</span><span class="n">get_homedir</span><span class="p">()</span> <span class="o">/</span> <span class="s2">&quot;datasets&quot;</span> <span class="o">/</span> <span class="s2">&quot;simple_pictures&quot;</span> <span class="o">/</span> <span class="s2">&quot;image.bmp&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="c1"># (...)</span>
+
+        <span class="c1"># Wait a bit</span>
+        <span class="n">api</span><span class="o">.</span><span class="n">poll_until_result_ready</span><span class="p">(</span><span class="n">request_id</span><span class="p">,</span> <span class="n">max_time</span><span class="o">=</span><span class="mi">60</span><span class="p">)</span>
+
+        <span class="c1"># Retrieve results of the previous request</span>
+        <span class="n">api</span><span class="o">.</span><span class="n">get_results</span><span class="p">(</span><span class="n">request_id</span><span class="p">)</span>
+
+        <span class="c1"># Triggers a DB export of the server as-is, to be displayed with visjsclassificator. Server-side only operation.</span>
+        <span class="n">api</span><span class="o">.</span><span class="n">export_db_server</span><span class="p">()</span></div></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">client_instance</span> <span class="o">=</span> <span class="n">ClientInstanceExample</span><span class="p">()</span>
+    <span class="n">client_instance</span><span class="o">.</span><span class="n">launch</span><span class="p">()</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, Vincent FALCONIERI.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.2.
+    </div>
+  </body>
+</html>

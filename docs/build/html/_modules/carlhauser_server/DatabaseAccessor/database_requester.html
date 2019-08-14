@@ -1,0 +1,152 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>carlhauser_server.DatabaseAccessor.database_requester &#8212; Douglas-Quaid 0.0.4 documentation</title>
+    <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for carlhauser_server.DatabaseAccessor.database_requester</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+
+<span class="kn">import</span> <span class="nn">argparse</span>
+
+<span class="kn">import</span> <span class="nn">carlhauser_server.Configuration.database_conf</span> <span class="k">as</span> <span class="nn">database_conf</span>
+<span class="kn">import</span> <span class="nn">carlhauser_server.Configuration.distance_engine_conf</span> <span class="k">as</span> <span class="nn">distance_engine_conf</span>
+<span class="kn">import</span> <span class="nn">carlhauser_server.Configuration.feature_extractor_conf</span> <span class="k">as</span> <span class="nn">feature_extractor_conf</span>
+<span class="kn">import</span> <span class="nn">carlhauser_server.DatabaseAccessor.database_common</span> <span class="k">as</span> <span class="nn">database_common</span>
+<span class="kn">import</span> <span class="nn">carlhauser_server.DistanceEngine.scoring_datastrutures</span> <span class="k">as</span> <span class="nn">score_datastruct</span>
+<span class="kn">from</span> <span class="nn">carlhauser_server.Helpers</span> <span class="k">import</span> <span class="n">arg_parser</span>
+<span class="kn">from</span> <span class="nn">common.environment_variable</span> <span class="k">import</span> <span class="n">load_server_logging_conf_file</span><span class="p">,</span> <span class="n">make_small_line</span><span class="p">,</span> <span class="n">QueueNames</span>
+
+<span class="n">load_server_logging_conf_file</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="Database_Requester"><a class="viewcode-back" href="../../../carlhauser_server.DatabaseAccessor.html#carlhauser_server.DatabaseAccessor.database_requester.Database_Requester">[docs]</a><span class="k">class</span> <span class="nc">Database_Requester</span><span class="p">(</span><span class="n">database_common</span><span class="o">.</span><span class="n">Database_Common</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Heritate from the database common, and so has already built in access to cache, storage ..</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tmp_db_conf</span><span class="p">:</span> <span class="n">database_conf</span><span class="o">.</span><span class="n">Default_database_conf</span><span class="p">,</span>
+                 <span class="n">tmp_dist_conf</span><span class="p">:</span> <span class="n">distance_engine_conf</span><span class="o">.</span><span class="n">Default_distance_engine_conf</span><span class="p">,</span>
+                 <span class="n">tmp_fe_conf</span><span class="p">:</span> <span class="n">feature_extractor_conf</span><span class="o">.</span><span class="n">Default_feature_extractor_conf</span><span class="p">):</span>
+        <span class="c1"># STD attributes</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">tmp_db_conf</span><span class="p">,</span> <span class="n">tmp_dist_conf</span><span class="p">,</span> <span class="n">tmp_fe_conf</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Database_Requester.process_fetched_data"><a class="viewcode-back" href="../../../carlhauser_server.DatabaseAccessor.html#carlhauser_server.DatabaseAccessor.database_requester.Database_Requester.process_fetched_data">[docs]</a>    <span class="k">def</span> <span class="nf">process_fetched_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fetched_id</span><span class="p">,</span> <span class="n">fetched_dict</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Method to overwrite to specify the worker. Called each time something is fetched from queue.</span>
+<span class="sd">        Perform calculation on the database to fetch near pictures. Does not add the requested picture to the database</span>
+<span class="sd">        :param fetched_id: id to process</span>
+<span class="sd">        :param fetched_dict: data to process</span>
+<span class="sd">        :return: Nothing (or to be defined)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;DB Request worker processing </span><span class="si">{fetched_id}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Fetched dict </span><span class="si">{fetched_dict}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Beaware, that this is a request only : Do NOT add picture to storage</span>
+
+        <span class="c1"># Get top matching pictures in clusters</span>
+        <span class="n">top_matching_pictures</span><span class="p">,</span> <span class="n">list_matching_clusters</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_top_matching_pictures</span><span class="p">(</span><span class="n">fetched_dict</span><span class="p">)</span>
+
+        <span class="c1"># Depending on the quality of the match ...</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_good_match</span><span class="p">(</span><span class="n">top_matching_pictures</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Match is good enough with at least one cluster&quot;</span><span class="p">)</span>
+            <span class="n">results</span> <span class="o">=</span> <span class="n">score_datastruct</span><span class="o">.</span><span class="n">build_response</span><span class="p">(</span><span class="n">fetched_id</span><span class="p">,</span> <span class="n">list_matching_clusters</span><span class="p">,</span> <span class="n">top_matching_pictures</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Create an answer with void lists</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Match not good enough, with any cluster&quot;</span><span class="p">)</span>
+            <span class="n">results</span> <span class="o">=</span> <span class="n">score_datastruct</span><span class="o">.</span><span class="n">build_response</span><span class="p">(</span><span class="n">fetched_id</span><span class="p">,</span> <span class="p">[],</span> <span class="p">[])</span>
+
+        <span class="c1"># Adding results</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_request_result</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cache_db_no_decode</span><span class="p">,</span> <span class="n">fetched_id</span><span class="p">,</span> <span class="n">results</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Request done. Results written.&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">make_small_line</span><span class="p">())</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Requester Worker ready to accept more queries.&quot;</span><span class="p">)</span></div></div>
+
+<span class="c1"># Launcher for this worker. Launch this file to launch a worker</span>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s1">&#39;Launch a worker for a specific task : requesting picture to database&#39;</span><span class="p">)</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">arg_parser</span><span class="o">.</span><span class="n">add_arg_db_conf</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">arg_parser</span><span class="o">.</span><span class="n">add_arg_dist_conf</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">arg_parser</span><span class="o">.</span><span class="n">add_arg_fe_conf</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>
+
+    <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+
+    <span class="n">db_conf</span><span class="p">,</span> <span class="n">dist_conf</span><span class="p">,</span> <span class="n">fe_conf</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">arg_parser</span><span class="o">.</span><span class="n">parse_conf_files</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+
+    <span class="c1"># Create the Database Accessor and run it</span>
+    <span class="n">db_accessor</span> <span class="o">=</span> <span class="n">Database_Requester</span><span class="p">(</span><span class="n">db_conf</span><span class="p">,</span> <span class="n">dist_conf</span><span class="p">,</span> <span class="n">fe_conf</span><span class="p">)</span>
+    <span class="n">db_accessor</span><span class="o">.</span><span class="n">input_queue</span> <span class="o">=</span> <span class="n">QueueNames</span><span class="o">.</span><span class="n">DB_TO_REQUEST</span>
+    <span class="n">db_accessor</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">sleep_in_sec</span><span class="o">=</span><span class="n">db_conf</span><span class="o">.</span><span class="n">REQUESTER_WAIT_SEC</span><span class="p">)</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, Vincent FALCONIERI.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.2.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,215 @@
+\indexentry{carlhauser\_client.API (module)@\spxentry{carlhauser\_client.API}\spxextra{module}|hyperpage}{2}
+\indexentry{carlhauser\_client.EvaluationTools.SimilarityGraphExtractor (module)@\spxentry{carlhauser\_client.EvaluationTools.SimilarityGraphExtractor}\spxextra{module}|hyperpage}{2}
+\indexentry{carlhauser\_client.EvaluationTools.StorageGraphExtractor (module)@\spxentry{carlhauser\_client.EvaluationTools.StorageGraphExtractor}\spxextra{module}|hyperpage}{2}
+\indexentry{carlhauser\_client.EvaluationTools (module)@\spxentry{carlhauser\_client.EvaluationTools}\spxextra{module}|hyperpage}{2}
+\indexentry{carlhauser\_client.Helpers (module)@\spxentry{carlhauser\_client.Helpers}\spxextra{module}|hyperpage}{2}
+\indexentry{carlhauser\_client (module)@\spxentry{carlhauser\_client}\spxextra{module}|hyperpage}{2}
+\indexentry{carlhauser\_client\_tests.API (module)@\spxentry{carlhauser\_client\_tests.API}\spxextra{module}|hyperpage}{3}
+\indexentry{carlhauser\_client\_tests.EvaluationTools.evaluator.test\_similarity\_graph\_extractor (module)@\spxentry{carlhauser\_client\_tests.EvaluationTools.evaluator.test\_similarity\_graph\_extractor}\spxextra{module}|hyperpage}{3}
+\indexentry{TestClusterMatcher (class in carlhauser\_client\_tests.EvaluationTools.evaluator.test\_similarity\_graph\_extractor)@\spxentry{TestClusterMatcher}\spxextra{class in carlhauser\_client\_tests.EvaluationTools.evaluator.test\_similarity\_graph\_extractor}|hyperpage}{3}
+\indexentry{setUp() (carlhauser\_client\_tests.EvaluationTools.evaluator.test\_similarity\_graph\_extractor.TestClusterMatcher method)@\spxentry{setUp()}\spxextra{carlhauser\_client\_tests.EvaluationTools.evaluator.test\_similarity\_graph\_extractor.TestClusterMatcher method}|hyperpage}{3}
+\indexentry{test\_absolute\_truth\_and\_meaning() (carlhauser\_client\_tests.EvaluationTools.evaluator.test\_similarity\_graph\_extractor.TestClusterMatcher method)@\spxentry{test\_absolute\_truth\_and\_meaning()}\spxextra{carlhauser\_client\_tests.EvaluationTools.evaluator.test\_similarity\_graph\_extractor.TestClusterMatcher method}|hyperpage}{3}
+\indexentry{carlhauser\_client\_tests.EvaluationTools.evaluator (module)@\spxentry{carlhauser\_client\_tests.EvaluationTools.evaluator}\spxextra{module}|hyperpage}{4}
+\indexentry{carlhauser\_client\_tests.EvaluationTools (module)@\spxentry{carlhauser\_client\_tests.EvaluationTools}\spxextra{module}|hyperpage}{4}
+\indexentry{carlhauser\_client\_tests.Helpers.test\_dict\_utilities (module)@\spxentry{carlhauser\_client\_tests.Helpers.test\_dict\_utilities}\spxextra{module}|hyperpage}{4}
+\indexentry{TestClusterMatcher (class in carlhauser\_client\_tests.Helpers.test\_dict\_utilities)@\spxentry{TestClusterMatcher}\spxextra{class in carlhauser\_client\_tests.Helpers.test\_dict\_utilities}|hyperpage}{4}
+\indexentry{setUp() (carlhauser\_client\_tests.Helpers.test\_dict\_utilities.TestClusterMatcher method)@\spxentry{setUp()}\spxextra{carlhauser\_client\_tests.Helpers.test\_dict\_utilities.TestClusterMatcher method}|hyperpage}{4}
+\indexentry{test\_absolute\_truth\_and\_meaning() (carlhauser\_client\_tests.Helpers.test\_dict\_utilities.TestClusterMatcher method)@\spxentry{test\_absolute\_truth\_and\_meaning()}\spxextra{carlhauser\_client\_tests.Helpers.test\_dict\_utilities.TestClusterMatcher method}|hyperpage}{4}
+\indexentry{test\_dict\_reverse() (carlhauser\_client\_tests.Helpers.test\_dict\_utilities.TestClusterMatcher method)@\spxentry{test\_dict\_reverse()}\spxextra{carlhauser\_client\_tests.Helpers.test\_dict\_utilities.TestClusterMatcher method}|hyperpage}{4}
+\indexentry{test\_dict\_reverse\_hard() (carlhauser\_client\_tests.Helpers.test\_dict\_utilities.TestClusterMatcher method)@\spxentry{test\_dict\_reverse\_hard()}\spxextra{carlhauser\_client\_tests.Helpers.test\_dict\_utilities.TestClusterMatcher method}|hyperpage}{4}
+\indexentry{test\_dict\_reverse\_realist() (carlhauser\_client\_tests.Helpers.test\_dict\_utilities.TestClusterMatcher method)@\spxentry{test\_dict\_reverse\_realist()}\spxextra{carlhauser\_client\_tests.Helpers.test\_dict\_utilities.TestClusterMatcher method}|hyperpage}{4}
+\indexentry{test\_dict\_update() (carlhauser\_client\_tests.Helpers.test\_dict\_utilities.TestClusterMatcher method)@\spxentry{test\_dict\_update()}\spxextra{carlhauser\_client\_tests.Helpers.test\_dict\_utilities.TestClusterMatcher method}|hyperpage}{4}
+\indexentry{carlhauser\_client\_tests.Helpers (module)@\spxentry{carlhauser\_client\_tests.Helpers}\spxextra{module}|hyperpage}{4}
+\indexentry{carlhauser\_client\_tests.context (module)@\spxentry{carlhauser\_client\_tests.context}\spxextra{module}|hyperpage}{4}
+\indexentry{carlhauser\_client\_tests (module)@\spxentry{carlhauser\_client\_tests}\spxextra{module}|hyperpage}{4}
+\indexentry{carlhauser\_server.Processus.processus\_list (module)@\spxentry{carlhauser\_server.Processus.processus\_list}\spxextra{module}|hyperpage}{6}
+\indexentry{ProcessesList (class in carlhauser\_server.Processus.processus\_list)@\spxentry{ProcessesList}\spxextra{class in carlhauser\_server.Processus.processus\_list}|hyperpage}{6}
+\indexentry{append() (carlhauser\_server.Processus.processus\_list.ProcessesList method)@\spxentry{append()}\spxextra{carlhauser\_server.Processus.processus\_list.ProcessesList method}|hyperpage}{7}
+\indexentry{flush() (carlhauser\_server.Processus.processus\_list.ProcessesList method)@\spxentry{flush()}\spxextra{carlhauser\_server.Processus.processus\_list.ProcessesList method}|hyperpage}{7}
+\indexentry{flush\_not\_running() (carlhauser\_server.Processus.processus\_list.ProcessesList method)@\spxentry{flush\_not\_running()}\spxextra{carlhauser\_server.Processus.processus\_list.ProcessesList method}|hyperpage}{7}
+\indexentry{get\_running\_processus() (carlhauser\_server.Processus.processus\_list.ProcessesList method)@\spxentry{get\_running\_processus()}\spxextra{carlhauser\_server.Processus.processus\_list.ProcessesList method}|hyperpage}{7}
+\indexentry{is\_there\_alive\_workers() (carlhauser\_server.Processus.processus\_list.ProcessesList method)@\spxentry{is\_there\_alive\_workers()}\spxextra{carlhauser\_server.Processus.processus\_list.ProcessesList method}|hyperpage}{7}
+\indexentry{kill\_all\_processus() (carlhauser\_server.Processus.processus\_list.ProcessesList method)@\spxentry{kill\_all\_processus()}\spxextra{carlhauser\_server.Processus.processus\_list.ProcessesList method}|hyperpage}{7}
+\indexentry{wait\_until\_all\_stopped() (carlhauser\_server.Processus.processus\_list.ProcessesList method)@\spxentry{wait\_until\_all\_stopped()}\spxextra{carlhauser\_server.Processus.processus\_list.ProcessesList method}|hyperpage}{7}
+\indexentry{carlhauser\_server.Processus.worker\_process (module)@\spxentry{carlhauser\_server.Processus.worker\_process}\spxextra{module}|hyperpage}{7}
+\indexentry{WorkerProcessus (class in carlhauser\_server.Processus.worker\_process)@\spxentry{WorkerProcessus}\spxextra{class in carlhauser\_server.Processus.worker\_process}|hyperpage}{7}
+\indexentry{check\_status() (carlhauser\_server.Processus.worker\_process.WorkerProcessus method)@\spxentry{check\_status()}\spxextra{carlhauser\_server.Processus.worker\_process.WorkerProcessus method}|hyperpage}{7}
+\indexentry{get\_str() (carlhauser\_server.Processus.worker\_process.WorkerProcessus method)@\spxentry{get\_str()}\spxextra{carlhauser\_server.Processus.worker\_process.WorkerProcessus method}|hyperpage}{7}
+\indexentry{is\_running() (carlhauser\_server.Processus.worker\_process.WorkerProcessus method)@\spxentry{is\_running()}\spxextra{carlhauser\_server.Processus.worker\_process.WorkerProcessus method}|hyperpage}{7}
+\indexentry{launch() (carlhauser\_server.Processus.worker\_process.WorkerProcessus method)@\spxentry{launch()}\spxextra{carlhauser\_server.Processus.worker\_process.WorkerProcessus method}|hyperpage}{7}
+\indexentry{shutdown() (carlhauser\_server.Processus.worker\_process.WorkerProcessus method)@\spxentry{shutdown()}\spxextra{carlhauser\_server.Processus.worker\_process.WorkerProcessus method}|hyperpage}{7}
+\indexentry{wait\_until\_stopped() (carlhauser\_server.Processus.worker\_process.WorkerProcessus method)@\spxentry{wait\_until\_stopped()}\spxextra{carlhauser\_server.Processus.worker\_process.WorkerProcessus method}|hyperpage}{7}
+\indexentry{carlhauser\_server.Processus (module)@\spxentry{carlhauser\_server.Processus}\spxextra{module}|hyperpage}{8}
+\indexentry{carlhauser\_server\_tests.API.test\_in\_memory\_files\_ops (module)@\spxentry{carlhauser\_server\_tests.API.test\_in\_memory\_files\_ops}\spxextra{module}|hyperpage}{9}
+\indexentry{TestInMemoryOperations (class in carlhauser\_server\_tests.API.test\_in\_memory\_files\_ops)@\spxentry{TestInMemoryOperations}\spxextra{class in carlhauser\_server\_tests.API.test\_in\_memory\_files\_ops}|hyperpage}{9}
+\indexentry{setUp() (carlhauser\_server\_tests.API.test\_in\_memory\_files\_ops.TestInMemoryOperations method)@\spxentry{setUp()}\spxextra{carlhauser\_server\_tests.API.test\_in\_memory\_files\_ops.TestInMemoryOperations method}|hyperpage}{9}
+\indexentry{test\_absolute\_truth\_and\_meaning() (carlhauser\_server\_tests.API.test\_in\_memory\_files\_ops.TestInMemoryOperations method)@\spxentry{test\_absolute\_truth\_and\_meaning()}\spxextra{carlhauser\_server\_tests.API.test\_in\_memory\_files\_ops.TestInMemoryOperations method}|hyperpage}{9}
+\indexentry{test\_bmp\_conversion() (carlhauser\_server\_tests.API.test\_in\_memory\_files\_ops.TestInMemoryOperations method)@\spxentry{test\_bmp\_conversion()}\spxextra{carlhauser\_server\_tests.API.test\_in\_memory\_files\_ops.TestInMemoryOperations method}|hyperpage}{9}
+\indexentry{test\_exif\_and\_hash() (carlhauser\_server\_tests.API.test\_in\_memory\_files\_ops.TestInMemoryOperations method)@\spxentry{test\_exif\_and\_hash()}\spxextra{carlhauser\_server\_tests.API.test\_in\_memory\_files\_ops.TestInMemoryOperations method}|hyperpage}{9}
+\indexentry{carlhauser\_server\_tests.API (module)@\spxentry{carlhauser\_server\_tests.API}\spxextra{module}|hyperpage}{11}
+\indexentry{carlhauser\_server\_tests.Configuration (module)@\spxentry{carlhauser\_server\_tests.Configuration}\spxextra{module}|hyperpage}{11}
+\indexentry{carlhauser\_server\_tests.Data (module)@\spxentry{carlhauser\_server\_tests.Data}\spxextra{module}|hyperpage}{11}
+\indexentry{carlhauser\_server\_tests.DatabaseAccessor (module)@\spxentry{carlhauser\_server\_tests.DatabaseAccessor}\spxextra{module}|hyperpage}{11}
+\indexentry{carlhauser\_server\_tests.DistanceEngine (module)@\spxentry{carlhauser\_server\_tests.DistanceEngine}\spxextra{module}|hyperpage}{11}
+\indexentry{carlhauser\_server\_tests.FeatureExtractor (module)@\spxentry{carlhauser\_server\_tests.FeatureExtractor}\spxextra{module}|hyperpage}{11}
+\indexentry{carlhauser\_server\_tests.Helpers (module)@\spxentry{carlhauser\_server\_tests.Helpers}\spxextra{module}|hyperpage}{11}
+\indexentry{carlhauser\_server\_tests.Processus (module)@\spxentry{carlhauser\_server\_tests.Processus}\spxextra{module}|hyperpage}{11}
+\indexentry{carlhauser\_server\_tests.Singletons.test\_singleton (module)@\spxentry{carlhauser\_server\_tests.Singletons.test\_singleton}\spxextra{module}|hyperpage}{11}
+\indexentry{testSingleton (class in carlhauser\_server\_tests.Singletons.test\_singleton)@\spxentry{testSingleton}\spxextra{class in carlhauser\_server\_tests.Singletons.test\_singleton}|hyperpage}{11}
+\indexentry{testSingleton.Derived (class in carlhauser\_server\_tests.Singletons.test\_singleton)@\spxentry{testSingleton.Derived}\spxextra{class in carlhauser\_server\_tests.Singletons.test\_singleton}|hyperpage}{12}
+\indexentry{get\_myvalue() (carlhauser\_server\_tests.Singletons.test\_singleton.testSingleton.Derived method)@\spxentry{get\_myvalue()}\spxextra{carlhauser\_server\_tests.Singletons.test\_singleton.testSingleton.Derived method}|hyperpage}{12}
+\indexentry{get\_value\_shared() (carlhauser\_server\_tests.Singletons.test\_singleton.testSingleton.Derived method)@\spxentry{get\_value\_shared()}\spxextra{carlhauser\_server\_tests.Singletons.test\_singleton.testSingleton.Derived method}|hyperpage}{12}
+\indexentry{increment\_value() (carlhauser\_server\_tests.Singletons.test\_singleton.testSingleton.Derived method)@\spxentry{increment\_value()}\spxextra{carlhauser\_server\_tests.Singletons.test\_singleton.testSingleton.Derived method}|hyperpage}{12}
+\indexentry{value\_shared (carlhauser\_server\_tests.Singletons.test\_singleton.testSingleton.Derived attribute)@\spxentry{value\_shared}\spxextra{carlhauser\_server\_tests.Singletons.test\_singleton.testSingleton.Derived attribute}|hyperpage}{12}
+\indexentry{setUp() (carlhauser\_server\_tests.Singletons.test\_singleton.testSingleton method)@\spxentry{setUp()}\spxextra{carlhauser\_server\_tests.Singletons.test\_singleton.testSingleton method}|hyperpage}{12}
+\indexentry{test\_singleton() (carlhauser\_server\_tests.Singletons.test\_singleton.testSingleton method)@\spxentry{test\_singleton()}\spxextra{carlhauser\_server\_tests.Singletons.test\_singleton.testSingleton method}|hyperpage}{12}
+\indexentry{test\_singleton\_instance\_equality() (carlhauser\_server\_tests.Singletons.test\_singleton.testSingleton method)@\spxentry{test\_singleton\_instance\_equality()}\spxextra{carlhauser\_server\_tests.Singletons.test\_singleton.testSingleton method}|hyperpage}{12}
+\indexentry{carlhauser\_server\_tests.Singletons.test\_worker\_start\_stop (module)@\spxentry{carlhauser\_server\_tests.Singletons.test\_worker\_start\_stop}\spxextra{module}|hyperpage}{12}
+\indexentry{testDistanceEngine (class in carlhauser\_server\_tests.Singletons.test\_worker\_start\_stop)@\spxentry{testDistanceEngine}\spxextra{class in carlhauser\_server\_tests.Singletons.test\_worker\_start\_stop}|hyperpage}{12}
+\indexentry{setUp() (carlhauser\_server\_tests.Singletons.test\_worker\_start\_stop.testDistanceEngine method)@\spxentry{setUp()}\spxextra{carlhauser\_server\_tests.Singletons.test\_worker\_start\_stop.testDistanceEngine method}|hyperpage}{12}
+\indexentry{test\_absolute\_truth\_and\_meaning() (carlhauser\_server\_tests.Singletons.test\_worker\_start\_stop.testDistanceEngine method)@\spxentry{test\_absolute\_truth\_and\_meaning()}\spxextra{carlhauser\_server\_tests.Singletons.test\_worker\_start\_stop.testDistanceEngine method}|hyperpage}{12}
+\indexentry{carlhauser\_server\_tests.Singletons (module)@\spxentry{carlhauser\_server\_tests.Singletons}\spxextra{module}|hyperpage}{12}
+\indexentry{carlhauser\_server\_tests (module)@\spxentry{carlhauser\_server\_tests}\spxextra{module}|hyperpage}{12}
+\indexentry{common.Calibrator (module)@\spxentry{common.Calibrator}\spxextra{module}|hyperpage}{13}
+\indexentry{common.ChartMaker (module)@\spxentry{common.ChartMaker}\spxextra{module}|hyperpage}{13}
+\indexentry{common.DataTurksAlgos.pictures\_exporter (module)@\spxentry{common.DataTurksAlgos.pictures\_exporter}\spxextra{module}|hyperpage}{13}
+\indexentry{PicturesExporter (class in common.DataTurksAlgos.pictures\_exporter)@\spxentry{PicturesExporter}\spxextra{class in common.DataTurksAlgos.pictures\_exporter}|hyperpage}{13}
+\indexentry{export\_dicts() (common.DataTurksAlgos.pictures\_exporter.PicturesExporter method)@\spxentry{export\_dicts()}\spxextra{common.DataTurksAlgos.pictures\_exporter.PicturesExporter method}|hyperpage}{13}
+\indexentry{iterate\_over\_dataturks\_json() (common.DataTurksAlgos.pictures\_exporter.PicturesExporter method)@\spxentry{iterate\_over\_dataturks\_json()}\spxextra{common.DataTurksAlgos.pictures\_exporter.PicturesExporter method}|hyperpage}{13}
+\indexentry{launch\_copy() (common.DataTurksAlgos.pictures\_exporter.PicturesExporter method)@\spxentry{launch\_copy()}\spxextra{common.DataTurksAlgos.pictures\_exporter.PicturesExporter method}|hyperpage}{13}
+\indexentry{list\_to\_dict() (common.DataTurksAlgos.pictures\_exporter.PicturesExporter static method)@\spxentry{list\_to\_dict()}\spxextra{common.DataTurksAlgos.pictures\_exporter.PicturesExporter static method}|hyperpage}{13}
+\indexentry{load\_dataturks\_json() (common.DataTurksAlgos.pictures\_exporter.PicturesExporter method)@\spxentry{load\_dataturks\_json()}\spxextra{common.DataTurksAlgos.pictures\_exporter.PicturesExporter method}|hyperpage}{13}
+\indexentry{load\_files() (common.DataTurksAlgos.pictures\_exporter.PicturesExporter static method)@\spxentry{load\_files()}\spxextra{common.DataTurksAlgos.pictures\_exporter.PicturesExporter static method}|hyperpage}{13}
+\indexentry{load\_pictures\_to\_copy() (common.DataTurksAlgos.pictures\_exporter.PicturesExporter method)@\spxentry{load\_pictures\_to\_copy()}\spxextra{common.DataTurksAlgos.pictures\_exporter.PicturesExporter method}|hyperpage}{14}
+\indexentry{load\_pictures\_to\_not\_copy() (common.DataTurksAlgos.pictures\_exporter.PicturesExporter method)@\spxentry{load\_pictures\_to\_not\_copy()}\spxextra{common.DataTurksAlgos.pictures\_exporter.PicturesExporter method}|hyperpage}{14}
+\indexentry{dir\_path() (in module common.DataTurksAlgos.pictures\_exporter)@\spxentry{dir\_path()}\spxextra{in module common.DataTurksAlgos.pictures\_exporter}|hyperpage}{14}
+\indexentry{common.DataTurksAlgos (module)@\spxentry{common.DataTurksAlgos}\spxextra{module}|hyperpage}{14}
+\indexentry{common.Graph (module)@\spxentry{common.Graph}\spxextra{module}|hyperpage}{14}
+\indexentry{common.HumanHash.docker\_committer (module)@\spxentry{common.HumanHash.docker\_committer}\spxextra{module}|hyperpage}{14}
+\indexentry{DockerCommmiter (class in common.HumanHash.docker\_committer)@\spxentry{DockerCommmiter}\spxextra{class in common.HumanHash.docker\_committer}|hyperpage}{14}
+\indexentry{commit\_docker() (common.HumanHash.docker\_committer.DockerCommmiter method)@\spxentry{commit\_docker()}\spxextra{common.HumanHash.docker\_committer.DockerCommmiter method}|hyperpage}{14}
+\indexentry{get\_commit\_name() (common.HumanHash.docker\_committer.DockerCommmiter method)@\spxentry{get\_commit\_name()}\spxextra{common.HumanHash.docker\_committer.DockerCommmiter method}|hyperpage}{14}
+\indexentry{inifnite\_commit\_docker() (common.HumanHash.docker\_committer.DockerCommmiter method)@\spxentry{inifnite\_commit\_docker()}\spxextra{common.HumanHash.docker\_committer.DockerCommmiter method}|hyperpage}{14}
+\indexentry{remove\_too\_old\_images() (common.HumanHash.docker\_committer.DockerCommmiter method)@\spxentry{remove\_too\_old\_images()}\spxextra{common.HumanHash.docker\_committer.DockerCommmiter method}|hyperpage}{14}
+\indexentry{main() (in module common.HumanHash.docker\_committer)@\spxentry{main()}\spxextra{in module common.HumanHash.docker\_committer}|hyperpage}{14}
+\indexentry{common.HumanHash.humanizer (module)@\spxentry{common.HumanHash.humanizer}\spxextra{module}|hyperpage}{14}
+\indexentry{Humanizer (class in common.HumanHash.humanizer)@\spxentry{Humanizer}\spxextra{class in common.HumanHash.humanizer}|hyperpage}{14}
+\indexentry{correct\_name() (common.HumanHash.humanizer.Humanizer static method)@\spxentry{correct\_name()}\spxextra{common.HumanHash.humanizer.Humanizer static method}|hyperpage}{14}
+\indexentry{get\_name() (common.HumanHash.humanizer.Humanizer static method)@\spxentry{get\_name()}\spxextra{common.HumanHash.humanizer.Humanizer static method}|hyperpage}{14}
+\indexentry{humanize\_name() (common.HumanHash.humanizer.Humanizer method)@\spxentry{humanize\_name()}\spxextra{common.HumanHash.humanizer.Humanizer method}|hyperpage}{15}
+\indexentry{is\_already\_drawn() (common.HumanHash.humanizer.Humanizer method)@\spxentry{is\_already\_drawn()}\spxextra{common.HumanHash.humanizer.Humanizer method}|hyperpage}{15}
+\indexentry{rename\_all\_files() (common.HumanHash.humanizer.Humanizer method)@\spxentry{rename\_all\_files()}\spxextra{common.HumanHash.humanizer.Humanizer method}|hyperpage}{15}
+\indexentry{sanity\_check() (common.HumanHash.humanizer.Humanizer static method)@\spxentry{sanity\_check()}\spxextra{common.HumanHash.humanizer.Humanizer static method}|hyperpage}{15}
+\indexentry{main() (in module common.HumanHash.humanizer)@\spxentry{main()}\spxextra{in module common.HumanHash.humanizer}|hyperpage}{15}
+\indexentry{test() (in module common.HumanHash.humanizer)@\spxentry{test()}\spxextra{in module common.HumanHash.humanizer}|hyperpage}{15}
+\indexentry{common.HumanHash.urlifier (module)@\spxentry{common.HumanHash.urlifier}\spxextra{module}|hyperpage}{15}
+\indexentry{Referencer (class in common.HumanHash.urlifier)@\spxentry{Referencer}\spxextra{class in common.HumanHash.urlifier}|hyperpage}{15}
+\indexentry{check\_correctness() (common.HumanHash.urlifier.Referencer static method)@\spxentry{check\_correctness()}\spxextra{common.HumanHash.urlifier.Referencer static method}|hyperpage}{15}
+\indexentry{reference\_all\_files() (common.HumanHash.urlifier.Referencer method)@\spxentry{reference\_all\_files()}\spxextra{common.HumanHash.urlifier.Referencer method}|hyperpage}{15}
+\indexentry{save\_to\_text() (common.HumanHash.urlifier.Referencer static method)@\spxentry{save\_to\_text()}\spxextra{common.HumanHash.urlifier.Referencer static method}|hyperpage}{15}
+\indexentry{store\_value() (common.HumanHash.urlifier.Referencer method)@\spxentry{store\_value()}\spxextra{common.HumanHash.urlifier.Referencer method}|hyperpage}{15}
+\indexentry{main() (in module common.HumanHash.urlifier)@\spxentry{main()}\spxextra{in module common.HumanHash.urlifier}|hyperpage}{15}
+\indexentry{common.HumanHash (module)@\spxentry{common.HumanHash}\spxextra{module}|hyperpage}{15}
+\indexentry{common.ImportExport.json\_import\_export (module)@\spxentry{common.ImportExport.json\_import\_export}\spxextra{module}|hyperpage}{15}
+\indexentry{Custom\_JSON\_Encoder (class in common.ImportExport.json\_import\_export)@\spxentry{Custom\_JSON\_Encoder}\spxextra{class in common.ImportExport.json\_import\_export}|hyperpage}{15}
+\indexentry{default() (common.ImportExport.json\_import\_export.Custom\_JSON\_Encoder method)@\spxentry{default()}\spxextra{common.ImportExport.json\_import\_export.Custom\_JSON\_Encoder method}|hyperpage}{15}
+\indexentry{load\_json() (in module common.ImportExport.json\_import\_export)@\spxentry{load\_json()}\spxextra{in module common.ImportExport.json\_import\_export}|hyperpage}{16}
+\indexentry{save\_json() (in module common.ImportExport.json\_import\_export)@\spxentry{save\_json()}\spxextra{in module common.ImportExport.json\_import\_export}|hyperpage}{16}
+\indexentry{common.ImportExport.pickle\_import\_export (module)@\spxentry{common.ImportExport.pickle\_import\_export}\spxextra{module}|hyperpage}{16}
+\indexentry{Pickler (class in common.ImportExport.pickle\_import\_export)@\spxentry{Pickler}\spxextra{class in common.ImportExport.pickle\_import\_export}|hyperpage}{16}
+\indexentry{get\_object\_from\_pickle() (common.ImportExport.pickle\_import\_export.Pickler static method)@\spxentry{get\_object\_from\_pickle()}\spxextra{common.ImportExport.pickle\_import\_export.Pickler static method}|hyperpage}{16}
+\indexentry{get\_pickle\_from\_object() (common.ImportExport.pickle\_import\_export.Pickler static method)@\spxentry{get\_pickle\_from\_object()}\spxextra{common.ImportExport.pickle\_import\_export.Pickler static method}|hyperpage}{16}
+\indexentry{patch\_Keypoint\_pickiling() (common.ImportExport.pickle\_import\_export.Pickler static method)@\spxentry{patch\_Keypoint\_pickiling()}\spxextra{common.ImportExport.pickle\_import\_export.Pickler static method}|hyperpage}{16}
+\indexentry{common.ImportExport.picture\_import\_export (module)@\spxentry{common.ImportExport.picture\_import\_export}\spxextra{module}|hyperpage}{16}
+\indexentry{load\_picture() (in module common.ImportExport.picture\_import\_export)@\spxentry{load\_picture()}\spxextra{in module common.ImportExport.picture\_import\_export}|hyperpage}{16}
+\indexentry{save\_picture() (in module common.ImportExport.picture\_import\_export)@\spxentry{save\_picture()}\spxextra{in module common.ImportExport.picture\_import\_export}|hyperpage}{16}
+\indexentry{common.ImportExport (module)@\spxentry{common.ImportExport}\spxextra{module}|hyperpage}{16}
+\indexentry{common.ParametersExplorer.parameter\_explorer (module)@\spxentry{common.ParametersExplorer.parameter\_explorer}\spxextra{module}|hyperpage}{16}
+\indexentry{ParameterExplorer (class in common.ParametersExplorer.parameter\_explorer)@\spxentry{ParameterExplorer}\spxextra{class in common.ParametersExplorer.parameter\_explorer}|hyperpage}{16}
+\indexentry{launch() (common.ParametersExplorer.parameter\_explorer.ParameterExplorer method)@\spxentry{launch()}\spxextra{common.ParametersExplorer.parameter\_explorer.ParameterExplorer method}|hyperpage}{16}
+\indexentry{common.ParametersExplorer (module)@\spxentry{common.ParametersExplorer}\spxextra{module}|hyperpage}{17}
+\indexentry{common.PerformanceDatastructs (module)@\spxentry{common.PerformanceDatastructs}\spxextra{module}|hyperpage}{17}
+\indexentry{common.TestInstanceLauncher (module)@\spxentry{common.TestInstanceLauncher}\spxextra{module}|hyperpage}{17}
+\indexentry{common.CustomException (module)@\spxentry{common.CustomException}\spxextra{module}|hyperpage}{17}
+\indexentry{AlgoFeatureNotPresentError@\spxentry{AlgoFeatureNotPresentError}|hyperpage}{17}
+\indexentry{common.environment\_variable (module)@\spxentry{common.environment\_variable}\spxextra{module}|hyperpage}{17}
+\indexentry{EndPoints (class in common.environment\_variable)@\spxentry{EndPoints}\spxextra{class in common.environment\_variable}|hyperpage}{17}
+\indexentry{ADD\_PICTURE (common.environment\_variable.EndPoints attribute)@\spxentry{ADD\_PICTURE}\spxextra{common.environment\_variable.EndPoints attribute}|hyperpage}{17}
+\indexentry{EMPTY\_PIPELINE (common.environment\_variable.EndPoints attribute)@\spxentry{EMPTY\_PIPELINE}\spxextra{common.environment\_variable.EndPoints attribute}|hyperpage}{17}
+\indexentry{GET\_REQUEST\_RESULT (common.environment\_variable.EndPoints attribute)@\spxentry{GET\_REQUEST\_RESULT}\spxextra{common.environment\_variable.EndPoints attribute}|hyperpage}{17}
+\indexentry{REQUEST\_DB (common.environment\_variable.EndPoints attribute)@\spxentry{REQUEST\_DB}\spxextra{common.environment\_variable.EndPoints attribute}|hyperpage}{17}
+\indexentry{REQUEST\_PICTURE (common.environment\_variable.EndPoints attribute)@\spxentry{REQUEST\_PICTURE}\spxextra{common.environment\_variable.EndPoints attribute}|hyperpage}{17}
+\indexentry{WAIT\_FOR\_ADD (common.environment\_variable.EndPoints attribute)@\spxentry{WAIT\_FOR\_ADD}\spxextra{common.environment\_variable.EndPoints attribute}|hyperpage}{17}
+\indexentry{WAIT\_FOR\_REQUEST (common.environment\_variable.EndPoints attribute)@\spxentry{WAIT\_FOR\_REQUEST}\spxextra{common.environment\_variable.EndPoints attribute}|hyperpage}{17}
+\indexentry{JSON\_parsable\_Dict (class in common.environment\_variable)@\spxentry{JSON\_parsable\_Dict}\spxextra{class in common.environment\_variable}|hyperpage}{17}
+\indexentry{JSON\_parsable\_Enum (class in common.environment\_variable)@\spxentry{JSON\_parsable\_Enum}\spxextra{class in common.environment\_variable}|hyperpage}{17}
+\indexentry{QueueNames (class in common.environment\_variable)@\spxentry{QueueNames}\spxextra{class in common.environment\_variable}|hyperpage}{18}
+\indexentry{DB\_TO\_ADD (common.environment\_variable.QueueNames attribute)@\spxentry{DB\_TO\_ADD}\spxextra{common.environment\_variable.QueueNames attribute}|hyperpage}{18}
+\indexentry{DB\_TO\_REQUEST (common.environment\_variable.QueueNames attribute)@\spxentry{DB\_TO\_REQUEST}\spxextra{common.environment\_variable.QueueNames attribute}|hyperpage}{18}
+\indexentry{FEATURE\_TO\_ADD (common.environment\_variable.QueueNames attribute)@\spxentry{FEATURE\_TO\_ADD}\spxextra{common.environment\_variable.QueueNames attribute}|hyperpage}{18}
+\indexentry{FEATURE\_TO\_REQUEST (common.environment\_variable.QueueNames attribute)@\spxentry{FEATURE\_TO\_REQUEST}\spxextra{common.environment\_variable.QueueNames attribute}|hyperpage}{18}
+\indexentry{dir\_path() (in module common.environment\_variable)@\spxentry{dir\_path()}\spxextra{in module common.environment\_variable}|hyperpage}{18}
+\indexentry{get\_homedir() (in module common.environment\_variable)@\spxentry{get\_homedir()}\spxextra{in module common.environment\_variable}|hyperpage}{18}
+\indexentry{load\_client\_logging\_conf\_file() (in module common.environment\_variable)@\spxentry{load\_client\_logging\_conf\_file()}\spxextra{in module common.environment\_variable}|hyperpage}{18}
+\indexentry{load\_server\_logging\_conf\_file() (in module common.environment\_variable)@\spxentry{load\_server\_logging\_conf\_file()}\spxextra{in module common.environment\_variable}|hyperpage}{18}
+\indexentry{make\_big\_line() (in module common.environment\_variable)@\spxentry{make\_big\_line()}\spxextra{in module common.environment\_variable}|hyperpage}{18}
+\indexentry{make\_small\_line() (in module common.environment\_variable)@\spxentry{make\_small\_line()}\spxextra{in module common.environment\_variable}|hyperpage}{18}
+\indexentry{resolve\_path() (in module common.environment\_variable)@\spxentry{resolve\_path()}\spxextra{in module common.environment\_variable}|hyperpage}{18}
+\indexentry{common (module)@\spxentry{common}\spxextra{module}|hyperpage}{18}
+\indexentry{common\_tests.Calibrator (module)@\spxentry{common\_tests.Calibrator}\spxextra{module}|hyperpage}{19}
+\indexentry{common\_tests.ChartMaker (module)@\spxentry{common\_tests.ChartMaker}\spxextra{module}|hyperpage}{19}
+\indexentry{common\_tests.DataTurksAlgo.test\_dataturks\_algo (module)@\spxentry{common\_tests.DataTurksAlgo.test\_dataturks\_algo}\spxextra{module}|hyperpage}{19}
+\indexentry{test\_template (class in common\_tests.DataTurksAlgo.test\_dataturks\_algo)@\spxentry{test\_template}\spxextra{class in common\_tests.DataTurksAlgo.test\_dataturks\_algo}|hyperpage}{19}
+\indexentry{check\_size\_folder() (common\_tests.DataTurksAlgo.test\_dataturks\_algo.test\_template method)@\spxentry{check\_size\_folder()}\spxextra{common\_tests.DataTurksAlgo.test\_dataturks\_algo.test\_template method}|hyperpage}{19}
+\indexentry{clean\_folder() (common\_tests.DataTurksAlgo.test\_dataturks\_algo.test\_template method)@\spxentry{clean\_folder()}\spxextra{common\_tests.DataTurksAlgo.test\_dataturks\_algo.test\_template method}|hyperpage}{19}
+\indexentry{create\_sorted() (common\_tests.DataTurksAlgo.test\_dataturks\_algo.test\_template method)@\spxentry{create\_sorted()}\spxextra{common\_tests.DataTurksAlgo.test\_dataturks\_algo.test\_template method}|hyperpage}{19}
+\indexentry{setUp() (common\_tests.DataTurksAlgo.test\_dataturks\_algo.test\_template method)@\spxentry{setUp()}\spxextra{common\_tests.DataTurksAlgo.test\_dataturks\_algo.test\_template method}|hyperpage}{19}
+\indexentry{test\_already\_copied\_not\_recopied() (common\_tests.DataTurksAlgo.test\_dataturks\_algo.test\_template method)@\spxentry{test\_already\_copied\_not\_recopied()}\spxextra{common\_tests.DataTurksAlgo.test\_dataturks\_algo.test\_template method}|hyperpage}{20}
+\indexentry{test\_first\_copy\_packets\_size() (common\_tests.DataTurksAlgo.test\_dataturks\_algo.test\_template method)@\spxentry{test\_first\_copy\_packets\_size()}\spxextra{common\_tests.DataTurksAlgo.test\_dataturks\_algo.test\_template method}|hyperpage}{20}
+\indexentry{test\_to\_delete() (common\_tests.DataTurksAlgo.test\_dataturks\_algo.test\_template method)@\spxentry{test\_to\_delete()}\spxextra{common\_tests.DataTurksAlgo.test\_dataturks\_algo.test\_template method}|hyperpage}{20}
+\indexentry{common\_tests.DataTurksAlgo (module)@\spxentry{common\_tests.DataTurksAlgo}\spxextra{module}|hyperpage}{20}
+\indexentry{common\_tests.Graph (module)@\spxentry{common\_tests.Graph}\spxextra{module}|hyperpage}{20}
+\indexentry{common\_tests.ImportExport.test\_json\_import\_export (module)@\spxentry{common\_tests.ImportExport.test\_json\_import\_export}\spxextra{module}|hyperpage}{20}
+\indexentry{testJSONImportExport (class in common\_tests.ImportExport.test\_json\_import\_export)@\spxentry{testJSONImportExport}\spxextra{class in common\_tests.ImportExport.test\_json\_import\_export}|hyperpage}{20}
+\indexentry{setUp() (common\_tests.ImportExport.test\_json\_import\_export.testJSONImportExport method)@\spxentry{setUp()}\spxextra{common\_tests.ImportExport.test\_json\_import\_export.testJSONImportExport method}|hyperpage}{20}
+\indexentry{tearDown() (common\_tests.ImportExport.test\_json\_import\_export.testJSONImportExport method)@\spxentry{tearDown()}\spxextra{common\_tests.ImportExport.test\_json\_import\_export.testJSONImportExport method}|hyperpage}{20}
+\indexentry{test\_absolute\_truth\_and\_meaning() (common\_tests.ImportExport.test\_json\_import\_export.testJSONImportExport method)@\spxentry{test\_absolute\_truth\_and\_meaning()}\spxextra{common\_tests.ImportExport.test\_json\_import\_export.testJSONImportExport method}|hyperpage}{20}
+\indexentry{test\_json\_export() (common\_tests.ImportExport.test\_json\_import\_export.testJSONImportExport method)@\spxentry{test\_json\_export()}\spxextra{common\_tests.ImportExport.test\_json\_import\_export.testJSONImportExport method}|hyperpage}{20}
+\indexentry{test\_json\_import() (common\_tests.ImportExport.test\_json\_import\_export.testJSONImportExport method)@\spxentry{test\_json\_import()}\spxextra{common\_tests.ImportExport.test\_json\_import\_export.testJSONImportExport method}|hyperpage}{20}
+\indexentry{test\_json\_import\_export\_consistency() (common\_tests.ImportExport.test\_json\_import\_export.testJSONImportExport method)@\spxentry{test\_json\_import\_export\_consistency()}\spxextra{common\_tests.ImportExport.test\_json\_import\_export.testJSONImportExport method}|hyperpage}{20}
+\indexentry{common\_tests.ImportExport.test\_pickle\_import\_export (module)@\spxentry{common\_tests.ImportExport.test\_pickle\_import\_export}\spxextra{module}|hyperpage}{20}
+\indexentry{testPICKLEImportExport (class in common\_tests.ImportExport.test\_pickle\_import\_export)@\spxentry{testPICKLEImportExport}\spxextra{class in common\_tests.ImportExport.test\_pickle\_import\_export}|hyperpage}{20}
+\indexentry{setUp() (common\_tests.ImportExport.test\_pickle\_import\_export.testPICKLEImportExport method)@\spxentry{setUp()}\spxextra{common\_tests.ImportExport.test\_pickle\_import\_export.testPICKLEImportExport method}|hyperpage}{20}
+\indexentry{test\_absolute\_truth\_and\_meaning() (common\_tests.ImportExport.test\_pickle\_import\_export.testPICKLEImportExport method)@\spxentry{test\_absolute\_truth\_and\_meaning()}\spxextra{common\_tests.ImportExport.test\_pickle\_import\_export.testPICKLEImportExport method}|hyperpage}{20}
+\indexentry{test\_pickle\_import\_export\_ORB() (common\_tests.ImportExport.test\_pickle\_import\_export.testPICKLEImportExport method)@\spxentry{test\_pickle\_import\_export\_ORB()}\spxextra{common\_tests.ImportExport.test\_pickle\_import\_export.testPICKLEImportExport method}|hyperpage}{20}
+\indexentry{test\_pickle\_import\_export\_consistency() (common\_tests.ImportExport.test\_pickle\_import\_export.testPICKLEImportExport method)@\spxentry{test\_pickle\_import\_export\_consistency()}\spxextra{common\_tests.ImportExport.test\_pickle\_import\_export.testPICKLEImportExport method}|hyperpage}{20}
+\indexentry{common\_tests.ImportExport.test\_picture\_import\_export (module)@\spxentry{common\_tests.ImportExport.test\_picture\_import\_export}\spxextra{module}|hyperpage}{21}
+\indexentry{testPICTUREImportExport (class in common\_tests.ImportExport.test\_picture\_import\_export)@\spxentry{testPICTUREImportExport}\spxextra{class in common\_tests.ImportExport.test\_picture\_import\_export}|hyperpage}{21}
+\indexentry{setUp() (common\_tests.ImportExport.test\_picture\_import\_export.testPICTUREImportExport method)@\spxentry{setUp()}\spxextra{common\_tests.ImportExport.test\_picture\_import\_export.testPICTUREImportExport method}|hyperpage}{21}
+\indexentry{tearDown() (common\_tests.ImportExport.test\_picture\_import\_export.testPICTUREImportExport method)@\spxentry{tearDown()}\spxextra{common\_tests.ImportExport.test\_picture\_import\_export.testPICTUREImportExport method}|hyperpage}{21}
+\indexentry{test\_absolute\_truth\_and\_meaning() (common\_tests.ImportExport.test\_picture\_import\_export.testPICTUREImportExport method)@\spxentry{test\_absolute\_truth\_and\_meaning()}\spxextra{common\_tests.ImportExport.test\_picture\_import\_export.testPICTUREImportExport method}|hyperpage}{21}
+\indexentry{test\_picture\_export() (common\_tests.ImportExport.test\_picture\_import\_export.testPICTUREImportExport method)@\spxentry{test\_picture\_export()}\spxextra{common\_tests.ImportExport.test\_picture\_import\_export.testPICTUREImportExport method}|hyperpage}{21}
+\indexentry{test\_picture\_import() (common\_tests.ImportExport.test\_picture\_import\_export.testPICTUREImportExport method)@\spxentry{test\_picture\_import()}\spxextra{common\_tests.ImportExport.test\_picture\_import\_export.testPICTUREImportExport method}|hyperpage}{21}
+\indexentry{test\_picture\_import\_export\_consistency() (common\_tests.ImportExport.test\_picture\_import\_export.testPICTUREImportExport method)@\spxentry{test\_picture\_import\_export\_consistency()}\spxextra{common\_tests.ImportExport.test\_picture\_import\_export.testPICTUREImportExport method}|hyperpage}{21}
+\indexentry{common\_tests.ImportExport (module)@\spxentry{common\_tests.ImportExport}\spxextra{module}|hyperpage}{21}
+\indexentry{common\_tests.ParametersExplorer (module)@\spxentry{common\_tests.ParametersExplorer}\spxextra{module}|hyperpage}{21}
+\indexentry{common\_tests.PerformanceDatastructs.test\_scores (module)@\spxentry{common\_tests.PerformanceDatastructs.test\_scores}\spxextra{module}|hyperpage}{21}
+\indexentry{TestClusterMatcher (class in common\_tests.PerformanceDatastructs.test\_scores)@\spxentry{TestClusterMatcher}\spxextra{class in common\_tests.PerformanceDatastructs.test\_scores}|hyperpage}{21}
+\indexentry{setUp() (common\_tests.PerformanceDatastructs.test\_scores.TestClusterMatcher method)@\spxentry{setUp()}\spxextra{common\_tests.PerformanceDatastructs.test\_scores.TestClusterMatcher method}|hyperpage}{21}
+\indexentry{test\_absolute\_truth\_and\_meaning() (common\_tests.PerformanceDatastructs.test\_scores.TestClusterMatcher method)@\spxentry{test\_absolute\_truth\_and\_meaning()}\spxextra{common\_tests.PerformanceDatastructs.test\_scores.TestClusterMatcher method}|hyperpage}{21}
+\indexentry{test\_merge\_scores() (common\_tests.PerformanceDatastructs.test\_scores.TestClusterMatcher method)@\spxentry{test\_merge\_scores()}\spxextra{common\_tests.PerformanceDatastructs.test\_scores.TestClusterMatcher method}|hyperpage}{21}
+\indexentry{common\_tests.PerformanceDatastructs (module)@\spxentry{common\_tests.PerformanceDatastructs}\spxextra{module}|hyperpage}{22}
+\indexentry{common\_tests.Scalability\_evaluator (module)@\spxentry{common\_tests.Scalability\_evaluator}\spxextra{module}|hyperpage}{22}
+\indexentry{common\_tests.TestInstanceLauncher.test\_instance\_launcher (module)@\spxentry{common\_tests.TestInstanceLauncher.test\_instance\_launcher}\spxextra{module}|hyperpage}{22}
+\indexentry{test\_tests\_database\_launcher (class in common\_tests.TestInstanceLauncher.test\_instance\_launcher)@\spxentry{test\_tests\_database\_launcher}\spxextra{class in common\_tests.TestInstanceLauncher.test\_instance\_launcher}|hyperpage}{22}
+\indexentry{setUp() (common\_tests.TestInstanceLauncher.test\_instance\_launcher.test\_tests\_database\_launcher method)@\spxentry{setUp()}\spxextra{common\_tests.TestInstanceLauncher.test\_instance\_launcher.test\_tests\_database\_launcher method}|hyperpage}{22}
+\indexentry{test\_absolute\_truth\_and\_meaning() (common\_tests.TestInstanceLauncher.test\_instance\_launcher.test\_tests\_database\_launcher method)@\spxentry{test\_absolute\_truth\_and\_meaning()}\spxextra{common\_tests.TestInstanceLauncher.test\_instance\_launcher.test\_tests\_database\_launcher method}|hyperpage}{22}
+\indexentry{test\_compute\_score\_for\_one\_threshold() (common\_tests.TestInstanceLauncher.test\_instance\_launcher.test\_tests\_database\_launcher method)@\spxentry{test\_compute\_score\_for\_one\_threshold()}\spxextra{common\_tests.TestInstanceLauncher.test\_instance\_launcher.test\_tests\_database\_launcher method}|hyperpage}{22}
+\indexentry{common\_tests.TestInstanceLauncher (module)@\spxentry{common\_tests.TestInstanceLauncher}\spxextra{module}|hyperpage}{22}
+\indexentry{common\_tests.test\_environment\_variable (module)@\spxentry{common\_tests.test\_environment\_variable}\spxextra{module}|hyperpage}{22}
+\indexentry{TestEnvVariable (class in common\_tests.test\_environment\_variable)@\spxentry{TestEnvVariable}\spxextra{class in common\_tests.test\_environment\_variable}|hyperpage}{22}
+\indexentry{setUp() (common\_tests.test\_environment\_variable.TestEnvVariable method)@\spxentry{setUp()}\spxextra{common\_tests.test\_environment\_variable.TestEnvVariable method}|hyperpage}{22}
+\indexentry{test\_absolute\_truth\_and\_meaning() (common\_tests.test\_environment\_variable.TestEnvVariable method)@\spxentry{test\_absolute\_truth\_and\_meaning()}\spxextra{common\_tests.test\_environment\_variable.TestEnvVariable method}|hyperpage}{22}
+\indexentry{test\_dir\_path() (common\_tests.test\_environment\_variable.TestEnvVariable method)@\spxentry{test\_dir\_path()}\spxextra{common\_tests.test\_environment\_variable.TestEnvVariable method}|hyperpage}{22}
+\indexentry{test\_env\_variable\_presence() (common\_tests.test\_environment\_variable.TestEnvVariable method)@\spxentry{test\_env\_variable\_presence()}\spxextra{common\_tests.test\_environment\_variable.TestEnvVariable method}|hyperpage}{22}
+\indexentry{common\_tests (module)@\spxentry{common\_tests}\spxextra{module}|hyperpage}{22}

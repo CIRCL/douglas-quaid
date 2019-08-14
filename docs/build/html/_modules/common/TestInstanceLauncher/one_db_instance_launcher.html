@@ -1,0 +1,263 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>common.TestInstanceLauncher.one_db_instance_launcher &#8212; Douglas-Quaid 0.0.4 documentation</title>
+    <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for common.TestInstanceLauncher.one_db_instance_launcher</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">pprint</span>
+
+<span class="kn">import</span> <span class="nn">carlhauser_server.Configuration.database_conf</span> <span class="k">as</span> <span class="nn">database_conf</span>
+<span class="kn">import</span> <span class="nn">carlhauser_server.Configuration.distance_engine_conf</span> <span class="k">as</span> <span class="nn">distance_engine_conf</span>
+<span class="kn">import</span> <span class="nn">carlhauser_server.Configuration.feature_extractor_conf</span> <span class="k">as</span> <span class="nn">feature_extractor_conf</span>
+<span class="kn">import</span> <span class="nn">carlhauser_server.Configuration.webservice_conf</span> <span class="k">as</span> <span class="nn">webservice_conf</span>
+<span class="kn">import</span> <span class="nn">carlhauser_server.Singletons.database_start_stop</span> <span class="k">as</span> <span class="nn">database_start_stop</span>
+<span class="kn">import</span> <span class="nn">carlhauser_server.instance_handler</span> <span class="k">as</span> <span class="nn">core</span>
+<span class="kn">from</span> <span class="nn">common.ImportExport.json_import_export</span> <span class="k">import</span> <span class="n">Custom_JSON_Encoder</span>
+<span class="kn">from</span> <span class="nn">common.environment_variable</span> <span class="k">import</span> <span class="n">get_homedir</span>
+<span class="kn">from</span> <span class="nn">common.environment_variable</span> <span class="k">import</span> <span class="n">load_server_logging_conf_file</span>
+
+<span class="n">load_server_logging_conf_file</span><span class="p">()</span>
+
+<div class="viewcode-block" id="TestInstanceLauncher"><a class="viewcode-back" href="../../../common.TestInstanceLauncher.html#common.TestInstanceLauncher.one_db_instance_launcher.TestInstanceLauncher">[docs]</a><span class="k">class</span> <span class="nc">TestInstanceLauncher</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot; Create a running instance of douglas-quaid, all linked on a unique test database</span>
+<span class="sd">        Modify the behavior of the core launcher handler, to use only one database. &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span>
+
+        <span class="c1"># TMP and modified version of handlers that will overwrite core-launcher&#39;s ones.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db_handler</span> <span class="p">:</span> <span class="n">database_start_stop</span><span class="o">.</span><span class="n">Database_StartStop</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="c1"># self.worker_handler : = None</span>
+
+        <span class="c1"># Configurations files</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db_conf</span> <span class="p">:</span> <span class="n">database_conf</span><span class="o">.</span><span class="n">Default_database_conf</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dist_conf</span> <span class="p">:</span><span class="n">distance_engine_conf</span><span class="o">.</span><span class="n">Default_distance_engine_conf</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fe_conf</span> <span class="p">:</span> <span class="n">feature_extractor_conf</span><span class="o">.</span><span class="n">Default_feature_extractor_conf</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ws_conf</span> <span class="p">:</span> <span class="n">webservice_conf</span><span class="o">.</span><span class="n">Default_webservice_conf</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">core_launcher</span> <span class="p">:</span> <span class="n">core</span><span class="o">.</span><span class="n">Instance_Handler</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="c1"># ============================== LAUNCHER ACTIONS ==============================</span>
+<div class="viewcode-block" id="TestInstanceLauncher.create_full_instance"><a class="viewcode-back" href="../../../common.TestInstanceLauncher.html#common.TestInstanceLauncher.one_db_instance_launcher.TestInstanceLauncher.create_full_instance">[docs]</a>    <span class="k">def</span> <span class="nf">create_full_instance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">db_conf</span><span class="p">:</span> <span class="n">database_conf</span><span class="o">.</span><span class="n">Default_database_conf</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                             <span class="n">dist_conf</span><span class="p">:</span> <span class="n">distance_engine_conf</span><span class="o">.</span><span class="n">Default_distance_engine_conf</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                             <span class="n">fe_conf</span><span class="p">:</span> <span class="n">feature_extractor_conf</span><span class="o">.</span><span class="n">Default_feature_extractor_conf</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                             <span class="n">ws_conf</span><span class="p">:</span> <span class="n">webservice_conf</span><span class="o">.</span><span class="n">Default_webservice_conf</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Construct a full Database instance (Database, workers etc.)</span>
+<span class="sd">        :param db_conf: configuration file</span>
+<span class="sd">        :param dist_conf: configuration file</span>
+<span class="sd">        :param fe_conf: configuration file</span>
+<span class="sd">        :param ws_conf: configuration file</span>
+<span class="sd">        :return: Nothing</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_configurations</span><span class="p">(</span><span class="n">db_conf</span><span class="p">,</span> <span class="n">dist_conf</span><span class="p">,</span> <span class="n">fe_conf</span><span class="p">,</span> <span class="n">ws_conf</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">create_modified_db_handler</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">create_core_launcher</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">launcher_core_launcher</span><span class="p">()</span>
+        <span class="c1"># TODO: Flush database ? To be sure not to have artifacts ?</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="s2">&quot;[TESTS] LAUNCHING DATABASE AS TEST : NOTHING WILL BE REMOVED ON STORAGE OR CACHE DATABASES [TESTS] / full instance&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestInstanceLauncher.create_database_only_instance"><a class="viewcode-back" href="../../../common.TestInstanceLauncher.html#common.TestInstanceLauncher.one_db_instance_launcher.TestInstanceLauncher.create_database_only_instance">[docs]</a>    <span class="k">def</span> <span class="nf">create_database_only_instance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">db_conf</span><span class="p">:</span> <span class="n">database_conf</span><span class="o">.</span><span class="n">Default_database_conf</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                                      <span class="n">dist_conf</span><span class="p">:</span> <span class="n">distance_engine_conf</span><span class="o">.</span><span class="n">Default_distance_engine_conf</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                                      <span class="n">fe_conf</span><span class="p">:</span> <span class="n">feature_extractor_conf</span><span class="o">.</span><span class="n">Default_feature_extractor_conf</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                                      <span class="n">ws_conf</span><span class="p">:</span> <span class="n">webservice_conf</span><span class="o">.</span><span class="n">Default_webservice_conf</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Construct a Database only instance (Database, no workers etc.)</span>
+<span class="sd">        :param db_conf: configuration file</span>
+<span class="sd">        :param dist_conf: configuration file</span>
+<span class="sd">        :param fe_conf: configuration file</span>
+<span class="sd">        :param ws_conf: configuration file</span>
+<span class="sd">        :return: Nothing</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_configurations</span><span class="p">(</span><span class="n">db_conf</span><span class="p">,</span> <span class="n">dist_conf</span><span class="p">,</span> <span class="n">fe_conf</span><span class="p">,</span> <span class="n">ws_conf</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">create_modified_db_handler</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="s2">&quot;[TESTS] LAUNCHING DATABASE AS TEST : NOTHING WILL BE REMOVED ON STORAGE OR CACHE DATABASES [TESTS] / DB only instance&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestInstanceLauncher.tearDown"><a class="viewcode-back" href="../../../common.TestInstanceLauncher.html#common.TestInstanceLauncher.one_db_instance_launcher.TestInstanceLauncher.tearDown">[docs]</a>    <span class="k">def</span> <span class="nf">tearDown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="s2">&quot;[TESTS] STOPPING DATABASE AS TEST : NOTHING WILL BE REMOVED ON STORAGE OR CACHE DATABASES [TESTS]&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Shut down the database</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">core_launcher</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span></div>
+
+    <span class="c1"># ============================== PRECISE ACTIONS ==============================</span>
+
+<div class="viewcode-block" id="TestInstanceLauncher.set_configurations"><a class="viewcode-back" href="../../../common.TestInstanceLauncher.html#common.TestInstanceLauncher.one_db_instance_launcher.TestInstanceLauncher.set_configurations">[docs]</a>    <span class="k">def</span> <span class="nf">set_configurations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">db_conf</span><span class="p">:</span> <span class="n">database_conf</span><span class="o">.</span><span class="n">Default_database_conf</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                           <span class="n">dist_conf</span><span class="p">:</span> <span class="n">distance_engine_conf</span><span class="o">.</span><span class="n">Default_distance_engine_conf</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                           <span class="n">fe_conf</span><span class="p">:</span> <span class="n">feature_extractor_conf</span><span class="o">.</span><span class="n">Default_feature_extractor_conf</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                           <span class="n">ws_conf</span><span class="p">:</span> <span class="n">webservice_conf</span><span class="o">.</span><span class="n">Default_webservice_conf</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="c1"># Set the configuration to use.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Settings configuration file on the test instance launcher&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Create a configuration files if none is provided</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db_conf</span> <span class="o">=</span> <span class="n">database_conf</span><span class="o">.</span><span class="n">Default_database_conf</span><span class="p">()</span> <span class="k">if</span> <span class="n">db_conf</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">db_conf</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dist_conf</span> <span class="o">=</span> <span class="n">distance_engine_conf</span><span class="o">.</span><span class="n">Default_distance_engine_conf</span><span class="p">()</span> <span class="k">if</span> <span class="n">dist_conf</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">dist_conf</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fe_conf</span> <span class="o">=</span> <span class="n">feature_extractor_conf</span><span class="o">.</span><span class="n">Default_feature_extractor_conf</span><span class="p">()</span> <span class="k">if</span> <span class="n">fe_conf</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">fe_conf</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ws_conf</span> <span class="o">=</span> <span class="n">webservice_conf</span><span class="o">.</span><span class="n">Default_webservice_conf</span><span class="p">()</span> <span class="k">if</span> <span class="n">ws_conf</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">ws_conf</span>
+
+        <span class="c1"># Log config files</span>
+        <span class="n">json_encoder</span> <span class="o">=</span> <span class="n">Custom_JSON_Encoder</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Registered configuration files are ... &quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Configuration db_conf : </span><span class="se">\n</span><span class="s2">{pprint.pformat(json_encoder.encode(self.db_conf), indent=2)}&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Configuration dist_conf : </span><span class="se">\n</span><span class="s2">{pprint.pformat(json_encoder.encode(self.dist_conf), indent=2)}&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Configuration fe_conf : </span><span class="se">\n</span><span class="s2">{pprint.pformat(json_encoder.encode(self.fe_conf), indent=2)}&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Configuration ws_conf : </span><span class="se">\n</span><span class="s2">{pprint.pformat(json_encoder.encode(self.ws_conf), indent=2)}&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestInstanceLauncher.create_modified_db_handler"><a class="viewcode-back" href="../../../common.TestInstanceLauncher.html#common.TestInstanceLauncher.one_db_instance_launcher.TestInstanceLauncher.create_modified_db_handler">[docs]</a>    <span class="k">def</span> <span class="nf">create_modified_db_handler</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">database_start_stop</span><span class="o">.</span><span class="n">Database_StartStop</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create a database handler (start/stop), modify its configuration and launch the DB</span>
+<span class="sd">        :return: An instance of database startstop</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Create database handler from configuration file</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db_handler</span> <span class="o">=</span> <span class="n">database_start_stop</span><span class="o">.</span><span class="n">Database_StartStop</span><span class="p">(</span><span class="n">db_conf</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">db_conf</span><span class="p">)</span>
+
+        <span class="c1"># Overwrite configuration of db handler</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db_handler</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">overwrite_socket_and_script_db_handler</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db_handler</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_conf</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">db_handler</span><span class="o">.</span><span class="n">launch_all_redis</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db_handler</span><span class="o">.</span><span class="n">wait_until_all_redis_running</span><span class="p">()</span>
+
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">                    # Launch test Redis DB (test, that&#39;s all)</span>
+<span class="sd">            if not self.db_handler.socket_test.is_running():</span>
+<span class="sd">                self.db_handler.socket_test.launch()</span>
+
+<span class="sd">                # Time for the socket to be opened</span>
+<span class="sd">                self.db_handler.socket_test.wait_until_running()</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_handler</span></div>
+
+<div class="viewcode-block" id="TestInstanceLauncher.overwrite_socket_and_script_db_handler"><a class="viewcode-back" href="../../../common.TestInstanceLauncher.html#common.TestInstanceLauncher.one_db_instance_launcher.TestInstanceLauncher.overwrite_socket_and_script_db_handler">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">overwrite_socket_and_script_db_handler</span><span class="p">(</span><span class="n">db_handler</span><span class="p">:</span> <span class="n">database_start_stop</span><span class="o">.</span><span class="n">Database_StartStop</span><span class="p">,</span>
+                                               <span class="n">db_conf</span><span class="p">:</span> <span class="n">database_conf</span><span class="o">.</span><span class="n">Default_database_conf</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Replace all attributes of db_handler by test database values</span>
+<span class="sd">        :param db_handler: An instance of db handler</span>
+<span class="sd">        :param db_conf: The configuration with which to overwrite existing configuration</span>
+<span class="sd">        :return: A modified version of db handler</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Specific attributes</span>
+        <span class="n">db_handler</span><span class="o">.</span><span class="n">cache_socket_path</span> <span class="o">=</span> <span class="n">get_homedir</span><span class="p">()</span> <span class="o">/</span> <span class="n">db_conf</span><span class="o">.</span><span class="n">DB_SOCKETS_PATH</span> <span class="o">/</span> <span class="s1">&#39;test.sock&#39;</span>
+        <span class="n">db_handler</span><span class="o">.</span><span class="n">storage_socket_path</span> <span class="o">=</span> <span class="n">get_homedir</span><span class="p">()</span> <span class="o">/</span> <span class="n">db_conf</span><span class="o">.</span><span class="n">DB_SOCKETS_PATH</span> <span class="o">/</span> <span class="s1">&#39;test.sock&#39;</span>
+
+        <span class="c1"># Cache scripts</span>
+        <span class="n">db_handler</span><span class="o">.</span><span class="n">launch_cache_script_path</span> <span class="o">=</span> <span class="n">get_homedir</span><span class="p">()</span> <span class="o">/</span> <span class="n">db_conf</span><span class="o">.</span><span class="n">DB_SCRIPTS_PATH</span> <span class="o">/</span> <span class="s2">&quot;run.sh&quot;</span>
+        <span class="n">db_handler</span><span class="o">.</span><span class="n">shutdown_cache_script_path</span> <span class="o">=</span> <span class="n">get_homedir</span><span class="p">()</span> <span class="o">/</span> <span class="n">db_conf</span><span class="o">.</span><span class="n">DB_SCRIPTS_PATH</span> <span class="o">/</span> <span class="s2">&quot;shutdown.sh&quot;</span>
+        <span class="n">db_handler</span><span class="o">.</span><span class="n">flush_cache_script_path</span> <span class="o">=</span> <span class="n">get_homedir</span><span class="p">()</span> <span class="o">/</span> <span class="n">db_conf</span><span class="o">.</span><span class="n">DB_SCRIPTS_PATH</span> <span class="o">/</span> <span class="s2">&quot;shutdown.sh&quot;</span>
+
+        <span class="c1"># Storage scripts</span>
+        <span class="n">db_handler</span><span class="o">.</span><span class="n">launch_storage_script_path</span> <span class="o">=</span> <span class="n">get_homedir</span><span class="p">()</span> <span class="o">/</span> <span class="n">db_conf</span><span class="o">.</span><span class="n">DB_SCRIPTS_PATH</span> <span class="o">/</span> <span class="s2">&quot;run.sh&quot;</span>
+        <span class="n">db_handler</span><span class="o">.</span><span class="n">shutdown_storage_script_path</span> <span class="o">=</span> <span class="n">get_homedir</span><span class="p">()</span> <span class="o">/</span> <span class="n">db_conf</span><span class="o">.</span><span class="n">DB_SCRIPTS_PATH</span> <span class="o">/</span> <span class="s2">&quot;shutdown.sh&quot;</span>
+        <span class="n">db_handler</span><span class="o">.</span><span class="n">flush_storage_script_path</span> <span class="o">=</span> <span class="n">get_homedir</span><span class="p">()</span> <span class="o">/</span> <span class="n">db_conf</span><span class="o">.</span><span class="n">DB_SCRIPTS_PATH</span> <span class="o">/</span> <span class="s2">&quot;shutdown.sh&quot;</span>
+
+        <span class="c1"># Setting test-database scripts, sockets, ... paths</span>
+        <span class="n">db_handler</span><span class="o">.</span><span class="n">test_socket_path</span> <span class="o">=</span> <span class="n">get_homedir</span><span class="p">()</span> <span class="o">/</span> <span class="n">db_conf</span><span class="o">.</span><span class="n">DB_SOCKETS_PATH</span> <span class="o">/</span> <span class="s1">&#39;test.sock&#39;</span>
+        <span class="n">db_handler</span><span class="o">.</span><span class="n">launch_test_script_path</span> <span class="o">=</span> <span class="n">get_homedir</span><span class="p">()</span> <span class="o">/</span> <span class="n">db_conf</span><span class="o">.</span><span class="n">DB_SCRIPTS_PATH</span> <span class="o">/</span> <span class="s2">&quot;run.sh&quot;</span>
+        <span class="n">db_handler</span><span class="o">.</span><span class="n">shutdown_test_script_path</span> <span class="o">=</span> <span class="n">get_homedir</span><span class="p">()</span> <span class="o">/</span> <span class="n">db_conf</span><span class="o">.</span><span class="n">DB_SCRIPTS_PATH</span> <span class="o">/</span> <span class="s2">&quot;shutdown.sh&quot;</span>
+
+        <span class="k">return</span> <span class="n">db_handler</span></div>
+
+<div class="viewcode-block" id="TestInstanceLauncher.create_core_launcher"><a class="viewcode-back" href="../../../common.TestInstanceLauncher.html#common.TestInstanceLauncher.one_db_instance_launcher.TestInstanceLauncher.create_core_launcher">[docs]</a>    <span class="k">def</span> <span class="nf">create_core_launcher</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Create a core launcher and overwrite its configuration &quot;&quot;&quot;</span>
+
+        <span class="c1"># Create launcher handler to perform other launching operation</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">core_launcher</span> <span class="o">=</span> <span class="n">core</span><span class="o">.</span><span class="n">Instance_Handler</span><span class="p">()</span>
+
+        <span class="c1"># Overwrite configuration</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">core_launcher</span><span class="o">.</span><span class="n">db_conf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_conf</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">core_launcher</span><span class="o">.</span><span class="n">dist_conf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dist_conf</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">core_launcher</span><span class="o">.</span><span class="n">fe_conf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fe_conf</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">core_launcher</span><span class="o">.</span><span class="n">ws_conf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ws_conf</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">core_launcher</span><span class="o">.</span><span class="n">db_startstop</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_handler</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">core_launcher</span></div>
+
+<div class="viewcode-block" id="TestInstanceLauncher.launcher_core_launcher"><a class="viewcode-back" href="../../../common.TestInstanceLauncher.html#common.TestInstanceLauncher.one_db_instance_launcher.TestInstanceLauncher.launcher_core_launcher">[docs]</a>    <span class="k">def</span> <span class="nf">launcher_core_launcher</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Launch the whole &quot;ecosystem&quot; of workers around the database. Handled by the core &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">core_launcher</span><span class="o">.</span><span class="n">prevent_workers_shutdown</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">core_launcher</span><span class="o">.</span><span class="n">start_adder_workers</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">core_launcher</span><span class="o">.</span><span class="n">start_requester_workers</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">core_launcher</span><span class="o">.</span><span class="n">start_feature_workers</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">core_launcher</span><span class="o">.</span><span class="n">start_webservice</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">core_launcher</span><span class="o">.</span><span class="n">check_worker</span><span class="p">()</span></div></div>
+
+
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, Vincent FALCONIERI.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.2.
+    </div>
+  </body>
+</html>

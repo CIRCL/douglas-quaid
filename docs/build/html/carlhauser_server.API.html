@@ -13,7 +13,9 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="_static/language_data.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" /> 
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="carlhauser_server.Configuration package" href="carlhauser_server.Configuration.html" />
+    <link rel="prev" title="carlhauser_server package" href="carlhauser_server.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -24,7 +26,14 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li> 
+        <li class="right" >
+          <a href="carlhauser_server.Configuration.html" title="carlhauser_server.Configuration package"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="carlhauser_server.html" title="carlhauser_server package"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="carlhauser_server.html" accesskey="U">carlhauser_server package</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -38,146 +47,14 @@
 <div class="section" id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-carlhauser_server.API.API_server">
-<span id="carlhauser-server-api-api-server-module"></span><h2>carlhauser_server.API.API_server module<a class="headerlink" href="#module-carlhauser_server.API.API_server" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
-<dt id="carlhauser_server.API.API_server.EndpointAction">
-<em class="property">class </em><code class="sig-prename descclassname">carlhauser_server.API.API_server.</code><code class="sig-name descname">EndpointAction</code><span class="sig-paren">(</span><em class="sig-param">action</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/API/API_server.html#EndpointAction"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.API.API_server.EndpointAction" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Defines an Endpoint for a specific action for any client.</p>
-</dd></dl>
-
-<dl class="class">
-<dt id="carlhauser_server.API.API_server.FlaskAppWrapper">
-<em class="property">class </em><code class="sig-prename descclassname">carlhauser_server.API.API_server.</code><code class="sig-name descname">FlaskAppWrapper</code><span class="sig-paren">(</span><em class="sig-param">name: str</em>, <em class="sig-param">tmp_ws_conf: &lt;module 'carlhauser_server.Configuration.webservice_conf' from '/home/user/Desktop/douglas-quaid/carlhauser_server/Configuration/webservice_conf.py'&gt;</em>, <em class="sig-param">tmp_db_conf: &lt;module 'carlhauser_server.Configuration.database_conf' from '/home/user/Desktop/douglas-quaid/carlhauser_server/Configuration/database_conf.py'&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/API/API_server.html#FlaskAppWrapper"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.API.API_server.FlaskAppWrapper" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<dl class="method">
-<dt id="carlhauser_server.API.API_server.FlaskAppWrapper.add_all_endpoints">
-<code class="sig-name descname">add_all_endpoints</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/API/API_server.html#FlaskAppWrapper.add_all_endpoints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.API.API_server.FlaskAppWrapper.add_all_endpoints" title="Permalink to this definition">¶</a></dt>
-<dd><p>Add all endpoints = all callable URL of the API, and link them to the good functions
-:return: Nothing</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="carlhauser_server.API.API_server.FlaskAppWrapper.add_bad_method_info">
-<em class="property">static </em><code class="sig-name descname">add_bad_method_info</code><span class="sig-paren">(</span><em class="sig-param">result_json: Dict</em>, <em class="sig-param">good_method_instead: str = None</em><span class="sig-paren">)</span> &#x2192; Dict<a class="reference internal" href="_modules/carlhauser_server/API/API_server.html#FlaskAppWrapper.add_bad_method_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.API.API_server.FlaskAppWrapper.add_bad_method_info" title="Permalink to this definition">¶</a></dt>
-<dd><p>Add error values to the result_json if method is bad
-:param result_json: The result json/dict to which to add standard values
-:param good_method_instead: the method that should be used by the resquest
-:return: the modified result_json</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="carlhauser_server.API.API_server.FlaskAppWrapper.add_endpoint">
-<code class="sig-name descname">add_endpoint</code><span class="sig-paren">(</span><em class="sig-param">endpoint=None</em>, <em class="sig-param">endpoint_name=None</em>, <em class="sig-param">handler=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/API/API_server.html#FlaskAppWrapper.add_endpoint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.API.API_server.FlaskAppWrapper.add_endpoint" title="Permalink to this definition">¶</a></dt>
-<dd><p>Add one endpoint to the flask application. Accept GET, POST and PUT.
-:param endpoint: Callable URL.
-:param endpoint_name: Name of the Endpoint
-:param handler: function to execute on call on the URL
-:return: Nothing</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="carlhauser_server.API.API_server.FlaskAppWrapper.add_picture">
-<code class="sig-name descname">add_picture</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; Dict<a class="reference internal" href="_modules/carlhauser_server/API/API_server.html#FlaskAppWrapper.add_picture"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.API.API_server.FlaskAppWrapper.add_picture" title="Permalink to this definition">¶</a></dt>
-<dd><p>Handle an adding of a picture request on server side.
-:return: The result json (status of the request, etc.)</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="carlhauser_server.API.API_server.FlaskAppWrapper.add_std_info">
-<em class="property">static </em><code class="sig-name descname">add_std_info</code><span class="sig-paren">(</span><em class="sig-param">result_json: Dict</em><span class="sig-paren">)</span> &#x2192; Dict<a class="reference internal" href="_modules/carlhauser_server/API/API_server.html#FlaskAppWrapper.add_std_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.API.API_server.FlaskAppWrapper.add_std_info" title="Permalink to this definition">¶</a></dt>
-<dd><p>Add standard information to the result_json
-:param result_json: The result json/dict to which to add standard values
-:return: the modified result_json</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="carlhauser_server.API.API_server.FlaskAppWrapper.are_pipelines_empty">
-<code class="sig-name descname">are_pipelines_empty</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; Dict<a class="reference internal" href="_modules/carlhauser_server/API/API_server.html#FlaskAppWrapper.are_pipelines_empty"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.API.API_server.FlaskAppWrapper.are_pipelines_empty" title="Permalink to this definition">¶</a></dt>
-<dd><p>Handle a check of emptiness on the pipelines (list of queues)
-:return: The result json (status of the request, etc.)</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="carlhauser_server.API.API_server.FlaskAppWrapper.enqueue_and_save_picture">
-<code class="sig-name descname">enqueue_and_save_picture</code><span class="sig-paren">(</span><em class="sig-param">file: werkzeug.datastructures.FileStorage</em>, <em class="sig-param">result_json: Dict</em>, <em class="sig-param">queue: common.environment_variable.QueueNames</em><span class="sig-paren">)</span> &#x2192; Dict<a class="reference internal" href="_modules/carlhauser_server/API/API_server.html#FlaskAppWrapper.enqueue_and_save_picture"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.API.API_server.FlaskAppWrapper.enqueue_and_save_picture" title="Permalink to this definition">¶</a></dt>
-<dd><p>Hash the picture, generate a BMP file, enqueue it, return the result_json with relevant values
-:param queue: Queue to add the picture
-:param file: the file provided by the client
-:param result_json: The result json/dict to which to add standard values
-:return: the modified result_json</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="carlhauser_server.API.API_server.FlaskAppWrapper.export_db_as_graphe">
-<code class="sig-name descname">export_db_as_graphe</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; Dict<a class="reference internal" href="_modules/carlhauser_server/API/API_server.html#FlaskAppWrapper.export_db_as_graphe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.API.API_server.FlaskAppWrapper.export_db_as_graphe" title="Permalink to this definition">¶</a></dt>
-<dd><p>Handle a dump of the database request
-:return: The result json (status of the request, etc.)</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="carlhauser_server.API.API_server.FlaskAppWrapper.get_results">
-<code class="sig-name descname">get_results</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; Dict<a class="reference internal" href="_modules/carlhauser_server/API/API_server.html#FlaskAppWrapper.get_results"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.API.API_server.FlaskAppWrapper.get_results" title="Permalink to this definition">¶</a></dt>
-<dd><p>Handle a retrieval of results
-:return: The result json (status of the request, etc.)</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="carlhauser_server.API.API_server.FlaskAppWrapper.is_ready">
-<code class="sig-name descname">is_ready</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; Dict<a class="reference internal" href="_modules/carlhauser_server/API/API_server.html#FlaskAppWrapper.is_ready"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.API.API_server.FlaskAppWrapper.is_ready" title="Permalink to this definition">¶</a></dt>
-<dd><p>Handle a check of a request readiness
-:return: The result json (status of the request, etc.)</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="carlhauser_server.API.API_server.FlaskAppWrapper.ping">
-<code class="sig-name descname">ping</code><span class="sig-paren">(</span><em class="sig-param">*args</em><span class="sig-paren">)</span> &#x2192; Dict<a class="reference internal" href="_modules/carlhauser_server/API/API_server.html#FlaskAppWrapper.ping"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.API.API_server.FlaskAppWrapper.ping" title="Permalink to this definition">¶</a></dt>
-<dd><p>Handle a ping request on server side. Creates a pong answer
-:param args: None is required
-:return: The result json (pong)</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="carlhauser_server.API.API_server.FlaskAppWrapper.request_similar_picture">
-<code class="sig-name descname">request_similar_picture</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; Dict<a class="reference internal" href="_modules/carlhauser_server/API/API_server.html#FlaskAppWrapper.request_similar_picture"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.API.API_server.FlaskAppWrapper.request_similar_picture" title="Permalink to this definition">¶</a></dt>
-<dd><p>Handle a request of one picture, to return a list of similar pictures
-:return: The result json (status of the request, etc.)</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="carlhauser_server.API.API_server.FlaskAppWrapper.run">
-<code class="sig-name descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/API/API_server.html#FlaskAppWrapper.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.API.API_server.FlaskAppWrapper.run" title="Permalink to this definition">¶</a></dt>
-<dd><p>Final action to call to run the flask process, which generate endpoints, and so.
-Handle SLL Certificate, if they are provided = use them, else = self sign a certificate on the fly
-:return: no return (continuously executing. Return error code if stopped and so)</p>
-</dd></dl>
-
-</dd></dl>
-
+<div class="section" id="carlhauser-server-api-api-server-module">
+<h2>carlhauser_server.API.API_server module<a class="headerlink" href="#carlhauser-server-api-api-server-module" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-carlhauser_server.API.in_memory_files_ops">
-<span id="carlhauser-server-api-in-memory-files-ops-module"></span><h2>carlhauser_server.API.in_memory_files_ops module<a class="headerlink" href="#module-carlhauser_server.API.in_memory_files_ops" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
-<dt id="carlhauser_server.API.in_memory_files_ops.convert_to_bmp">
-<code class="sig-prename descclassname">carlhauser_server.API.in_memory_files_ops.</code><code class="sig-name descname">convert_to_bmp</code><span class="sig-paren">(</span><em class="sig-param">file_value: _io.BufferedReader</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/API/in_memory_files_ops.html#convert_to_bmp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.API.in_memory_files_ops.convert_to_bmp" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the BMP version of the file, directly in memory
-:param file_value: A file to compute the BMP version
-:return: the BMP version of the file</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="carlhauser_server.API.in_memory_files_ops.get_SHA1">
-<code class="sig-prename descclassname">carlhauser_server.API.in_memory_files_ops.</code><code class="sig-name descname">get_SHA1</code><span class="sig-paren">(</span><em class="sig-param">file_value: _io.BufferedReader</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/API/in_memory_files_ops.html#get_SHA1"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.API.in_memory_files_ops.get_SHA1" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get SHA1 hash of the file, directly in memory
-TODO : Fix the input type
-:param file_value: A file to compute the SHA-1
-:return: the SHA-1 of the file in memory</p>
-</dd></dl>
-
+<div class="section" id="carlhauser-server-api-in-memory-files-ops-module">
+<h2>carlhauser_server.API.in_memory_files_ops module<a class="headerlink" href="#carlhauser-server-api-in-memory-files-ops-module" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-carlhauser_server.API">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-carlhauser_server.API" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-contents">
+<h2>Module contents<a class="headerlink" href="#module-contents" title="Permalink to this headline">¶</a></h2>
 </div>
 </div>
 
@@ -191,13 +68,19 @@ TODO : Fix the input type
   <ul>
 <li><a class="reference internal" href="#">carlhauser_server.API package</a><ul>
 <li><a class="reference internal" href="#submodules">Submodules</a></li>
-<li><a class="reference internal" href="#module-carlhauser_server.API.API_server">carlhauser_server.API.API_server module</a></li>
-<li><a class="reference internal" href="#module-carlhauser_server.API.in_memory_files_ops">carlhauser_server.API.in_memory_files_ops module</a></li>
-<li><a class="reference internal" href="#module-carlhauser_server.API">Module contents</a></li>
+<li><a class="reference internal" href="#carlhauser-server-api-api-server-module">carlhauser_server.API.API_server module</a></li>
+<li><a class="reference internal" href="#carlhauser-server-api-in-memory-files-ops-module">carlhauser_server.API.in_memory_files_ops module</a></li>
+<li><a class="reference internal" href="#module-contents">Module contents</a></li>
 </ul>
 </li>
 </ul>
 
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="carlhauser_server.html"
+                        title="previous chapter">carlhauser_server package</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="carlhauser_server.Configuration.html"
+                        title="next chapter">carlhauser_server.Configuration package</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -228,7 +111,14 @@ TODO : Fix the input type
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li> 
+        <li class="right" >
+          <a href="carlhauser_server.Configuration.html" title="carlhauser_server.Configuration package"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="carlhauser_server.html" title="carlhauser_server package"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="carlhauser_server.html" >carlhauser_server package</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

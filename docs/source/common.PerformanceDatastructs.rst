@@ -28,14 +28,6 @@ common.PerformanceDatastructs.stats\_datastruct module
    :undoc-members:
    :show-inheritance:
 
-common.PerformanceDatastructs.thresholds\_datastruct module
------------------------------------------------------------
-
-.. automodule:: common.PerformanceDatastructs.thresholds_datastruct
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 
 Module contents
 ---------------

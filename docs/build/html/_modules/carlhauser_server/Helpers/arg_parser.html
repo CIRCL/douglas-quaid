@@ -1,0 +1,206 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>carlhauser_server.Helpers.arg_parser &#8212; Douglas-Quaid 0.0.4 documentation</title>
+    <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for carlhauser_server.Helpers.arg_parser</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">pathlib</span>
+
+<span class="kn">import</span> <span class="nn">carlhauser_server.Configuration.database_conf</span> <span class="k">as</span> <span class="nn">database_conf</span>
+<span class="kn">import</span> <span class="nn">carlhauser_server.Configuration.distance_engine_conf</span> <span class="k">as</span> <span class="nn">distance_engine_conf</span>
+<span class="kn">import</span> <span class="nn">carlhauser_server.Configuration.feature_extractor_conf</span> <span class="k">as</span> <span class="nn">feature_extractor_conf</span>
+<span class="kn">import</span> <span class="nn">carlhauser_server.Configuration.webservice_conf</span> <span class="k">as</span> <span class="nn">webservice_conf</span>
+<span class="kn">import</span> <span class="nn">common.ImportExport.json_import_export</span> <span class="k">as</span> <span class="nn">json_import_export</span>
+<span class="kn">from</span> <span class="nn">common.environment_variable</span> <span class="k">import</span> <span class="n">JSON_parsable_Dict</span>
+<span class="kn">from</span> <span class="nn">common.environment_variable</span> <span class="k">import</span> <span class="n">dir_path</span>
+<span class="kn">from</span> <span class="nn">common.environment_variable</span> <span class="k">import</span> <span class="n">load_server_logging_conf_file</span>
+
+<span class="n">load_server_logging_conf_file</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="ConfArgs"><a class="viewcode-back" href="../../../carlhauser_server.Helpers.html#carlhauser_server.Helpers.arg_parser.ConfArgs">[docs]</a><span class="k">class</span> <span class="nc">ConfArgs</span><span class="p">(</span><span class="n">JSON_parsable_Dict</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Specify argument to use to launch workers</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">DB_CONF_ARG</span> <span class="o">=</span> <span class="s1">&#39;-dbc&#39;</span>
+    <span class="n">DB_CONF_NAME</span> <span class="o">=</span> <span class="s1">&#39;db_conf&#39;</span>
+
+    <span class="n">DIST_CONF_ARG</span> <span class="o">=</span> <span class="s1">&#39;-distc&#39;</span>
+    <span class="n">DIST_CONF_NAME</span> <span class="o">=</span> <span class="s1">&#39;dist_conf&#39;</span>
+
+    <span class="n">FE_CONF_ARG</span> <span class="o">=</span> <span class="s1">&#39;-fec&#39;</span>
+    <span class="n">FE_CONF_NAME</span> <span class="o">=</span> <span class="s1">&#39;fe_conf&#39;</span>
+
+    <span class="n">WS_CONF_ARG</span> <span class="o">=</span> <span class="s1">&#39;-wsc&#39;</span>
+    <span class="n">WS_CONF_NAME</span> <span class="o">=</span> <span class="s1">&#39;ws_conf&#39;</span>
+
+    <span class="n">MODE_ARG</span> <span class="o">=</span> <span class="s1">&#39;-m&#39;</span>
+    <span class="n">MODE_NAME</span> <span class="o">=</span> <span class="s1">&#39;mode&#39;</span></div>
+
+
+<div class="viewcode-block" id="add_arg_db_conf"><a class="viewcode-back" href="../../../carlhauser_server.Helpers.html#carlhauser_server.Helpers.arg_parser.add_arg_db_conf">[docs]</a><span class="k">def</span> <span class="nf">add_arg_db_conf</span><span class="p">(</span><span class="n">parser</span><span class="p">:</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">):</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="n">ConfArgs</span><span class="o">.</span><span class="n">DB_CONF_ARG</span><span class="p">,</span>
+                        <span class="s1">&#39;--database_configuration_file&#39;</span><span class="p">,</span>
+                        <span class="n">dest</span><span class="o">=</span><span class="n">ConfArgs</span><span class="o">.</span><span class="n">DB_CONF_NAME</span><span class="p">,</span>
+                        <span class="nb">type</span><span class="o">=</span><span class="n">dir_path</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;DB_configuration_file stored as json. Path&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">parser</span></div>
+
+
+<div class="viewcode-block" id="add_arg_ws_conf"><a class="viewcode-back" href="../../../carlhauser_server.Helpers.html#carlhauser_server.Helpers.arg_parser.add_arg_ws_conf">[docs]</a><span class="k">def</span> <span class="nf">add_arg_ws_conf</span><span class="p">(</span><span class="n">parser</span><span class="p">:</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">):</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="n">ConfArgs</span><span class="o">.</span><span class="n">WS_CONF_ARG</span><span class="p">,</span>
+                        <span class="s1">&#39;--webservice_configuration_file&#39;</span><span class="p">,</span>
+                        <span class="n">dest</span><span class="o">=</span><span class="n">ConfArgs</span><span class="o">.</span><span class="n">WS_CONF_NAME</span><span class="p">,</span>
+                        <span class="nb">type</span><span class="o">=</span><span class="n">dir_path</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;WebService_configuration_file stored as json. Path&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">parser</span></div>
+
+
+<div class="viewcode-block" id="add_arg_fe_conf"><a class="viewcode-back" href="../../../carlhauser_server.Helpers.html#carlhauser_server.Helpers.arg_parser.add_arg_fe_conf">[docs]</a><span class="k">def</span> <span class="nf">add_arg_fe_conf</span><span class="p">(</span><span class="n">parser</span><span class="p">:</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">):</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="n">ConfArgs</span><span class="o">.</span><span class="n">FE_CONF_ARG</span><span class="p">,</span>
+                        <span class="s1">&#39;--feature_configuration_file&#39;</span><span class="p">,</span>
+                        <span class="n">dest</span><span class="o">=</span><span class="n">ConfArgs</span><span class="o">.</span><span class="n">FE_CONF_NAME</span><span class="p">,</span>
+                        <span class="nb">type</span><span class="o">=</span><span class="n">dir_path</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Feature_configuration_file stored as json. Path&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">parser</span></div>
+
+
+<div class="viewcode-block" id="add_arg_dist_conf"><a class="viewcode-back" href="../../../carlhauser_server.Helpers.html#carlhauser_server.Helpers.arg_parser.add_arg_dist_conf">[docs]</a><span class="k">def</span> <span class="nf">add_arg_dist_conf</span><span class="p">(</span><span class="n">parser</span><span class="p">:</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">):</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="n">ConfArgs</span><span class="o">.</span><span class="n">DIST_CONF_ARG</span><span class="p">,</span>
+                        <span class="s1">&#39;--distance_configuration_file&#39;</span><span class="p">,</span>
+                        <span class="n">dest</span><span class="o">=</span><span class="n">ConfArgs</span><span class="o">.</span><span class="n">DIST_CONF_NAME</span><span class="p">,</span>
+                        <span class="nb">type</span><span class="o">=</span><span class="n">dir_path</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;DIST_configuration_file stored as json. Path&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">parser</span></div>
+
+
+<div class="viewcode-block" id="add_mode"><a class="viewcode-back" href="../../../carlhauser_server.Helpers.html#carlhauser_server.Helpers.arg_parser.add_mode">[docs]</a><span class="k">def</span> <span class="nf">add_mode</span><span class="p">(</span><span class="n">parser</span><span class="p">:</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">):</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="n">ConfArgs</span><span class="o">.</span><span class="n">MODE_ARG</span><span class="p">,</span> <span class="s1">&#39;--mode&#39;</span><span class="p">,</span>
+                        <span class="n">dest</span><span class="o">=</span><span class="n">ConfArgs</span><span class="o">.</span><span class="n">MODE_NAME</span><span class="p">,</span>
+                        <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+                        <span class="n">choices</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;ADD&quot;</span><span class="p">,</span> <span class="s2">&quot;REQUEST&quot;</span><span class="p">},</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Specify queues to work from/to for the worker.&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">parser</span></div>
+
+
+<div class="viewcode-block" id="parse_conf_files"><a class="viewcode-back" href="../../../carlhauser_server.Helpers.html#carlhauser_server.Helpers.arg_parser.parse_conf_files">[docs]</a><span class="k">def</span> <span class="nf">parse_conf_files</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="n">database_conf</span><span class="o">.</span><span class="n">Default_database_conf</span><span class="p">,</span>
+                               <span class="n">distance_engine_conf</span><span class="o">.</span><span class="n">Default_distance_engine_conf</span><span class="p">,</span>
+                               <span class="n">feature_extractor_conf</span><span class="o">.</span><span class="n">Default_feature_extractor_conf</span><span class="p">,</span>
+                               <span class="n">webservice_conf</span><span class="o">.</span><span class="n">Default_webservice_conf</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Parse args to configuration files, if they exist.</span>
+<span class="sd">    Usage example : db_conf, dist_conf, fe_conf, ws_conf = arg_parser.parse_conf_files(args)</span>
+<span class="sd">    :param args: parsed arguments from command line</span>
+<span class="sd">    :return: db_conf, dist_conf, feature_conf, webservice_conf</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span>
+    <span class="n">tmp_db_conf</span><span class="p">,</span> <span class="n">tmp_dist_conf</span><span class="p">,</span> <span class="n">tmp_fe_conf</span><span class="p">,</span> <span class="n">tmp_ws_conf</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+
+    <span class="c1"># Load the provided configuration file and create back the Configuration Object</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">conf_arg</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">ConfArgs</span><span class="o">.</span><span class="n">DB_CONF_NAME</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">conf_arg</span><span class="p">:</span>
+            <span class="n">tmp_db_conf</span> <span class="o">=</span> <span class="n">database_conf</span><span class="o">.</span><span class="n">parse_from_dict</span><span class="p">(</span><span class="n">json_import_export</span><span class="o">.</span><span class="n">load_json</span><span class="p">(</span><span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">conf_arg</span><span class="p">)))</span>
+    <span class="k">except</span> <span class="ne">AttributeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;No DB CONF argument : </span><span class="si">{e}</span><span class="s2">. This may be normal if current launch (e.g. a worker) does not require this configuration.&quot;</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">conf_arg</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">ConfArgs</span><span class="o">.</span><span class="n">DIST_CONF_NAME</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">conf_arg</span><span class="p">:</span>
+            <span class="n">tmp_dist_conf</span> <span class="o">=</span> <span class="n">distance_engine_conf</span><span class="o">.</span><span class="n">parse_from_dict</span><span class="p">(</span><span class="n">json_import_export</span><span class="o">.</span><span class="n">load_json</span><span class="p">(</span><span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">conf_arg</span><span class="p">)))</span>
+    <span class="k">except</span> <span class="ne">AttributeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;No DIST CONF argument : </span><span class="si">{e}</span><span class="s2">. This may be normal if current launch (e.g. a worker) does not require this configuration.&quot;</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">conf_arg</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">ConfArgs</span><span class="o">.</span><span class="n">FE_CONF_NAME</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">conf_arg</span><span class="p">:</span>
+            <span class="n">tmp_fe_conf</span> <span class="o">=</span> <span class="n">feature_extractor_conf</span><span class="o">.</span><span class="n">parse_from_dict</span><span class="p">(</span><span class="n">json_import_export</span><span class="o">.</span><span class="n">load_json</span><span class="p">(</span><span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">conf_arg</span><span class="p">)))</span>
+    <span class="k">except</span> <span class="ne">AttributeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;No FE CONF argument : </span><span class="si">{e}</span><span class="s2">. This may be normal if current launch (e.g. a worker) does not require this configuration.&quot;</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">conf_arg</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">ConfArgs</span><span class="o">.</span><span class="n">WS_CONF_NAME</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">conf_arg</span><span class="p">:</span>
+            <span class="n">tmp_ws_conf</span> <span class="o">=</span> <span class="n">webservice_conf</span><span class="o">.</span><span class="n">parse_from_dict</span><span class="p">(</span><span class="n">json_import_export</span><span class="o">.</span><span class="n">load_json</span><span class="p">(</span><span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">conf_arg</span><span class="p">)))</span>
+    <span class="k">except</span> <span class="ne">AttributeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;No WS CONF argument : </span><span class="si">{e}</span><span class="s2">. This may be normal if current launch (e.g. a worker) does not require this configuration.&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">tmp_db_conf</span><span class="p">,</span> <span class="n">tmp_dist_conf</span><span class="p">,</span> <span class="n">tmp_fe_conf</span><span class="p">,</span> <span class="n">tmp_ws_conf</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, Vincent FALCONIERI.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.2.
+    </div>
+  </body>
+</html>

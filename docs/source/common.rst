@@ -10,6 +10,7 @@ Subpackages
    common.ChartMaker
    common.DataTurksAlgos
    common.Graph
+   common.HumanHash
    common.ImportExport
    common.ParametersExplorer
    common.PerformanceDatastructs

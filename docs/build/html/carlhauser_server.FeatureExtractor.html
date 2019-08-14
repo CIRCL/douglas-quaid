@@ -13,7 +13,9 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="_static/language_data.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" /> 
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="carlhauser_server.Helpers package" href="carlhauser_server.Helpers.html" />
+    <link rel="prev" title="carlhauser_server.DistanceEngine package" href="carlhauser_server.DistanceEngine.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -24,7 +26,14 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li> 
+        <li class="right" >
+          <a href="carlhauser_server.Helpers.html" title="carlhauser_server.Helpers package"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="carlhauser_server.DistanceEngine.html" title="carlhauser_server.DistanceEngine package"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="carlhauser_server.html" accesskey="U">carlhauser_server package</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -38,77 +47,17 @@
 <div class="section" id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-carlhauser_server.FeatureExtractor.feature_worker">
-<span id="carlhauser-server-featureextractor-feature-worker-module"></span><h2>carlhauser_server.FeatureExtractor.feature_worker module<a class="headerlink" href="#module-carlhauser_server.FeatureExtractor.feature_worker" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
-<dt id="carlhauser_server.FeatureExtractor.feature_worker.Feature_Worker">
-<em class="property">class </em><code class="sig-prename descclassname">carlhauser_server.FeatureExtractor.feature_worker.</code><code class="sig-name descname">Feature_Worker</code><span class="sig-paren">(</span><em class="sig-param">tmp_db_conf: &lt;module 'carlhauser_server.Configuration.database_conf' from '/home/user/Desktop/douglas-quaid/carlhauser_server/Configuration/database_conf.py'&gt;</em>, <em class="sig-param">tmp_fe_conf: &lt;module 'carlhauser_server.Configuration.feature_extractor_conf' from '/home/user/Desktop/douglas-quaid/carlhauser_server/Configuration/feature_extractor_conf.py'&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/FeatureExtractor/feature_worker.html#Feature_Worker"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.FeatureExtractor.feature_worker.Feature_Worker" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="carlhauser_server.DatabaseAccessor.html#carlhauser_server.DatabaseAccessor.database_worker.Database_Worker" title="carlhauser_server.DatabaseAccessor.database_worker.Database_Worker"><code class="xref py py-class docutils literal notranslate"><span class="pre">carlhauser_server.DatabaseAccessor.database_worker.Database_Worker</span></code></a></p>
-<p>Heritate from the database accessor, and so has already built in access to cache, storage ..</p>
-<dl class="method">
-<dt id="carlhauser_server.FeatureExtractor.feature_worker.Feature_Worker.fetch_from_queue">
-<code class="sig-name descname">fetch_from_queue</code><span class="sig-paren">(</span><em class="sig-param">) -&gt; (&lt;class 'str'&gt;</em>, <em class="sig-param">typing.Dict</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/FeatureExtractor/feature_worker.html#Feature_Worker.fetch_from_queue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.FeatureExtractor.feature_worker.Feature_Worker.fetch_from_queue" title="Permalink to this definition">¶</a></dt>
-<dd><p>Overwriting the existing fetching function, to prevent PICKLING when fetching
-:return: A string representing the id of the new fetched data, and the fetched associated dict</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="carlhauser_server.FeatureExtractor.feature_worker.Feature_Worker.process_fetched_data">
-<code class="sig-name descname">process_fetched_data</code><span class="sig-paren">(</span><em class="sig-param">fetched_id</em>, <em class="sig-param">fetched_dict</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/FeatureExtractor/feature_worker.html#Feature_Worker.process_fetched_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.FeatureExtractor.feature_worker.Feature_Worker.process_fetched_data" title="Permalink to this definition">¶</a></dt>
-<dd><p>From a fetch id and a fetch asssociated dict, compute the hashes
-and orbing of current picture and add it to next queue
-:param fetched_id: id to process
-:param fetched_dict: data to process
-:return: Nothing (or to be defined)</p>
-</dd></dl>
-
-</dd></dl>
-
+<div class="section" id="carlhauser-server-featureextractor-feature-worker-module">
+<h2>carlhauser_server.FeatureExtractor.feature_worker module<a class="headerlink" href="#carlhauser-server-featureextractor-feature-worker-module" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-carlhauser_server.FeatureExtractor.picture_hasher">
-<span id="carlhauser-server-featureextractor-picture-hasher-module"></span><h2>carlhauser_server.FeatureExtractor.picture_hasher module<a class="headerlink" href="#module-carlhauser_server.FeatureExtractor.picture_hasher" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
-<dt id="carlhauser_server.FeatureExtractor.picture_hasher.Picture_Hasher">
-<em class="property">class </em><code class="sig-prename descclassname">carlhauser_server.FeatureExtractor.picture_hasher.</code><code class="sig-name descname">Picture_Hasher</code><span class="sig-paren">(</span><em class="sig-param">fe_conf: &lt;module 'carlhauser_server.Configuration.feature_extractor_conf' from '/home/user/Desktop/douglas-quaid/carlhauser_server/Configuration/feature_extractor_conf.py'&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/FeatureExtractor/picture_hasher.html#Picture_Hasher"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.FeatureExtractor.picture_hasher.Picture_Hasher" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<dl class="method">
-<dt id="carlhauser_server.FeatureExtractor.picture_hasher.Picture_Hasher.check_null_hash">
-<code class="sig-name descname">check_null_hash</code><span class="sig-paren">(</span><em class="sig-param">tmp_hash</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/FeatureExtractor/picture_hasher.html#Picture_Hasher.check_null_hash"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.FeatureExtractor.picture_hasher.Picture_Hasher.check_null_hash" title="Permalink to this definition">¶</a></dt>
-<dd><p>Check if the provided hash is none, if so, provide a “null version” of the hash.
-:param tmp_hash: the hash to check
-:return: a “null” version of the hash if “None”, the hash itself without modification otherwise.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="carlhauser_server.FeatureExtractor.picture_hasher.Picture_Hasher.hash_picture">
-<code class="sig-name descname">hash_picture</code><span class="sig-paren">(</span><em class="sig-param">curr_picture</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/FeatureExtractor/picture_hasher.html#Picture_Hasher.hash_picture"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.FeatureExtractor.picture_hasher.Picture_Hasher.hash_picture" title="Permalink to this definition">¶</a></dt>
-<dd><p>Hash a picture and returns the hash value
-:param curr_picture: the picture to hash
-:return: the hashed version of the picture</p>
-</dd></dl>
-
-</dd></dl>
-
+<div class="section" id="carlhauser-server-featureextractor-picture-hasher-module">
+<h2>carlhauser_server.FeatureExtractor.picture_hasher module<a class="headerlink" href="#carlhauser-server-featureextractor-picture-hasher-module" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-carlhauser_server.FeatureExtractor.picture_orber">
-<span id="carlhauser-server-featureextractor-picture-orber-module"></span><h2>carlhauser_server.FeatureExtractor.picture_orber module<a class="headerlink" href="#module-carlhauser_server.FeatureExtractor.picture_orber" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
-<dt id="carlhauser_server.FeatureExtractor.picture_orber.Picture_Orber">
-<em class="property">class </em><code class="sig-prename descclassname">carlhauser_server.FeatureExtractor.picture_orber.</code><code class="sig-name descname">Picture_Orber</code><span class="sig-paren">(</span><em class="sig-param">fe_conf: &lt;module 'carlhauser_server.Configuration.feature_extractor_conf' from '/home/user/Desktop/douglas-quaid/carlhauser_server/Configuration/feature_extractor_conf.py'&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/FeatureExtractor/picture_orber.html#Picture_Orber"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.FeatureExtractor.picture_orber.Picture_Orber" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<dl class="method">
-<dt id="carlhauser_server.FeatureExtractor.picture_orber.Picture_Orber.orb_picture">
-<code class="sig-name descname">orb_picture</code><span class="sig-paren">(</span><em class="sig-param">curr_picture</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/carlhauser_server/FeatureExtractor/picture_orber.html#Picture_Orber.orb_picture"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#carlhauser_server.FeatureExtractor.picture_orber.Picture_Orber.orb_picture" title="Permalink to this definition">¶</a></dt>
-<dd><p>Orb a picture and returns the orb value
-:param curr_picture: the picture to orb
-:return: the orb version of the picture</p>
-</dd></dl>
-
-</dd></dl>
-
+<div class="section" id="carlhauser-server-featureextractor-picture-orber-module">
+<h2>carlhauser_server.FeatureExtractor.picture_orber module<a class="headerlink" href="#carlhauser-server-featureextractor-picture-orber-module" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-carlhauser_server.FeatureExtractor">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-carlhauser_server.FeatureExtractor" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-contents">
+<h2>Module contents<a class="headerlink" href="#module-contents" title="Permalink to this headline">¶</a></h2>
 </div>
 </div>
 
@@ -122,14 +71,20 @@ and orbing of current picture and add it to next queue
   <ul>
 <li><a class="reference internal" href="#">carlhauser_server.FeatureExtractor package</a><ul>
 <li><a class="reference internal" href="#submodules">Submodules</a></li>
-<li><a class="reference internal" href="#module-carlhauser_server.FeatureExtractor.feature_worker">carlhauser_server.FeatureExtractor.feature_worker module</a></li>
-<li><a class="reference internal" href="#module-carlhauser_server.FeatureExtractor.picture_hasher">carlhauser_server.FeatureExtractor.picture_hasher module</a></li>
-<li><a class="reference internal" href="#module-carlhauser_server.FeatureExtractor.picture_orber">carlhauser_server.FeatureExtractor.picture_orber module</a></li>
-<li><a class="reference internal" href="#module-carlhauser_server.FeatureExtractor">Module contents</a></li>
+<li><a class="reference internal" href="#carlhauser-server-featureextractor-feature-worker-module">carlhauser_server.FeatureExtractor.feature_worker module</a></li>
+<li><a class="reference internal" href="#carlhauser-server-featureextractor-picture-hasher-module">carlhauser_server.FeatureExtractor.picture_hasher module</a></li>
+<li><a class="reference internal" href="#carlhauser-server-featureextractor-picture-orber-module">carlhauser_server.FeatureExtractor.picture_orber module</a></li>
+<li><a class="reference internal" href="#module-contents">Module contents</a></li>
 </ul>
 </li>
 </ul>
 
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="carlhauser_server.DistanceEngine.html"
+                        title="previous chapter">carlhauser_server.DistanceEngine package</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="carlhauser_server.Helpers.html"
+                        title="next chapter">carlhauser_server.Helpers package</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -160,7 +115,14 @@ and orbing of current picture and add it to next queue
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li> 
+        <li class="right" >
+          <a href="carlhauser_server.Helpers.html" title="carlhauser_server.Helpers package"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="carlhauser_server.DistanceEngine.html" title="carlhauser_server.DistanceEngine package"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="carlhauser_server.html" >carlhauser_server package</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

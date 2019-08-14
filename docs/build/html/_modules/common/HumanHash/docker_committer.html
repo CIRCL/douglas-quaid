@@ -1,0 +1,179 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>common.HumanHash.docker_committer &#8212; Douglas-Quaid 0.0.4 documentation</title>
+    <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for common.HumanHash.docker_committer</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">deque</span>
+
+<span class="c1"># See : https://github.com/docker/docker-py</span>
+<span class="kn">import</span> <span class="nn">docker</span>
+
+
+<span class="c1">### LAAAAUNCH WITH ROOT ACCESS !! or with user in docker group ####</span>
+
+<div class="viewcode-block" id="DockerCommmiter"><a class="viewcode-back" href="../../../common.HumanHash.html#common.HumanHash.docker_committer.DockerCommmiter">[docs]</a><span class="k">class</span> <span class="nc">DockerCommmiter</span><span class="p">:</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">saves_limit</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client</span> <span class="o">=</span> <span class="n">docker</span><span class="o">.</span><span class="n">from_env</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">deque_saves</span> <span class="o">=</span> <span class="n">deque</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">saves_limit</span> <span class="o">=</span> <span class="n">saves_limit</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_save_id</span> <span class="o">=</span> <span class="mi">0</span>
+
+<div class="viewcode-block" id="DockerCommmiter.inifnite_commit_docker"><a class="viewcode-back" href="../../../common.HumanHash.html#common.HumanHash.docker_committer.DockerCommmiter.inifnite_commit_docker">[docs]</a>    <span class="k">def</span> <span class="nf">inifnite_commit_docker</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docker_name</span><span class="p">,</span> <span class="n">nb_secs</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;List of runing container :&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">containers</span><span class="o">.</span><span class="n">list</span><span class="p">())</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;List of images :&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">images</span><span class="o">.</span><span class="n">list</span><span class="p">())</span>
+
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="c1"># Commit the docker</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">commit_docker</span><span class="p">(</span><span class="n">docker_name</span><span class="p">)</span>
+            <span class="c1"># Remove the old ones</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">remove_too_old_images</span><span class="p">()</span>
+
+            <span class="c1"># wait for next scheduled save time</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">nb_secs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DockerCommmiter.commit_docker"><a class="viewcode-back" href="../../../common.HumanHash.html#common.HumanHash.docker_committer.DockerCommmiter.commit_docker">[docs]</a>    <span class="k">def</span> <span class="nf">commit_docker</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docker_name</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="n">commit_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_commit_name</span><span class="p">()</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Commiting : </span><span class="si">{commit_name}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">containers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">docker_name</span><span class="p">)</span><span class="o">.</span><span class="n">commit</span><span class="p">(</span><span class="n">commit_name</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">deque_saves</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">commit_name</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">commit_name</span></div>
+
+<div class="viewcode-block" id="DockerCommmiter.get_commit_name"><a class="viewcode-back" href="../../../common.HumanHash.html#common.HumanHash.docker_committer.DockerCommmiter.get_commit_name">[docs]</a>    <span class="k">def</span> <span class="nf">get_commit_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">datetime_object</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Current date : &quot;</span><span class="p">,</span> <span class="n">datetime_object</span><span class="p">)</span>
+        <span class="n">commit_name</span> <span class="o">=</span> <span class="s2">&quot;save_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">current_save_id</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">datetime_object</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot;_&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="s2">&quot;_&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="s2">&quot;_&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="s2">&quot;_&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_save_id</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="n">commit_name</span></div>
+
+<div class="viewcode-block" id="DockerCommmiter.remove_too_old_images"><a class="viewcode-back" href="../../../common.HumanHash.html#common.HumanHash.docker_committer.DockerCommmiter.remove_too_old_images">[docs]</a>    <span class="k">def</span> <span class="nf">remove_too_old_images</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">deque_saves</span><span class="p">)</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">saves_limit</span><span class="p">:</span>
+            <span class="n">commit_name_to_remove</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">deque_saves</span><span class="o">.</span><span class="n">popleft</span><span class="p">()</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Too many saves. Removing save : </span><span class="si">{commit_name_to_remove}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">images</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">commit_name_to_remove</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Save limit not reached for now, only {len(self.deque_saves)} saves&quot;</span><span class="p">)</span></div></div>
+
+
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">&gt;&gt;&gt; client.images.remove(t.id)</span>
+<span class="sd">&gt;&gt;&gt; client.images.list()</span>
+<span class="sd">[&lt;Image: &#39;&#39;&gt;, &lt;Image: &#39;ubuntu:latest&#39;&gt;, &lt;Image: &#39;rediscommander/redis-commander:latest&#39;&gt;]</span>
+<span class="sd">&gt;&gt;&gt; client.images.list()</span>
+<span class="sd">[&lt;Image: &#39;&#39;&gt;, &lt;Image: &#39;ubuntu:latest&#39;&gt;, &lt;Image: &#39;rediscommander/redis-commander:latest&#39;&gt;]</span>
+<span class="sd">&gt;&gt;&gt; t = client.containers.get(&quot;musing_yonath&quot;).commit(&quot;test_image&quot;)</span>
+<span class="sd">&gt;&gt;&gt; t</span>
+<span class="sd">&lt;Image: &#39;test_image:latest&#39;&gt;</span>
+<span class="sd">&gt;&gt;&gt; client.images.list()</span>
+<span class="sd">[&lt;Image: &#39;test_image:latest&#39;&gt;, &lt;Image: &#39;&#39;&gt;, &lt;Image: &#39;ubuntu:latest&#39;&gt;, &lt;Image: &#39;rediscommander/redis-commander:latest&#39;&gt;]</span>
+<span class="sd">&gt;&gt;&gt; client.images.remove(t.id)</span>
+<span class="sd">&gt;&gt;&gt; client.images.list()</span>
+<span class="sd">[&lt;Image: &#39;&#39;&gt;, &lt;Image: &#39;ubuntu:latest&#39;&gt;, &lt;Image: &#39;rediscommander/redis-commander:latest&#39;&gt;]</span>
+
+<span class="sd">&#39;&#39;&#39;</span>
+
+
+<span class="c1"># HOW TO USE :</span>
+<span class="c1"># Launch your docker</span>
+<span class="c1"># Launch the monitor :</span>
+<span class="c1"># screen -S python_commiter python3 ./docker_committer.py -n &lt;docker_name&gt; -s 1500 -l 5</span>
+
+
+<div class="viewcode-block" id="main"><a class="viewcode-back" href="../../../common.HumanHash.html#common.HumanHash.docker_committer.main">[docs]</a><span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="c1"># Usage example : python3 ./humanizer.py -p ./MINI_DATASET/</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s1">&#39;Regularly save docker provided as parameter&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-n&#39;</span><span class="p">,</span> <span class="s1">&#39;--name&#39;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;docker_name&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Docker name to monitor&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-s&#39;</span><span class="p">,</span> <span class="s1">&#39;--sec&#39;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;seconds&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Seconds between each commit&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-l&#39;</span><span class="p">,</span> <span class="s1">&#39;--limit&#39;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;save_limit&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Number of saves to keep&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--version&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;version&#39;</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="s1">&#39;humanizer </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="s2">&quot;1.0.0&quot;</span><span class="p">)</span>
+
+    <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+    <span class="n">dockermng</span> <span class="o">=</span> <span class="n">DockerCommmiter</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">save_limit</span><span class="p">)</span>
+    <span class="n">dockermng</span><span class="o">.</span><span class="n">inifnite_commit_docker</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">docker_name</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">seconds</span><span class="p">)</span></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">Douglas-Quaid 0.0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2019, Vincent FALCONIERI.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.2.
+    </div>
+  </body>
+</html>
