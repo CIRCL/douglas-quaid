@@ -285,9 +285,23 @@ Tests are quite long to be performed, and you should do so only for devlopement 
 Current library is a step behind [Carl-Hauser](https://github.com/CIRCL/carl-hauser) (:wink:) for algorithms implementation, but uses :
 -   ImageHash Algorithms (A-hash, P-hash, D-hash, W-hash ... )
 -   TLSH
--   ORB
+-   ORB and ORB BoW
 
 Performance (quality and time) is served by improvements and design choices on top of these algorithms.
+
+One note about ORB and ORB BoW.
+
+ORB algorithm takes a picture, find important/relevant points in this picture (around 500), extract a patch of pixels around each point, and encode each patch into an array of bits. The signification of this array depends on the exact subalgorithm used in this step. When comparing two pictures, ORB algorithm must go through each of their list of array of bits. Therefore, (number of patches per picture)² are needed. The process is quite slow even for comparing only two pictures.
+
+We can build a dictionnary of most common patches. If we have a big enough set of pictures, ORB can find all of their importants points, and encode all their patches of pixels. We at the end have a big list of array of bits. We can then perform a k-means on this list, and get cluster of similar patches. We can then only extract one representative patch per cluster and so create a dictionnary.
+
+ORB BoW algorithm can then use this dictionnary to perform faster comparison than ORB. Like ORB, it will find important/relevant points in each picture, extract patch of pixels and encode them. However, instead of keeping a full list of the encoded patches, it constructs a boolean array for each picture. The length of the boolean array is as long as the size of the dictionnary. Each bit of the boolean array indicates the presence or absence of a dictionnary's patch of pixels. Therefore, when comparing two pictures, we can only perform one comparison between their respective boolean arrays. Which is much faster.  
+
+The downside of this method is the precision : we have an approximation, as we use a discrete space instead of a continuous space to perform our comparison. The more our discrete space is precise (the bigger our dictionnary is) the more precise we are, but comparison will be a bit longer (comparing two 512bits vectors together is longer than two 32bits vectors, excluding specific hardware optimization). 
+What is in the dictionnary counts : for face recognition, we would only create a dictionnary of faces's pixels' patches. 
+
+Here, we provide two dictionnaries : (DISCLAMER : I forgot the exact size of each dictionnary .. but order of magnitude should be correct) a first (vocab.npy) of about 1000 patches is available, along with a second dictionnary (vocab_100000.npy) of about 100000 patches. The second should be more precise but a bit slower than the first one. 
+ORB BoW is (roughly) as fast as a ImageHash algorithm, but with (roughly) the same precision of an ORB algorithm.   
 
 ## Configuration and Tweaking
 
