@@ -285,4 +285,4 @@ if __name__ == '__main__':
         launcher.ws_conf = ws_conf
 
     sf = safe_launcher.SafeLauncher(launcher, "launch", "stop")
-    sf.launch()
+    sf.launch(use_input=False)
